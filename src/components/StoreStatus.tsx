@@ -1,0 +1,201 @@
+import React, { useState, useEffect } from 'react';
+import { Clock, Calendar, Store, AlertCircle } from 'lucide-react';
+
+interface StoreHours {
+  day: number;
+  open: string;
+  close: string;
+}
+
+interface StoreStatusProps {
+  vendorId: number;
+}
+
+const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
+  const [storeStatus, setStoreStatus] = useState<{
+    store_hours: StoreHours[];
+    vacation_mode: boolean;
+    closed_dates: string[];
+    is_open_now: boolean;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    const fetchStoreStatus = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // For development purposes, we'll use default store hours
+        // In a real implementation, you would fetch this from your API
+        setStoreStatus({
+          store_hours: defaultStoreHours,
+          vacation_mode: false,
+          closed_dates: [],
+          is_open_now: true
+        });
+        
+        setLoading(false);
+      } catch (err) {
+        console.warn('خطأ في جلب حالة المتجر:', err);
+        
+        // في حالة الفشل، نستخدم القيم الافتراضية
+        setStoreStatus({
+          store_hours: defaultStoreHours,
+          vacation_mode: false,
+          closed_dates: [],
+          is_open_now: true
+        });
+        
+        setError(err instanceof Error ? err.message : 'حدث خطأ في جلب البيانات');
+        setLoading(false);
+
+        if (retryCount < 3) {
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+          }, 2000 * (retryCount + 1));
+        }
+      }
+    };
+
+    fetchStoreStatus();
+
+    // تحديث الحالة كل دقيقة
+    const interval = setInterval(fetchStoreStatus, 60000);
+
+    return () => clearInterval(interval);
+  }, [vendorId, retryCount]);
+
+  if (loading) {
+    return (
+      <div className="animate-pulse bg-white rounded-lg shadow-sm p-4">
+        <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+        <div className="space-y-2">
+          {[...Array(7)].map((_, index) => (
+            <div key={index} className="h-4 bg-gray-200 rounded w-full"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !storeStatus) {
+    return (
+      <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+        <div className="flex items-center gap-2 mb-2">
+          <AlertCircle className="w-5 h-5" />
+          <p className="font-medium">خطأ في جلب البيانات</p>
+        </div>
+        <p className="text-sm">{error}</p>
+        {retryCount < 3 && (
+          <p className="text-sm mt-2">
+            جاري إعادة المحاولة... ({retryCount + 1}/3)
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (!storeStatus) {
+    return (
+      <div className="bg-yellow-50 text-yellow-700 p-4 rounded-lg flex items-center gap-2 mb-4">
+        <Store className="w-5 h-5" />
+        <p>لا توجد معلومات عن ساعات العمل</p>
+      </div>
+    );
+  }
+
+  const getDayName = (day: number) => {
+    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    return days[day];
+  };
+
+  const formatTime = (time: string) => {
+    try {
+      const [hours, minutes] = time.split(':');
+      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    } catch {
+      return time;
+    }
+  };
+
+  const currentDay = new Date().getDay();
+  const todayHours = storeStatus.store_hours.find(hours => hours.day === currentDay);
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      {/* حالة المتجر */}
+      <div className="flex items-center gap-3 mb-4">
+        <Store className={`w-5 h-5 ${
+          storeStatus.is_open_now ? 'text-green-500' : 'text-red-500'
+        }`} />
+        <div>
+          <h3 className="font-semibold text-gray-900">
+            {storeStatus.vacation_mode ? 'المتجر في إجازة' : 
+             storeStatus.is_open_now ? 'المتجر مفتوح الآن' : 'المتجر مغلق حالياً'}
+          </h3>
+          {!storeStatus.vacation_mode && todayHours && (
+            <p className="text-sm text-gray-600">
+              ساعات العمل اليوم: {formatTime(todayHours.open)} - {formatTime(todayHours.close)}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* ساعات العمل */}
+      {!storeStatus.vacation_mode && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            <Clock className="w-4 h-4 text-brand" />
+            <span>ساعات العمل</span>
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {storeStatus.store_hours.map((hours) => (
+              <div 
+                key={hours.day}
+                className={`flex justify-between text-sm ${
+                  hours.day === currentDay ? 'text-brand font-medium' : 'text-gray-600'
+                }`}
+              >
+                <span>{getDayName(hours.day)}</span>
+                <span>{formatTime(hours.open)} - {formatTime(hours.close)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* التواريخ المغلقة */}
+      {storeStatus.closed_dates && storeStatus.closed_dates.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+            <Calendar className="w-4 h-4 text-brand" />
+            <span>أيام الإغلاق القادمة</span>
+          </div>
+          <div className="space-y-1">
+            {storeStatus.closed_dates.map((date) => (
+              <div key={date} className="text-sm text-gray-600">
+                {new Date(date).toLocaleDateString('ar-SA')}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ساعات العمل الافتراضية
+const defaultStoreHours = [
+  { day: 0, open: "09:00", close: "21:00" }, // الأحد
+  { day: 1, open: "09:00", close: "21:00" }, // الاثنين
+  { day: 2, open: "09:00", close: "21:00" }, // الثلاثاء
+  { day: 3, open: "09:00", close: "21:00" }, // الأربعاء
+  { day: 4, open: "09:00", close: "21:00" }, // الخميس
+  { day: 5, open: "14:00", close: "21:00" }, // الجمعة
+  { day: 6, open: "09:00", close: "21:00" }  // السبت
+];
+
+export default StoreStatus;

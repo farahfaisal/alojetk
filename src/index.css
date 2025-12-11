@@ -1,0 +1,854 @@
+/* Import Cairo font */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+#root {
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for modern browsers */
+  overflow: hidden;
+  position: relative;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#root::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: 100vh;
+    height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  body {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #root {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Safe area handling for iPhone */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+/* Bottom navigation safe area */
+.bottom-nav-safe-area {
+  padding-bottom: calc(8px + var(--safe-area-bottom)) !important;
+  min-height: calc(60px + var(--safe-area-bottom)) !important;
+  padding-top: 8px !important;
+}
+
+/* Content area adjustments */
+.content-area-with-nav {
+  padding-bottom: calc(80px + var(--safe-area-bottom)) !important;
+  height: calc(100vh - 72px - 68px - var(--safe-area-bottom)) !important;
+  height: calc(100dvh - 72px - 68px - var(--safe-area-bottom)) !important;
+}
+
+/* Main content padding for bottom navigation */
+.main-content-with-nav {
+  padding-bottom: calc(80px + max(env(safe-area-inset-bottom), 8px)) !important;
+  min-height: calc(100vh - 80px - max(env(safe-area-inset-bottom), 8px)) !important;
+  min-height: calc(100dvh - 80px - max(env(safe-area-inset-bottom), 8px)) !important;
+}
+
+/* Modal pages safe area */
+.modal-page-ios {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollable areas */
+.modal-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: auto;
+  scroll-behavior: smooth;
+  height: 100%;
+  position: relative;
+}
+
+/* Hide scrollbars globally but keep functionality */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch improvements for iOS */
+button, input, textarea, select {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent zoom on input focus */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* Fix for iOS keyboard issues */
+.ios-keyboard-fix {
+  position: relative;
+  z-index: 1;
+}
+
+/* Swiper fixes for iOS */
+.swiper {
+  touch-action: pan-y;
+}
+
+.swiper-slide {
+  height: auto;
+}
+
+/* Map container fixes */
+.map-container {
+  position: relative;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS Map fixes */
+@supports (-webkit-touch-callout: none) {
+  .gm-style {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  .gm-style > div {
+    position: relative !important;
+  }
+  
+  .gm-style img {
+    max-width: none !important;
+  }
+  
+  /* Fix for iOS Safari map rendering */
+  .gm-style-iw {
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+  }
+}
+
+/* Google Maps iOS specific fixes */
+.gm-style {
+  font-family: 'Cairo', sans-serif !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  border-radius: 12px !important;
+}
+
+.gm-style > div {
+  transform: none !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.gm-style img {
+  max-width: none !important;
+  height: auto !important;
+}
+
+/* Embedded Map Container Fixes for iOS */
+@supports (-webkit-touch-callout: none) {
+  /* Enhanced map container for embedded maps */
+  .map-container-embedded {
+    position: relative !important;
+    width: 100% !important;
+    height: 300px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    -webkit-overflow-scrolling: touch !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+  }
+  
+  .map-container-embedded .gm-style {
+    position: relative !important;
+    width: 100% !important;
+    height: 300px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+  }
+  
+  .map-container-embedded .gm-style > div {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* Fix for map tiles loading on iOS */
+  .map-container-embedded .gm-style .gm-style-mtc {
+    display: block !important;
+    position: relative !important;
+  }
+  
+  /* Ensure map controls are visible and positioned correctly */
+  .map-container-embedded .gm-style .gmnoprint {
+    display: block !important;
+    position: relative !important;
+  }
+  
+  /* Fix map canvas rendering for embedded maps */
+  .map-container-embedded .gm-style canvas {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 12px !important;
+  }
+  
+  .gm-style {
+    position: relative !important;
+    width: 100% !important;
+    height: 300px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+  }
+  
+  .gm-style > div {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  
+  /* Fix for map tiles loading on iOS */
+  .gm-style .gm-style-mtc {
+    display: block !important;
+    position: relative !important;
+  }
+  
+  /* Ensure map controls are visible and positioned correctly */
+  .gm-style .gmnoprint {
+    display: block !important;
+    position: relative !important;
+  }
+  
+  /* Fix map canvas rendering for embedded maps */
+  .gm-style canvas {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Fix for map container in forms */
+  .map-container-embedded {
+    position: relative !important;
+    width: 100% !important;
+    height: 300px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Fix map container on iOS */
+.map-ios-fix {
+  position: relative !important;
+  overflow: hidden !important;
+  -webkit-transform: translateZ(0) !important;
+  transform: translateZ(0) !important;
+  width: 100% !important;
+  height: 300px !important;
+  border-radius: 12px !important;
+}
+
+/* iOS Bottom Navigation Fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Force bottom nav to always be visible on iOS */
+  .bottom-nav-ios {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 50 !important;
+    background-color: white !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding-bottom: max(env(safe-area-inset-bottom), 8px) !important;
+    padding-top: 8px !important;
+    min-height: calc(60px + max(env(safe-area-inset-bottom), 8px)) !important;
+    width: 100% !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+  }
+  
+  /* Ensure nav items are properly spaced on iOS */
+  .bottom-nav-ios .nav-item {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 4px 8px !important;
+    transition: all 0.2s ease !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+  }
+  
+  /* iOS specific icon sizing */
+  .bottom-nav-ios .nav-icon {
+    width: 24px !important;
+    height: 24px !important;
+    position: relative !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* iOS specific text sizing */
+  .bottom-nav-ios .nav-text {
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    display: block !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Force visibility for iOS navigation */
+  .ios-nav-item {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .ios-icon {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .ios-text {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Prevent elastic scrolling */
+body {
+  overscroll-behavior: auto;
+  -webkit-overscroll-behavior: auto;
+}
+
+/* Fix for floating elements on iPhone */
+.floating-element {
+  position: fixed;
+  z-index: 9999;
+  bottom: calc(80px + var(--safe-area-bottom));
+}
+
+/* Animation improvements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-shadow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Utility classes */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* RTL support */
+[dir="rtl"] .swiper-button-next {
+  left: 10px;
+  right: auto;
+}
+
+[dir="rtl"] .swiper-button-prev {
+  right: 10px;
+  left: auto;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Focus states */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2;
+}
+
+/* Custom scrollbar for webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Thin scrollbar for addons list */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Hero section decorative elements */
+.hero-decorative {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-decorative:nth-child(1) {
+  top: 10%;
+  right: 10%;
+  width: 80px;
+  height: 80px;
+  animation-delay: 0s;
+}
+
+.hero-decorative:nth-child(2) {
+  bottom: 20%;
+  left: 15%;
+  width: 60px;
+  height: 60px;
+  animation-delay: 2s;
+}
+
+.hero-decorative:nth-child(3) {
+  top: 50%;
+  right: 20%;
+  width: 40px;
+  height: 40px;
+  animation-delay: 4s;
+}
+
+/* Category card hover effects */
+.category-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Badge animations */
+.badge-new {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+  }
+}
+
+.badge-logo-jitak {
+  animation: pulse-glow-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-green {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+  }
+}
+
+/* iPhone X+ specific adjustments */
+@media screen and (max-width: 430px) and (min-height: 800px) {
+  .bottom-nav-ios {
+    padding-bottom: calc(34px + var(--safe-area-bottom)) !important;
+    min-height: calc(60px + 34px + var(--safe-area-bottom)) !important;
+  }
+  
+  .content-area-ios {
+    padding-bottom: calc(94px + var(--safe-area-bottom)) !important;
+    height: calc(100vh - 72px - 94px - var(--safe-area-bottom)) !important;
+    height: calc(100dvh - 72px - 94px - var(--safe-area-bottom)) !important;
+  }
+}
+
+/* Prevent text selection on UI elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Improve touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Fix for modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Fix for full-screen modals */
+.full-screen-modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Brand colors */
+.text-brand {
+  color: #c21d14;
+}
+
+.bg-brand {
+  background-color: #c21d14;
+}
+
+.text-accent {
+  color: #ffffff;
+}
+
+.bg-accent {
+  background-color: #ffffff;
+}
+
+/* Red click effects for categories */
+.text-shadow-red {
+  text-shadow: 0 2px 4px rgba(194, 29, 20, 0.5);
+}
+
+.border-3 {
+  border-width: 3px;
+}
+
+/* Category click animation */
+@keyframes category-click {
+  0% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(194, 29, 20, 0.7);
+  }
+  50% { 
+    transform: scale(0.95);
+    box-shadow: 0 0 0 10px rgba(194, 29, 20, 0.3);
+  }
+  100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 20px rgba(194, 29, 20, 0);
+  }
+}
+
+.category-click-effect {
+  animation: category-click 0.6s ease-out;
+}
+
+/* Red glow effect */
+.red-glow {
+  box-shadow: 0 0 20px rgba(194, 29, 20, 0.4);
+}
+
+/* Responsive text - smaller fonts for mobile */
+@media (max-width: 640px) {
+  .text-responsive-sm {
+    font-size: 0.75rem;
+  }
+
+  .text-responsive-base {
+    font-size: 0.875rem;
+  }
+
+  .text-responsive-lg {
+    font-size: 1rem;
+  }
+}
+
+/* Global mobile font size optimizations */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  h3 {
+    font-size: 1.125rem !important;
+  }
+
+  h4 {
+    font-size: 1rem !important;
+  }
+
+  h5, h6 {
+    font-size: 0.875rem !important;
+  }
+
+  p, span, div {
+    font-size: 0.875rem;
+  }
+
+  button {
+    font-size: 0.875rem;
+  }
+
+  .text-xs {
+    font-size: 0.625rem !important;
+  }
+
+  .text-sm {
+    font-size: 0.75rem !important;
+  }
+
+  .text-base {
+    font-size: 0.875rem !important;
+  }
+
+  .text-lg {
+    font-size: 1rem !important;
+  }
+
+  .text-xl {
+    font-size: 1.125rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  .text-3xl {
+    font-size: 1.5rem !important;
+  }
+
+  .text-4xl {
+    font-size: 1.75rem !important;
+  }
+}
+
+/* Safe area padding for status bar (battery, clock, etc.) */
+.safe-area-top {
+  padding-top: max(env(safe-area-inset-top), 0px) !important;
+}
+
+/* Ensure root respects status bar area */
+#root {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px) !important;
+}
+
+.safe-area-left {
+  padding-left: max(env(safe-area-inset-left), 0px) !important;
+}
+
+.safe-area-right {
+  padding-right: max(env(safe-area-inset-right), 0px) !important;
+}
+
+/* Full screen modals with safe area */
+.modal-full-screen-safe {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  padding-top: max(env(safe-area-inset-top), 0px) !important;
+  padding-bottom: max(env(safe-area-inset-bottom), 0px) !important;
+}
+
+/* Content area with safe area top */
+.content-with-safe-area-top {
+  padding-top: max(env(safe-area-inset-top), 0px) !important;
+}
+
+/* iOS specific safe area enhancements */
+@supports (-webkit-touch-callout: none) {
+  .ios-safe-top {
+    padding-top: max(env(safe-area-inset-top), 20px) !important;
+  }
+
+  .ios-safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 20px) !important;
+  }
+}

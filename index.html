@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/jpeg" href="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>الو جيتك - توصيل طلبات</title>
+    <style>
+      body {
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        position: relative;
+        width: 100vw;
+        min-height: 100vh;
+        -webkit-overflow-scrolling: touch;
+        -webkit-text-size-adjust: 100%;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        background-color: #c21d14;
+      }
+      
+      #root {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Fix for iOS Safari viewport issues */
+      @supports (-webkit-touch-callout: none) {
+        body {
+          min-height: -webkit-fill-available;
+          position: relative;
+        }
+        
+        #root {
+          min-height: -webkit-fill-available;
+        }
+      }
+      
+      /* Prevent horizontal scrolling and bouncing */
+      html {
+        overflow-x: hidden;
+        width: 100vw;
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      /* Fix for Google Maps on iOS */
+      .gm-style {
+        font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+      
+      .gm-style > div {
+        transform: none !important;
+        position: relative !important;
+      }
+      
+      .gm-style img {
+        max-width: none !important;
+        height: auto !important;
+      }
+      
+      /* Prevent elastic scrolling on iOS */
+      body {
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Fix for iPhone notch and safe areas */
+      @media screen and (max-width: 430px) {
+        body {
+          padding-top: max(env(safe-area-inset-top), 0px);
+          padding-bottom: max(env(safe-area-inset-bottom), 0px);
+        }
+        
+        #root {
+          padding-top: max(env(safe-area-inset-top), 0px);
+          min-height: calc(100vh - max(env(safe-area-inset-top), 0px) - max(env(safe-area-inset-bottom), 0px));
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
