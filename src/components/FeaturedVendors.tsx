@@ -193,22 +193,19 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
 
                 {/* Status Badge - Fixed Height */}
                 <div className="flex items-center justify-center" style={{ height: '20px' }}>
-                  <div className="flex items-center gap-1.5">
-                    <div className={`w-2 h-2 rounded-full ${
-                      vendor.status === 'active' ? 'bg-green-500' :
-                      vendor.status === 'busy' ? 'bg-yellow-500' :
-                      vendor.status === 'suspended' ? 'bg-red-500' : 'bg-gray-400'
-                    }`}></div>
-                    <span className={`font-medium text-sm ${
-                      vendor.status === 'active' ? 'text-green-600' :
-                      vendor.status === 'busy' ? 'text-yellow-600' :
-                      vendor.status === 'suspended' ? 'text-red-600' : 'text-gray-500'
-                    }`}>
-                      {vendor.status === 'active' ? 'مفتوح الآن' :
-                       vendor.status === 'busy' ? 'مشغول' :
-                       vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
-                    </span>
-                  </div>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                    vendor.status === 'active'
+                      ? 'bg-green-500/90 text-white'
+                      : vendor.status === 'busy'
+                        ? 'bg-orange-500/90 text-white'
+                        : vendor.status === 'suspended'
+                          ? 'bg-red-500/90 text-white'
+                          : 'bg-gray-500/90 text-white'
+                  }`}>
+                    {vendor.status === 'active' ? 'مفتوح الآن' :
+                     vendor.status === 'busy' ? 'مشغول' :
+                     vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
+                  </span>
                 </div>
               </div>
             </motion.button>
