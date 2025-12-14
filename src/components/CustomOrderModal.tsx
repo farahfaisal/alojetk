@@ -44,10 +44,12 @@ const CustomOrderModal: React.FC<CustomOrderModalProps> = ({
       let cart = cartItems ? JSON.parse(cartItems) : {};
 
       const customItemId = `custom_${Date.now()}`;
+      // Use a fixed UUID for custom orders to satisfy NOT NULL constraint
+      const CUSTOM_PRODUCT_ID = '00000000-0000-0000-0000-000000000001';
 
       cart[customItemId] = {
         id: customItemId,
-        product_id: null,
+        product_id: CUSTOM_PRODUCT_ID,
         name: 'طلب خاص',
         price: 0,
         quantity: 1,
