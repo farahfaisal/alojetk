@@ -392,13 +392,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             const itemPriceWithAddons = item.price + addonsTotal;
             return {
               order_id: (order as any).id,
-              product_id: item.product_id,
-              quantity: item.quantity,
+              product_id: item.product_id || null,
+              quantity: item.quantity || 1,
               price: itemPriceWithAddons,
-              vendor_id: item.vendor_id,
-              vendor_name: item.vendor_name,
-              name: item.name,
-              product_name: item.name,
+              vendor_id: item.vendor_id || vendorId,
+              vendor_name: item.vendor_name || vendorItems[0].vendor_name,
+              name: item.name || 'منتج',
+              product_name: item.name || 'منتج',
               notes: (item as any).is_custom ? `طلب خاص: ${(item as any).custom_details}` : null,
               addons_data: item.addons || [],
               variant_id: item.variant_id || null,
@@ -411,8 +411,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           throw new Error('لا توجد منتجات صالحة في السلة');
         }
 
+        console.log('📝 Order items to insert:', orderItems);
         const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-        if (itemsError) throw itemsError;
+        if (itemsError) {
+          console.error('❌ Error inserting order items:', itemsError);
+          throw itemsError;
+        }
       }
 
       // Use the first order for remaining operations
