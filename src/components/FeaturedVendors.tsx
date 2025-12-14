@@ -163,15 +163,15 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
               {/* Store Info - Fixed Height */}
               <div className="px-3 pb-3 bg-white flex-1 flex flex-col">
                 {/* Store Name - Fixed Height */}
-                <h3 className="font-bold text-gray-900 text-base text-center line-clamp-2 leading-tight" style={{ height: '48px' }}>
+                <h3 className="font-bold text-gray-900 text-lg text-center line-clamp-2 leading-tight mb-0.5" style={{ height: '42px' }}>
                   {vendor.store_name}
                 </h3>
 
                 {/* Location - Fixed Height */}
                 {(vendor.address || vendor.city) && (
-                  <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '18px' }}>
-                    <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    <span className="text-gray-500 text-xs truncate">
+                  <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '16px' }}>
+                    <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                    <span className="text-gray-500 text-[10px] truncate">
                       {vendor.city || vendor.address}
                     </span>
                   </div>
@@ -181,31 +181,34 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
                 <div className="w-full h-px bg-gray-200 my-1.5"></div>
 
                 {/* Rating Section - Fixed Height */}
-                <div className="flex items-center justify-center gap-1 mb-1.5" style={{ height: '20px' }}>
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span className="font-bold text-gray-900 text-sm">
+                <div className="flex items-center justify-center gap-1 mb-1.5" style={{ height: '18px' }}>
+                  <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                  <span className="font-bold text-gray-900 text-xs">
                     {vendor.rating ? vendor.rating : 'جديد'}
                   </span>
                   {vendor.rating_count && (
-                    <span className="text-gray-500 text-sm">({vendor.rating_count > 999 ? '+1000' : `+${vendor.rating_count}`})</span>
+                    <span className="text-gray-500 text-[11px]">({vendor.rating_count > 999 ? '+1000' : `+${vendor.rating_count}`})</span>
                   )}
                 </div>
 
                 {/* Status Badge - Fixed Height */}
-                <div className="flex items-center justify-center" style={{ height: '20px' }}>
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                    vendor.status === 'active'
-                      ? 'bg-green-500/90 text-white'
-                      : vendor.status === 'busy'
-                        ? 'bg-orange-500/90 text-white'
-                        : vendor.status === 'suspended'
-                          ? 'bg-red-500/90 text-white'
-                          : 'bg-gray-500/90 text-white'
-                  }`}>
-                    {vendor.status === 'active' ? 'مفتوح الآن' :
-                     vendor.status === 'busy' ? 'مشغول' :
-                     vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
-                  </span>
+                <div className="flex items-center justify-center" style={{ height: '18px' }}>
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      vendor.status === 'active' ? 'bg-green-500' :
+                      vendor.status === 'busy' ? 'bg-yellow-500' :
+                      vendor.status === 'suspended' ? 'bg-red-500' : 'bg-gray-400'
+                    }`}></div>
+                    <span className={`font-medium text-[11px] ${
+                      vendor.status === 'active' ? 'text-green-600' :
+                      vendor.status === 'busy' ? 'text-yellow-600' :
+                      vendor.status === 'suspended' ? 'text-red-600' : 'text-gray-500'
+                    }`}>
+                      {vendor.status === 'active' ? 'مفتوح الآن' :
+                       vendor.status === 'busy' ? 'مشغول' :
+                       vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </motion.button>

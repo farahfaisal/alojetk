@@ -846,7 +846,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                             {/* Product Info */}
                             <div className="p-3">
-                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-[13px]">{product.name}</h3>
                               {product.description && (
                                 <p className="text-xs text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                               )}
@@ -930,7 +930,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                               {/* Product Info */}
                               <div className="p-4">
-                                <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                                <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-[15px]">{product.name}</h3>
                                 {product.description && (
                                   <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                                 )}
@@ -1011,7 +1011,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                             {/* Product Info */}
                             <div className="p-4">
-                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-[15px]">{product.name}</h3>
                               {product.description && (
                                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                               )}
