@@ -392,7 +392,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             const itemPriceWithAddons = item.price + addonsTotal;
             return {
               order_id: (order as any).id,
-              product_id: item.product_id || null,
+              product_id: (item as any).is_custom
+                ? '00000000-0000-0000-0000-000000000001'
+                : (item.product_id || '00000000-0000-0000-0000-000000000001'),
               quantity: item.quantity || 1,
               price: itemPriceWithAddons,
               vendor_id: item.vendor_id || vendorId,
