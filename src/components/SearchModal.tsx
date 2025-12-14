@@ -177,7 +177,10 @@ const SearchModal: React.FC<SearchModalProps> = ({
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="bg-white rounded-b-3xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: '90vh' }}
+        style={{
+          maxHeight: '90vh',
+          paddingTop: 'max(env(safe-area-inset-top), 0px)'
+        }}
       >
         {/* Header */}
         <div className="bg-gradient-to-br from-[#c21d14] to-[#8b1a1a] px-4 py-6">

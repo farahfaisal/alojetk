@@ -172,7 +172,9 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col overflow-hidden" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)'
+    }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-md mx-auto">

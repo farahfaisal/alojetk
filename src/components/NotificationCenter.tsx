@@ -26,6 +26,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
             className="absolute top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl z-10"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top), 0px)'
+            }}
           >
             <div className="flex flex-col h-full">
               {/* Header */}

@@ -531,7 +531,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col" dir="rtl">
+    <div className="fixed inset-0 bg-white z-50 flex flex-col" dir="rtl" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)'
+    }}>
       <div className="sticky top-0 z-10 bg-white shadow-sm">
         <div className="max-w-2xl mx-auto p-4 flex items-center justify-between">
           <button

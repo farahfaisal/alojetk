@@ -805,9 +805,9 @@ body {
   padding-top: max(env(safe-area-inset-top), 0px) !important;
 }
 
-/* Ensure root respects status bar area */
+/* Root element without padding - each page handles safe area individually */
 #root {
-  padding-top: env(safe-area-inset-top);
+  padding-top: 0;
 }
 
 .safe-area-bottom {

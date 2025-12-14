@@ -241,7 +241,9 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)'
+    }}>
       <div className="bg-white shadow-sm">
         <div className="max-w-md mx-auto p-4 flex items-center justify-between">
           <button
