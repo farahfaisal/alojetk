@@ -352,7 +352,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           order_group_id: orderGroupId,
           total_vendors: vendorCount,
           vendor_order_index: i + 1,
-          order_type: isMultiVendor ? 'multi_vendor' : 'single_vendor',
           items_data: vendorItems.map((item) => ({
             id: item.id,
             product_id: item.product_id,

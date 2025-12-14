@@ -31,15 +31,28 @@ interface OrderDetails {
   customer_name: string;
   customer_phone: string;
   vendor_name: string;
+  vendor_id?: string;
   driver_name?: string;
   created_at: string;
   estimated_total_time?: number;
   items_data: any[];
 }
 
+interface VendorInfo {
+  id: string;
+  name: string;
+  logo_url: string;
+}
+
+interface ProductImage {
+  [productId: string]: string;
+}
+
 const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose }) => {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [orderHistory, setOrderHistory] = useState<OrderStatus[]>([]);
+  const [productImages, setProductImages] = useState<ProductImage>({});
+  const [vendorInfo, setVendorInfo] = useState<VendorInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -91,7 +104,42 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
 
       if (error) throw error;
       setOrderDetails(data);
-      
+
+      // Fetch vendor info including logo
+      if (data?.vendor_id) {
+        const { data: vendor, error: vendorError } = await supabase
+          .from('vendors')
+          .select('id, name, logo_url')
+          .eq('id', data.vendor_id)
+          .maybeSingle();
+
+        if (!vendorError && vendor) {
+          setVendorInfo(vendor);
+        }
+      }
+
+      // Fetch product images
+      if (data?.items_data && data.items_data.length > 0) {
+        const productIds = data.items_data
+          .map((item: any) => item.product_id)
+          .filter(Boolean);
+
+        if (productIds.length > 0) {
+          const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('id, image_url')
+            .in('id', productIds);
+
+          if (!productsError && products) {
+            const imagesMap: ProductImage = {};
+            products.forEach((product: any) => {
+              imagesMap[product.id] = product.image_url;
+            });
+            setProductImages(imagesMap);
+          }
+        }
+      }
+
       // Also fetch order history
       await fetchOrderHistory();
     } catch (err) {
@@ -233,6 +281,29 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
         <div className="max-w-md mx-auto p-4 space-y-6">
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
+            {/* Vendor Logo and Name */}
+            {vendorInfo && (
+              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
+                  {vendorInfo.logo_url ? (
+                    <img
+                      src={vendorInfo.logo_url}
+                      alt={vendorInfo.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-brand flex items-center justify-center">
+                      <Store className="w-8 h-8 text-white" />
+                    </div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">المتجر</p>
+                  <p className="text-lg font-bold text-gray-900">{vendorInfo.name}</p>
+                </div>
+              </div>
+            )}
+
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-gray-900">
                 طلب رقم {orderDetails.order_number || orderDetails.id.slice(-6)}
@@ -292,110 +363,112 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
 
           {/* Order Status Timeline */}
           <div className="relative">
-            {orderHistory.length > 0 ? (
-              <div className="space-y-0 relative">
-                {/* Timeline dots line */}
-                <div className="absolute left-6 top-14 bottom-14 w-0.5 bg-gradient-to-b from-green-300 via-red-300 to-gray-200"
-                     style={{
-                       height: `calc(100% - ${orderHistory.length * 4}rem)`,
-                       top: '3.5rem'
-                     }}
-                />
+            {(() => {
+              // Define 4 main stages
+              const stages = [
+                { key: 'pending', label: 'في انتظار الموافقة', icon: Clock },
+                { key: 'processing', label: 'قيد التحضير', icon: Package },
+                { key: 'shipping', label: 'في الطريق', icon: Truck },
+                { key: 'delivered', label: 'تم التوصيل', icon: Check }
+              ];
 
-                {orderHistory.map((status, index) => {
-                  const isCompleted = index < orderHistory.length - 1 ||
-                                      ['delivered', 'completed', 'shipping', 'ready', 'processing', 'accepted'].includes(status.status);
-                  const isCurrent = index === orderHistory.length - 1 &&
-                                    !['delivered', 'completed', 'cancelled', 'rejected'].includes(status.status);
-                  const isLastPending = index === orderHistory.length - 1 &&
-                                         status.status === 'pending';
+              // Determine current stage index based on order status
+              const getCurrentStageIndex = () => {
+                const status = orderDetails?.status || 'pending';
+                if (['cancelled', 'rejected'].includes(status)) return -1;
+                if (['delivered', 'completed'].includes(status)) return 3;
+                if (['shipping', 'out_for_delivery', 'picked_up'].includes(status)) return 2;
+                if (['processing', 'accepted', 'preparing', 'ready'].includes(status)) return 1;
+                return 0; // pending
+              };
 
-                  return (
-                    <div key={status.id} className="flex items-stretch gap-0 relative mb-0">
-                      {/* Timeline Circle Icon */}
-                      <div className="flex flex-col items-center z-10 w-12 flex-shrink-0">
+              const currentStageIndex = getCurrentStageIndex();
+
+              return (
+                <div className="space-y-0 relative">
+                  {/* Timeline dots line */}
+                  <div className="absolute left-6 top-14 bottom-14 w-0.5 bg-gradient-to-b from-green-300 via-amber-300 to-gray-200"
+                       style={{
+                         height: `calc(100% - 16rem)`,
+                         top: '3.5rem'
+                       }}
+                  />
+
+                  {stages.map((stage, index) => {
+                    const isCompleted = currentStageIndex > index;
+                    const isCurrent = currentStageIndex === index;
+                    const isPending = currentStageIndex < index;
+                    const Icon = stage.icon;
+
+                    return (
+                      <div key={stage.key} className="flex items-stretch gap-0 relative mb-0">
+                        {/* Timeline Circle Icon */}
+                        <div className="flex flex-col items-center z-10 w-12 flex-shrink-0">
+                          <div className={`
+                            w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300
+                            ${isCompleted ? 'bg-green-500 shadow-md' :
+                              isCurrent ? 'bg-amber-500 shadow-lg shadow-amber-500/50' :
+                              'bg-white border-2 border-gray-300'}
+                          `}>
+                            {isCompleted ? (
+                              <Check className="w-6 h-6 text-white" />
+                            ) : isCurrent ? (
+                              <Icon className="w-6 h-6 text-white animate-pulse" />
+                            ) : (
+                              <Icon className="w-5 h-5 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Status Card */}
                         <div className={`
-                          w-12 h-12 rounded-full flex items-center justify-center
-                          ${isCompleted ? 'bg-green-500' : isCurrent ? 'bg-red-500' : 'bg-white border-2 border-gray-300'}
-                          ${isLastPending ? 'bg-red-500 shadow-lg' : ''}
+                          flex-1 rounded-2xl p-5 mb-2 ml-2 mr-2 transition-all duration-300
+                          ${isCompleted ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md' :
+                            isCurrent ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-2 border-amber-700 shadow-xl shadow-amber-500/30 animate-pulse' :
+                            'bg-white border border-gray-200 text-gray-400'}
                         `}>
-                          {isCompleted ? (
-                            <Check className="w-6 h-6 text-white" />
-                          ) : isCurrent ? (
-                            <Check className="w-6 h-6 text-white" />
-                          ) : isLastPending ? (
-                            <Check className="w-6 h-6 text-white" />
-                          ) : (
-                            <div className={`w-3 h-3 rounded-full bg-gray-300`} />
-                          )}
-                        </div>
-                      </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h4 className={`font-bold text-lg mb-1 ${isCompleted || isCurrent ? 'text-white' : 'text-gray-400'}`}>
+                                {stage.label}
+                              </h4>
+                              {isCurrent && orderDetails?.driver_name && index === 2 && (
+                                <p className="text-sm text-white/90">
+                                  السائق: {orderDetails.driver_name}
+                                </p>
+                              )}
+                            </div>
+                            {(isCompleted || isCurrent) && (
+                              <div className="text-white">
+                                <p className="text-sm font-medium">
+                                  {(() => {
+                                    const relevantHistory = orderHistory.find(h => {
+                                      if (index === 0) return ['pending'].includes(h.status);
+                                      if (index === 1) return ['processing', 'accepted', 'preparing', 'ready'].includes(h.status);
+                                      if (index === 2) return ['shipping', 'out_for_delivery', 'picked_up'].includes(h.status);
+                                      if (index === 3) return ['delivered', 'completed'].includes(h.status);
+                                      return false;
+                                    });
 
-                      {/* Status Card */}
-                      <div className={`
-                        flex-1 rounded-2xl p-5 mb-2 ml-2 mr-2
-                        ${isCompleted ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' :
-                          isCurrent ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-red-700' : 'bg-white border border-gray-200'}
-                      `}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className={`font-bold text-lg mb-1 ${isCompleted || isCurrent ? 'text-white' : 'text-gray-900'}`}>
-                              {getStatusText(status.status)}
-                            </h4>
-                            {status.note && (
-                              <p className={`text-sm ${isCompleted || isCurrent ? 'text-white/90' : 'text-gray-600'}`}>
-                                {status.note}
-                              </p>
+                                    if (relevantHistory) {
+                                      return new Date(relevantHistory.created_at).toLocaleTimeString('ar', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      });
+                                    }
+                                    return '';
+                                  })()}
+                                </p>
+                              </div>
                             )}
-                            {status.driver_name && (
-                              <p className={`text-sm ${isCompleted || isCurrent ? 'text-white/90' : 'text-gray-600'}`}>
-                                السائق: {status.driver_name}
-                              </p>
-                            )}
-                          </div>
-                          <div className={`text-right ${isCompleted || isCurrent ? 'text-white' : 'text-gray-900'}`}>
-                            <p className="text-sm font-medium">
-                              {new Date(status.created_at).toLocaleTimeString('ar', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
                           </div>
                         </div>
-                        {isCompleted && (
-                          <div className="absolute top-5 left-5">
-                            <Check className="w-7 h-7 text-green-400" />
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex items-stretch gap-0 relative">
-                <div className="flex flex-col items-center z-10 w-12 flex-shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-rose-700 flex items-center justify-center">
-                    {getStatusIcon(orderDetails.status)}
-                  </div>
+                    );
+                  })}
                 </div>
-                <div className="flex-1 bg-gradient-to-r from-rose-700 to-rose-600 text-white rounded-2xl p-5 ml-2 mr-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg text-white">{getStatusText(orderDetails.status)}</h4>
-                    </div>
-                    <div className="text-white">
-                      <p className="text-sm font-medium">
-                        {new Date(orderDetails.created_at).toLocaleTimeString('ar', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Delivery Info */}
@@ -433,28 +506,41 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
               تفاصيل الطلب
             </h3>
             <div className="space-y-3">
-              {orderDetails.items_data?.map((item: any, index: number) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <Package className="w-6 h-6 text-gray-400" />
+              {orderDetails.items_data?.map((item: any, index: number) => {
+                // Check for image in multiple possible locations
+                const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+
+                return (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="w-6 h-6 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-lg text-gray-900 truncate">{item.name}</h4>
+                      {item.variant_name && (
+                        <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
+                      )}
+                      <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                      {item.addons && item.addons.length > 0 && (
+                        <div className="text-xs text-gray-500">
+                          الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{item.name}</h4>
-                    {item.variant_name && (
-                      <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
-                    )}
-                    <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
-                    {item.addons && item.addons.length > 0 && (
-                      <div className="text-xs text-gray-500">
-                        الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <div className="border-t mt-4 pt-4 space-y-2">
