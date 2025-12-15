@@ -30,7 +30,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [vendorStatusMessage, setVendorStatusMessage] = useState<string>('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [storeCategories, setStoreCategories] = useState<{id: number, name: string}[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [showSearch, setShowSearch] = useState(false);
   const [deliveryInfo, setDeliveryInfo] = useState({
