@@ -395,37 +395,68 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         console.log(`✅ Order created successfully:`, order);
         createdOrders.push(order);
 
-        const orderItems = vendorItems.map((item) => {
-            const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
-            const itemPriceWithAddons = item.price + addonsTotal;
-            return {
+        // Separate custom orders from regular orders
+        const regularItems = [];
+        const customItems = [];
+
+        for (const item of vendorItems) {
+          const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
+          const itemPriceWithAddons = item.price + addonsTotal;
+
+          if ((item as any).is_custom) {
+            // Custom order item
+            customItems.push({
               order_id: (order as any).id,
-              product_id: (item as any).is_custom
-                ? null
-                : item.product_id,
+              vendor_id: item.vendor_id || vendorId,
+              custom_product_name: item.name || 'طلب خاص',
+              description: (item as any).custom_details || '',
+              quantity: item.quantity || 1,
+              price: item.price,
+              total_price: itemPriceWithAddons * (item.quantity || 1),
+              notes: (item as any).custom_details || null,
+            });
+          } else {
+            // Regular order item
+            regularItems.push({
+              order_id: (order as any).id,
+              product_id: item.product_id,
               quantity: item.quantity || 1,
               price: itemPriceWithAddons,
               vendor_id: item.vendor_id || vendorId,
               vendor_name: item.vendor_name || vendorItems[0].vendor_name,
               name: item.name || 'منتج',
               product_name: item.name || 'منتج',
-              notes: (item as any).is_custom ? `طلب خاص: ${(item as any).custom_details}` : null,
+              notes: null,
               addons_data: item.addons || [],
               variant_id: item.variant_id || null,
               variant_name: item.variant_name || null,
               preparation_time: item.preparation_time || null,
-            };
-          });
+            });
+          }
+        }
 
-        if (orderItems.length === 0) {
+        if (regularItems.length === 0 && customItems.length === 0) {
           throw new Error('لا توجد منتجات صالحة في السلة');
         }
 
-        console.log('📝 Order items to insert:', orderItems);
-        const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-        if (itemsError) {
-          console.error('❌ Error inserting order items:', itemsError);
-          throw itemsError;
+        // Insert regular items
+        if (regularItems.length > 0) {
+          console.log('📝 Regular order items to insert:', regularItems);
+          const { error: itemsError } = await supabase.from('order_items').insert(regularItems);
+          if (itemsError) {
+            console.error('❌ Error inserting order items:', itemsError);
+            throw itemsError;
+          }
+        }
+
+        // Insert custom items
+        if (customItems.length > 0) {
+          console.log('📝 Custom order items to insert:', customItems);
+          const { error: customItemsError } = await supabase.from('custom_order_items').insert(customItems);
+          if (customItemsError) {
+            console.error('❌ Error inserting custom order items:', customItemsError);
+            throw customItemsError;
+          }
         }
       }
 
