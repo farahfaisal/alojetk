@@ -287,6 +287,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       // Generate a unique order group ID for multi-vendor orders
       const orderGroupId = isMultiVendor ? crypto.randomUUID() : null;
 
+      // Calculate total subtotal to distribute discounts proportionally
+      const totalSubtotal = calculateSubtotal();
+
       // Get additional vendor fee from settings
       let additionalVendorFee = 5;
       try {
@@ -327,7 +330,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           }
         }
 
-        const vendorTotal = vendorSubtotal + vendorDeliveryFee - pointsDiscount;
+        // Distribute points discount proportionally based on vendor subtotal
+        const vendorPointsDiscount = totalSubtotal > 0
+          ? (vendorSubtotal / totalSubtotal) * pointsDiscount
+          : 0;
+
+        const vendorTotal = Math.max(0, vendorSubtotal + vendorDeliveryFee - vendorPointsDiscount);
 
         const orderData: any = {
           customer_id: customerId,
@@ -336,7 +344,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           total: vendorTotal,
           subtotal: vendorSubtotal,
           delivery_fee: vendorDeliveryFee,
-          points_discount: pointsDiscount,
+          points_discount: vendorPointsDiscount,
           payment_method: primaryPaymentMethod,
           notes: orderNotes || null,
           address: currentAddress?.address || '',
