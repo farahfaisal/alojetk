@@ -97,7 +97,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         .insert({
           customer_id: user.id,
           customer_name: customerName,
-          customer_phone: customerPhone,
+          customer_phone: user.phone || customerPhone,
           pickup_address: pickupAddress.address,
           pickup_latitude: pickupAddress.coordinates?.lat,
           pickup_longitude: pickupAddress.coordinates?.lng,
@@ -212,9 +212,11 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
+                      readOnly
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
                       placeholder="05xxxxxxxx"
                     />
+                    <p className="text-xs text-gray-500 mt-1">لا يمكن تغيير رقم الهاتف</p>
                   </div>
                 </div>
               </div>

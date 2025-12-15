@@ -350,7 +350,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           address: currentAddress?.address || '',
           city: selectedCity || currentAddress?.city || '',
           customer_name: currentAddress?.name || '',
-          customer_phone: currentAddress?.phone || '',
+          customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
           geocoded_latitude: currentAddress?.coordinates?.lat || null,
           geocoded_longitude: currentAddress?.coordinates?.lng || null,
