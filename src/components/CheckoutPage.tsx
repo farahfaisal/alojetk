@@ -615,7 +615,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <span className="text-2xl">🚶</span>
                 </div>
                 <div className="flex-1 text-right">
-                  <p className="text-base font-bold text-gray-900">إستلام</p>
+                  <p className="text-base font-bold text-gray-900">إستلام (بدون توصيل)</p>
                 </div>
               </button>
 
