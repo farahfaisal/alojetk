@@ -781,32 +781,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </button>
 
               <button
-                onClick={() => {
-                  setSelectedPaymentMethods(prev => {
-                    const hasCash = prev.includes('cash');
-                    const filtered = prev.filter(m => m !== 'cash' && m !== 'card');
-                    if (hasCash) return [...filtered, 'card'];
-                    return [...filtered, 'card'];
-                  });
-                }}
-                className={`w-full rounded-lg p-4 flex items-center justify-between transition-all ${
-                  selectedPaymentMethods.includes('card') ? 'bg-yellow-50 border-2 border-yellow-500' : 'bg-white border-2 border-gray-200'
-                }`}
+                disabled
+                className="w-full rounded-lg p-4 flex items-center justify-between transition-all bg-gray-50 border-2 border-gray-200 opacity-60 cursor-not-allowed"
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${
-                    selectedPaymentMethods.includes('card') ? 'bg-yellow-500 border-yellow-500' : 'border-gray-300'
-                  }`}>
-                    {selectedPaymentMethods.includes('card') && <Check className="w-4 h-4 text-white" />}
+                  <div className="w-6 h-6 rounded-lg border-2 flex items-center justify-center border-gray-300">
                   </div>
                 </div>
                 <div className="flex-1 text-right mr-3">
-                  <p className="font-bold text-gray-900 text-base">بطاقة</p>
+                  <p className="font-bold text-gray-900 text-base">بطاقة <span className="text-sm font-normal text-gray-500">(قريباً)</span></p>
                 </div>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  selectedPaymentMethods.includes('card') ? 'bg-yellow-100' : 'bg-gray-100'
-                }`}>
-                  <CreditCard className={`w-5 h-5 ${selectedPaymentMethods.includes('card') ? 'text-yellow-600' : 'text-gray-600'}`} />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
+                  <CreditCard className="w-5 h-5 text-gray-600" />
                 </div>
               </button>
             </div>
