@@ -747,13 +747,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
           </button>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-900 text-right">
-              ملاحظة: موقع التسليم الذي أدخلته يبعد أكثر من 100 متر عن موقعك الحالي
-            </p>
-          </div>
-
           <div>
             <h3 className="text-lg font-bold text-gray-900 mb-3 text-right">طريقة الدفع</h3>
             <div className="space-y-3">
