@@ -43,13 +43,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
   const [userAddress, setUserAddress] = useState<{address: string, city: string, latitude?: number, longitude?: number} | null>(null);
 
-  // Set initial category from props
-  useEffect(() => {
-    if (categoryId !== null && categoryId !== undefined) {
-      console.log('Setting initial category from props:', categoryId);
-      setSelectedCategoryId(categoryId);
-    }
-  }, [categoryId]);
+  // Don't auto-filter by category - show all products initially
+  // useEffect(() => {
+  //   if (categoryId !== null && categoryId !== undefined) {
+  //     console.log('Setting initial category from props:', categoryId);
+  //     setSelectedCategoryId(categoryId);
+  //   }
+  // }, [categoryId]);
 
   // Prevent body scrolling when store page is open
   useEffect(() => {
@@ -334,8 +334,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         });
 
         setAllProducts(data);
-        // Use categoryId from props instead of selectedCategoryId state
-        filterAndGroupProducts(data, categoryId, searchQuery);
+        // Show all products initially (no category filter)
+        filterAndGroupProducts(data, null, searchQuery);
       } catch (err) {
         console.error('Error in fetchAllProducts:', err);
         
@@ -361,7 +361,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     };
 
     fetchAllProducts();
-  }, [vendor.id, categoryId, searchQuery]);
+  }, [vendor.id, searchQuery]);
 
   // Filter and group products when filters change
   useEffect(() => {
