@@ -706,6 +706,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     }`}
                     dir="ltr"
                   />
+                  <p className="text-xs text-gray-500 mt-1">يمكنك إضافة رقم هاتف إضافي للتواصل لهذا العنوان</p>
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-800">{errors.phone}</p>
                   )}
