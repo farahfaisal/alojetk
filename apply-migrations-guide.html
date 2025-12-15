@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق تحديثات قاعدة البيانات</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #C8102E 0%, #8B0A1F 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #C8102E 0%, #8B0A1F 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .alert {
+      background: #fff3cd;
+      border-right: 4px solid #ffc107;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border-right: 4px solid #dc3545;
+    }
+
+    .alert h3 {
+      color: #856404;
+      margin-bottom: 10px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-error h3 {
+      color: #721c24;
+    }
+
+    .alert p {
+      color: #856404;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .alert-error p {
+      color: #721c24;
+    }
+
+    .steps {
+      margin: 30px 0;
+    }
+
+    .step {
+      background: #f8f9fa;
+      border-right: 4px solid #C8102E;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    .step h3 {
+      color: #C8102E;
+      font-size: 22px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-number {
+      background: #C8102E;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .sql-box {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 25px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      margin: 15px 0;
+      overflow-x: auto;
+      direction: ltr;
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .copy-btn {
+      background: #C8102E;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .copy-btn:hover {
+      background: #8B0A1F;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(200, 16, 46, 0.4);
+    }
+
+    .success-msg {
+      background: #d4edda;
+      border-right: 4px solid #28a745;
+      color: #155724;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+      font-weight: bold;
+    }
+
+    .instructions {
+      background: #e7f3ff;
+      border-right: 4px solid #0056b3;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .instructions ul {
+      margin-right: 25px;
+      margin-top: 15px;
+      line-height: 2;
+    }
+
+    .instructions li {
+      color: #0056b3;
+      font-size: 16px;
+    }
+
+    .important {
+      background: #ffe7e7;
+      border: 2px solid #ff4444;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .important h4 {
+      color: #cc0000;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .important p {
+      color: #cc0000;
+      line-height: 1.8;
+    }
+
+    .video-section {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .video-section h4 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .btn-primary {
+      background: #0056b3;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #004494;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 86, 179, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 تطبيق تحديثات قاعدة البيانات</h1>
+      <p>اتبع الخطوات التالية لإصلاح مشكلة الطلبات المخصصة</p>
+    </div>
+
+    <div class="content">
+      <div class="alert alert-error">
+        <h3>❌ الخطأ الحالي:</h3>
+        <p><strong>HTTP 406</strong> - Could not find the table 'public.custom_order_items' in the schema cache</p>
+        <p>هذا يعني أن الجدول غير موجود في قاعدة البيانات ويجب إنشاؤه.</p>
+      </div>
+
+      <div class="important">
+        <h4>⚠️ مهم جداً:</h4>
+        <p>يجب تطبيق التحديثات التالية على قاعدة البيانات بالترتيب. لا تخطي أي خطوة!</p>
+      </div>
+
+      <div class="steps">
+        <!-- Step 1 -->
+        <div class="step">
+          <h3>
+            <span class="step-number">1</span>
+            افتح Supabase SQL Editor
+          </h3>
+          <div class="instructions">
+            <p><strong>اتبع هذه الخطوات:</strong></p>
+            <ul>
+              <li>افتح متصفحك واذهب إلى <a href="https://fliwyntfvfedslbwkvks.supabase.co" target="_blank">Supabase Dashboard</a></li>
+              <li>من القائمة الجانبية، اضغط على <strong>"SQL Editor"</strong></li>
+              <li>اضغط على <strong>"New Query"</strong> لفتح محرر SQL جديد</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step">
+          <h3>
+            <span class="step-number">2</span>
+            تطبيق Migration #1: إنشاء جدول custom_order_items
+          </h3>
+          <p>انسخ الكود التالي والصقه في محرر SQL:</p>
+          <div class="sql-box" id="migration1">-- إنشاء جدول custom_order_items
+CREATE TABLE IF NOT EXISTS custom_order_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  vendor_id uuid REFERENCES vendors(id) ON DELETE SET NULL,
+  custom_product_name text NOT NULL,
+  description text DEFAULT '',
+  quantity integer NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  price numeric(10, 2) NOT NULL CHECK (price >= 0),
+  total_price numeric(10, 2) NOT NULL CHECK (total_price >= 0),
+  image_url text,
+  notes text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- إنشاء فهارس لتسريع الاستعلامات
+CREATE INDEX IF NOT EXISTS idx_custom_order_items_order_id ON custom_order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_custom_order_items_vendor_id ON custom_order_items(vendor_id);
+
+-- تفعيل Row Level Security
+ALTER TABLE custom_order_items ENABLE ROW LEVEL SECURITY;
+
+-- سياسة: المستخدمون يمكنهم عرض طلباتهم المخصصة
+CREATE POLICY "Users can view own custom order items"
+  ON custom_order_items
+  FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = custom_order_items.order_id
+      AND orders.user_id = auth.uid()
+    )
+  );
+
+-- سياسة: المستخدمون يمكنهم إضافة طلبات مخصصة
+CREATE POLICY "Users can insert custom order items for own orders"
+  ON custom_order_items
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = custom_order_items.order_id
+      AND orders.user_id = auth.uid()
+    )
+  );
+
+-- سياسة: المستخدمون يمكنهم تعديل طلباتهم المخصصة (قبل التأكيد)
+CREATE POLICY "Users can update own custom order items"
+  ON custom_order_items
+  FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = custom_order_items.order_id
+      AND orders.user_id = auth.uid()
+      AND orders.status IN ('pending', 'cart')
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = custom_order_items.order_id
+      AND orders.user_id = auth.uid()
+      AND orders.status IN ('pending', 'cart')
+    )
+  );
+
+-- سياسة: المستخدمون يمكنهم حذف طلباتهم المخصصة (قبل التأكيد)
+CREATE POLICY "Users can delete own custom order items"
+  ON custom_order_items
+  FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = custom_order_items.order_id
+      AND orders.user_id = auth.uid()
+      AND orders.status IN ('pending', 'cart')
+    )
+  );
+
+-- سياسة: التجار يمكنهم عرض طلبات متاجرهم المخصصة
+CREATE POLICY "Vendors can view their custom order items"
+  ON custom_order_items
+  FOR SELECT
+  TO authenticated
+  USING (
+    vendor_id IN (
+      SELECT id FROM vendors
+      WHERE user_id = auth.uid()
+    )
+  );
+
+-- دالة لتحديث وقت التعديل تلقائياً
+CREATE OR REPLACE FUNCTION update_custom_order_items_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- إنشاء trigger لتحديث updated_at
+CREATE TRIGGER update_custom_order_items_timestamp
+  BEFORE UPDATE ON custom_order_items
+  FOR EACH ROW
+  EXECUTE FUNCTION update_custom_order_items_updated_at();</div>
+          <button class="copy-btn" onclick="copySQL('migration1', 'success1')">
+            📋 نسخ الكود
+          </button>
+          <div class="success-msg" id="success1">✅ تم النسخ! الآن الصقه في SQL Editor واضغط Run</div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step">
+          <h3>
+            <span class="step-number">3</span>
+            تطبيق Migration #2: إضافة vendor_id إلى order_items
+          </h3>
+          <p>في نفس محرر SQL، انسخ الكود التالي والصقه:</p>
+          <div class="sql-box" id="migration2">-- إضافة vendor_id إلى جدول order_items
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'order_items' AND column_name = 'vendor_id'
+  ) THEN
+    ALTER TABLE order_items ADD COLUMN vendor_id uuid REFERENCES vendors(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+
+-- إنشاء فهرس لتسريع الاستعلامات
+CREATE INDEX IF NOT EXISTS idx_order_items_vendor_id ON order_items(vendor_id);</div>
+          <button class="copy-btn" onclick="copySQL('migration2', 'success2')">
+            📋 نسخ الكود
+          </button>
+          <div class="success-msg" id="success2">✅ تم النسخ! الآن الصقه في SQL Editor واضغط Run</div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step">
+          <h3>
+            <span class="step-number">4</span>
+            تأكيد التطبيق
+          </h3>
+          <div class="instructions">
+            <p><strong>بعد تطبيق كلا التحديثين:</strong></p>
+            <ul>
+              <li>يجب أن تظهر رسالة نجاح ✅ "Success. No rows returned"</li>
+              <li>إذا ظهر خطأ، تأكد من نسخ الكود بالكامل</li>
+              <li>يمكنك التحقق من إنشاء الجدول من خلال Table Editor</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert">
+        <h3>✅ بعد التطبيق:</h3>
+        <p>عد إلى التطبيق وجرب إضافة طلب خاص مرة أخرى. يجب أن يعمل بنجاح الآن!</p>
+      </div>
+
+      <div class="video-section">
+        <h4>🎥 بحاجة لمساعدة مرئية؟</h4>
+        <p>يمكنك مشاهدة فيديو توضيحي لكيفية تطبيق التحديثات في Supabase</p>
+        <a href="https://www.youtube.com/watch?v=qCLtL_IbMJY" target="_blank" class="btn-primary">
+          🎬 شاهد الفيديو التوضيحي
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function copySQL(elementId, successId) {
+      const sqlCode = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(sqlCode).then(() => {
+        const successMsg = document.getElementById(successId);
+        successMsg.style.display = 'block';
+        setTimeout(() => {
+          successMsg.style.display = 'none';
+        }, 5000);
+      });
+    }
+  </script>
+</body>
+</html>
