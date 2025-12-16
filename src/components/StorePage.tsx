@@ -423,6 +423,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       const variantInfo = addons?.find(addon => addon.isVariant);
       const regularAddons = addons?.filter(addon => !addon.isVariant) || [];
 
+      console.log('🔧 Variant Info:', variantInfo);
+      console.log('🔧 Regular Addons:', regularAddons);
+
       // Use variant price if available, otherwise use product base price
       const finalPrice = variantInfo?.variant_price || product.price;
       const finalName = variantInfo ? `${product.name} - ${variantInfo.variant_name}` : product.name;
@@ -444,6 +447,17 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           }));
         }
       } else {
+        const mappedAddons = regularAddons.map(addon => ({
+          id: addon.id,
+          name: addon.name,
+          price: addon.price,
+          quantity: addon.quantity || 1,
+          is_required: addon.is_required || false,
+          is_default: addon.is_default || false
+        }));
+
+        console.log('🔧 Mapped Addons for new cart item:', mappedAddons);
+
         cart[cartItemId] = {
           id: cartItemId,
           product_id: product.id,
@@ -455,19 +469,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           vendor_name: vendor.store_name,
           variant_id: variantInfo?.variant_id,
           variant_name: variantInfo?.variant_name,
-          addons: regularAddons.map(addon => ({
-            id: addon.id,
-            name: addon.name,
-            price: addon.price,
-            quantity: addon.quantity || 1,
-            is_required: addon.is_required || false,
-            is_default: addon.is_default || false
-          })),
+          addons: mappedAddons,
           preparation_time: product.details?.preparation_time
         };
       }
 
       console.log('🔧 Updated cart with correct variant price:', cart[cartItemId]);
+      console.log('🔧 Cart item addons:', cart[cartItemId].addons);
 
       localStorage.setItem('cartItems', JSON.stringify(cart));
       setSelectedProduct(null);

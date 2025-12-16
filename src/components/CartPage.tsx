@@ -313,8 +313,18 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     return cartItems.reduce((total, item) => {
       const itemPrice = item.price || 0;
       const itemTotal = itemPrice * item.quantity;
-      const addonsTotal = (item.addons || []).reduce((sum, addon) =>
-        sum + ((addon.price || 0) * addon.quantity), 0) * item.quantity;
+      const addonsTotal = (item.addons || []).reduce((sum, addon) => {
+        const addonPrice = addon.price || 0;
+        const addonQuantity = addon.quantity || 1;
+        console.log(`🔧 Addon: ${addon.name}, Price: ${addonPrice}, Qty: ${addonQuantity}`);
+        return sum + (addonPrice * addonQuantity);
+      }, 0) * item.quantity;
+
+      console.log(`📦 Item: ${item.name}`);
+      console.log(`  - Base Price: ${itemPrice} x ${item.quantity} = ${itemTotal}`);
+      console.log(`  - Addons Total: ${addonsTotal}`);
+      console.log(`  - Item Total: ${itemTotal + addonsTotal}`);
+
       return total + itemTotal + addonsTotal;
     }, 0);
   };
