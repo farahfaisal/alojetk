@@ -84,23 +84,38 @@ const SearchModal: React.FC<SearchModalProps> = ({
       setIsSearching(true);
 
       try {
-        // Search vendors
-        const { data: vendors, error: vendorsError } = await supabase
+        // Build vendor query
+        let vendorQuery = supabase
           .from('vendors')
-          .select('id, store_name, logo_url, category')
-          .ilike('store_name', `%${searchQuery}%`)
-          .limit(5);
+          .select('id, store_name, logo_url, category, service_area_id')
+          .ilike('store_name', `%${searchQuery}%`);
+
+        // Filter by zone if selected
+        if (selectedZone) {
+          vendorQuery = vendorQuery.eq('service_area_id', selectedZone);
+        }
+
+        const { data: vendors, error: vendorsError } = await vendorQuery.limit(5);
 
         if (vendorsError) throw vendorsError;
 
-        // Search products
-        const { data: products, error: productsError } = await supabase
+        // Build products query with vendor zone filter
+        let productsQuery = supabase
           .from('products')
-          .select('id, name, price, image_url, vendor:vendor_id(store_name)')
-          .ilike('name', `%${searchQuery}%`)
-          .limit(10);
+          .select('id, name, price, image_url, vendor:vendor_id(store_name, service_area_id)')
+          .ilike('name', `%${searchQuery}%`);
+
+        const { data: products, error: productsError } = await productsQuery.limit(10);
 
         if (productsError) throw productsError;
+
+        // Filter products by zone if selected
+        let filteredProducts = products || [];
+        if (selectedZone) {
+          filteredProducts = filteredProducts.filter((p: any) =>
+            p.vendor?.service_area_id === selectedZone
+          );
+        }
 
         const results: SearchResult[] = [
           ...(vendors || []).map(v => ({
@@ -110,7 +125,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
             image: v.logo_url,
             category: v.category
           })),
-          ...(products || []).map((p: any) => ({
+          ...filteredProducts.map((p: any) => ({
             id: p.id,
             name: p.name,
             type: 'product' as const,
@@ -130,7 +145,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
     const debounce = setTimeout(performSearch, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery]);
+  }, [searchQuery, selectedZone]);
 
   const handleSearchSubmit = (query: string) => {
     if (query.trim()) {
