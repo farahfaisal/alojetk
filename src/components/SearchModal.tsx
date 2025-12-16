@@ -57,7 +57,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           const parsedZone = JSON.parse(storedZone);
           const zone = data?.find(area => area.name === parsedZone);
           if (zone) {
-            setSelectedZone(zone.id);
+            setSelectedZone(zone.name);
           }
         }
       } catch (error) {
@@ -87,12 +87,12 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Build vendor query
         let vendorQuery = supabase
           .from('vendors')
-          .select('id, store_name, logo_url, category, service_area_id')
+          .select('id, store_name, logo_url, category, service_areas')
           .ilike('store_name', `%${searchQuery}%`);
 
         // Filter by zone if selected
         if (selectedZone) {
-          vendorQuery = vendorQuery.eq('service_area_id', selectedZone);
+          vendorQuery = vendorQuery.contains('service_areas', [selectedZone]);
         }
 
         const { data: vendors, error: vendorsError } = await vendorQuery.limit(5);
@@ -102,7 +102,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Build products query with vendor zone filter
         let productsQuery = supabase
           .from('products')
-          .select('id, name, price, image_url, vendor:vendor_id(store_name, service_area_id)')
+          .select('id, name, price, image_url, vendor:vendor_id(store_name, service_areas)')
           .ilike('name', `%${searchQuery}%`);
 
         const { data: products, error: productsError } = await productsQuery.limit(10);
@@ -113,7 +113,8 @@ const SearchModal: React.FC<SearchModalProps> = ({
         let filteredProducts = products || [];
         if (selectedZone) {
           filteredProducts = filteredProducts.filter((p: any) =>
-            p.vendor?.service_area_id === selectedZone
+            p.vendor?.service_areas && Array.isArray(p.vendor.service_areas) &&
+            p.vendor.service_areas.includes(selectedZone)
           );
         }
 
@@ -166,13 +167,10 @@ const SearchModal: React.FC<SearchModalProps> = ({
     onClose();
   };
 
-  const handleZoneChange = (zoneId: string) => {
-    setSelectedZone(zoneId);
-    const zone = serviceAreas.find(area => area.id === zoneId);
-    if (zone) {
-      localStorage.setItem('selectedCity', JSON.stringify(zone.name));
-      window.dispatchEvent(new Event('storage'));
-    }
+  const handleZoneChange = (zoneName: string) => {
+    setSelectedZone(zoneName);
+    localStorage.setItem('selectedCity', JSON.stringify(zoneName));
+    window.dispatchEvent(new Event('storage'));
   };
 
   if (!isOpen) return null;
@@ -222,7 +220,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
             >
               <option value="" disabled>اختر المنطقة</option>
               {serviceAreas.map(area => (
-                <option key={area.id} value={area.id} className="bg-gray-800 text-white">
+                <option key={area.id} value={area.name} className="bg-gray-800 text-white">
                   {area.name} {area.status === 'coming_soon' && '(قريباً)'}
                 </option>
               ))}
