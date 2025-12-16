@@ -600,7 +600,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 {/* شارة "مفتوح" يسار تحت البانر */}
                 <div className="absolute -top-6 left-4">
                   <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
-                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-gray-400 text-white'}`}>
+                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
                   </span>
                 </div>
