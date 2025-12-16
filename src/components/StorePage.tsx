@@ -412,20 +412,29 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     try {
       const product = products.find(p => p.id === productId);
       if (!product) return;
-      
+
       if (!isVendorAvailable) {
         return;
       }
 
       console.log('🔧 Adding to cart with addons:', addons);
-      
+
+      // Check if there's a variant in the addons
+      const variantInfo = addons?.find(addon => addon.isVariant);
+      const regularAddons = addons?.filter(addon => !addon.isVariant) || [];
+
+      // Use variant price if available, otherwise use product base price
+      const finalPrice = variantInfo?.variant_price || product.price;
+      const finalName = variantInfo ? `${product.name} - ${variantInfo.variant_name}` : product.name;
+      const cartItemId = variantInfo ? `${productId}_${variantInfo.variant_id}` : productId;
+
       const cartItems = localStorage.getItem('cartItems');
       let cart = cartItems ? JSON.parse(cartItems) : {};
-      
-      if (cart[productId]) {
-        cart[productId].quantity += quantity;
-        if (addons && addons.length > 0) {
-          cart[productId].addons = addons.map(addon => ({
+
+      if (cart[cartItemId]) {
+        cart[cartItemId].quantity += quantity;
+        if (regularAddons && regularAddons.length > 0) {
+          cart[cartItemId].addons = regularAddons.map(addon => ({
             id: addon.id,
             name: addon.name,
             price: addon.price,
@@ -435,36 +444,38 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           }));
         }
       } else {
-        cart[productId] = {
-          id: product.id,
+        cart[cartItemId] = {
+          id: cartItemId,
           product_id: product.id,
-          name: product.name,
-          price: product.price,
+          name: finalName,
+          price: finalPrice,
           quantity: quantity,
           image: product.image_url,
           vendor_id: vendor.id,
           vendor_name: vendor.store_name,
-          addons: addons ? addons.map(addon => ({
+          variant_id: variantInfo?.variant_id,
+          variant_name: variantInfo?.variant_name,
+          addons: regularAddons.map(addon => ({
             id: addon.id,
             name: addon.name,
             price: addon.price,
             quantity: addon.quantity || 1,
             is_required: addon.is_required || false,
             is_default: addon.is_default || false
-          })) : [],
+          })),
           preparation_time: product.details?.preparation_time
         };
       }
-      
-      console.log('🔧 Updated cart with addons:', cart[productId]);
-      
+
+      console.log('🔧 Updated cart with correct variant price:', cart[cartItemId]);
+
       localStorage.setItem('cartItems', JSON.stringify(cart));
       setSelectedProduct(null);
-      
+
       window.dispatchEvent(new Event('storage'));
-      
-      window.dispatchEvent(new CustomEvent('cart-item-added', { 
-        detail: { productName: product.name }
+
+      window.dispatchEvent(new CustomEvent('cart-item-added', {
+        detail: { productName: finalName }
       }));
     } catch (error) {
       console.error('Error adding item to cart:', error);
