@@ -84,11 +84,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
       setIsSearching(true);
 
       try {
+        console.log('🔍 Search started:', { searchQuery, selectedZone });
+
         // Build vendor query
         let vendorQuery = supabase
           .from('vendors')
-          .select('id, store_name, logo_url, category, service_areas')
-          .ilike('store_name', `%${searchQuery}%`);
+          .select('id, store_name, logo_url, type, service_areas')
+          .ilike('store_name', `%${searchQuery}%`)
+          .eq('status', 'active');
 
         // Filter by zone if selected
         if (selectedZone) {
@@ -97,34 +100,59 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
         const { data: vendors, error: vendorsError } = await vendorQuery.limit(5);
 
-        if (vendorsError) throw vendorsError;
+        if (vendorsError) {
+          console.error('❌ Vendors query error:', vendorsError);
+          throw vendorsError;
+        }
+
+        console.log('✅ Vendors found:', vendors?.length || 0, vendors);
 
         // Build products query with vendor zone filter
         let productsQuery = supabase
           .from('products')
-          .select('id, name, price, image_url, vendor:vendor_id(store_name, service_areas)')
-          .ilike('name', `%${searchQuery}%`);
+          .select('id, name, price, image_url, vendor:vendor_id(id, store_name, service_areas, status)')
+          .ilike('name', `%${searchQuery}%`)
+          .eq('status', 'active');
 
-        const { data: products, error: productsError } = await productsQuery.limit(10);
+        const { data: products, error: productsError } = await productsQuery.limit(20);
 
-        if (productsError) throw productsError;
-
-        // Filter products by zone if selected
-        let filteredProducts = products || [];
-        if (selectedZone) {
-          filteredProducts = filteredProducts.filter((p: any) =>
-            p.vendor?.service_areas && Array.isArray(p.vendor.service_areas) &&
-            p.vendor.service_areas.includes(selectedZone)
-          );
+        if (productsError) {
+          console.error('❌ Products query error:', productsError);
         }
 
+        console.log('📦 Products found (before filter):', products?.length || 0, products);
+
+        // Filter products by zone if selected and vendor is active
+        let filteredProducts = products || [];
+        if (selectedZone) {
+          filteredProducts = filteredProducts.filter((p: any) => {
+            const hasServiceArea = p.vendor?.service_areas &&
+                                  Array.isArray(p.vendor.service_areas) &&
+                                  p.vendor.service_areas.includes(selectedZone);
+            const isVendorActive = p.vendor?.status === 'active';
+            console.log(`Product "${p.name}":`, {
+              vendorName: p.vendor?.store_name,
+              serviceAreas: p.vendor?.service_areas,
+              hasServiceArea,
+              vendorStatus: p.vendor?.status,
+              isVendorActive
+            });
+            return hasServiceArea && isVendorActive;
+          });
+        } else {
+          // If no zone selected, still filter by vendor status
+          filteredProducts = filteredProducts.filter((p: any) => p.vendor?.status === 'active');
+        }
+
+        console.log('📦 Products found (after filter):', filteredProducts.length);
+
         const results: SearchResult[] = [
-          ...(vendors || []).map(v => ({
+          ...(vendors || []).map((v: any) => ({
             id: v.id,
             name: v.store_name,
             type: 'vendor' as const,
             image: v.logo_url,
-            category: v.category
+            category: v.type
           })),
           ...filteredProducts.map((p: any) => ({
             id: p.id,
@@ -136,6 +164,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           }))
         ];
 
+        console.log('✅ Total results:', results.length);
         setSearchResults(results);
       } catch (error) {
         console.error('Search error:', error);
