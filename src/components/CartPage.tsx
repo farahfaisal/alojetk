@@ -269,13 +269,14 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         if (parsedItems[itemId]) {
           parsedItems[itemId].quantity = quantity;
           localStorage.setItem('cartItems', JSON.stringify(parsedItems));
-          
+
           // Update local state
           const itemsArray = Object.values(parsedItems) as CartItem[];
           setCartItems(itemsArray);
-          
+
           // Dispatch storage event
           window.dispatchEvent(new Event('storage'));
+          window.dispatchEvent(new CustomEvent('cartUpdated'));
         }
       }
     } catch (error) {
@@ -289,14 +290,21 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       if (storedItems) {
         const parsedItems = JSON.parse(storedItems);
         delete parsedItems[itemId];
-        localStorage.setItem('cartItems', JSON.stringify(parsedItems));
-        
+
+        // If cart is empty after deletion, remove the key entirely
+        if (Object.keys(parsedItems).length === 0) {
+          localStorage.removeItem('cartItems');
+        } else {
+          localStorage.setItem('cartItems', JSON.stringify(parsedItems));
+        }
+
         // Update local state
         const itemsArray = Object.values(parsedItems) as CartItem[];
         setCartItems(itemsArray);
-        
+
         // Dispatch storage event
         window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
       }
     } catch (error) {
       console.error('Error removing cart item:', error);
@@ -307,6 +315,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     localStorage.removeItem('cartItems');
     setCartItems([]);
     window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
 
   const calculateSubtotal = () => {
@@ -316,14 +325,8 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       const addonsTotal = (item.addons || []).reduce((sum, addon) => {
         const addonPrice = addon.price || 0;
         const addonQuantity = addon.quantity || 1;
-        console.log(`🔧 Addon: ${addon.name}, Price: ${addonPrice}, Qty: ${addonQuantity}`);
         return sum + (addonPrice * addonQuantity);
       }, 0) * item.quantity;
-
-      console.log(`📦 Item: ${item.name}`);
-      console.log(`  - Base Price: ${itemPrice} x ${item.quantity} = ${itemTotal}`);
-      console.log(`  - Addons Total: ${addonsTotal}`);
-      console.log(`  - Item Total: ${itemTotal + addonsTotal}`);
 
       return total + itemTotal + addonsTotal;
     }, 0);

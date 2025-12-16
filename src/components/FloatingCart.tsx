@@ -22,6 +22,8 @@ const FloatingCart: React.FC<FloatingCartProps> = ({ onOpenCart, showOnlyInProdu
           setIsVisible(count > 0);
         } catch (e) {
           console.error('Error parsing cart items:', e);
+          setCartItemsCount(0);
+          setIsVisible(false);
         }
       } else {
         setCartItemsCount(0);
@@ -35,17 +37,13 @@ const FloatingCart: React.FC<FloatingCartProps> = ({ onOpenCart, showOnlyInProdu
     window.addEventListener('storage', updateCartCount);
 
     // Also listen for custom cart-item-added and cartUpdated events
-    const handleCartItemAdded = () => {
-      updateCartCount();
-    };
-
-    window.addEventListener('cart-item-added', handleCartItemAdded);
-    window.addEventListener('cartUpdated', handleCartItemAdded);
+    window.addEventListener('cart-item-added', updateCartCount);
+    window.addEventListener('cartUpdated', updateCartCount);
 
     return () => {
       window.removeEventListener('storage', updateCartCount);
-      window.removeEventListener('cart-item-added', handleCartItemAdded);
-      window.removeEventListener('cartUpdated', handleCartItemAdded);
+      window.removeEventListener('cart-item-added', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
     };
   }, []);
 

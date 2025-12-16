@@ -417,14 +417,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         return;
       }
 
-      console.log('🔧 Adding to cart with addons:', addons);
-
       // Check if there's a variant in the addons
       const variantInfo = addons?.find(addon => addon.isVariant);
       const regularAddons = addons?.filter(addon => !addon.isVariant) || [];
-
-      console.log('🔧 Variant Info:', variantInfo);
-      console.log('🔧 Regular Addons:', regularAddons);
 
       // Use variant price if available, otherwise use product base price
       const finalPrice = variantInfo?.variant_price || product.price;
@@ -456,8 +451,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           is_default: addon.is_default || false
         }));
 
-        console.log('🔧 Mapped Addons for new cart item:', mappedAddons);
-
         cart[cartItemId] = {
           id: cartItemId,
           product_id: product.id,
@@ -473,9 +466,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           preparation_time: product.details?.preparation_time
         };
       }
-
-      console.log('🔧 Updated cart with correct variant price:', cart[cartItemId]);
-      console.log('🔧 Cart item addons:', cart[cartItemId].addons);
 
       localStorage.setItem('cartItems', JSON.stringify(cart));
       setSelectedProduct(null);

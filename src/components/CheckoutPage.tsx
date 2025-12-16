@@ -518,6 +518,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       localStorage.removeItem('cartItems');
       window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
 
       setOrderId((order as any).id);
       setSuccess(true);

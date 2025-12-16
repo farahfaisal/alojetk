@@ -711,12 +711,10 @@ const AppContent: React.FC = () => {
         )}
 
         {/* Floating Cart Button */}
-        {cartItemsCount > 0 && (
-          <FloatingCart
-            onOpenCart={handleOpenCart}
-            showOnlyInProductPage={false}
-          />
-        )}
+        <FloatingCart
+          onOpenCart={handleOpenCart}
+          showOnlyInProductPage={false}
+        />
 
         <Sidebar
           isOpen={isSidebarOpen}
