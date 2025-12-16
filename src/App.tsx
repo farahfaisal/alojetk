@@ -32,6 +32,8 @@ import CaptainRequestPage from './components/CaptainRequestPage';
 import CaptainRequestsTracking from './components/CaptainRequestsTracking';
 import SearchModal from './components/SearchModal';
 import CitySelector from './components/CitySelector';
+import SingleProductPage from './components/SingleProductPage';
+import StorePage from './components/StorePage';
 
 interface ServiceArea {
   id: string;
@@ -69,6 +71,8 @@ const AppContent: React.FC = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [showPermissionsPrompt, setShowPermissionsPrompt] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
   const { toast } = useToast();
   const [showServiceAreaSelection, setShowServiceAreaSelection] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -815,11 +819,11 @@ const AppContent: React.FC = () => {
           onClose={() => setIsSearchOpen(false)}
           onVendorSelect={(vendorId) => {
             setIsSearchOpen(false);
-            // Navigate to vendor page
+            setSelectedVendorId(vendorId);
           }}
           onProductSelect={(productId) => {
             setIsSearchOpen(false);
-            // Navigate to product page
+            setSelectedProductId(productId);
           }}
         />
 
@@ -836,6 +840,23 @@ const AppContent: React.FC = () => {
           <ServiceAreaSelection
             onSelectArea={handleServiceAreaSelect}
             onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
+          />
+        )}
+
+        {/* Single Product Page */}
+        {selectedProductId && (
+          <SingleProductPage
+            productId={selectedProductId}
+            onClose={() => setSelectedProductId(null)}
+            onAddToCart={() => {}}
+          />
+        )}
+
+        {/* Store Page */}
+        {selectedVendorId && (
+          <StorePage
+            vendorId={selectedVendorId}
+            onClose={() => setSelectedVendorId(null)}
           />
         )}
       </div>
