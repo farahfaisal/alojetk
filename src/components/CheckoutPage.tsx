@@ -121,12 +121,46 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     };
     loadBalances();
 
-    if (!currentAddress) {
-      const addresses = getSavedAddresses();
-      const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
-      if (defaultAddr) setCurrentAddress(defaultAddr);
-    }
-  }, [user, currentAddress]);
+    const loadUserDataAndAddresses = async () => {
+      if (!currentAddress) {
+        const addresses = getSavedAddresses();
+        const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
+
+        if (defaultAddr) {
+          setCurrentAddress(defaultAddr);
+        } else {
+          const customerId = (user as any)?.customer_id || user?.id;
+          if (customerId) {
+            try {
+              const { data: customerData, error } = await supabase
+                .from('customers')
+                .select('name, phone, address, city')
+                .eq('id', customerId)
+                .maybeSingle();
+
+              if (!error && customerData) {
+                const autoAddress: SavedAddress = {
+                  id: 'auto-generated',
+                  name: customerData.name || '',
+                  phone: customerData.phone || '',
+                  address: customerData.address || '',
+                  city: customerData.city || selectedCity || '',
+                  isDefault: false,
+                  detailedAddress: '',
+                  coordinates: undefined
+                };
+                setCurrentAddress(autoAddress);
+              }
+            } catch (err) {
+              console.error('Error loading customer data:', err);
+            }
+          }
+        }
+      }
+    };
+
+    loadUserDataAndAddresses();
+  }, [user, currentAddress, selectedCity]);
 
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) => {
