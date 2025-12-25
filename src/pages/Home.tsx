@@ -488,7 +488,9 @@ const Home: React.FC<HomeProps> = ({
               ))}
             </div>
           ) : (
-            vendorsByCategory.map(({ category, vendors }) => (
+            vendorsByCategory.map(({ category, vendors }) => {
+              console.log(`🏪 Rendering ${vendors.length} vendors for category: ${category.name}`);
+              return (
               <div key={category.id} className="px-4">
                 <div className="bg-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center justify-between mb-3">
@@ -514,16 +516,19 @@ const Home: React.FC<HomeProps> = ({
                     </button>
                   </div>
 
-                  <Swiper
-                  slidesPerView={2.2}
-                  spaceBetween={16}
-                  freeMode={true}
-                  modules={[FreeMode]}
-                  className="w-full"
-                  loop={false}
-                >
-                  {vendors.map(vendor => (
-                    <SwiperSlide key={vendor.id}>
+                  <div className="w-full overflow-x-auto">
+                    <Swiper
+                      slidesPerView={2.2}
+                      spaceBetween={16}
+                      freeMode={true}
+                      modules={[FreeMode]}
+                      className="w-full"
+                      watchSlidesProgress={true}
+                      observer={true}
+                      observeParents={true}
+                    >
+                      {vendors.map(vendor => (
+                        <SwiperSlide key={vendor.id}>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -601,11 +606,13 @@ const Home: React.FC<HomeProps> = ({
                         </div>
                       </motion.button>
                     </SwiperSlide>
-                  ))}
-                  </Swiper>
+                      ))}
+                    </Swiper>
+                  </div>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       )}
