@@ -97,8 +97,7 @@ const Home: React.FC<HomeProps> = ({
               .select('*')
               .is('parent_id', null)
               .eq('type', 'restaurant')
-              .order('name')
-              .limit(12);
+              .order('name');
             data = fallbackResult.data;
             error = fallbackResult.error;
           } else {
@@ -107,8 +106,7 @@ const Home: React.FC<HomeProps> = ({
               .from('categories')
               .select('*')
               .eq('parent_id', parentData.id)
-              .order('name')
-              .limit(12);
+              .order('name');
             data = result.data;
             error = result.error;
             
@@ -130,8 +128,7 @@ const Home: React.FC<HomeProps> = ({
               .select('*')
               .is('parent_id', null)
               .eq('type', 'supermarket')
-              .order('name')
-              .limit(12);
+              .order('name');
             data = fallbackResult.data;
             error = fallbackResult.error;
           } else {
@@ -140,8 +137,7 @@ const Home: React.FC<HomeProps> = ({
               .from('categories')
               .select('*')
               .eq('parent_id', parentData.id)
-              .order('name')
-              .limit(12);
+              .order('name');
             data = result.data;
             error = result.error;
           }
@@ -151,8 +147,7 @@ const Home: React.FC<HomeProps> = ({
             .from('categories')
             .select('*')
             .is('parent_id', null)
-            .order('name')
-            .limit(12);
+            .order('name');
           data = result.data;
           error = result.error;
         }
@@ -220,8 +215,7 @@ const Home: React.FC<HomeProps> = ({
               .select('*')
               .eq('type', 'مطاعم')
               .in('id', vendorIds)
-              .order('rating', { ascending: false })
-              .limit(10);
+              .order('rating', { ascending: false });
               
             if (vendorsData && vendorsData.length > 0) {
               all.push({
