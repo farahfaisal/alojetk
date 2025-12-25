@@ -187,18 +187,14 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
   };
 
   const handleCategoryClick = (categoryId: number | null) => {
-    // Update selected category
-    setSelectedCategory(categoryId);
+    if (categoryId) {
+      const category = productCategories.find(c => c.id === categoryId);
+      const categoryName = category?.name || 'التصنيف';
 
-    // Scroll to the category section
-    if (categoryId && categoryRefs.current[categoryId]) {
-      const element = categoryRefs.current[categoryId];
-      if (element) {
-        const yOffset = -80; // Offset for fixed header
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
+      setSelectedCategoryForVendors({ id: categoryId, name: categoryName });
+      setShowCategoryVendors(true);
     }
+    setSelectedCategory(categoryId);
   };
 
   // Function to get fallback image based on category name
