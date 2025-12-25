@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, AlertCircle, Store, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import VendorsList from '../components/VendorsList';
@@ -58,6 +58,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
   const [error, setError] = useState<string | null>(null);
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
   const [showAllOffers, setShowAllOffers] = useState(false);
+  const categoryRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   // Fetch product categories (subcategories of "ماركت")
   useEffect(() => {
@@ -186,17 +187,18 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
   };
 
   const handleCategoryClick = (categoryId: number | null) => {
-    if (categoryId) {
-      // Find the category name
-      const category = productCategories.find(c => c.id === categoryId);
-      const categoryName = category?.name || 'التصنيف';
-
-      // Open category vendors page
-      setSelectedCategoryForVendors({ id: categoryId, name: categoryName });
-      setShowCategoryVendors(true);
-    }
     // Update selected category
     setSelectedCategory(categoryId);
+
+    // Scroll to the category section
+    if (categoryId && categoryRefs.current[categoryId]) {
+      const element = categoryRefs.current[categoryId];
+      if (element) {
+        const yOffset = -80; // Offset for fixed header
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
   };
 
   // Function to get fallback image based on category name
@@ -481,117 +483,91 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
       {/* Vendors with Special Offers Section */}
       <VendorsWithOffers onVendorClick={setSelectedVendor} type="supermarket" selectedCity={selectedCity} />
 
-      {!selectedCategory && (
-        <>
-          {/* Featured Vendors */}
-          <div className="px-4 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
-              <button
-                onClick={() => setShowAllVendors(true)}
-                className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
-              >
-                عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
-              </button>
-            </div>
+      {/* Featured Vendors */}
+      <div className="px-4 py-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
+          <button
+            onClick={() => setShowAllVendors(true)}
+            className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+          >
+            عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
+          </button>
+        </div>
 
-            <FeaturedVendors onVendorClick={setSelectedVendor} type="supermarket" />
-          </div>
+        <FeaturedVendors onVendorClick={setSelectedVendor} type="supermarket" />
+      </div>
 
-          {/* Available Vendors */}
-          {availableVendors.length > 0 && (
-            <div className="w-full px-4 mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">المتاجر المتوفرة</h2>
-                <button
-                  onClick={() => setShowAllVendors(true)}
-                  className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
-                >
-                  عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
-                </button>
-              </div>
-              <Swiper
-                slidesPerView={2.2}
-                spaceBetween={16}
-                freeMode={true}
-                modules={[FreeMode]}
-                className="w-full"
-                loop={false}
-              >
-                {availableVendors.map(vendor => (
-                  <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          )}
-          
-          {/* Category-Specific Vendors Carousels */}
-          {vendorsByCategory.map(({ category, vendors }) => (
-            <div key={category.id} className="w-full px-4 mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand/20">
-                    <img
-                      src={category.image_url || getCategoryFallbackImage(category.name)}
-                      alt={category.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = getCategoryFallbackImage(category.name);
-                      }}
-                    />
-                  </div>
-                  متاجر {category.name}
-                </h2>
-                <button
-                  onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                  className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
-                >
-                  عرض الكل ({vendors.length})
-                  <ChevronLeft className="w-4 h-4 mr-1" />
-                </button>
-              </div>
-              <Swiper
-                slidesPerView={2.2}
-                spaceBetween={16}
-                freeMode={true}
-                modules={[FreeMode]}
-                className="w-full"
-                loop={false}
-              >
-                {vendors.map(vendor => (
-                  <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          ))}
-        </>
-      )}
-      
-      {/* Category-Specific Vendors */}
-      {selectedCategory && (
-        <div className="w-full px-4 mt-6">
+      {/* Available Vendors */}
+      {availableVendors.length > 0 && (
+        <div className="w-full px-4 mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">
-              {productCategories.find(c => c.id === selectedCategory)?.name || 'متاجر التصنيف'}
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900">المتاجر المتوفرة</h2>
             <button
-              onClick={() => handleViewCategoryVendors(
-                selectedCategory,
-                productCategories.find(c => c.id === selectedCategory)?.name || 'متاجر التصنيف'
-              )}
-              className="text-accent hover:text-accent-light text-sm font-medium flex items-center"
+              onClick={() => setShowAllVendors(true)}
+              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
             >
               عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
             </button>
           </div>
-          <VendorsList 
-            type="supermarket"
-            categoryId={selectedCategory}
-            limit={10}
-            includeInactive={false}
-          />
+          <Swiper
+            slidesPerView={2.2}
+            spaceBetween={16}
+            freeMode={true}
+            modules={[FreeMode]}
+            className="w-full"
+            loop={false}
+          >
+            {availableVendors.map(vendor => (
+              <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       )}
+
+      {/* Category-Specific Vendors Carousels */}
+      {vendorsByCategory.map(({ category, vendors }) => (
+        <div
+          key={category.id}
+          ref={(el) => (categoryRefs.current[category.id] = el)}
+          className="w-full px-4 mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand/20">
+                <img
+                  src={category.image_url || getCategoryFallbackImage(category.name)}
+                  alt={category.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getCategoryFallbackImage(category.name);
+                  }}
+                />
+              </div>
+              متاجر {category.name}
+            </h2>
+            <button
+              onClick={() => handleViewCategoryVendors(category.id, category.name)}
+              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
+            >
+              عرض الكل ({vendors.length})
+              <ChevronLeft className="w-4 h-4 mr-1" />
+            </button>
+          </div>
+          <Swiper
+            slidesPerView={2.2}
+            spaceBetween={16}
+            freeMode={true}
+            modules={[FreeMode]}
+            className="w-full"
+            loop={false}
+          >
+            {vendors.map(vendor => (
+              <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      ))}
       
       {/* Vendor Page Modal */}
       {selectedVendor && (
