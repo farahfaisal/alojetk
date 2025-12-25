@@ -208,8 +208,7 @@ const Home: React.FC<HomeProps> = ({
             
             // Get unique vendor IDs
             const vendorIds = [...new Set(productsData.map(p => p.vendor_id))];
-            console.log(`📦 Category "${category.name}": Found ${vendorIds.length} unique vendor IDs`);
-
+            
             // Fetch vendors with type "مطاعم"
             const { data: vendorsData } = await supabase
               .from('vendors')
@@ -217,9 +216,7 @@ const Home: React.FC<HomeProps> = ({
               .eq('type', 'مطاعم')
               .in('id', vendorIds)
               .order('rating', { ascending: false });
-
-            console.log(`🏪 Category "${category.name}": Retrieved ${vendorsData?.length || 0} vendors from database`);
-
+              
             if (vendorsData && vendorsData.length > 0) {
               all.push({
                 category: category,
@@ -491,9 +488,7 @@ const Home: React.FC<HomeProps> = ({
               ))}
             </div>
           ) : (
-            vendorsByCategory.map(({ category, vendors }) => {
-              console.log(`🏪 Rendering ${vendors.length} vendors for category: ${category.name}`);
-              return (
+            vendorsByCategory.map(({ category, vendors }) => (
               <div key={category.id} className="px-4">
                 <div className="bg-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center justify-between mb-3">
@@ -519,37 +514,22 @@ const Home: React.FC<HomeProps> = ({
                     </button>
                   </div>
 
-                  <div className="w-full pb-4" style={{ minHeight: '250px' }}>
-                    <Swiper
-                      slidesPerView={2.2}
-                      spaceBetween={16}
-                      freeMode={{
-                        enabled: true,
-                        momentum: true,
-                        momentumRatio: 0.5,
-                        momentumVelocityRatio: 0.5
-                      }}
-                      modules={[FreeMode]}
-                      className="w-full"
-                      style={{ height: '230px' }}
-                      slidesPerGroup={1}
-                      watchSlidesProgress={true}
-                      observer={true}
-                      observeParents={true}
-                      observeSlideChildren={true}
-                      resistanceRatio={0}
-                      touchRatio={1}
-                      threshold={5}
-                    >
-                      {vendors.map((vendor, index) => {
-                        console.log(`📍 Rendering vendor ${index + 1}/${vendors.length}: ${vendor.store_name}`);
-                        return (
-                        <SwiperSlide key={vendor.id}>
+                  <Swiper
+                  slidesPerView={2.2}
+                  spaceBetween={16}
+                  freeMode={true}
+                  modules={[FreeMode]}
+                  className="w-full"
+                  loop={false}
+                >
+                  {vendors.map(vendor => (
+                    <SwiperSlide key={vendor.id}>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedVendor(vendor)}
-                        className="bg-white rounded-lg overflow-hidden border border-gray-200 transition-all cursor-pointer flex flex-col h-full"
+                        className="bg-white rounded-lg overflow-hidden border border-gray-200 transition-all cursor-pointer w-full flex flex-col"
+                        style={{ height: '230px' }}
                       >
                         {/* Logo Section - Centered - Fixed Height */}
                         <div className="flex flex-col items-center pt-4 pb-1 bg-white" style={{ height: '100px' }}>
@@ -621,14 +601,11 @@ const Home: React.FC<HomeProps> = ({
                         </div>
                       </motion.button>
                     </SwiperSlide>
-                        );
-                      })}
-                    </Swiper>
-                  </div>
+                  ))}
+                  </Swiper>
                 </div>
               </div>
-              );
-            })
+            ))
           )}
         </div>
       )}
