@@ -202,20 +202,22 @@ const Home: React.FC<HomeProps> = ({
               .from('products')
               .select('vendor_id')
               .eq('category_id', category.id)
-              .eq('status', 'active');
-              
+              .eq('status', 'active')
+              .limit(10000); // Ensure we get all products
+
             if (!productsData || productsData.length === 0) continue;
-            
+
             // Get unique vendor IDs
             const vendorIds = [...new Set(productsData.map(p => p.vendor_id))];
-            
+
             // Fetch vendors with type "مطاعم"
             const { data: vendorsData } = await supabase
               .from('vendors')
               .select('*')
               .eq('type', 'مطاعم')
               .in('id', vendorIds)
-              .order('rating', { ascending: false });
+              .order('rating', { ascending: false })
+              .limit(1000); // Ensure we get all vendors
               
             if (vendorsData && vendorsData.length > 0) {
               all.push({
