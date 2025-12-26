@@ -454,20 +454,10 @@ const AppContent: React.FC = () => {
     localStorage.setItem('selectedCity', JSON.stringify(city));
     setIsCityDropdownOpen(false);
 
-    // Show permissions prompt only on first city selection
-    const hasSelectedCityBefore = localStorage.getItem('has_selected_city_before');
-    const hasSeenPermissionsPrompt = localStorage.getItem('permissions_prompt_shown');
-
-    if (!hasSelectedCityBefore) {
-      localStorage.setItem('has_selected_city_before', 'true');
-
-      if (!hasSeenPermissionsPrompt) {
-        setTimeout(() => {
-          setShowPermissionsPrompt(true);
-          localStorage.setItem('permissions_prompt_shown', 'true');
-        }, 1000);
-      }
-    }
+    // Show permissions prompt after city selection
+    setTimeout(() => {
+      setShowPermissionsPrompt(true);
+    }, 800);
   };
 
   const closeAllComponents = () => {
@@ -599,14 +589,10 @@ const AppContent: React.FC = () => {
     localStorage.setItem('selectedCity', JSON.stringify(area));
     setShowServiceAreaSelection(false);
 
-    // Show permissions prompt after area selection if not shown before
-    const hasSeenPermissionsPrompt = localStorage.getItem('permissions_prompt_shown');
-    if (!hasSeenPermissionsPrompt) {
-      setTimeout(() => {
-        setShowPermissionsPrompt(true);
-        localStorage.setItem('permissions_prompt_shown', 'true');
-      }, 1000);
-    }
+    // Show permissions prompt after area selection
+    setTimeout(() => {
+      setShowPermissionsPrompt(true);
+    }, 800);
   };
 
   const handleOpenPrivacyPolicyFromServiceArea = () => {
