@@ -37,13 +37,21 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
 
       const { data, error } = await supabase
         .from('customers')
-        .select('full_name, phone')
-        .eq('id', user.id)
+        .select('name, phone, address, city')
+        .eq('auth_user_id', user.id)
         .maybeSingle();
 
       if (data) {
-        setCustomerName(data.full_name || '');
+        setCustomerName(data.name || '');
         setCustomerPhone(data.phone || '');
+
+        // Auto-fill pickup address from user's saved address
+        if (data.address && data.city) {
+          setPickupAddress({
+            address: data.address,
+            city: data.city
+          });
+        }
       }
     };
 
