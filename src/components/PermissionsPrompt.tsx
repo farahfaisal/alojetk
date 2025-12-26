@@ -104,9 +104,32 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
   const requestNotifications = async () => {
     try {
       setLoading(true);
-      console.log('🔔 Notifications disabled - skipping to complete');
-      setNotificationPermission('denied');
-      setStep('complete');
+      console.log('🔔 Requesting notification permission from prompt...');
+
+      if (!notificationSupported) {
+        console.log('⚠️ Notifications not supported on this device');
+        setNotificationPermission('denied');
+        setStep('complete');
+        return;
+      }
+
+      const granted = await requestNotificationPermission();
+      console.log('🔔 Notification permission result from prompt:', granted);
+
+      setNotificationPermission(granted ? 'granted' : 'denied');
+
+      // Save permission status
+      const currentStatus = JSON.parse(localStorage.getItem('permissions_status') || '{}');
+      localStorage.setItem('permissions_status', JSON.stringify({
+        ...currentStatus,
+        notifications: granted ? 'granted' : 'denied',
+        timestamp: Date.now()
+      }));
+
+      // Move to complete step after notification permission
+      setTimeout(() => {
+        setStep('complete');
+      }, 1000);
     } catch (error) {
       console.error('Error requesting notification permissions:', error);
       setNotificationPermission('denied');
