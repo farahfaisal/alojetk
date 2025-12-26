@@ -109,10 +109,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
     const fetchUserData = async () => {
       if (!user || initialAddress) return;
 
+      const customerId = user.customer_id || user.id;
       const { data, error } = await supabase
         .from('customers')
         .select('name, phone, address, city')
-        .eq('auth_user_id', user.id)
+        .eq('id', customerId)
         .maybeSingle();
 
       if (data && !error) {
