@@ -195,15 +195,27 @@ const Home: React.FC<HomeProps> = ({
         try {
           setVendorsLoading(true);
           const all: { category: ProductCategory; vendors: Vendor[] }[] = [];
-          
+
           for (const category of categories) {
-            // Get products in this category
+            // Step 1: Get all subcategories for this category
+            const { data: subcategoriesData } = await supabase
+              .from('categories')
+              .select('id')
+              .eq('parent_id', category.id);
+
+            // Build array of category IDs (main category + all subcategories)
+            const categoryIds = [category.id];
+            if (subcategoriesData && subcategoriesData.length > 0) {
+              categoryIds.push(...subcategoriesData.map(cat => cat.id));
+            }
+
+            // Step 2: Get products in this category and its subcategories
             const { data: productsData } = await supabase
               .from('products')
               .select('vendor_id')
-              .eq('category_id', category.id)
+              .in('category_id', categoryIds)
               .eq('status', 'active')
-              .limit(10000); // Ensure we get all products
+              .limit(10000);
 
             if (!productsData || productsData.length === 0) continue;
 
@@ -217,8 +229,8 @@ const Home: React.FC<HomeProps> = ({
               .eq('type', 'مطاعم')
               .in('id', vendorIds)
               .order('rating', { ascending: false })
-              .limit(1000); // Ensure we get all vendors
-              
+              .limit(1000);
+
             if (vendorsData && vendorsData.length > 0) {
               all.push({
                 category: category,
@@ -226,7 +238,7 @@ const Home: React.FC<HomeProps> = ({
               });
             }
           }
-          
+
           setVendorsByCategory(all);
         } catch (err) {
           console.error('Error fetching vendors by category:', err);
@@ -234,7 +246,7 @@ const Home: React.FC<HomeProps> = ({
           setVendorsLoading(false);
         }
       };
-      
+
       fetchVendorsByCategory();
     }
   }, [categories, viewMode]);
