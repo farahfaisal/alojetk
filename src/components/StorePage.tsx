@@ -657,7 +657,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </h1>
                     <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-sm">
                       <MapPin className="w-4 h-4 text-sky-600" />
-                      <span>{vendor.address || vendor.city || 'الموقع غير محدد'}</span>
+                      <span>{vendor.address || 'الموقع غير محدد'}</span>
                     </div>
                   </div>
 

@@ -21,7 +21,6 @@ interface FeaturedVendor {
   featured?: boolean;
   type?: string;
   address?: string;
-  city?: string;
 }
 
 interface FeaturedVendorsProps {
@@ -168,11 +167,11 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
                 </h3>
 
                 {/* Location - Fixed Height */}
-                {(vendor.address || vendor.city) && (
+                {vendor.address && (
                   <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '18px' }}>
                     <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                     <span className="text-gray-500 text-xs truncate">
-                      {vendor.city || vendor.address}
+                      {vendor.address}
                     </span>
                   </div>
                 )}

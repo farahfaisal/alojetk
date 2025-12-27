@@ -20,7 +20,6 @@ interface Vendor {
   address?: string;
   service_areas?: string[];
   type?: string;
-  city?: string;
 }
 
 interface VendorsListProps {
@@ -223,11 +222,11 @@ const VendorsList: React.FC<VendorsListProps> = ({
                 </h3>
 
                 {/* Location - Fixed Height */}
-                {(vendor.address || vendor.city) && (
+                {vendor.address && (
                   <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '16px' }}>
                     <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
                     <span className="text-gray-500 text-[10px] truncate">
-                      {vendor.city || vendor.address}
+                      {vendor.address}
                     </span>
                   </div>
                 )}

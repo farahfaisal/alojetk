@@ -43,7 +43,7 @@ interface Vendor {
   status: string;
   featured_until?: string;
   featured_order?: number;
-  city?: string;
+  address?: string;
   type?: string;
 }
 
@@ -573,11 +573,11 @@ const Home: React.FC<HomeProps> = ({
                           </h3>
 
                           {/* Location - Fixed Height */}
-                          {(vendor.city || vendor.address) && (
+                          {vendor.address && (
                             <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '16px' }}>
                               <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
                               <span className="text-gray-500 text-[10px] truncate">
-                                {vendor.city || vendor.address}
+                                {vendor.address}
                               </span>
                             </div>
                           )}

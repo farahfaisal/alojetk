@@ -26,7 +26,6 @@ interface Vendor {
   rating_count?: number;
   status: string;
   address?: string;
-  city?: string;
   type?: string;
 }
 
@@ -212,7 +211,6 @@ const AllVendorsPage: React.FC<AllVendorsPageProps> = ({
                   <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                     <MapPin className="w-3 h-3" />
                     <span>{vendor.address}</span>
-                    {vendor.city && <span>، {vendor.city}</span>}
                   </div>
                 )}
               </div>
