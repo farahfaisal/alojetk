@@ -97,7 +97,8 @@ const Home: React.FC<HomeProps> = ({
               .select('*')
               .is('parent_id', null)
               .eq('type', 'restaurant')
-              .order('name');
+              .order('name')
+              .limit(12);
             data = fallbackResult.data;
             error = fallbackResult.error;
           } else {
@@ -106,7 +107,8 @@ const Home: React.FC<HomeProps> = ({
               .from('categories')
               .select('*')
               .eq('parent_id', parentData.id)
-              .order('name');
+              .order('name')
+              .limit(12);
             data = result.data;
             error = result.error;
             
@@ -128,7 +130,8 @@ const Home: React.FC<HomeProps> = ({
               .select('*')
               .is('parent_id', null)
               .eq('type', 'supermarket')
-              .order('name');
+              .order('name')
+              .limit(12);
             data = fallbackResult.data;
             error = fallbackResult.error;
           } else {
@@ -137,7 +140,8 @@ const Home: React.FC<HomeProps> = ({
               .from('categories')
               .select('*')
               .eq('parent_id', parentData.id)
-              .order('name');
+              .order('name')
+              .limit(12);
             data = result.data;
             error = result.error;
           }
@@ -147,7 +151,8 @@ const Home: React.FC<HomeProps> = ({
             .from('categories')
             .select('*')
             .is('parent_id', null)
-            .order('name');
+            .order('name')
+            .limit(12);
           data = result.data;
           error = result.error;
         }
@@ -195,33 +200,20 @@ const Home: React.FC<HomeProps> = ({
         try {
           setVendorsLoading(true);
           const all: { category: ProductCategory; vendors: Vendor[] }[] = [];
-
+          
           for (const category of categories) {
-            // Step 1: Get all subcategories for this category
-            const { data: subcategoriesData } = await supabase
-              .from('categories')
-              .select('id')
-              .eq('parent_id', category.id);
-
-            // Build array of category IDs (main category + all subcategories)
-            const categoryIds = [category.id];
-            if (subcategoriesData && subcategoriesData.length > 0) {
-              categoryIds.push(...subcategoriesData.map(cat => cat.id));
-            }
-
-            // Step 2: Get products in this category and its subcategories
+            // Get products in this category
             const { data: productsData } = await supabase
               .from('products')
               .select('vendor_id')
-              .in('category_id', categoryIds)
-              .eq('status', 'active')
-              .limit(10000);
-
+              .eq('category_id', category.id)
+              .eq('status', 'active');
+              
             if (!productsData || productsData.length === 0) continue;
-
+            
             // Get unique vendor IDs
             const vendorIds = [...new Set(productsData.map(p => p.vendor_id))];
-
+            
             // Fetch vendors with type "مطاعم"
             const { data: vendorsData } = await supabase
               .from('vendors')
@@ -229,8 +221,8 @@ const Home: React.FC<HomeProps> = ({
               .eq('type', 'مطاعم')
               .in('id', vendorIds)
               .order('rating', { ascending: false })
-              .limit(1000);
-
+              .limit(10);
+              
             if (vendorsData && vendorsData.length > 0) {
               all.push({
                 category: category,
@@ -238,7 +230,7 @@ const Home: React.FC<HomeProps> = ({
               });
             }
           }
-
+          
           setVendorsByCategory(all);
         } catch (err) {
           console.error('Error fetching vendors by category:', err);
@@ -246,7 +238,7 @@ const Home: React.FC<HomeProps> = ({
           setVendorsLoading(false);
         }
       };
-
+      
       fetchVendorsByCategory();
     }
   }, [categories, viewMode]);

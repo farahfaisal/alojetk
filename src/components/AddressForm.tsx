@@ -5,8 +5,6 @@ import { SavedAddress, saveAddress, updateAddress, getSavedAddresses } from '../
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
 
 interface AddressFormProps {
   onSave: (address: SavedAddress) => void;
@@ -35,8 +33,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
   isModal = false,
   vendorLocation = defaultMapCenter
 }) => {
-  const { user } = useAuth();
-
   // Get selected service area from localStorage
   const getDefaultCity = () => {
     if (initialAddress?.city) {
@@ -103,32 +99,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
     };
     fetchServiceAreas();
   }, []);
-
-  // Auto-fill user data when no initialAddress provided
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user || initialAddress) return;
-
-      const customerId = user.customer_id || user.id;
-      const { data, error } = await supabase
-        .from('customers')
-        .select('name, phone, address, city')
-        .eq('id', customerId)
-        .maybeSingle();
-
-      if (data && !error) {
-        setFormData(prev => ({
-          ...prev,
-          name: data.name || prev.name,
-          phone: data.phone || prev.phone,
-          address: data.address || prev.address,
-          city: data.city || prev.city
-        }));
-      }
-    };
-
-    fetchUserData();
-  }, [user, initialAddress]);
 
   const handleMainAreaClick = async (area: ServiceArea) => {
     try {
@@ -736,7 +706,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     }`}
                     dir="ltr"
                   />
-                  <p className="text-xs text-gray-500 mt-1">يمكنك إضافة رقم هاتف إضافي للتواصل لهذا العنوان</p>
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-800">{errors.phone}</p>
                   )}

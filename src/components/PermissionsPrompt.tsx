@@ -104,32 +104,9 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
   const requestNotifications = async () => {
     try {
       setLoading(true);
-      console.log('🔔 Requesting notification permission from prompt...');
-
-      if (!notificationSupported) {
-        console.log('⚠️ Notifications not supported on this device');
-        setNotificationPermission('denied');
-        setStep('complete');
-        return;
-      }
-
-      const granted = await requestNotificationPermission();
-      console.log('🔔 Notification permission result from prompt:', granted);
-
-      setNotificationPermission(granted ? 'granted' : 'denied');
-
-      // Save permission status
-      const currentStatus = JSON.parse(localStorage.getItem('permissions_status') || '{}');
-      localStorage.setItem('permissions_status', JSON.stringify({
-        ...currentStatus,
-        notifications: granted ? 'granted' : 'denied',
-        timestamp: Date.now()
-      }));
-
-      // Move to complete step after notification permission
-      setTimeout(() => {
-        setStep('complete');
-      }, 1000);
+      console.log('🔔 Notifications disabled - skipping to complete');
+      setNotificationPermission('denied');
+      setStep('complete');
     } catch (error) {
       console.error('Error requesting notification permissions:', error);
       setNotificationPermission('denied');
@@ -166,6 +143,7 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
   const renderIntroStep = () => (
     <div className="space-y-6">
       <div className="bg-brand/10 p-6 rounded-xl">
+        <h3 className="text-xl font-bold text-accent mb-4 text-center">مرحباً بك في تطبيق بين إديك!</h3>
         <h3 className="text-xl font-bold text-accent mb-4 text-center">مرحباً بك في تطبيق الو جيتك!</h3>
         <p className="text-gray-700 mb-4">
           لتقديم أفضل تجربة ممكنة في الو جيتك، نحتاج إلى بعض الأذونات:
@@ -419,7 +397,7 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
         </div>
         <h3 className="text-xl font-bold text-accent mb-4 text-center">تم الإعداد بنجاح!</h3>
         <p className="text-gray-700 mb-4 text-center">
-          شكراً لك! يمكنك الآن الاستمتاع بكامل مزايا تطبيق الو جيتك.
+          شكراً لك! يمكنك الآن الاستمتاع بكامل مزايا تطبيق بين إديك.
         </p>
         
         <div className="space-y-3 mt-6">

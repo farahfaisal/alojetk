@@ -35,24 +35,15 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
     const fetchUserData = async () => {
       if (!user) return;
 
-      const customerId = user.customer_id || user.id;
       const { data, error } = await supabase
         .from('customers')
-        .select('name, phone, address, city')
-        .eq('id', customerId)
+        .select('full_name, phone')
+        .eq('id', user.id)
         .maybeSingle();
 
-      if (data && !error) {
-        setCustomerName(data.name || '');
+      if (data) {
+        setCustomerName(data.full_name || '');
         setCustomerPhone(data.phone || '');
-
-        // Auto-fill pickup address from user's saved address
-        if (data.address && data.city) {
-          setPickupAddress({
-            address: data.address,
-            city: data.city
-          });
-        }
       }
     };
 
@@ -106,7 +97,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         .insert({
           customer_id: user.id,
           customer_name: customerName,
-          customer_phone: user.phone || customerPhone,
+          customer_phone: customerPhone,
           pickup_address: pickupAddress.address,
           pickup_latitude: pickupAddress.coordinates?.lat,
           pickup_longitude: pickupAddress.coordinates?.lng,
@@ -221,11 +212,9 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
-                      readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                       placeholder="05xxxxxxxx"
                     />
-                    <p className="text-xs text-gray-500 mt-1">لا يمكن تغيير رقم الهاتف</p>
                   </div>
                 </div>
               </div>

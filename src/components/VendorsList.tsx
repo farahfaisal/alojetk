@@ -64,46 +64,40 @@ const VendorsList: React.FC<VendorsListProps> = ({
         
         // Check if we need to filter by category
         if (categoryId) {
-          // First get all products in this category
-          const { data: productsData } = await supabase
-            .from('products')
-            .select('vendor_id')
-            .eq('category_id', categoryId)
-            .eq('status', 'active');
-
-          if (!productsData || productsData.length === 0) {
-            setVendors([]);
-            setTotalCount(0);
-            setLoading(false);
-            return;
-          }
-
-          // Get unique vendor IDs
-          const vendorIds = [...new Set(productsData.map(p => p.vendor_id))];
-
-          // Now fetch vendors
           query = supabase
             .from('vendors')
-            .select('*', { count: 'exact' })
-            .in('id', vendorIds);
+            .select(`
+              *,
+              products!inner (
+                id,
+                category_id
+              )
+            `);
+          // Filter by category
+          query = query.eq('products.category_id', categoryId);
         } else {
           // No category filter, just get all vendors
           query = supabase
             .from('vendors')
             .select('*', { count: 'exact' });
         }
-
+        
         // Filter by type if specified
         if (type !== 'all') {
           const dbType = mapTypeToDbValue(type);
           query = query.eq('type', dbType);
         }
-
+        
         // Filter by status if includeInactive is false
         if (!includeInactive) {
           query = query.eq('status', 'active');
         }
-
+        
+        // Apply limit if specified
+        if (limit) {
+          query = query.limit(limit);
+        }
+        
         // Apply sorting
         switch (sortBy) {
           case 'newest':
@@ -118,21 +112,21 @@ const VendorsList: React.FC<VendorsListProps> = ({
                         .order('rating', { ascending: false });
             break;
         }
-
-        // Apply limit AFTER getting unique vendors
-        if (limit) {
-          query = query.limit(limit);
-        }
-
+        
         // Execute query
         const { data: vendors, error: fetchError, count } = await query;
-
+        
         if (fetchError) throw fetchError;
-
-        console.log("Fetched vendors:", vendors);
-
-        setVendors(vendors || []);
-        setTotalCount(count || vendors?.length || 0);
+        
+        // Filter out duplicates by vendor ID
+        const uniqueVendors = vendors ? Array.from(new Set(vendors.map(v => v.id)))
+          .map(id => vendors.find(v => v.id === id))
+          .filter(Boolean) : [];
+        
+        console.log("Fetched vendors:", uniqueVendors);
+        
+        setVendors(uniqueVendors as Vendor[]);
+        setTotalCount(count || uniqueVendors.length);
       } catch (err) {
         console.error('Error fetching vendors:', err);
         setError('حدث خطأ في جلب قائمة المتاجر');
@@ -255,7 +249,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
                         ? 'bg-orange-500/90 text-white'
                         : vendor.status === 'suspended'
                           ? 'bg-red-500/90 text-white'
-                          : 'bg-red-700/90 text-white'
+                          : 'bg-gray-500/90 text-white'
                   }`}>
                     {vendor.status === 'active' ? 'مفتوح الآن' :
                      vendor.status === 'busy' ? 'مشغول' :

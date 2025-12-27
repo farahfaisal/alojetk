@@ -200,7 +200,7 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
                         ? 'bg-orange-500/90 text-white'
                         : vendor.status === 'suspended'
                           ? 'bg-red-500/90 text-white'
-                          : 'bg-red-700/90 text-white'
+                          : 'bg-gray-500/90 text-white'
                   }`}>
                     {vendor.status === 'active' ? 'مفتوح الآن' :
                      vendor.status === 'busy' ? 'مشغول' :
