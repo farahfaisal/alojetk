@@ -577,7 +577,8 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             rating: selectedVendor.rating,
             status: {
               is_open: selectedVendor.status === 'active'
-            }
+            },
+            address: selectedVendor.address
           }}
           categoryId={null}
           onClose={() => setSelectedVendor(null)}

@@ -633,7 +633,8 @@ const Home: React.FC<HomeProps> = ({
             banner: selectedVendor.banner_url,
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
-            status: { is_open: selectedVendor.status === 'active' }
+            status: { is_open: selectedVendor.status === 'active' },
+            address: selectedVendor.address
           }}
           categoryId={null}
           onClose={() => setSelectedVendor(null)}

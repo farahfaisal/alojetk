@@ -294,7 +294,8 @@ const VendorsList: React.FC<VendorsListProps> = ({
                 banner: selectedVendor.banner_url,
                 logo: selectedVendor.logo_url,
                 rating: selectedVendor.rating,
-                status: selectedVendor.status
+                status: selectedVendor.status,
+                address: selectedVendor.address
               }}
               categoryId={categoryId || null}
               onClose={() => setSelectedVendor(null)}

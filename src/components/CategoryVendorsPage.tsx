@@ -405,7 +405,8 @@ const CategoryVendorsPage: React.FC<CategoryVendorsPageProps> = ({
             banner: selectedVendor.banner_url,
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
-            status: selectedVendor.status
+            status: selectedVendor.status,
+            address: selectedVendor.address
           }}
           categoryId={categoryId}
           onClose={() => setSelectedVendor(null)}
