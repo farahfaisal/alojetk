@@ -32,6 +32,8 @@ import CaptainRequestPage from './components/CaptainRequestPage';
 import CaptainRequestsTracking from './components/CaptainRequestsTracking';
 import SearchModal from './components/SearchModal';
 import CitySelector from './components/CitySelector';
+import SingleProductPage from './components/SingleProductPage';
+import StorePage from './components/StorePage';
 
 interface ServiceArea {
   id: string;
@@ -69,6 +71,8 @@ const AppContent: React.FC = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [showPermissionsPrompt, setShowPermissionsPrompt] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
   const { toast } = useToast();
   const [showServiceAreaSelection, setShowServiceAreaSelection] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -450,20 +454,10 @@ const AppContent: React.FC = () => {
     localStorage.setItem('selectedCity', JSON.stringify(city));
     setIsCityDropdownOpen(false);
 
-    // Show permissions prompt only on first city selection
-    const hasSelectedCityBefore = localStorage.getItem('has_selected_city_before');
-    const hasSeenPermissionsPrompt = localStorage.getItem('permissions_prompt_shown');
-
-    if (!hasSelectedCityBefore) {
-      localStorage.setItem('has_selected_city_before', 'true');
-
-      if (!hasSeenPermissionsPrompt) {
-        setTimeout(() => {
-          setShowPermissionsPrompt(true);
-          localStorage.setItem('permissions_prompt_shown', 'true');
-        }, 1000);
-      }
-    }
+    // Show permissions prompt after city selection
+    setTimeout(() => {
+      setShowPermissionsPrompt(true);
+    }, 800);
   };
 
   const closeAllComponents = () => {
@@ -595,14 +589,10 @@ const AppContent: React.FC = () => {
     localStorage.setItem('selectedCity', JSON.stringify(area));
     setShowServiceAreaSelection(false);
 
-    // Show permissions prompt after area selection if not shown before
-    const hasSeenPermissionsPrompt = localStorage.getItem('permissions_prompt_shown');
-    if (!hasSeenPermissionsPrompt) {
-      setTimeout(() => {
-        setShowPermissionsPrompt(true);
-        localStorage.setItem('permissions_prompt_shown', 'true');
-      }, 1000);
-    }
+    // Show permissions prompt after area selection
+    setTimeout(() => {
+      setShowPermissionsPrompt(true);
+    }, 800);
   };
 
   const handleOpenPrivacyPolicyFromServiceArea = () => {
@@ -707,12 +697,10 @@ const AppContent: React.FC = () => {
         )}
 
         {/* Floating Cart Button */}
-        {cartItemsCount > 0 && (
-          <FloatingCart
-            onOpenCart={handleOpenCart}
-            showOnlyInProductPage={false}
-          />
-        )}
+        <FloatingCart
+          onOpenCart={handleOpenCart}
+          showOnlyInProductPage={false}
+        />
 
         <Sidebar
           isOpen={isSidebarOpen}
@@ -815,11 +803,11 @@ const AppContent: React.FC = () => {
           onClose={() => setIsSearchOpen(false)}
           onVendorSelect={(vendorId) => {
             setIsSearchOpen(false);
-            // Navigate to vendor page
+            setSelectedVendorId(vendorId);
           }}
           onProductSelect={(productId) => {
             setIsSearchOpen(false);
-            // Navigate to product page
+            setSelectedProductId(productId);
           }}
         />
 
@@ -836,6 +824,23 @@ const AppContent: React.FC = () => {
           <ServiceAreaSelection
             onSelectArea={handleServiceAreaSelect}
             onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
+          />
+        )}
+
+        {/* Single Product Page */}
+        {selectedProductId && (
+          <SingleProductPage
+            productId={selectedProductId}
+            onClose={() => setSelectedProductId(null)}
+            onAddToCart={() => {}}
+          />
+        )}
+
+        {/* Store Page */}
+        {selectedVendorId && (
+          <StorePage
+            vendorId={selectedVendorId}
+            onClose={() => setSelectedVendorId(null)}
           />
         )}
       </div>

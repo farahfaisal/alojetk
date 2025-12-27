@@ -121,12 +121,46 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     };
     loadBalances();
 
-    if (!currentAddress) {
-      const addresses = getSavedAddresses();
-      const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
-      if (defaultAddr) setCurrentAddress(defaultAddr);
-    }
-  }, [user, currentAddress]);
+    const loadUserDataAndAddresses = async () => {
+      if (!currentAddress) {
+        const addresses = getSavedAddresses();
+        const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
+
+        if (defaultAddr) {
+          setCurrentAddress(defaultAddr);
+        } else {
+          const customerId = (user as any)?.customer_id || user?.id;
+          if (customerId) {
+            try {
+              const { data: customerData, error } = await supabase
+                .from('customers')
+                .select('name, phone, address, city')
+                .eq('id', customerId)
+                .maybeSingle();
+
+              if (!error && customerData) {
+                const autoAddress: SavedAddress = {
+                  id: 'auto-generated',
+                  name: customerData.name || '',
+                  phone: customerData.phone || '',
+                  address: customerData.address || '',
+                  city: customerData.city || selectedCity || '',
+                  isDefault: false,
+                  detailedAddress: '',
+                  coordinates: undefined
+                };
+                setCurrentAddress(autoAddress);
+              }
+            } catch (err) {
+              console.error('Error loading customer data:', err);
+            }
+          }
+        }
+      }
+    };
+
+    loadUserDataAndAddresses();
+  }, [user, currentAddress, selectedCity]);
 
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) => {
@@ -246,6 +280,17 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setError(null);
 
     try {
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      const storedCity = localStorage.getItem('selectedCity');
+      const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+
+      console.log('📍 Service area for order:', {
+        selectedServiceArea,
+        storedCity,
+        serviceAreaName,
+        propSelectedCity: selectedCity,
+        addressCity: currentAddress?.city
+      });
       if (courierMode === 'delivery' && deliveryType === 'scheduled') {
         if (!scheduledDate || !scheduledTime) {
           setError('يرجى اختيار تاريخ ووقت التوصيل');
@@ -348,9 +393,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           payment_method: primaryPaymentMethod,
           notes: orderNotes || null,
           address: currentAddress?.address || '',
-          city: selectedCity || currentAddress?.city || '',
+          city: serviceAreaName || selectedCity || currentAddress?.city || '',
           customer_name: currentAddress?.name || '',
-          customer_phone: currentAddress?.phone || '',
+          customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
           geocoded_latitude: currentAddress?.coordinates?.lat || null,
           geocoded_longitude: currentAddress?.coordinates?.lng || null,
@@ -377,8 +422,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           orderGroupId,
           vendorOrderIndex: i + 1,
           totalVendors: vendorCount,
-          city: selectedCity,
-          addressCity: currentAddress?.city
+          serviceAreaName,
+          selectedCity,
+          addressCity: currentAddress?.city,
+          finalCity: orderData.city
         });
 
         const { data: order, error: orderError } = await supabase
@@ -518,6 +565,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       localStorage.removeItem('cartItems');
       window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
 
       setOrderId((order as any).id);
       setSuccess(true);
@@ -615,7 +663,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <span className="text-2xl">🚶</span>
                 </div>
                 <div className="flex-1 text-right">
-                  <p className="text-base font-bold text-gray-900">إستلام</p>
+                  <p className="text-base font-bold text-gray-900">إستلام (بدون توصيل)</p>
                 </div>
               </button>
 
@@ -747,13 +795,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
           </button>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-900 text-right">
-              ملاحظة: موقع التسليم الذي أدخلته يبعد أكثر من 100 متر عن موقعك الحالي
-            </p>
-          </div>
-
           <div>
             <h3 className="text-lg font-bold text-gray-900 mb-3 text-right">طريقة الدفع</h3>
             <div className="space-y-3">
@@ -788,32 +829,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </button>
 
               <button
-                onClick={() => {
-                  setSelectedPaymentMethods(prev => {
-                    const hasCash = prev.includes('cash');
-                    const filtered = prev.filter(m => m !== 'cash' && m !== 'card');
-                    if (hasCash) return [...filtered, 'card'];
-                    return [...filtered, 'card'];
-                  });
-                }}
-                className={`w-full rounded-lg p-4 flex items-center justify-between transition-all ${
-                  selectedPaymentMethods.includes('card') ? 'bg-yellow-50 border-2 border-yellow-500' : 'bg-white border-2 border-gray-200'
-                }`}
+                disabled
+                className="w-full rounded-lg p-4 flex items-center justify-between transition-all bg-gray-50 border-2 border-gray-200 opacity-60 cursor-not-allowed"
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${
-                    selectedPaymentMethods.includes('card') ? 'bg-yellow-500 border-yellow-500' : 'border-gray-300'
-                  }`}>
-                    {selectedPaymentMethods.includes('card') && <Check className="w-4 h-4 text-white" />}
+                  <div className="w-6 h-6 rounded-lg border-2 flex items-center justify-center border-gray-300">
                   </div>
                 </div>
                 <div className="flex-1 text-right mr-3">
-                  <p className="font-bold text-gray-900 text-base">بطاقة</p>
+                  <p className="font-bold text-gray-900 text-base">بطاقة <span className="text-sm font-normal text-gray-500">(قريباً)</span></p>
                 </div>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  selectedPaymentMethods.includes('card') ? 'bg-yellow-100' : 'bg-gray-100'
-                }`}>
-                  <CreditCard className={`w-5 h-5 ${selectedPaymentMethods.includes('card') ? 'text-yellow-600' : 'text-gray-600'}`} />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
+                  <CreditCard className="w-5 h-5 text-gray-600" />
                 </div>
               </button>
             </div>

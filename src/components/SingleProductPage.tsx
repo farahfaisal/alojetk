@@ -789,9 +789,10 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         {/* Red Card with Product Info */}
         <div className="mx-4 bg-[#B91C1C] rounded-3xl shadow-2xl overflow-hidden">
           <div className="bg-white m-1 rounded-[22px] p-6">
-            {/* Quantity Selector at Top - Only show in variants step */}
-            {selectionStep === 'variants' && (
-              <div className="flex items-center justify-center mb-4">
+            {/* Quantity Selector at Top - Show in all steps */}
+            <div className="flex items-center justify-center mb-4">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-sm font-semibold text-gray-700">الكمية</span>
                 <div className="flex items-center bg-white rounded-xl border-2 border-gray-200 shadow-sm">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -816,7 +817,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   </motion.button>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Product Name and Description */}
             <div className="text-center mb-4">

@@ -223,7 +223,7 @@ const CategoryVendorsPage: React.FC<CategoryVendorsPageProps> = ({
                       <span>{vendor.rating.toFixed(1)}</span>
                     </div>
                   )}
-                  
+
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
                     vendor.status === 'active'
                       ? 'bg-green-500/90 text-white'
@@ -231,7 +231,7 @@ const CategoryVendorsPage: React.FC<CategoryVendorsPageProps> = ({
                         ? 'bg-orange-500/90 text-white'
                         : vendor.status === 'suspended'
                           ? 'bg-red-500/90 text-white'
-                          : 'bg-gray-500/90 text-white'
+                          : 'bg-red-700/90 text-white'
                   }`}>
                     {vendor.status === 'active' ? 'مفتوح' :
                      vendor.status === 'busy' ? 'مشغول' :

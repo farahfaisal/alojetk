@@ -57,7 +57,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           const parsedZone = JSON.parse(storedZone);
           const zone = data?.find(area => area.name === parsedZone);
           if (zone) {
-            setSelectedZone(zone.id);
+            setSelectedZone(zone.name);
           }
         }
       } catch (error) {
@@ -84,33 +84,77 @@ const SearchModal: React.FC<SearchModalProps> = ({
       setIsSearching(true);
 
       try {
-        // Search vendors
-        const { data: vendors, error: vendorsError } = await supabase
+        console.log('🔍 Search started:', { searchQuery, selectedZone });
+
+        // Build vendor query
+        let vendorQuery = supabase
           .from('vendors')
-          .select('id, store_name, logo_url, category')
+          .select('id, store_name, logo_url, type, service_areas')
           .ilike('store_name', `%${searchQuery}%`)
-          .limit(5);
+          .eq('status', 'active');
 
-        if (vendorsError) throw vendorsError;
+        // Filter by zone if selected
+        if (selectedZone) {
+          vendorQuery = vendorQuery.contains('service_areas', [selectedZone]);
+        }
 
-        // Search products
-        const { data: products, error: productsError } = await supabase
+        const { data: vendors, error: vendorsError } = await vendorQuery.limit(5);
+
+        if (vendorsError) {
+          console.error('❌ Vendors query error:', vendorsError);
+          throw vendorsError;
+        }
+
+        console.log('✅ Vendors found:', vendors?.length || 0, vendors);
+
+        // Build products query with vendor zone filter
+        let productsQuery = supabase
           .from('products')
-          .select('id, name, price, image_url, vendor:vendor_id(store_name)')
+          .select('id, name, price, image_url, vendor:vendor_id(id, store_name, service_areas, status)')
           .ilike('name', `%${searchQuery}%`)
-          .limit(10);
+          .eq('status', 'active');
 
-        if (productsError) throw productsError;
+        const { data: products, error: productsError } = await productsQuery.limit(20);
+
+        if (productsError) {
+          console.error('❌ Products query error:', productsError);
+        }
+
+        console.log('📦 Products found (before filter):', products?.length || 0, products);
+
+        // Filter products by zone if selected and vendor is active
+        let filteredProducts = products || [];
+        if (selectedZone) {
+          filteredProducts = filteredProducts.filter((p: any) => {
+            const hasServiceArea = p.vendor?.service_areas &&
+                                  Array.isArray(p.vendor.service_areas) &&
+                                  p.vendor.service_areas.includes(selectedZone);
+            const isVendorActive = p.vendor?.status === 'active';
+            console.log(`Product "${p.name}":`, {
+              vendorName: p.vendor?.store_name,
+              serviceAreas: p.vendor?.service_areas,
+              hasServiceArea,
+              vendorStatus: p.vendor?.status,
+              isVendorActive
+            });
+            return hasServiceArea && isVendorActive;
+          });
+        } else {
+          // If no zone selected, still filter by vendor status
+          filteredProducts = filteredProducts.filter((p: any) => p.vendor?.status === 'active');
+        }
+
+        console.log('📦 Products found (after filter):', filteredProducts.length);
 
         const results: SearchResult[] = [
-          ...(vendors || []).map(v => ({
+          ...(vendors || []).map((v: any) => ({
             id: v.id,
             name: v.store_name,
             type: 'vendor' as const,
             image: v.logo_url,
-            category: v.category
+            category: v.type
           })),
-          ...(products || []).map((p: any) => ({
+          ...filteredProducts.map((p: any) => ({
             id: p.id,
             name: p.name,
             type: 'product' as const,
@@ -120,6 +164,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           }))
         ];
 
+        console.log('✅ Total results:', results.length);
         setSearchResults(results);
       } catch (error) {
         console.error('Search error:', error);
@@ -130,7 +175,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
     const debounce = setTimeout(performSearch, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery]);
+  }, [searchQuery, selectedZone]);
 
   const handleSearchSubmit = (query: string) => {
     if (query.trim()) {
@@ -151,13 +196,10 @@ const SearchModal: React.FC<SearchModalProps> = ({
     onClose();
   };
 
-  const handleZoneChange = (zoneId: string) => {
-    setSelectedZone(zoneId);
-    const zone = serviceAreas.find(area => area.id === zoneId);
-    if (zone) {
-      localStorage.setItem('selectedCity', JSON.stringify(zone.name));
-      window.dispatchEvent(new Event('storage'));
-    }
+  const handleZoneChange = (zoneName: string) => {
+    setSelectedZone(zoneName);
+    localStorage.setItem('selectedCity', JSON.stringify(zoneName));
+    window.dispatchEvent(new Event('storage'));
   };
 
   if (!isOpen) return null;
@@ -207,7 +249,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
             >
               <option value="" disabled>اختر المنطقة</option>
               {serviceAreas.map(area => (
-                <option key={area.id} value={area.id} className="bg-gray-800 text-white">
+                <option key={area.id} value={area.name} className="bg-gray-800 text-white">
                   {area.name} {area.status === 'coming_soon' && '(قريباً)'}
                 </option>
               ))}

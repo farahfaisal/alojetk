@@ -54,7 +54,9 @@ CREATE POLICY "Users can view own custom order items"
     EXISTS (
       SELECT 1 FROM orders
       WHERE orders.id = custom_order_items.order_id
-      AND orders.user_id = auth.uid()
+      AND orders.customer_id IN (
+        SELECT id FROM customers WHERE user_id = auth.uid()
+      )
     )
   );
 
@@ -67,7 +69,9 @@ CREATE POLICY "Users can insert custom order items for own orders"
     EXISTS (
       SELECT 1 FROM orders
       WHERE orders.id = custom_order_items.order_id
-      AND orders.user_id = auth.uid()
+      AND orders.customer_id IN (
+        SELECT id FROM customers WHERE user_id = auth.uid()
+      )
     )
   );
 
@@ -80,7 +84,9 @@ CREATE POLICY "Users can update own custom order items"
     EXISTS (
       SELECT 1 FROM orders
       WHERE orders.id = custom_order_items.order_id
-      AND orders.user_id = auth.uid()
+      AND orders.customer_id IN (
+        SELECT id FROM customers WHERE user_id = auth.uid()
+      )
       AND orders.status IN ('pending', 'cart')
     )
   )
@@ -88,7 +94,9 @@ CREATE POLICY "Users can update own custom order items"
     EXISTS (
       SELECT 1 FROM orders
       WHERE orders.id = custom_order_items.order_id
-      AND orders.user_id = auth.uid()
+      AND orders.customer_id IN (
+        SELECT id FROM customers WHERE user_id = auth.uid()
+      )
       AND orders.status IN ('pending', 'cart')
     )
   );
@@ -102,7 +110,9 @@ CREATE POLICY "Users can delete own custom order items"
     EXISTS (
       SELECT 1 FROM orders
       WHERE orders.id = custom_order_items.order_id
-      AND orders.user_id = auth.uid()
+      AND orders.customer_id IN (
+        SELECT id FROM customers WHERE user_id = auth.uid()
+      )
       AND orders.status IN ('pending', 'cart')
     )
   );

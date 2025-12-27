@@ -113,8 +113,21 @@ export async function getCurrentLocation() {
 // Function to request notification permissions
 export async function requestNotificationPermission() {
   try {
-    console.log('🔔 Notification permissions disabled');
-    return false;
+    console.log('🔔 Requesting notification permission...');
+
+    if (Capacitor.isNativePlatform()) {
+      // For native platforms
+      console.log('📱 Requesting native notification permission...');
+      const result = await setupNativePushNotifications();
+      console.log('📱 Native notification permission result:', result);
+      return result;
+    } else {
+      // For web
+      console.log('🌐 Requesting web notification permission...');
+      const result = await setupWebPushNotifications();
+      console.log('🌐 Web notification permission result:', result);
+      return result;
+    }
   } catch (error) {
     console.error('⚠️ Notification permission request failed:', error);
     return false;
@@ -124,8 +137,27 @@ export async function requestNotificationPermission() {
 // Function to request payment notifications specifically
 export async function requestPaymentNotificationPermission() {
   try {
-    console.log('💳 Payment notifications disabled');
-    return false;
+    console.log('💳 Enabling payment notifications...');
+
+    // First check if general notifications are enabled
+    if (Notification.permission !== 'granted') {
+      console.warn('⚠️ General notifications not granted, requesting...');
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        return false;
+      }
+    }
+
+    // Enable payment notifications
+    localStorage.setItem('payment_notifications_enabled', 'true');
+    console.log('✅ Payment notifications enabled');
+
+    // Show a test notification
+    setTimeout(() => {
+      sendTestNotification('💳 إشعارات الدفع مفعلة', 'ستصلك إشعارات خاصة بالمدفوعات والمعاملات المالية');
+    }, 500);
+
+    return true;
   } catch (error) {
     console.error('Error requesting payment notification permission:', error);
     return false;
@@ -421,7 +453,39 @@ function sendWelcomeNotification() {
 // Function to show a notification
 export function showNotification(title: string, body: string, data?: any) {
   try {
-    console.log('📢 Notification disabled:', title);
+    console.log('📢 Showing notification:', title);
+
+    if (Notification.permission !== 'granted') {
+      console.warn('⚠️ Notification permission not granted');
+      return;
+    }
+
+    const notification = new Notification(title, {
+      body: body,
+      icon: '/vite.svg',
+      badge: '/vite.svg',
+      dir: 'rtl',
+      lang: 'ar',
+      tag: 'notification',
+      requireInteraction: false,
+      data: data
+    });
+
+    // Auto close after 5 seconds
+    setTimeout(() => {
+      notification.close();
+    }, 5000);
+
+    notification.onclick = () => {
+      console.log('Notification clicked');
+      if (data) {
+        handleNotificationClick(data);
+      }
+      notification.close();
+      window.focus();
+    };
+
+    console.log('✅ Notification shown successfully');
   } catch (error) {
     console.error('Error showing notification:', error);
   }

@@ -412,20 +412,27 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     try {
       const product = products.find(p => p.id === productId);
       if (!product) return;
-      
+
       if (!isVendorAvailable) {
         return;
       }
 
-      console.log('🔧 Adding to cart with addons:', addons);
-      
+      // Check if there's a variant in the addons
+      const variantInfo = addons?.find(addon => addon.isVariant);
+      const regularAddons = addons?.filter(addon => !addon.isVariant) || [];
+
+      // Use variant price if available, otherwise use product base price
+      const finalPrice = variantInfo?.variant_price || product.price;
+      const finalName = variantInfo ? `${product.name} - ${variantInfo.variant_name}` : product.name;
+      const cartItemId = variantInfo ? `${productId}_${variantInfo.variant_id}` : productId;
+
       const cartItems = localStorage.getItem('cartItems');
       let cart = cartItems ? JSON.parse(cartItems) : {};
-      
-      if (cart[productId]) {
-        cart[productId].quantity += quantity;
-        if (addons && addons.length > 0) {
-          cart[productId].addons = addons.map(addon => ({
+
+      if (cart[cartItemId]) {
+        cart[cartItemId].quantity += quantity;
+        if (regularAddons && regularAddons.length > 0) {
+          cart[cartItemId].addons = regularAddons.map(addon => ({
             id: addon.id,
             name: addon.name,
             price: addon.price,
@@ -435,36 +442,38 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           }));
         }
       } else {
-        cart[productId] = {
-          id: product.id,
+        const mappedAddons = regularAddons.map(addon => ({
+          id: addon.id,
+          name: addon.name,
+          price: addon.price,
+          quantity: addon.quantity || 1,
+          is_required: addon.is_required || false,
+          is_default: addon.is_default || false
+        }));
+
+        cart[cartItemId] = {
+          id: cartItemId,
           product_id: product.id,
-          name: product.name,
-          price: product.price,
+          name: finalName,
+          price: finalPrice,
           quantity: quantity,
           image: product.image_url,
           vendor_id: vendor.id,
           vendor_name: vendor.store_name,
-          addons: addons ? addons.map(addon => ({
-            id: addon.id,
-            name: addon.name,
-            price: addon.price,
-            quantity: addon.quantity || 1,
-            is_required: addon.is_required || false,
-            is_default: addon.is_default || false
-          })) : [],
+          variant_id: variantInfo?.variant_id,
+          variant_name: variantInfo?.variant_name,
+          addons: mappedAddons,
           preparation_time: product.details?.preparation_time
         };
       }
-      
-      console.log('🔧 Updated cart with addons:', cart[productId]);
-      
+
       localStorage.setItem('cartItems', JSON.stringify(cart));
       setSelectedProduct(null);
-      
+
       window.dispatchEvent(new Event('storage'));
-      
-      window.dispatchEvent(new CustomEvent('cart-item-added', { 
-        detail: { productName: product.name }
+
+      window.dispatchEvent(new CustomEvent('cart-item-added', {
+        detail: { productName: finalName }
       }));
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -591,7 +600,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 {/* شارة "مفتوح" يسار تحت البانر */}
                 <div className="absolute -top-6 left-4">
                   <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
-                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-gray-400 text-white'}`}>
+                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
                   </span>
                 </div>
@@ -846,7 +855,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                             {/* Product Info */}
                             <div className="p-3">
-                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-sm">{product.name}</h3>
                               {product.description && (
                                 <p className="text-xs text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                               )}
@@ -930,7 +939,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                               {/* Product Info */}
                               <div className="p-4">
-                                <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                                <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-base">{product.name}</h3>
                                 {product.description && (
                                   <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                                 )}
@@ -1011,7 +1020,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                             {/* Product Info */}
                             <div className="p-4">
-                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-xs">{product.name}</h3>
+                              <h3 className="font-bold text-gray-900 mb-1 line-clamp-1 text-base">{product.name}</h3>
                               {product.description && (
                                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                               )}
