@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
   Check, MapPin, CreditCard, Truck, Clock, Package, AlertCircle,
-  Loader2, ChevronLeft, ChevronRight, MessageSquare, Info, User, DollarSign, Wallet, Gift, Zap
+  Loader2, ChevronRight, MessageSquare, Info, User, DollarSign, Wallet, Gift, Zap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { payFromWallet, getCustomerWalletBalance } from '../lib/wallet';
 import { getCustomerPoints } from '../lib/points';
-import { SavedAddress, getSavedAddresses, saveAddress } from '../lib/storage';
+import { SavedAddress, getSavedAddresses } from '../lib/storage';
 import OrderTrackingPage from './OrderTrackingPage';
-import AddressSelector from './AddressSelector';
-import AddressForm from './AddressForm';
 import { X } from 'lucide-react';
 
 interface CartItem {
@@ -53,8 +51,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const { user } = useAuth();
 
   const [currentAddress, setCurrentAddress] = useState<SavedAddress | null>(selectedAddress);
-  const [showAddressSelector, setShowAddressSelector] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [orderNotes, setOrderNotes] = useState(notes || '');
   const [showNotesModal, setShowNotesModal] = useState(false);
 
@@ -756,10 +752,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {currentAddress ? (
-              <button
-                onClick={() => setShowAddressSelector(true)}
-                className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center gap-3 hover:bg-gray-100 transition-colors"
-              >
+              <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <div className="flex-1 text-right">
                   <p className="font-bold text-gray-900 text-base mb-1">{currentAddress.name}</p>
                   <p className="text-sm text-gray-600 mb-1">{currentAddress.phone}</p>
@@ -769,15 +762,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   )}
                   <p className="text-xs text-gray-500 mt-1">{currentAddress.city}</p>
                 </div>
-                <ChevronLeft className="w-5 h-5 text-gray-400 flex-shrink-0" />
-              </button>
+              </div>
             ) : (
-              <button
-                onClick={() => setShowAddressForm(true)}
-                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-brand hover:text-brand transition-colors"
-              >
-                + إضافة عنوان التوصيل
-              </button>
+              <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg text-right">
+                <p className="text-red-600 text-sm">يرجى إضافة عنوان التوصيل من صفحة سلة المشتريات</p>
+              </div>
             )}
           </div>
 
@@ -1014,47 +1003,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         </div>
       </div>
 
-      {/* Address Selector Modal */}
-      {showAddressSelector && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" dir="rtl">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b flex items-center justify-between">
-              <button
-                onClick={() => setShowAddressSelector(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-              <h3 className="text-xl font-bold text-gray-900">اختر عنوان التوصيل</h3>
-            </div>
-            <div className="p-4">
-              <AddressSelector
-                onSelectAddress={(addr) => {
-                  setCurrentAddress(addr);
-                  setShowAddressSelector(false);
-                }}
-                onAddNewAddress={() => {
-                  setShowAddressSelector(false);
-                  setShowAddressForm(true);
-                }}
-                selectedAddressId={currentAddress?.id}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Address Form Modal */}
-      {showAddressForm && (
-        <AddressForm
-          onSave={(addr) => {
-            setCurrentAddress(addr);
-            setShowAddressForm(false);
-          }}
-          onCancel={() => setShowAddressForm(false)}
-          isModal={true}
-        />
-      )}
 
       {/* Notes Modal */}
       {showNotesModal && (
