@@ -161,7 +161,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) => {
       const itemPrice = item.price || 0;
-      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0) * item.quantity;
+      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0);
       return total + itemPrice * item.quantity + addonsTotal;
     }, 0);
 
@@ -357,7 +357,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         const vendorSubtotal = vendorItems.reduce((total, item) => {
           const itemTotal = item.price * item.quantity;
           const addonsTotal = (item.addons || []).reduce((sum, addon) =>
-            sum + (addon.price * addon.quantity), 0) * item.quantity;
+            sum + (addon.price * addon.quantity), 0);
           return total + itemTotal + addonsTotal;
         }, 0);
 
@@ -444,7 +444,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
         for (const item of vendorItems) {
           const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
-          const itemPriceWithAddons = item.price + addonsTotal;
 
           if ((item as any).is_custom) {
             // Custom order item
@@ -455,7 +454,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               description: (item as any).custom_details || '',
               quantity: item.quantity || 1,
               price: item.price,
-              total_price: itemPriceWithAddons * (item.quantity || 1),
+              total_price: (item.price * (item.quantity || 1)) + addonsTotal,
               notes: (item as any).custom_details || null,
             });
           } else {
@@ -464,7 +463,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               order_id: (order as any).id,
               product_id: item.product_id,
               quantity: item.quantity || 1,
-              price: itemPriceWithAddons,
+              price: item.price,
               vendor_id: item.vendor_id || vendorId,
               vendor_name: item.vendor_name || vendorItems[0].vendor_name,
               name: item.name || 'منتج',

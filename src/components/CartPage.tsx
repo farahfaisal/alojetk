@@ -326,7 +326,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         const addonPrice = addon.price || 0;
         const addonQuantity = addon.quantity || 1;
         return sum + (addonPrice * addonQuantity);
-      }, 0) * item.quantity;
+      }, 0);
 
       return total + itemTotal + addonsTotal;
     }, 0);
@@ -552,7 +552,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                     {item.is_custom ? (
                                       <span className="text-amber-600">يحدد لاحقاً</span>
                                     ) : (
-                                      `${(((item.price || 0) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)) * item.quantity).toFixed(2)} شيكل`
+                                      `${(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} شيكل`
                                     )}
                                   </div>
                                   <button
