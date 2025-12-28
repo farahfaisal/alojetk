@@ -50,6 +50,7 @@ interface ProductImage {
 
 const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose }) => {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [relatedOrders, setRelatedOrders] = useState<OrderDetails[]>([]);
   const [orderHistory, setOrderHistory] = useState<OrderStatus[]>([]);
   const [productImages, setProductImages] = useState<ProductImage>({});
   const [vendorInfo, setVendorInfo] = useState<VendorInfo | null>(null);
@@ -104,6 +105,19 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
 
       if (error) throw error;
       setOrderDetails(data);
+
+      // If this is a multi-vendor order, fetch all related orders
+      if (data?.is_multi_vendor && data?.order_group_id) {
+        const { data: related, error: relatedError } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('order_group_id', data.order_group_id)
+          .order('vendor_order_index', { ascending: true });
+
+        if (!relatedError && related) {
+          setRelatedOrders(related);
+        }
+      }
 
       // Fetch vendor info including logo
       if (data?.vendor_id) {
@@ -310,14 +324,24 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
               <h3 className="text-2xl font-bold text-gray-900">
                 طلب رقم {orderDetails.order_number || orderDetails.id.slice(-6)}
               </h3>
+              {orderDetails.is_multi_vendor && relatedOrders.length > 0 && (
+                <div className="inline-block px-3 py-1 bg-brand/10 text-brand rounded-full text-xs font-medium mt-1">
+                  طلب متعدد المتاجر ({relatedOrders.length} متاجر)
+                </div>
+              )}
               <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold mt-2 ${getStatusColor(orderDetails.status)}`}>
                 {getStatusText(orderDetails.status)}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-brand">{orderDetails.total.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-brand">
+                  {orderDetails.is_multi_vendor && relatedOrders.length > 0
+                    ? relatedOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)
+                    : orderDetails.total.toFixed(2)
+                  }
+                </div>
                 <div className="text-sm text-gray-600">المجموع الكلي</div>
               </div>
               <div>
@@ -502,64 +526,153 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
           </div>
 
           {/* Order Items */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Package className="w-5 h-5 text-brand" />
-              تفاصيل الطلب
-            </h3>
-            <div className="space-y-3">
-              {orderDetails.items_data?.map((item: any, index: number) => {
-                // Check for image in multiple possible locations
-                const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+          {orderDetails.is_multi_vendor && relatedOrders.length > 0 ? (
+            // Multi-vendor: Show all related orders grouped by vendor
+            relatedOrders.map((vendorOrder: any, orderIndex: number) => (
+              <div key={vendorOrder.id} className="bg-white rounded-xl p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3 pb-3 border-b">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <Store className="w-5 h-5 text-brand" />
+                    {vendorOrder.vendor_name}
+                  </h3>
+                  <span className="text-sm bg-brand/10 text-brand px-3 py-1 rounded-full font-medium">
+                    متجر {orderIndex + 1} من {relatedOrders.length}
+                  </span>
+                </div>
 
-                return (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {productImage ? (
-                        <img
-                          src={productImage}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Package className="w-6 h-6 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-lg text-gray-900 truncate">{item.name}</h4>
-                      {item.variant_name && (
-                        <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
-                      )}
-                      <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
-                      {item.addons && item.addons.length > 0 && (
-                        <div className="text-xs text-gray-500">
-                          الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
+                <div className="space-y-3 mb-4">
+                  {vendorOrder.items_data?.map((item: any, index: number) => {
+                    const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+
+                    return (
+                      <div key={index} className="flex items-center gap-3">
+                        <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {productImage ? (
+                            <img
+                              src={productImage}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Package className="w-6 h-6 text-gray-400" />
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
-                    </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-lg text-gray-900 truncate">{item.name}</h4>
+                          {item.variant_name && (
+                            <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
+                          )}
+                          <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                          {item.addons && item.addons.length > 0 && (
+                            <div className="text-xs text-gray-500">
+                              الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="border-t pt-3 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">المجموع الفرعي</span>
+                    <span className="font-medium">{vendorOrder.subtotal.toFixed(2)} شيكل</span>
                   </div>
-                );
-              })}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">رسوم التوصيل</span>
+                    <span className="font-medium">{vendorOrder.delivery_fee.toFixed(2)} شيكل</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                    <span className="text-gray-900">مجموع المتجر</span>
+                    <span className="text-brand">{vendorOrder.total.toFixed(2)} شيكل</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            // Single vendor: Show regular order details
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <Package className="w-5 h-5 text-brand" />
+                تفاصيل الطلب
+              </h3>
+              <div className="space-y-3">
+                {orderDetails.items_data?.map((item: any, index: number) => {
+                  const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+
+                  return (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {productImage ? (
+                          <img
+                            src={productImage}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Package className="w-6 h-6 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-lg text-gray-900 truncate">{item.name}</h4>
+                        {item.variant_name && (
+                          <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
+                        )}
+                        <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                        {item.addons && item.addons.length > 0 && (
+                          <div className="text-xs text-gray-500">
+                            الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            
-            <div className="border-t mt-4 pt-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600">المجموع الفرعي</span>
-                <span className="font-medium">{orderDetails.subtotal.toFixed(2)} شيكل</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">رسوم التوصيل</span>
-                <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
-              </div>
-              <div className="flex justify-between border-t pt-2">
-                <span className="font-bold text-gray-900">المجموع الكلي</span>
-                <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>
+          )}
+
+          {/* Order Summary - Only show for single vendor */}
+          {!orderDetails.is_multi_vendor && (
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">المجموع الفرعي</span>
+                  <span className="font-medium">{orderDetails.subtotal.toFixed(2)} شيكل</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">رسوم التوصيل</span>
+                  <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
+                </div>
+                <div className="flex justify-between border-t pt-2">
+                  <span className="font-bold text-gray-900">المجموع الكلي</span>
+                  <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Multi-Vendor Total Summary */}
+          {orderDetails.is_multi_vendor && relatedOrders.length > 0 && (
+            <div className="bg-gradient-to-r from-brand to-brand-light rounded-xl p-4 shadow-lg text-white">
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-lg">المجموع الكلي للطلب</span>
+                <span className="font-bold text-2xl">
+                  {relatedOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)} شيكل
+                </span>
+              </div>
+              <p className="text-sm text-white/80 mt-2">
+                {relatedOrders.length} متاجر في هذا الطلب
+              </p>
+            </div>
+          )}
 
           {/* Order Notes */}
           {orderDetails.notes && (
