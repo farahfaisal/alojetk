@@ -565,9 +565,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           </div>
 
           {/* === HERO المطابق للتصميم === */}
-          <div className="relative bg-white" style={{ marginTop: 'calc(80px + max(env(safe-area-inset-top), 0px))' }}>
+          <div className="relative" style={{ marginTop: 'calc(80px + max(env(safe-area-inset-top), 0px))' }}>
             {/* بانر الصورة */}
-            <div className="relative h-52 overflow-hidden">
+            <div className="relative h-48 overflow-hidden">
               <img
                 src={vendor.banner || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200"}
                 alt={vendor.store_name}
@@ -575,124 +575,121 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               />
             </div>
 
-            {/* المنطقة البيضاء مع الدوائر */}
-            <div className="px-4 pb-4">
-              {/* الدوائر الثلاث */}
-              <div className="flex items-center justify-center gap-4 -mt-12 mb-4">
-
-                {/* دائرة سعر التوصيل (يسار) */}
-                <div className="flex flex-col items-center">
-                  <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-                    <div className="w-[72px] h-[72px] rounded-full bg-gray-100 flex flex-col items-center justify-center">
-                      <span className="text-xl font-extrabold text-gray-900">{deliveryInfo.fee}</span>
-                      <span className="text-[10px] font-medium text-gray-600">₪</span>
-                    </div>
-                  </div>
-                  <span className="mt-1.5 text-[11px] font-semibold text-gray-700">سعر التوصيل</span>
-                </div>
-
-                {/* دائرة الشعار (وسط) */}
-                <div className="flex flex-col items-center">
-                  <div className="w-24 h-24 rounded-full bg-white shadow-xl flex items-center justify-center overflow-hidden">
-                    <img
-                      src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
-                      alt={vendor.store_name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                {/* دائرة وقت التوصيل (يمين) */}
-                <div className="flex flex-col items-center">
-                  <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
-                    <div className="w-[72px] h-[72px] rounded-full bg-[#B50F2B] flex flex-col items-center justify-center">
-                      <span className="text-xl font-extrabold text-white">
-                        {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
-                      </span>
-                      <span className="text-[10px] font-medium text-white">دقيقة</span>
-                    </div>
-                  </div>
-                  <span className="mt-1.5 text-[11px] font-semibold text-gray-700">وقت التوصيل</span>
-                </div>
-
-              </div>
-
-              {/* البطاقة الرمادية */}
-              <div className="relative bg-gray-100 rounded-2xl px-4 py-5 border border-gray-200">
+            {/* البطاقة الرمادية الرئيسية */}
+            <div className="relative px-4">
+              <div className="relative bg-gray-100 rounded-t-3xl -mt-6 px-4 pt-6 pb-20 border-t border-x border-gray-200">
 
                 {/* شارة "مفتوح" في الزاوية العلوية اليسرى */}
-                <div className="absolute -top-3 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg
+                <div className="absolute top-4 left-4 z-10">
+                  <span className={`px-3 py-1.5 rounded-lg text-xs font-bold shadow-md
                     ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-600 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
                   </span>
                 </div>
 
+                {/* زر المشاركة الدائري الأحمر على اليمين */}
+                <button
+                  onClick={() => window.navigator.share?.({
+                    title: vendor.store_name,
+                    text: 'اطلب الآن',
+                    url: window.location.href
+                  })}
+                  className="absolute top-4 -right-2 w-12 h-12 rounded-full bg-[#B50F2B] text-white shadow-lg flex items-center justify-center z-10"
+                  aria-label="مشاركة"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8a3 3 0 10-2.83-4H15a3 3 0 102.83 4zM6 14a3 3 0 100 6 3 3 0 000-6zm12 0a3 3 0 100 6 3 3 0 000-6zM8.59 13.05l6.83-3.42.9 1.8-6.83 3.42-.9-1.8zM8.59 16.95l.9-1.8 6.83 3.42-.9 1.8-6.83-3.42z"/></svg>
+                </button>
 
-                  {/* اسم المتجر + العنوان */}
-                  <div className="text-center mt-2">
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                      {vendor.store_name}
-                    </h1>
-                    <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-sm">
-                      <MapPin className="w-4 h-4 text-sky-600" />
-                      <span>{vendor.address || 'الموقع غير محدد'}</span>
-                    </div>
+                {/* اسم المتجر */}
+                <div className="text-center mt-6">
+                  <h1 className="text-2xl font-extrabold text-gray-900">
+                    {vendor.store_name}
+                  </h1>
+                  <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-xs">
+                    <span>{vendor.address || 'مفصل المطبخ'}</span>
                   </div>
-
-                  {/* شارة الميزات (توصيل – تغليف – طعام) */}
-                  <div className="mt-4 flex items-center justify-center">
-                    <div className="rounded-2xl bg-white shadow-sm border border-gray-200 px-4 py-2 flex items-center gap-6">
-                      <div className="relative flex items-center">
-                        <Truck className="w-5 h-5 text-gray-700" />
-                        <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full text-[10px] flex items-center justify-center">✓</span>
-                      </div>
-                      <div className="relative flex items-center">
-                        <ShoppingBag className="w-5 h-5 text-gray-700" />
-                        <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full text-[10px] flex items-center justify-center">✓</span>
-                      </div>
-                      <div className="relative flex items-center">
-                        <span className="inline-flex items-center justify-center w-5 h-5 rounded text-gray-700">🍽️</span>
-                        <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full text-[10px] flex items-center justify-center">✓</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* حالة المتجر وأوقات العمل */}
-                  <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 px-4 py-3">
-                    <button
-                      onClick={() => setShowHoursModal(true)}
-                      className="w-full flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-red-800" />
-                        <span className={`font-semibold ${isVendorAvailable ? 'text-lime-600' : 'text-red-600'}`}>
-                          {isVendorAvailable ? 'مفتوح' : 'مغلق'}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">09:00 - 21:00</span>
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* زر المشاركة الدائري الأحمر على اليمين */}
-                  <button
-                    onClick={() => window.navigator.share?.({
-                      title: vendor.store_name,
-                      text: 'اطلب الآن',
-                      url: window.location.href
-                    })}
-                    className="absolute -right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#B50F2B] text-white shadow-lg flex items-center justify-center"
-                    aria-label="مشاركة"
-                  >
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8a3 3 0 10-2.83-4H15a3 3 0 102.83 4zM6 14a3 3 0 100 6 3 3 0 000-6zm12 0a3 3 0 100 6 3 3 0 000-6zM8.59 13.05l6.83-3.42.9 1.8-6.83 3.42-.9-1.8zM8.59 16.95l.9-1.8 6.83 3.42-.9 1.8-6.83-3.42z"/></svg>
-                  </button>
-
                 </div>
+
+                {/* شارة الميزات (توصيل – تغليف – طعام) */}
+                <div className="mt-4 flex items-center justify-center">
+                  <div className="rounded-xl bg-white shadow-sm px-3 py-2 flex items-center gap-4">
+                    <div className="relative flex items-center">
+                      <Truck className="w-4 h-4 text-gray-700" />
+                      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-600 text-white rounded-full text-[9px] flex items-center justify-center">✓</span>
+                    </div>
+                    <div className="relative flex items-center">
+                      <ShoppingBag className="w-4 h-4 text-gray-700" />
+                      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-600 text-white rounded-full text-[9px] flex items-center justify-center">✓</span>
+                    </div>
+                    <div className="relative flex items-center">
+                      <span className="inline-flex items-center justify-center w-4 h-4 text-gray-700">🍽️</span>
+                      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-600 text-white rounded-full text-[9px] flex items-center justify-center">✓</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* الدوائر الثلاث في أسفل البطاقة */}
+                <div className="absolute -bottom-10 left-0 right-0 px-8">
+                  <div className="flex items-center justify-center gap-3">
+
+                    {/* دائرة وقت التوصيل (يسار) - حمراء */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-[70px] h-[70px] rounded-full bg-white shadow-xl flex items-center justify-center">
+                        <div className="w-[62px] h-[62px] rounded-full bg-[#B50F2B] flex flex-col items-center justify-center">
+                          <span className="text-2xl font-extrabold text-white leading-none">
+                            {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="mt-1.5 text-[10px] font-semibold text-gray-700">وقت التوصيل</span>
+                    </div>
+
+                    {/* دائرة الشعار (وسط) */}
+                    <div className="flex flex-col items-center -mt-4">
+                      <div className="w-[90px] h-[90px] rounded-full bg-white shadow-2xl flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                        <img
+                          src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
+                          alt={vendor.store_name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+
+                    {/* دائرة سعر التوصيل (يمين) - بيضاء */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-[70px] h-[70px] rounded-full bg-white shadow-xl flex items-center justify-center">
+                        <div className="w-[62px] h-[62px] rounded-full bg-white border border-gray-200 flex flex-col items-center justify-center">
+                          <span className="text-2xl font-extrabold text-gray-900 leading-none">{deliveryInfo.fee}</span>
+                        </div>
+                      </div>
+                      <span className="mt-1.5 text-[10px] font-semibold text-gray-700">سعر التوصيل</span>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              {/* شريط الحالة والأوقات */}
+              <div className="bg-white rounded-b-3xl border-b border-x border-gray-200 pt-14 pb-4 px-4">
+                <button
+                  onClick={() => setShowHoursModal(true)}
+                  className="w-full flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-red-800" />
+                    <span className={`text-sm font-semibold ${isVendorAvailable ? 'text-lime-600' : 'text-red-600'}`}>
+                      {isVendorAvailable ? 'مفتوح' : 'مغلق'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">09:00 - 21:00</span>
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </div>
+                </button>
               </div>
             </div>
+          </div>
 
           {/* === نهاية الـ HERO ومعلومات المتجر === */}
 
