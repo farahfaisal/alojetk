@@ -81,7 +81,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
   }
 
   return (
-    <div className="relative -mx-4 overflow-hidden" dir="ltr">
+    <div className="relative w-screen overflow-hidden" dir="ltr" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
