@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import OrderTrackingPage from './OrderTrackingPage';
+import CaptainRequestsTracking from './CaptainRequestsTracking';
 
 interface OrdersPageProps {
   onClose: () => void;
@@ -23,6 +24,19 @@ interface Order {
   order_group_id?: string;
   vendor_order_index?: number;
   total_vendors?: number;
+  type: 'order';
+}
+
+interface CaptainRequest {
+  id: string;
+  status: string;
+  estimated_fare: number;
+  final_fare?: number;
+  pickup_address: string;
+  destination_address: string;
+  created_at: string;
+  payment_method: string;
+  type: 'captain_request';
 }
 
 interface OrderGroup {
@@ -32,15 +46,18 @@ interface OrderGroup {
   created_at: string;
   status: string;
   order_number: string;
+  type: 'group';
 }
 
 const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [groupedOrders, setGroupedOrders] = useState<(Order | OrderGroup)[]>([]);
+  const [captainRequests, setCaptainRequests] = useState<CaptainRequest[]>([]);
+  const [groupedOrders, setGroupedOrders] = useState<(Order | OrderGroup | CaptainRequest)[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [selectedCaptainRequest, setSelectedCaptainRequest] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
@@ -49,7 +66,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
     fetchOrders();
   }, [user, statusFilter, searchQuery]);
 
-  const groupOrdersByGroupId = (ordersList: Order[]): (Order | OrderGroup)[] => {
+  const groupOrdersByGroupId = (ordersList: Order[], captainRequestsList: CaptainRequest[]): (Order | OrderGroup | CaptainRequest)[] => {
     const grouped: { [key: string]: Order[] } = {};
     const single: Order[] = [];
 
@@ -64,7 +81,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       }
     });
 
-    const result: (Order | OrderGroup)[] = [];
+    const result: (Order | OrderGroup | CaptainRequest)[] = [];
 
     // Add grouped orders
     Object.entries(grouped).forEach(([groupId, groupOrders]) => {
@@ -77,7 +94,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         total: groupOrders.reduce((sum, order) => sum + order.total, 0),
         created_at: groupOrders[0].created_at,
         status: groupOrders[0].status,
-        order_number: groupOrders[0].order_number
+        order_number: groupOrders[0].order_number,
+        type: 'group'
       };
       result.push(group);
     });
@@ -85,10 +103,13 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
     // Add single orders
     single.forEach(order => result.push(order));
 
+    // Add captain requests
+    captainRequestsList.forEach(request => result.push(request));
+
     // Sort by created_at
     result.sort((a, b) => {
-      const dateA = 'created_at' in a ? new Date(a.created_at).getTime() : new Date((a as OrderGroup).created_at).getTime();
-      const dateB = 'created_at' in b ? new Date(b.created_at).getTime() : new Date((b as OrderGroup).created_at).getTime();
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
       return dateB - dateA;
     });
 
@@ -108,7 +129,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       setLoading(true);
       setError(null);
 
-      let query = supabase
+      // Fetch regular orders
+      let ordersQuery = supabase
         .from('orders')
         .select('*')
         .eq('customer_id', customerId)
@@ -116,19 +138,45 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
 
       // Apply status filter
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
+        ordersQuery = ordersQuery.eq('status', statusFilter);
       }
 
       // Apply search filter
       if (searchQuery.trim()) {
-        query = query.or(`order_number.ilike.%${searchQuery}%,vendor_name.ilike.%${searchQuery}%`);
+        ordersQuery = ordersQuery.or(`order_number.ilike.%${searchQuery}%,vendor_name.ilike.%${searchQuery}%`);
       }
 
-      const { data, error } = await query;
+      // Fetch captain requests
+      let captainQuery = supabase
+        .from('captain_requests')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setOrders(data || []);
-      setGroupedOrders(groupOrdersByGroupId(data || []));
+      // Apply status filter
+      if (statusFilter !== 'all') {
+        captainQuery = captainQuery.eq('status', statusFilter);
+      }
+
+      // Apply search filter for captain requests
+      if (searchQuery.trim()) {
+        captainQuery = captainQuery.or(`pickup_address.ilike.%${searchQuery}%,destination_address.ilike.%${searchQuery}%`);
+      }
+
+      const [ordersResult, captainResult] = await Promise.all([
+        ordersQuery,
+        captainQuery
+      ]);
+
+      if (ordersResult.error) throw ordersResult.error;
+      if (captainResult.error) throw captainResult.error;
+
+      const ordersData = (ordersResult.data || []).map(order => ({ ...order, type: 'order' as const }));
+      const captainData = (captainResult.data || []).map(req => ({ ...req, type: 'captain_request' as const }));
+
+      setOrders(ordersData);
+      setCaptainRequests(captainData);
+      setGroupedOrders(groupOrdersByGroupId(ordersData, captainData));
     } catch (err) {
       console.error('Error fetching orders:', err);
       setError('حدث خطأ في جلب الطلبات');
@@ -190,6 +238,14 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (selectedCaptainRequest) {
+    return (
+      <CaptainRequestsTracking
+        onClose={() => setSelectedCaptainRequest(null)}
+      />
+    );
+  }
 
   if (selectedOrder) {
     return (
@@ -315,7 +371,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
               <Package className="w-12 h-12 text-red-600 mx-auto mb-2" />
               <p>{error}</p>
             </div>
-          ) : orders.length === 0 ? (
+          ) : groupedOrders.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Package className="w-12 h-12 text-gray-400" />
@@ -393,6 +449,68 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                             <span>{totalItems} منتج</span>
                             <span>•</span>
                             <span>{group.orders[0].payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                } else if (item.type === 'captain_request') {
+                  // Captain request
+                  const request = item as CaptainRequest;
+                  return (
+                    <motion.div
+                      key={request.id}
+                      whileHover={{ scale: 1.01 }}
+                      onClick={() => setSelectedCaptainRequest(request.id)}
+                      className="bg-white rounded-lg p-4 border-2 border-orange-200 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-3 pb-2 border-b border-orange-100">
+                        <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                          <Truck className="w-3 h-3" />
+                          طلب توصيل طرود
+                        </div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
+                          {getStatusText(request.status)}
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                          {getStatusIcon(request.status)}
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <div className="flex items-start gap-2 mb-2">
+                                <MapPin className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-gray-500">من</p>
+                                  <p className="text-sm font-medium text-gray-900">{request.pickup_address}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <MapPin className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-gray-500">إلى</p>
+                                  <p className="text-sm font-medium text-gray-900">{request.destination_address}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-orange-600 text-lg">
+                                {(request.final_fare || request.estimated_fare).toFixed(2)} شيكل
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {request.final_fare ? 'السعر النهائي' : 'السعر التقديري'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
+                            <span>{new Date(request.created_at).toLocaleDateString('ar')}</span>
+                            <span>•</span>
+                            <span>{request.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
                           </div>
                         </div>
                       </div>
