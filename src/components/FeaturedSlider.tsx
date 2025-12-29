@@ -81,7 +81,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
   }
 
   return (
-    <div className="relative -mx-4 overflow-hidden bg-gray-100">
+    <div className="relative -mx-4 overflow-hidden bg-gray-100" dir="ltr">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -93,6 +93,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
         loop={true}
         className="h-[250px]"
         slidesPerGroup={1}
+        dir="ltr"
       >
         {ads.map((ad) => (
           <SwiperSlide key={ad.id}>
