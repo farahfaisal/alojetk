@@ -31,7 +31,26 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+      maxWidth: {
+        'screen': '100vw',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.no-horizontal-scroll': {
+          'overflow-x': 'hidden',
+          'max-width': '100vw',
+          'touch-action': 'pan-y',
+        },
+        '.lock-viewport': {
+          'position': 'relative',
+          'width': '100%',
+          'max-width': '100vw',
+          'overflow-x': 'hidden',
+        },
+      })
+    },
+  ],
 };

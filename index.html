@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -13,9 +13,11 @@
         font-family: 'Cairo', sans-serif;
         margin: 0;
         padding: 0;
-        overflow-x: hidden;
-        position: relative;
-        width: 100vw;
+        overflow-x: hidden !important;
+        position: fixed;
+        width: 100%;
+        max-width: 100vw;
+        height: 100vh;
         min-height: 100vh;
         -webkit-overflow-scrolling: touch;
         -webkit-text-size-adjust: 100%;
@@ -23,17 +25,22 @@
         -webkit-user-select: none;
         user-select: none;
         background-color: #c21d14;
+        touch-action: pan-y;
       }
       
       #root {
-        position: relative;
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        width: 100vw;
-        min-height: 100vh;
-        overflow-x: hidden;
+        bottom: 0;
+        width: 100%;
+        max-width: 100vw;
+        height: 100%;
+        overflow-x: hidden !important;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
       }
       
       /* Fix for iOS Safari viewport issues */
@@ -50,9 +57,18 @@
       
       /* Prevent horizontal scrolling and bouncing */
       html {
-        overflow-x: hidden;
-        width: 100vw;
+        overflow-x: hidden !important;
+        width: 100%;
+        max-width: 100vw;
+        position: fixed;
+        height: 100vh;
         -webkit-text-size-adjust: 100%;
+        touch-action: pan-y;
+      }
+
+      /* Prevent all children from causing horizontal overflow */
+      * {
+        max-width: 100%;
       }
       
       /* Fix for Google Maps on iOS */
