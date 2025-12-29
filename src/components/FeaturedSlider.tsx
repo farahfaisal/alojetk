@@ -97,13 +97,14 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
         {ads.map((ad) => (
           <SwiperSlide key={ad.id}>
             <div
-              className="relative h-full cursor-pointer bg-gray-100 flex items-center justify-center"
+              className="relative w-full h-full cursor-pointer"
               onClick={() => ad.link && window.open(ad.link, '_blank')}
             >
               <img
                 src={ad.image_url}
                 alt={ad.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
+                style={{ display: 'block' }}
               />
             </div>
           </SwiperSlide>
