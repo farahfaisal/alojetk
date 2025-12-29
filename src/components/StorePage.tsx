@@ -544,7 +544,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           height: 'auto'
         }}>
           {/* Header with Back Button */}
-          <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm" style={{
+          <div className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-200 shadow-sm" style={{
             top: 'max(env(safe-area-inset-top), 0px)'
           }}>
             <div className="flex items-center justify-between p-4">
@@ -565,7 +565,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           </div>
 
           {/* === HERO المطابق للتصميم === */}
-          <div className="relative" style={{ marginTop: 'calc(72px + max(env(safe-area-inset-top), 0px))' }}>
+          <div className="relative" style={{ marginTop: 'calc(80px + max(env(safe-area-inset-top), 0px))' }}>
             {/* بانر الصورة */}
             <div className="relative h-56 overflow-hidden">
               <img
@@ -583,7 +583,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               <div className="relative bg-transparent">
 
                 {/* شارة الوقت في اليمين العلوي من الخط الأحمر */}
-            <div className="absolute -top-10 right-4">
+            <div className="absolute -top-8 right-4">
   <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex flex-col items-center justify-center">
     <div className="w-full h-full rounded-full bg-gray-100 text-gray-800 flex flex-col items-center justify-center px-1">
       <div className="flex items-center gap-1">
@@ -598,7 +598,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 </div>
 
                 {/* شارة "مفتوح" يسار تحت البانر */}
-                <div className="absolute -top-6 left-4">
+                <div className="absolute -top-4 left-4">
                   <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
                     ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
