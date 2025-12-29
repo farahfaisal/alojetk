@@ -101,7 +101,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
               <img
                 src={ad.image_url}
                 alt={ad.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
           </SwiperSlide>
