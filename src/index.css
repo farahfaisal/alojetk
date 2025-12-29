@@ -8,17 +8,13 @@
 /* Reset and base styles */
 * {
   box-sizing: border-box;
-  max-width: 100%;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  width: 100%;
-  max-width: 100vw;
   overflow-x: hidden;
-  position: relative;
   font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
@@ -26,8 +22,6 @@ html, body {
   /* Hide scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;
-  /* Prevent horizontal movement and zoom */
-  touch-action: pan-y;
 }
 
 html::-webkit-scrollbar,
@@ -38,25 +32,15 @@ body::-webkit-scrollbar {
 #root {
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for modern browsers */
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
   /* Hide scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;
-  /* Prevent horizontal movement and zoom */
-  touch-action: pan-y;
 }
 
 #root::-webkit-scrollbar {
   display: none;
-}
-
-/* Prevent zoom on double tap */
-a, button, input, textarea, select {
-  touch-action: manipulation;
 }
 
 /* iOS Safari specific fixes */
@@ -169,13 +153,11 @@ a, button, input, textarea, select {
   display: none;
 }
 
-/* Touch improvements for iOS - prevent zoom */
-button, input, textarea, select, a {
+/* Touch improvements for iOS */
+button, input, textarea, select {
   -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* Prevent zoom on input focus */
@@ -434,44 +416,10 @@ input, textarea, select {
   }
 }
 
-/* Prevent elastic scrolling and horizontal movement */
+/* Prevent elastic scrolling */
 body {
-  overscroll-behavior-x: none;
-  overscroll-behavior-y: auto;
-  -webkit-overscroll-behavior-x: none;
-  -webkit-overscroll-behavior-y: auto;
-}
-
-/* Strict viewport control - prevent any horizontal scrolling */
-html {
-  width: 100vw;
-  max-width: 100vw;
-  overflow-x: hidden !important;
-  position: relative;
-}
-
-body {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden !important;
-  position: relative;
-}
-
-#root {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden !important;
-}
-
-/* Prevent any element from exceeding viewport width */
-* {
-  max-width: 100vw;
-}
-
-/* Allow only specific elements to be wider */
-img, svg, video {
-  max-width: 100%;
-  height: auto;
+  overscroll-behavior: auto;
+  -webkit-overscroll-behavior: auto;
 }
 
 /* Fix for floating elements on iPhone */
@@ -903,64 +851,4 @@ img, svg, video {
   .ios-safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 20px) !important;
   }
-}
-
-/* CRITICAL: Prevent ANY horizontal scrolling - final safeguard */
-html, body, #root, #root > *, main, div, section, article {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-}
-
-/* Container widths must not exceed viewport */
-.container, [class*="container"], [class*="wrapper"], [class*="content"] {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-
-/* Modals and fixed elements */
-[class*="modal"], [class*="popup"], [class*="dialog"], .fixed, [style*="position: fixed"] {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-
-/* Swiper and slider containers */
-.swiper, .swiper-container, [class*="slider"], [class*="carousel"] {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-
-/* Grid and flex containers */
-[class*="grid"], [class*="flex"] {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-
-/* Prevent zoom on all interactive elements */
-* {
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-/* Disable pinch zoom gestures */
-html {
-  touch-action: pan-y !important;
-  -ms-touch-action: pan-y !important;
-}
-
-body {
-  touch-action: pan-y !important;
-  -ms-touch-action: pan-y !important;
-}
-
-/* Prevent zoom on input focus */
-input:focus,
-textarea:focus,
-select:focus {
-  font-size: 16px !important;
-}
-
-/* Disable zoom on clickable elements */
-a, button, [role="button"], [onclick] {
-  touch-action: manipulation !important;
 }

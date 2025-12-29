@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
   Check, MapPin, CreditCard, Truck, Clock, Package, AlertCircle,
-  Loader2, ChevronRight, MessageSquare, Info, User, DollarSign, Wallet, Gift, Zap
+  Loader2, ChevronLeft, ChevronRight, MessageSquare, Info, User, DollarSign, Wallet, Gift, Zap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { payFromWallet, getCustomerWalletBalance } from '../lib/wallet';
 import { getCustomerPoints } from '../lib/points';
-import { SavedAddress, getSavedAddresses } from '../lib/storage';
+import { SavedAddress, getSavedAddresses, saveAddress } from '../lib/storage';
 import OrderTrackingPage from './OrderTrackingPage';
+import AddressSelector from './AddressSelector';
+import AddressForm from './AddressForm';
 import { X } from 'lucide-react';
 
 interface CartItem {
@@ -51,6 +53,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const { user } = useAuth();
 
   const [currentAddress, setCurrentAddress] = useState<SavedAddress | null>(selectedAddress);
+  const [showAddressSelector, setShowAddressSelector] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
   const [orderNotes, setOrderNotes] = useState(notes || '');
   const [showNotesModal, setShowNotesModal] = useState(false);
 
@@ -161,7 +165,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) => {
       const itemPrice = item.price || 0;
-      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0);
+      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0) * item.quantity;
       return total + itemPrice * item.quantity + addonsTotal;
     }, 0);
 
@@ -357,7 +361,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         const vendorSubtotal = vendorItems.reduce((total, item) => {
           const itemTotal = item.price * item.quantity;
           const addonsTotal = (item.addons || []).reduce((sum, addon) =>
-            sum + (addon.price * addon.quantity), 0);
+            sum + (addon.price * addon.quantity), 0) * item.quantity;
           return total + itemTotal + addonsTotal;
         }, 0);
 
@@ -444,6 +448,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
         for (const item of vendorItems) {
           const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
+          const itemPriceWithAddons = item.price + addonsTotal;
 
           if ((item as any).is_custom) {
             // Custom order item
@@ -454,7 +459,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               description: (item as any).custom_details || '',
               quantity: item.quantity || 1,
               price: item.price,
-              total_price: (item.price * (item.quantity || 1)) + addonsTotal,
+              total_price: itemPriceWithAddons * (item.quantity || 1),
               notes: (item as any).custom_details || null,
             });
           } else {
@@ -463,7 +468,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               order_id: (order as any).id,
               product_id: item.product_id,
               quantity: item.quantity || 1,
-              price: item.price,
+              price: itemPriceWithAddons,
               vendor_id: item.vendor_id || vendorId,
               vendor_name: item.vendor_name || vendorItems[0].vendor_name,
               name: item.name || 'منتج',
@@ -751,7 +756,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
 
             {currentAddress ? (
-              <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <button
+                onClick={() => setShowAddressSelector(true)}
+                className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center gap-3 hover:bg-gray-100 transition-colors"
+              >
                 <div className="flex-1 text-right">
                   <p className="font-bold text-gray-900 text-base mb-1">{currentAddress.name}</p>
                   <p className="text-sm text-gray-600 mb-1">{currentAddress.phone}</p>
@@ -761,11 +769,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   )}
                   <p className="text-xs text-gray-500 mt-1">{currentAddress.city}</p>
                 </div>
-              </div>
+                <ChevronLeft className="w-5 h-5 text-gray-400 flex-shrink-0" />
+              </button>
             ) : (
-              <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg text-right">
-                <p className="text-red-600 text-sm">يرجى إضافة عنوان التوصيل من صفحة سلة المشتريات</p>
-              </div>
+              <button
+                onClick={() => setShowAddressForm(true)}
+                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-brand hover:text-brand transition-colors"
+              >
+                + إضافة عنوان التوصيل
+              </button>
             )}
           </div>
 
@@ -1002,6 +1014,47 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         </div>
       </div>
 
+      {/* Address Selector Modal */}
+      {showAddressSelector && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[80vh] overflow-hidden">
+            <div className="p-4 border-b flex items-center justify-between">
+              <button
+                onClick={() => setShowAddressSelector(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <h3 className="text-xl font-bold text-gray-900">اختر عنوان التوصيل</h3>
+            </div>
+            <div className="p-4">
+              <AddressSelector
+                onSelectAddress={(addr) => {
+                  setCurrentAddress(addr);
+                  setShowAddressSelector(false);
+                }}
+                onAddNewAddress={() => {
+                  setShowAddressSelector(false);
+                  setShowAddressForm(true);
+                }}
+                selectedAddressId={currentAddress?.id}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Address Form Modal */}
+      {showAddressForm && (
+        <AddressForm
+          onSave={(addr) => {
+            setCurrentAddress(addr);
+            setShowAddressForm(false);
+          }}
+          onCancel={() => setShowAddressForm(false)}
+          isModal={true}
+        />
+      )}
 
       {/* Notes Modal */}
       {showNotesModal && (

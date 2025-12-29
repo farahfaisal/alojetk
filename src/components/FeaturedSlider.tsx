@@ -34,26 +34,24 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
       try {
         setLoading(true);
         setError(null);
-
+        
         // Build query for active advertisements
         let query = supabase
           .from('advertisements')
           .select('*')
-          .eq('status', 'active')
-          .eq('type', 'slider');
-
+          .eq('status', 'active');
+        
         // Filter by position if provided
         if (position) {
           query = query.eq('position', position);
         }
-
+        
         // Order by priority
         query = query.order('priority', { ascending: false });
 
         const { data, error } = await query;
 
         if (error) throw error;
-        console.log('FeaturedSlider ads:', data);
         setAds(data || []);
       } catch (err) {
         console.error('Error fetching advertisements:', err);
@@ -81,7 +79,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
   }
 
   return (
-    <div className="relative w-screen overflow-hidden" dir="ltr" style={{ marginLeft: 'calc(-50vw + 50%)' }}>
+    <div className="relative -mx-4 overflow-hidden bg-gray-100">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -93,19 +91,17 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
         loop={true}
         className="h-[250px]"
         slidesPerGroup={1}
-        dir="ltr"
       >
         {ads.map((ad) => (
           <SwiperSlide key={ad.id}>
             <div
-              className="relative w-full h-full cursor-pointer"
+              className="relative h-full cursor-pointer bg-gray-100 flex items-center justify-center"
               onClick={() => ad.link && window.open(ad.link, '_blank')}
             >
               <img
                 src={ad.image_url}
                 alt={ad.title}
-                className="w-full h-full object-cover"
-                style={{ display: 'block' }}
+                className="w-full h-full object-contain"
               />
             </div>
           </SwiperSlide>

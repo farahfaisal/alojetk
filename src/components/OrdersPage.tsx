@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import OrderTrackingPage from './OrderTrackingPage';
-import CaptainRequestsTracking from './CaptainRequestsTracking';
 
 interface OrdersPageProps {
   onClose: () => void;
@@ -20,44 +19,14 @@ interface Order {
   items_data: any[];
   address: string;
   payment_method: string;
-  is_multi_vendor?: boolean;
-  order_group_id?: string;
-  vendor_order_index?: number;
-  total_vendors?: number;
-  type: 'order';
-}
-
-interface CaptainRequest {
-  id: string;
-  status: string;
-  estimated_fare: number;
-  final_fare?: number;
-  pickup_address: string;
-  destination_address: string;
-  created_at: string;
-  payment_method: string;
-  type: 'captain_request';
-}
-
-interface OrderGroup {
-  order_group_id: string;
-  orders: Order[];
-  total: number;
-  created_at: string;
-  status: string;
-  order_number: string;
-  type: 'group';
 }
 
 const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [captainRequests, setCaptainRequests] = useState<CaptainRequest[]>([]);
-  const [groupedOrders, setGroupedOrders] = useState<(Order | OrderGroup | CaptainRequest)[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
-  const [selectedCaptainRequest, setSelectedCaptainRequest] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
@@ -65,56 +34,6 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   useEffect(() => {
     fetchOrders();
   }, [user, statusFilter, searchQuery]);
-
-  const groupOrdersByGroupId = (ordersList: Order[], captainRequestsList: CaptainRequest[]): (Order | OrderGroup | CaptainRequest)[] => {
-    const grouped: { [key: string]: Order[] } = {};
-    const single: Order[] = [];
-
-    ordersList.forEach(order => {
-      if (order.is_multi_vendor && order.order_group_id) {
-        if (!grouped[order.order_group_id]) {
-          grouped[order.order_group_id] = [];
-        }
-        grouped[order.order_group_id].push(order);
-      } else {
-        single.push(order);
-      }
-    });
-
-    const result: (Order | OrderGroup | CaptainRequest)[] = [];
-
-    // Add grouped orders
-    Object.entries(grouped).forEach(([groupId, groupOrders]) => {
-      // Sort by vendor_order_index
-      groupOrders.sort((a, b) => (a.vendor_order_index || 0) - (b.vendor_order_index || 0));
-
-      const group: OrderGroup = {
-        order_group_id: groupId,
-        orders: groupOrders,
-        total: groupOrders.reduce((sum, order) => sum + order.total, 0),
-        created_at: groupOrders[0].created_at,
-        status: groupOrders[0].status,
-        order_number: groupOrders[0].order_number,
-        type: 'group'
-      };
-      result.push(group);
-    });
-
-    // Add single orders
-    single.forEach(order => result.push(order));
-
-    // Add captain requests
-    captainRequestsList.forEach(request => result.push(request));
-
-    // Sort by created_at
-    result.sort((a, b) => {
-      const dateA = new Date(a.created_at).getTime();
-      const dateB = new Date(b.created_at).getTime();
-      return dateB - dateA;
-    });
-
-    return result;
-  };
 
   const fetchOrders = async () => {
     const customerId = user?.customer_id || user?.id;
@@ -129,8 +48,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       setLoading(true);
       setError(null);
 
-      // Fetch regular orders
-      let ordersQuery = supabase
+      let query = supabase
         .from('orders')
         .select('*')
         .eq('customer_id', customerId)
@@ -138,45 +56,18 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
 
       // Apply status filter
       if (statusFilter !== 'all') {
-        ordersQuery = ordersQuery.eq('status', statusFilter);
+        query = query.eq('status', statusFilter);
       }
 
       // Apply search filter
       if (searchQuery.trim()) {
-        ordersQuery = ordersQuery.or(`order_number.ilike.%${searchQuery}%,vendor_name.ilike.%${searchQuery}%`);
+        query = query.or(`order_number.ilike.%${searchQuery}%,vendor_name.ilike.%${searchQuery}%`);
       }
 
-      // Fetch captain requests
-      let captainQuery = supabase
-        .from('captain_requests')
-        .select('*')
-        .eq('customer_id', customerId)
-        .order('created_at', { ascending: false });
+      const { data, error } = await query;
 
-      // Apply status filter
-      if (statusFilter !== 'all') {
-        captainQuery = captainQuery.eq('status', statusFilter);
-      }
-
-      // Apply search filter for captain requests
-      if (searchQuery.trim()) {
-        captainQuery = captainQuery.or(`pickup_address.ilike.%${searchQuery}%,destination_address.ilike.%${searchQuery}%`);
-      }
-
-      const [ordersResult, captainResult] = await Promise.all([
-        ordersQuery,
-        captainQuery
-      ]);
-
-      if (ordersResult.error) throw ordersResult.error;
-      if (captainResult.error) throw captainResult.error;
-
-      const ordersData = (ordersResult.data || []).map(order => ({ ...order, type: 'order' as const }));
-      const captainData = (captainResult.data || []).map(req => ({ ...req, type: 'captain_request' as const }));
-
-      setOrders(ordersData);
-      setCaptainRequests(captainData);
-      setGroupedOrders(groupOrdersByGroupId(ordersData, captainData));
+      if (error) throw error;
+      setOrders(data || []);
     } catch (err) {
       console.error('Error fetching orders:', err);
       setError('حدث خطأ في جلب الطلبات');
@@ -238,14 +129,6 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
-  if (selectedCaptainRequest) {
-    return (
-      <CaptainRequestsTracking
-        onClose={() => setSelectedCaptainRequest(null)}
-      />
-    );
-  }
 
   if (selectedOrder) {
     return (
@@ -371,7 +254,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
               <Package className="w-12 h-12 text-red-600 mx-auto mb-2" />
               <p>{error}</p>
             </div>
-          ) : groupedOrders.length === 0 ? (
+          ) : orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Package className="w-12 h-12 text-gray-400" />
@@ -387,179 +270,45 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
             </div>
           ) : (
             <div className="space-y-4">
-              {groupedOrders.map((item) => {
-                // Check if it's an OrderGroup
-                const isGroup = 'orders' in item;
-
-                if (isGroup) {
-                  const group = item as OrderGroup;
-                  const totalItems = group.orders.reduce((sum, order) => sum + (order.items_data?.length || 0), 0);
-
-                  return (
-                    <motion.div
-                      key={group.order_group_id}
-                      whileHover={{ scale: 1.01 }}
-                      onClick={() => setSelectedOrder(group.orders[0].id)}
-                      className="bg-white rounded-lg p-4 border-2 border-brand/30 shadow-md transition-all cursor-pointer"
-                    >
-                      {/* Multi-vendor badge */}
-                      <div className="flex items-center justify-between mb-3 pb-2 border-b border-brand/20">
-                        <div className="flex items-center gap-2">
-                          <div className="bg-brand/10 text-brand px-3 py-1 rounded-full text-xs font-bold">
-                            طلب متعدد المتاجر
-                          </div>
-                          <span className="text-xs text-gray-600">
-                            {group.orders.length} متاجر
-                          </span>
+              {orders.map((order) => (
+                <motion.div
+                  key={order.id}
+                  whileHover={{ scale: 1.01 }}
+                  onClick={() => setSelectedOrder(order.id)}
+                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all cursor-pointer"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                      {getStatusIcon(order.status)}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h3 className="font-bold text-gray-900">
+                            طلب رقم {order.order_number || order.id.slice(-6)}
+                          </h3>
+                          <p className="text-sm text-gray-600">{order.vendor_name}</p>
                         </div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(group.status)}`}>
-                          {getStatusText(group.status)}
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-brand to-brand-light flex items-center justify-center flex-shrink-0">
-                          {getStatusIcon(group.status)}
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-bold text-gray-900">
-                                طلب رقم {group.order_number || group.order_group_id.slice(-6)}
-                              </h3>
-                              <div className="text-sm text-gray-600 mt-1 space-y-1">
-                                {group.orders.map((order, idx) => (
-                                  <div key={order.id} className="flex items-center gap-1">
-                                    <span className="text-brand">•</span>
-                                    <span>{order.vendor_name}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-brand text-lg">{group.total.toFixed(2)} شيكل</p>
-                              <p className="text-xs text-gray-500">المجموع الكلي</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
-                            <span>{new Date(group.created_at).toLocaleDateString('ar')}</span>
-                            <span>•</span>
-                            <span>{totalItems} منتج</span>
-                            <span>•</span>
-                            <span>{group.orders[0].payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
+                        <div className="text-right">
+                          <p className="font-bold text-brand">{order.total.toFixed(2)} شيكل</p>
+                          <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                            {getStatusText(order.status)}
                           </div>
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                } else if (item.type === 'captain_request') {
-                  // Captain request
-                  const request = item as CaptainRequest;
-                  return (
-                    <motion.div
-                      key={request.id}
-                      whileHover={{ scale: 1.01 }}
-                      onClick={() => setSelectedCaptainRequest(request.id)}
-                      className="bg-white rounded-lg p-4 border-2 border-orange-200 transition-all cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between mb-3 pb-2 border-b border-orange-100">
-                        <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                          <Truck className="w-3 h-3" />
-                          طلب توصيل طرود
-                        </div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
-                          {getStatusText(request.status)}
-                        </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>{new Date(order.created_at).toLocaleDateString('ar')}</span>
+                        <span>•</span>
+                        <span>{order.items_data?.length || 0} منتج</span>
+                        <span>•</span>
+                        <span>{order.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
                       </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                          {getStatusIcon(request.status)}
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-start gap-2 mb-2">
-                                <MapPin className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <p className="text-xs text-gray-500">من</p>
-                                  <p className="text-sm font-medium text-gray-900">{request.pickup_address}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-start gap-2">
-                                <MapPin className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <p className="text-xs text-gray-500">إلى</p>
-                                  <p className="text-sm font-medium text-gray-900">{request.destination_address}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-orange-600 text-lg">
-                                {(request.final_fare || request.estimated_fare).toFixed(2)} شيكل
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {request.final_fare ? 'السعر النهائي' : 'السعر التقديري'}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
-                            <span>{new Date(request.created_at).toLocaleDateString('ar')}</span>
-                            <span>•</span>
-                            <span>{request.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                } else {
-                  // Single order
-                  const order = item as Order;
-                  return (
-                    <motion.div
-                      key={order.id}
-                      whileHover={{ scale: 1.01 }}
-                      onClick={() => setSelectedOrder(order.id)}
-                      className="bg-white rounded-lg p-4 border border-gray-200 transition-all cursor-pointer"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
-                          {getStatusIcon(order.status)}
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-bold text-gray-900">
-                                طلب رقم {order.order_number || order.id.slice(-6)}
-                              </h3>
-                              <p className="text-sm text-gray-600">{order.vendor_name}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-brand">{order.total.toFixed(2)} شيكل</p>
-                              <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                                {getStatusText(order.status)}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>{new Date(order.created_at).toLocaleDateString('ar')}</span>
-                            <span>•</span>
-                            <span>{order.items_data?.length || 0} منتج</span>
-                            <span>•</span>
-                            <span>{order.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                }
-              })}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           )}
         </div>
