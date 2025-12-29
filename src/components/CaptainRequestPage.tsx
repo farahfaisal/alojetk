@@ -3,33 +3,25 @@ import { X, MapPin, Navigation, User, Phone, Wallet, Banknote, Loader2, Clock } 
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import MapAddressSelector from './MapAddressSelector';
+import ZoneSelector from './ZoneSelector';
+import { ServiceArea } from '../lib/zones';
 
 interface CaptainRequestPageProps {
   onClose: () => void;
-}
-
-interface Address {
-  address: string;
-  city: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
 }
 
 const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   const { user, isAuthenticated } = useAuth();
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [pickupAddress, setPickupAddress] = useState<Address | null>(null);
-  const [destinationAddress, setDestinationAddress] = useState<Address | null>(null);
+  const [pickupZone, setPickupZone] = useState<ServiceArea | null>(null);
+  const [destinationZone, setDestinationZone] = useState<ServiceArea | null>(null);
   const [notes, setNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'wallet'>('cash');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPickupMap, setShowPickupMap] = useState(false);
-  const [showDestinationMap, setShowDestinationMap] = useState(false);
+  const [showPickupSelector, setShowPickupSelector] = useState(false);
+  const [showDestinationSelector, setShowDestinationSelector] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,21 +30,13 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
       const customerId = user.customer_id || user.id;
       const { data, error } = await supabase
         .from('customers')
-        .select('name, phone, address, city')
+        .select('name, phone')
         .eq('id', customerId)
         .maybeSingle();
 
       if (data && !error) {
         setCustomerName(data.name || '');
         setCustomerPhone(data.phone || '');
-
-        // Auto-fill pickup address from user's saved address
-        if (data.address && data.city) {
-          setPickupAddress({
-            address: data.address,
-            city: data.city
-          });
-        }
       }
     };
 
@@ -60,26 +44,25 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   }, [user]);
 
   const calculateEstimatedFare = () => {
-    if (!pickupAddress?.coordinates || !destinationAddress?.coordinates) {
+    if (!pickupZone || !destinationZone) {
       return null;
     }
 
-    const R = 6371;
-    const dLat = (destinationAddress.coordinates.lat - pickupAddress.coordinates.lat) * Math.PI / 180;
-    const dLon = (destinationAddress.coordinates.lng - pickupAddress.coordinates.lng) * Math.PI / 180;
-    const a =
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(pickupAddress.coordinates.lat * Math.PI / 180) *
-      Math.cos(destinationAddress.coordinates.lat * Math.PI / 180) *
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const distance = R * c;
+    // Base fare calculation based on zones
+    const baseFare = 10;
 
-    const baseFare = 5;
-    const perKmRate = 3;
-    const estimatedFare = baseFare + (distance * perKmRate);
+    // If same zone, cheaper rate
+    if (pickupZone.id === destinationZone.id) {
+      return baseFare;
+    }
 
-    return Math.round(estimatedFare * 10) / 10;
+    // If same parent zone, medium rate
+    if (pickupZone.parent_id && pickupZone.parent_id === destinationZone.parent_id) {
+      return baseFare + 5;
+    }
+
+    // Different zones, higher rate
+    return baseFare + 15;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,8 +73,8 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
       return;
     }
 
-    if (!pickupAddress || !destinationAddress) {
-      setError('يرجى تحديد موقع الانطلاق والوجهة');
+    if (!pickupZone || !destinationZone) {
+      setError('يرجى تحديد منطقة الانطلاق ومنطقة الوجهة');
       return;
     }
 
@@ -107,12 +90,10 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
           customer_id: user.id,
           customer_name: customerName,
           customer_phone: user.phone || customerPhone,
-          pickup_address: pickupAddress.address,
-          pickup_latitude: pickupAddress.coordinates?.lat,
-          pickup_longitude: pickupAddress.coordinates?.lng,
-          destination_address: destinationAddress.address,
-          destination_latitude: destinationAddress.coordinates?.lat,
-          destination_longitude: destinationAddress.coordinates?.lng,
+          pickup_zone_id: pickupZone.id,
+          pickup_address: pickupZone.name,
+          destination_zone_id: destinationZone.id,
+          destination_address: destinationZone.name,
           notes: notes || null,
           payment_method: paymentMethod,
           estimated_fare: estimatedFare,
@@ -230,60 +211,60 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Pickup Location */}
+              {/* Pickup Zone */}
               <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                 <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-green-600" />
-                  موقع الانطلاق
+                  منطقة الانطلاق
                 </h3>
 
-                {pickupAddress ? (
+                {pickupZone ? (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="text-sm font-medium text-green-900">{pickupAddress.address}</p>
+                    <p className="text-sm font-medium text-green-900">{pickupZone.name}</p>
                     <button
                       type="button"
-                      onClick={() => setShowPickupMap(true)}
+                      onClick={() => setShowPickupSelector(true)}
                       className="text-sm text-green-600 hover:text-green-700 mt-2"
                     >
-                      تغيير الموقع
+                      تغيير المنطقة
                     </button>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setShowPickupMap(true)}
+                    onClick={() => setShowPickupSelector(true)}
                     className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand hover:text-brand transition-colors"
                   >
-                    اضغط لتحديد موقع الانطلاق
+                    اضغط لاختيار منطقة الانطلاق
                   </button>
                 )}
               </div>
 
-              {/* Destination Location */}
+              {/* Destination Zone */}
               <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                 <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-brand" />
-                  الوجهة
+                  منطقة الوجهة
                 </h3>
 
-                {destinationAddress ? (
+                {destinationZone ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-sm font-medium text-red-900">{destinationAddress.address}</p>
+                    <p className="text-sm font-medium text-red-900">{destinationZone.name}</p>
                     <button
                       type="button"
-                      onClick={() => setShowDestinationMap(true)}
+                      onClick={() => setShowDestinationSelector(true)}
                       className="text-sm text-red-600 hover:text-red-700 mt-2"
                     >
-                      تغيير الموقع
+                      تغيير المنطقة
                     </button>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setShowDestinationMap(true)}
+                    onClick={() => setShowDestinationSelector(true)}
                     className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand hover:text-brand transition-colors"
                   >
-                    اضغط لتحديد الوجهة
+                    اضغط لاختيار منطقة الوجهة
                   </button>
                 )}
               </div>
@@ -368,7 +349,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading || !pickupAddress || !destinationAddress}
+                disabled={loading || !pickupZone || !destinationZone}
                 className="w-full bg-gradient-to-r from-brand to-red-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
@@ -388,30 +369,30 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         </div>
       </motion.div>
 
-      {/* Pickup Map Selector */}
+      {/* Pickup Zone Selector */}
       <AnimatePresence>
-        {showPickupMap && (
-          <MapAddressSelector
-            onAddressSelected={(address) => {
-              setPickupAddress(address);
-              setShowPickupMap(false);
+        {showPickupSelector && (
+          <ZoneSelector
+            onZoneSelected={(zone) => {
+              setPickupZone(zone);
+              setShowPickupSelector(false);
             }}
-            onClose={() => setShowPickupMap(false)}
-            title="حدد موقع الانطلاق"
+            onClose={() => setShowPickupSelector(false)}
+            title="اختر منطقة الانطلاق"
           />
         )}
       </AnimatePresence>
 
-      {/* Destination Map Selector */}
+      {/* Destination Zone Selector */}
       <AnimatePresence>
-        {showDestinationMap && (
-          <MapAddressSelector
-            onAddressSelected={(address) => {
-              setDestinationAddress(address);
-              setShowDestinationMap(false);
+        {showDestinationSelector && (
+          <ZoneSelector
+            onZoneSelected={(zone) => {
+              setDestinationZone(zone);
+              setShowDestinationSelector(false);
             }}
-            onClose={() => setShowDestinationMap(false)}
-            title="حدد الوجهة"
+            onClose={() => setShowDestinationSelector(false)}
+            title="اختر منطقة الوجهة"
           />
         )}
       </AnimatePresence>
