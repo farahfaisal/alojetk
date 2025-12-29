@@ -579,26 +579,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             <div className="h-2 w-full bg-red-700" />
 
             {/* الطبقة الأمامية: شعار + شارات الوقت/السعر + حالة المتجر */}
-            <div className="relative -mt-8 px-4">
+            <div className="relative px-4 pt-14">
               <div className="relative bg-transparent">
 
-                {/* شارة الوقت في اليمين العلوي من الخط الأحمر */}
-            <div className="absolute top-2 right-4">
-  <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex flex-col items-center justify-center">
-    <div className="w-full h-full rounded-full bg-gray-100 text-gray-800 flex flex-col items-center justify-center px-1">
-      <div className="flex items-center gap-1">
-        <span className="text-2xl font-extrabold">{deliveryInfo.fee}</span>
-        <span className="text-[10px] font-medium">₪</span>
-      </div>
-      <span className="text-[9px] mt-[-2px] font-semibold text-gray-700 whitespace-nowrap">
-        سعر التوصيل
-      </span>
-    </div>
-  </div>
-</div>
-
                 {/* شارة "مفتوح" يسار تحت البانر */}
-                <div className="absolute top-8 left-4">
+                <div className="absolute -top-12 left-4">
                   <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
                     ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
@@ -606,10 +591,10 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 </div>
 
                 {/* بطاقة معلومات رمادية فاتحة (الحاوية الرئيسية) */}
-                <div className="relative bg-gray-100 rounded-2xl px-4 pb-6 pt-16 border border-gray-200">
+                <div className="relative bg-gray-100 rounded-2xl px-4 pb-6 pt-20 border border-gray-200">
 
                   {/* دائرة الشعار في المنتصف فوق البطاقة */}
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-red-700 shadow-xl overflow-hidden flex items-center justify-center">
+                  <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-red-700 shadow-xl overflow-hidden flex items-center justify-center">
                     <img
                       src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
                       alt={vendor.store_name}
@@ -617,9 +602,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     />
                   </div>
 
-                  {/* الدائرة الكبيرة (يسار) لعدد الدقائق */}
-                 {/* الدائرة الكبيرة (يسار) لوقت التوصيل */}
-<div className="absolute -top-10 left-4 flex flex-col items-center">
+                  {/* الدائرة الكبيرة (يسار) لوقت التوصيل */}
+<div className="absolute -top-14 left-4 flex flex-col items-center">
   <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex items-center justify-center">
     <div className="w-full h-full rounded-full bg-[#B50F2B] text-white flex items-center justify-center gap-1">
       <span className="text-2xl font-extrabold">
@@ -629,15 +613,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     </div>
   </div>
 
-  {/* ✅ النص تحت الدائرة */}
+  {/* النص تحت الدائرة */}
   <span className="text-[11px] font-semibold text-gray-700 mt-1">
     وقت التوصيل
   </span>
 </div>
 
                   {/* الدائرة الكبيرة (يمين) لسعر التوصيل */}
-                {/* الدائرة الكبيرة (يمين) لسعر التوصيل */}
-<div className="absolute -top-10 right-4 flex flex-col items-center">
+<div className="absolute -top-14 right-4 flex flex-col items-center">
   <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex flex-col items-center justify-center">
     <div className="w-full h-full rounded-full bg-gray-100 text-gray-800 flex items-center justify-center gap-1">
       <span className="text-2xl font-extrabold">{deliveryInfo.fee}</span>
