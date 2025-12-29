@@ -575,62 +575,59 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               />
             </div>
 
-            {/* شريط رفيع أحمر تحت البانر (كما في الصورة) */}
-            <div className="h-2 w-full bg-red-700" />
+            {/* الثلاث دوائر الكبيرة (متداخلة مع البانر) */}
+            <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 z-20">
+              <div className="flex items-start justify-between px-6">
 
-            {/* الطبقة الأمامية: شعار + شارات الوقت/السعر + حالة المتجر */}
-            <div className="relative px-4 -mt-12">
-              <div className="relative bg-transparent">
-
-                {/* شارة "مفتوح" يسار تحت البانر */}
-                <div className="absolute -top-4 left-4 z-20">
-                  <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
-                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
-                    {isVendorAvailable ? 'مفتوح' : 'مغلق'}
-                  </span>
+                {/* دائرة سعر التوصيل (يمين - على اليسار في الشاشة) */}
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full bg-white shadow-2xl flex items-center justify-center">
+                    <div className="w-[88px] h-[88px] rounded-full bg-gray-100 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-extrabold text-gray-900">{deliveryInfo.fee}</span>
+                      <span className="text-xs font-medium text-gray-600">₪</span>
+                    </div>
+                  </div>
+                  <span className="mt-2 text-xs font-semibold text-gray-700">سعر التوصيل</span>
                 </div>
 
-                {/* بطاقة معلومات رمادية فاتحة (الحاوية الرئيسية) */}
-                <div className="relative bg-gray-100 rounded-2xl px-4 pb-6 pt-16 border border-gray-200 mt-12">
-
-                  {/* دائرة الشعار في المنتصف فوق البطاقة */}
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-red-700 shadow-xl overflow-hidden flex items-center justify-center z-10">
+                {/* دائرة الشعار (وسط) */}
+                <div className="flex flex-col items-center -mt-2">
+                  <div className="w-28 h-28 rounded-full bg-white shadow-2xl flex items-center justify-center overflow-hidden border-4 border-white">
                     <img
                       src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
                       alt={vendor.store_name}
                       className="w-full h-full object-cover"
                     />
                   </div>
+                </div>
 
-                  {/* الدائرة الكبيرة (يسار) لوقت التوصيل */}
-<div className="absolute -top-10 left-4 flex flex-col items-center z-10">
-  <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex items-center justify-center">
-    <div className="w-full h-full rounded-full bg-[#B50F2B] text-white flex items-center justify-center gap-1">
-      <span className="text-2xl font-extrabold">
-        {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
-      </span>
-      <span className="text-[10px] font-medium">دقيقة</span>
-    </div>
-  </div>
+                {/* دائرة وقت التوصيل (يسار - على اليمين في الشاشة) */}
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full bg-white shadow-2xl flex items-center justify-center">
+                    <div className="w-[88px] h-[88px] rounded-full bg-[#B50F2B] flex flex-col items-center justify-center">
+                      <span className="text-2xl font-extrabold text-white">
+                        {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
+                      </span>
+                      <span className="text-xs font-medium text-white">دقيقة</span>
+                    </div>
+                  </div>
+                  <span className="mt-2 text-xs font-semibold text-gray-700">وقت التوصيل</span>
+                </div>
 
-  {/* النص تحت الدائرة */}
-  <span className="text-[11px] font-semibold text-gray-700 mt-1 bg-white px-2 rounded">
-    وقت التوصيل
-  </span>
-</div>
+              </div>
+            </div>
 
-                  {/* الدائرة الكبيرة (يمين) لسعر التوصيل */}
-<div className="absolute -top-10 right-4 flex flex-col items-center z-10">
-  <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex flex-col items-center justify-center">
-    <div className="w-full h-full rounded-full bg-gray-100 text-gray-800 flex items-center justify-center gap-1">
-      <span className="text-2xl font-extrabold">{deliveryInfo.fee}</span>
-      <span className="text-[10px] font-medium">₪</span>
-    </div>
-  </div>
-  <span className="text-[11px] font-semibold text-gray-700 mt-1 bg-white px-2 rounded">
-    سعر التوصيل
-  </span>
-</div>
+            {/* البطاقة الرمادية (تبدأ من منتصف الدوائر) */}
+            <div className="relative px-4 mt-16">
+              <div className="relative bg-gray-100 rounded-3xl px-4 pb-6 pt-20 border border-gray-200 shadow-sm">
+
+                {/* شارة "مفتوح" في الزاوية */}
+                <div className="absolute top-4 left-4">
+                  <span className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-md
+                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-600 text-white'}`}>
+                    {isVendorAvailable ? 'مفتوح' : 'مغلق'}
+                  </span>
+                </div>
 
 
                   {/* اسم المتجر + العنوان */}
@@ -696,7 +693,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                 </div>
               </div>
-            </div>
 
             {/* مسافة صغيرة قبل الأقسام التالية */}
             <div className="h-2 w-full bg-gray-100" />
