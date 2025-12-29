@@ -565,9 +565,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           </div>
 
           {/* === HERO المطابق للتصميم === */}
-          <div className="relative" style={{ marginTop: 'calc(80px + max(env(safe-area-inset-top), 0px))' }}>
+          <div className="relative bg-white" style={{ marginTop: 'calc(80px + max(env(safe-area-inset-top), 0px))' }}>
             {/* بانر الصورة */}
-            <div className="relative h-56 overflow-hidden">
+            <div className="relative h-52 overflow-hidden">
               <img
                 src={vendor.banner || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200"}
                 alt={vendor.store_name}
@@ -575,24 +575,25 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               />
             </div>
 
-            {/* الثلاث دوائر الكبيرة (متداخلة مع البانر) */}
-            <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 z-20">
-              <div className="flex items-start justify-between px-6">
+            {/* المنطقة البيضاء مع الدوائر */}
+            <div className="px-4 pb-4">
+              {/* الدوائر الثلاث */}
+              <div className="flex items-center justify-center gap-4 -mt-12 mb-4">
 
-                {/* دائرة سعر التوصيل (يمين - على اليسار في الشاشة) */}
+                {/* دائرة سعر التوصيل (يسار) */}
                 <div className="flex flex-col items-center">
-                  <div className="w-24 h-24 rounded-full bg-white shadow-2xl flex items-center justify-center">
-                    <div className="w-[88px] h-[88px] rounded-full bg-gray-100 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-extrabold text-gray-900">{deliveryInfo.fee}</span>
-                      <span className="text-xs font-medium text-gray-600">₪</span>
+                  <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
+                    <div className="w-[72px] h-[72px] rounded-full bg-gray-100 flex flex-col items-center justify-center">
+                      <span className="text-xl font-extrabold text-gray-900">{deliveryInfo.fee}</span>
+                      <span className="text-[10px] font-medium text-gray-600">₪</span>
                     </div>
                   </div>
-                  <span className="mt-2 text-xs font-semibold text-gray-700">سعر التوصيل</span>
+                  <span className="mt-1.5 text-[11px] font-semibold text-gray-700">سعر التوصيل</span>
                 </div>
 
                 {/* دائرة الشعار (وسط) */}
-                <div className="flex flex-col items-center -mt-2">
-                  <div className="w-28 h-28 rounded-full bg-white shadow-2xl flex items-center justify-center overflow-hidden border-4 border-white">
+                <div className="flex flex-col items-center">
+                  <div className="w-24 h-24 rounded-full bg-white shadow-xl flex items-center justify-center overflow-hidden">
                     <img
                       src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
                       alt={vendor.store_name}
@@ -601,29 +602,27 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   </div>
                 </div>
 
-                {/* دائرة وقت التوصيل (يسار - على اليمين في الشاشة) */}
+                {/* دائرة وقت التوصيل (يمين) */}
                 <div className="flex flex-col items-center">
-                  <div className="w-24 h-24 rounded-full bg-white shadow-2xl flex items-center justify-center">
-                    <div className="w-[88px] h-[88px] rounded-full bg-[#B50F2B] flex flex-col items-center justify-center">
-                      <span className="text-2xl font-extrabold text-white">
+                  <div className="w-20 h-20 rounded-full bg-white shadow-xl flex items-center justify-center">
+                    <div className="w-[72px] h-[72px] rounded-full bg-[#B50F2B] flex flex-col items-center justify-center">
+                      <span className="text-xl font-extrabold text-white">
                         {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
                       </span>
-                      <span className="text-xs font-medium text-white">دقيقة</span>
+                      <span className="text-[10px] font-medium text-white">دقيقة</span>
                     </div>
                   </div>
-                  <span className="mt-2 text-xs font-semibold text-gray-700">وقت التوصيل</span>
+                  <span className="mt-1.5 text-[11px] font-semibold text-gray-700">وقت التوصيل</span>
                 </div>
 
               </div>
-            </div>
 
-            {/* البطاقة الرمادية (تبدأ من منتصف الدوائر) */}
-            <div className="relative px-4 mt-16">
-              <div className="relative bg-gray-100 rounded-3xl px-4 pb-6 pt-20 border border-gray-200 shadow-sm">
+              {/* البطاقة الرمادية */}
+              <div className="relative bg-gray-100 rounded-2xl px-4 py-5 border border-gray-200">
 
-                {/* شارة "مفتوح" في الزاوية */}
-                <div className="absolute top-4 left-4">
-                  <span className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-md
+                {/* شارة "مفتوح" في الزاوية العلوية اليسرى */}
+                <div className="absolute -top-3 left-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg
                     ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-600 text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
                   </span>
@@ -693,10 +692,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                 </div>
               </div>
-
-            {/* مسافة صغيرة قبل الأقسام التالية */}
-            <div className="h-2 w-full bg-gray-100" />
-          </div>
+            </div>
 
           {/* === نهاية الـ HERO ومعلومات المتجر === */}
 
