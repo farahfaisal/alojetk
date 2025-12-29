@@ -34,24 +34,26 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
       try {
         setLoading(true);
         setError(null);
-        
+
         // Build query for active advertisements
         let query = supabase
           .from('advertisements')
           .select('*')
-          .eq('status', 'active');
-        
+          .eq('status', 'active')
+          .eq('type', 'slider');
+
         // Filter by position if provided
         if (position) {
           query = query.eq('position', position);
         }
-        
+
         // Order by priority
         query = query.order('priority', { ascending: false });
 
         const { data, error } = await query;
 
         if (error) throw error;
+        console.log('FeaturedSlider ads:', data);
         setAds(data || []);
       } catch (err) {
         console.error('Error fetching advertisements:', err);
