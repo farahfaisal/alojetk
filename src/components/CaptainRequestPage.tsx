@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import MapAddressSelector from './MapAddressSelector';
+import ServiceAreaPicker from './ServiceAreaPicker';
+import { ServiceArea } from '../lib/zones';
 
 interface CaptainRequestPageProps {
   onClose: () => void;
@@ -28,7 +30,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'wallet'>('cash');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPickupMap, setShowPickupMap] = useState(false);
+  const [showPickupAreaPicker, setShowPickupAreaPicker] = useState(false);
   const [showDestinationMap, setShowDestinationMap] = useState(false);
 
   useEffect(() => {
@@ -45,14 +47,6 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
       if (data && !error) {
         setCustomerName(data.name || '');
         setCustomerPhone(data.phone || '');
-
-        // Auto-fill pickup address from user's saved address
-        if (data.address && data.city) {
-          setPickupAddress({
-            address: data.address,
-            city: data.city
-          });
-        }
       }
     };
 
@@ -234,7 +228,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                 <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-green-600" />
-                  موقع الانطلاق
+                  موقع الانطلاق (منطقة الخدمة)
                 </h3>
 
                 {pickupAddress ? (
@@ -242,19 +236,19 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                     <p className="text-sm font-medium text-green-900">{pickupAddress.address}</p>
                     <button
                       type="button"
-                      onClick={() => setShowPickupMap(true)}
+                      onClick={() => setShowPickupAreaPicker(true)}
                       className="text-sm text-green-600 hover:text-green-700 mt-2"
                     >
-                      تغيير الموقع
+                      تغيير المنطقة
                     </button>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setShowPickupMap(true)}
+                    onClick={() => setShowPickupAreaPicker(true)}
                     className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand hover:text-brand transition-colors"
                   >
-                    اضغط لتحديد موقع الانطلاق
+                    اضغط لاختيار منطقة الانطلاق
                   </button>
                 )}
               </div>
@@ -388,16 +382,20 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         </div>
       </motion.div>
 
-      {/* Pickup Map Selector */}
+      {/* Pickup Area Picker */}
       <AnimatePresence>
-        {showPickupMap && (
-          <MapAddressSelector
-            onAddressSelected={(address) => {
-              setPickupAddress(address);
-              setShowPickupMap(false);
+        {showPickupAreaPicker && (
+          <ServiceAreaPicker
+            onAreaSelected={(area: ServiceArea) => {
+              setPickupAddress({
+                address: area.name,
+                city: area.city || area.name,
+                coordinates: undefined
+              });
+              setShowPickupAreaPicker(false);
             }}
-            onClose={() => setShowPickupMap(false)}
-            title="حدد موقع الانطلاق"
+            onClose={() => setShowPickupAreaPicker(false)}
+            title="اختر منطقة الانطلاق"
           />
         )}
       </AnimatePresence>
