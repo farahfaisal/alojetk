@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, MapPin, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 
 interface ServiceAreaPickerProps {
   onAreaSelected: (area: ServiceArea) => void;
-  onClose: () => void;
+  onClose?: () => void;
   title?: string;
+  required?: boolean;
 }
 
 const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
   onAreaSelected,
   onClose,
-  title = 'اختر منطقة الخدمة'
+  title = 'اختر منطقة الخدمة',
+  required = false
 }) => {
   const [mainAreas, setMainAreas] = useState<ServiceArea[]>([]);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
@@ -78,7 +80,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/50 z-[9998] backdrop-blur-sm"
-        onClick={onClose}
+        onClick={required ? undefined : onClose}
       />
 
       <motion.div
@@ -109,15 +111,26 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
                 {selectedMainArea ? selectedMainArea.name : title}
               </h2>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            {!required && onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-4">
+            {required && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                <p className="text-sm text-yellow-800 font-medium">
+                  يجب اختيار منطقة التوصيل للمتابعة
+                </p>
+              </div>
+            )}
+
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 text-brand animate-spin" />

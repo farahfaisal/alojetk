@@ -400,8 +400,8 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               });
               setShowPickupAreaPicker(false);
             }}
-            onClose={() => setShowPickupAreaPicker(false)}
             title="اختر منطقة الانطلاق"
+            required={true}
           />
         )}
       </AnimatePresence>
