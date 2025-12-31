@@ -66,7 +66,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
 
   if (loading) {
     return (
-      <div className="relative -mx-4 h-[250px] bg-gray-200 animate-pulse">
+      <div className="relative h-[250px] bg-gray-200 animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-8 h-8 border-4 border-t-transparent border-brand rounded-full animate-spin"></div>
         </div>
@@ -79,7 +79,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
   }
 
   return (
-    <div className="relative -mx-4 overflow-hidden bg-gray-100">
+    <div className="relative overflow-hidden bg-gray-100">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -95,13 +95,13 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
         {ads.map((ad) => (
           <SwiperSlide key={ad.id}>
             <div
-              className="relative h-full cursor-pointer bg-gray-100 flex items-center justify-center"
+              className="relative h-full cursor-pointer bg-gray-100"
               onClick={() => ad.link && window.open(ad.link, '_blank')}
             >
               <img
                 src={ad.image_url}
                 alt={ad.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
           </SwiperSlide>
