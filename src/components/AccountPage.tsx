@@ -259,7 +259,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
             setReferralLink(data.referral_link);
           } else {
             // If no referral link in database, create one
-            setReferralLink(`${window.location.origin}/signup?ref=${data.code}`);
+            setReferralLink(`https://jetekapp.site/signup?ref=${data.code}`);
           }
         } else {
           // Try a different approach - query without filters and check results
@@ -285,7 +285,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
             
             if (userCode) {
               setReferralCode(userCode.code);
-              setReferralLink(userCode.referral_link || `${window.location.origin}/signup?ref=${userCode.code}`);
+              setReferralLink(userCode.referral_link || `https://jetekapp.site/signup?ref=${userCode.code}`);
             } else {
               setReferralCode(null);
               setReferralLink('');
@@ -493,7 +493,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
       
       // Generate a random code
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      const referralLink = `${window.location.origin}/signup?ref=${code}`;
+      const referralLink = `https://jetekapp.site/signup?ref=${code}`;
       
       // Insert the code into the database
       const { data, error } = await supabase
