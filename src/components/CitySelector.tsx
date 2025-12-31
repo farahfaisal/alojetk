@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Check, ChevronRight, Search } from 'lucide-react';
+import { X, MapPin, Check, ChevronRight, Search, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMainServiceAreas, getSubServiceAreas, type ServiceArea } from '../lib/zones';
 
 interface CitySelectorProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onSelectCity: (cityName: string) => void;
   currentCity?: string;
+  required?: boolean;
 }
 
 const CitySelector: React.FC<CitySelectorProps> = ({
   isOpen,
   onClose,
   onSelectCity,
-  currentCity
+  currentCity,
+  required = false
 }) => {
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +82,9 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   const handleSelectArea = (area: ServiceArea) => {
     if (area.is_active || area.status === 'active') {
       onSelectCity(area.name);
-      onClose();
+      if (onClose) {
+        onClose();
+      }
     }
   };
 
@@ -93,7 +97,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-end"
-        onClick={onClose}
+        onClick={required ? undefined : onClose}
       >
         <motion.div
           initial={{ y: '100%' }}
@@ -111,12 +115,14 @@ const CitySelector: React.FC<CitySelectorProps> = ({
                 {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة التوصيل'}
               </h2>
             </div>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors backdrop-blur-sm"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
+            {!required && onClose && (
+              <button
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors backdrop-blur-sm"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            )}
           </div>
 
           {/* Search Box */}
@@ -149,6 +155,14 @@ const CitySelector: React.FC<CitySelectorProps> = ({
               </div>
             ) : (
               <div className="p-4 space-y-2">
+                {required && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                    <p className="text-sm text-yellow-800 font-medium">
+                      يجب اختيار منطقة التوصيل للمتابعة
+                    </p>
+                  </div>
+                )}
                 {selectedMainArea && (
                   <motion.button
                     initial={{ opacity: 0, x: -20 }}

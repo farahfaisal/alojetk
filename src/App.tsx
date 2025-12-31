@@ -453,11 +453,6 @@ const AppContent: React.FC = () => {
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
     setIsCityDropdownOpen(false);
-
-    // Show permissions prompt after city selection
-    setTimeout(() => {
-      setShowPermissionsPrompt(true);
-    }, 800);
   };
 
   const closeAllComponents = () => {
@@ -814,9 +809,9 @@ const AppContent: React.FC = () => {
         {/* City Selector */}
         <CitySelector
           isOpen={isCityDropdownOpen}
-          onClose={() => setIsCityDropdownOpen(false)}
           onSelectCity={handleCitySelect}
           currentCity={selectedCity}
+          required={true}
         />
 
         {/* Service Area Selection */}
