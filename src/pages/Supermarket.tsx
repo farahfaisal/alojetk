@@ -360,7 +360,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
       </div>
 
       {/* Featured Slider - Pass 'market' as position */}
-      <div className="-mx-4">
+      <div>
         <FeaturedSlider position="market" type="supermarket" />
       </div>
 

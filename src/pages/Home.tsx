@@ -350,7 +350,7 @@ const Home: React.FC<HomeProps> = ({
       </div>
 
       {/* Hero Banner Section */}
-      <div className="-mx-4">
+      <div>
         <FeaturedSlider position="home" type="restaurant" />
       </div>
 
