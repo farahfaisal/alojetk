@@ -32,6 +32,8 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   const [error, setError] = useState<string | null>(null);
   const [showPickupAreaPicker, setShowPickupAreaPicker] = useState(false);
   const [showDestinationMap, setShowDestinationMap] = useState(false);
+  const [showDestinationAreaPicker, setShowDestinationAreaPicker] = useState(false);
+  const [showDestinationOptions, setShowDestinationOptions] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -271,20 +273,29 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                     <p className="text-sm font-medium text-red-900">{destinationAddress.address}</p>
                     <button
                       type="button"
-                      onClick={() => setShowDestinationMap(true)}
+                      onClick={() => setShowDestinationOptions(true)}
                       className="text-sm text-red-600 hover:text-red-700 mt-2"
                     >
                       تغيير الموقع
                     </button>
                   </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowDestinationMap(true)}
-                    className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand hover:text-brand transition-colors"
-                  >
-                    اضغط لتحديد الوجهة
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowDestinationAreaPicker(true)}
+                      className="w-full py-3 bg-brand text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    >
+                      اختيار من مناطق الخدمة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowDestinationMap(true)}
+                      className="w-full py-3 border-2 border-brand text-brand rounded-lg hover:bg-red-50 transition-colors font-medium"
+                    >
+                      تحديد على الخريطة
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -413,10 +424,86 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
             onAddressSelected={(address) => {
               setDestinationAddress(address);
               setShowDestinationMap(false);
+              setShowDestinationOptions(false);
             }}
             onClose={() => setShowDestinationMap(false)}
             title="حدد الوجهة"
           />
+        )}
+      </AnimatePresence>
+
+      {/* Destination Area Picker */}
+      <AnimatePresence>
+        {showDestinationAreaPicker && (
+          <ServiceAreaPicker
+            onAreaSelected={(area) => {
+              setDestinationAddress({
+                address: area.name,
+                city: area.city,
+                coordinates: area.center
+              });
+              setShowDestinationAreaPicker(false);
+              setShowDestinationOptions(false);
+            }}
+            onClose={() => setShowDestinationAreaPicker(false)}
+            title="اختر منطقة الوجهة"
+            required={true}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Destination Options Modal */}
+      <AnimatePresence>
+        {showDestinationOptions && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[10000] flex items-center justify-center p-4"
+            onClick={() => setShowDestinationOptions(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-4 text-center">اختر طريقة تحديد الوجهة</h3>
+
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDestinationOptions(false);
+                    setShowDestinationAreaPicker(true);
+                  }}
+                  className="w-full py-4 bg-brand text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg"
+                >
+                  اختيار من مناطق الخدمة
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDestinationOptions(false);
+                    setShowDestinationMap(true);
+                  }}
+                  className="w-full py-4 border-2 border-brand text-brand rounded-xl hover:bg-red-50 transition-colors font-medium"
+                >
+                  تحديد على الخريطة
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDestinationOptions(false)}
+                  className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
