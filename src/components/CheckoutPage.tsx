@@ -161,7 +161,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) => {
       const itemPrice = item.price || 0;
-      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0) * item.quantity;
+      const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0);
       return total + itemPrice * item.quantity + addonsTotal;
     }, 0);
 
