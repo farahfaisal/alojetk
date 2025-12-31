@@ -7,6 +7,7 @@ import AddressForm from './AddressForm';
 import { getSavedAddresses, type SavedAddress, getUserProfile, updateUserProfile } from '../lib/storage';
 import PointsRedemptionModal from './PointsRedemptionModal';
 import NotificationSettings from './NotificationSettings';
+import NotificationCenter from './NotificationCenter';
 import { getUserPointsAccount, getUserPointsTransactions } from '../lib/points';
 import WalletPage from './WalletPage';
 import { getCustomerWalletBalance } from '../lib/wallet';
@@ -55,6 +56,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
   const [walletLoading, setWalletLoading] = useState(false);
   const [showPointsSettings, setShowPointsSettings] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
 
   // Get current time for greeting
   const getGreeting = () => {
@@ -123,6 +125,14 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
       onClick: () => setCurrentSection('referral')
     },
     {
+      id: 'notification-center',
+      title: 'الإشعارات',
+      description: 'عرض جميع الإشعارات',
+      icon: <Bell className="w-6 h-6" />,
+      color: 'bg-red-500',
+      onClick: () => setShowNotificationCenter(true)
+    },
+    {
       id: 'points-settings',
       title: 'إعدادات النقاط',
       description: 'إدارة نظام النقاط والمكافآت',
@@ -135,7 +145,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
       id: 'notifications',
       title: 'إعدادات الإشعارات',
       description: 'تخصيص الإشعارات',
-      icon: <Bell className="w-6 h-6" />,
+      icon: <Settings className="w-6 h-6" />,
       color: 'bg-yellow-500',
       onClick: () => setCurrentSection('notifications')
     },
@@ -1381,6 +1391,12 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
         onClose={() => setShowRedemptionModal(false)}
         userPoints={userPoints || 0}
         onRedeemSuccess={refreshPointsData}
+      />
+
+      {/* Notification Center */}
+      <NotificationCenter
+        isOpen={showNotificationCenter}
+        onClose={() => setShowNotificationCenter(false)}
       />
     </div>
   );
