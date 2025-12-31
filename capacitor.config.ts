@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: "always",
-    scheme: "بين اديك",
+    scheme: "الو جيتك",
     backgroundColor: "#c21d14",
     limitsNavigationsToAppBoundDomains: true,
     preferredContentMode: "mobile"
