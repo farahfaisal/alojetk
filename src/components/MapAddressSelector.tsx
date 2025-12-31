@@ -64,10 +64,15 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
   const [mapError, setMapError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  // Detect iOS
+  // Detect iOS and prevent body scroll
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(iOS);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, []);
 
   const { isLoaded } = useJsApiLoader({

@@ -34,6 +34,8 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   const [showDestinationMap, setShowDestinationMap] = useState(false);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
     const fetchUserData = async () => {
       if (!user) return;
 
@@ -51,6 +53,10 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
     };
 
     fetchUserData();
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [user]);
 
   const calculateEstimatedFare = () => {

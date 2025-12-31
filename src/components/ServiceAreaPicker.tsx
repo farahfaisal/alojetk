@@ -21,7 +21,12 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
   const [loadingSubAreas, setLoadingSubAreas] = useState(false);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
     loadMainAreas();
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, []);
 
   const loadMainAreas = async () => {

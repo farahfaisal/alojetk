@@ -74,6 +74,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
   const [selectedRequest, setSelectedRequest] = useState<CaptainRequest | null>(null);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
     fetchRequests();
 
     const channel = supabase
@@ -93,6 +94,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
       .subscribe();
 
     return () => {
+      document.body.style.overflow = '';
       supabase.removeChannel(channel);
     };
   }, [user]);
