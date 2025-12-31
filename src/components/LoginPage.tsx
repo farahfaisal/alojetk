@@ -272,18 +272,6 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
           {step === 'phone' && (
             <form onSubmit={handlePhoneSubmit} className="space-y-6">
-              {/* Test Account Info */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div className="flex items-start gap-2">
-                  <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-bold text-blue-900 mb-1">حساب تجريبي للاختبار:</p>
-                    <p className="text-blue-800">رقم الهاتف: <span className="font-mono font-bold">0595284308</span></p>
-                    <p className="text-blue-800">رمز التحقق: <span className="font-mono font-bold">123456</span></p>
-                  </div>
-                </div>
-              </div>
-
               <div className="relative">
                 <input
                   type="tel"
