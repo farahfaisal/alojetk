@@ -31,9 +31,14 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPickupAreaPicker, setShowPickupAreaPicker] = useState(false);
+  const [showPickupMap, setShowPickupMap] = useState(false);
+  const [showPickupOptions, setShowPickupOptions] = useState(false);
+  const [showPickupManual, setShowPickupManual] = useState(false);
   const [showDestinationMap, setShowDestinationMap] = useState(false);
   const [showDestinationAreaPicker, setShowDestinationAreaPicker] = useState(false);
   const [showDestinationOptions, setShowDestinationOptions] = useState(false);
+  const [showDestinationManual, setShowDestinationManual] = useState(false);
+  const [manualAddress, setManualAddress] = useState('');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -236,7 +241,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                 <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-green-600" />
-                  موقع الانطلاق (منطقة الخدمة)
+                  موقع الانطلاق
                 </h3>
 
                 {pickupAddress ? (
@@ -244,20 +249,36 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                     <p className="text-sm font-medium text-green-900">{pickupAddress.address}</p>
                     <button
                       type="button"
-                      onClick={() => setShowPickupAreaPicker(true)}
+                      onClick={() => setShowPickupOptions(true)}
                       className="text-sm text-green-600 hover:text-green-700 mt-2"
                     >
-                      تغيير المنطقة
+                      تغيير الموقع
                     </button>
                   </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowPickupAreaPicker(true)}
-                    className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand hover:text-brand transition-colors"
-                  >
-                    اضغط لاختيار منطقة الانطلاق
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowPickupAreaPicker(true)}
+                      className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                    >
+                      اختيار من مناطق الخدمة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowPickupMap(true)}
+                      className="w-full py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors font-medium"
+                    >
+                      تحديد على الخريطة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowPickupManual(true)}
+                      className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                      كتابة العنوان يدوياً
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -294,6 +315,13 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                       className="w-full py-3 border-2 border-brand text-brand rounded-lg hover:bg-red-50 transition-colors font-medium"
                     >
                       تحديد على الخريطة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowDestinationManual(true)}
+                      className="w-full py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                      كتابة العنوان يدوياً
                     </button>
                   </div>
                 )}
@@ -407,13 +435,165 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               setPickupAddress({
                 address: area.name,
                 city: area.city || area.name,
-                coordinates: undefined
+                coordinates: area.center
               });
               setShowPickupAreaPicker(false);
+              setShowPickupOptions(false);
             }}
+            onClose={() => setShowPickupAreaPicker(false)}
             title="اختر منطقة الانطلاق"
             required={true}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Pickup Map Selector */}
+      <AnimatePresence>
+        {showPickupMap && (
+          <MapAddressSelector
+            onAddressSelected={(address) => {
+              setPickupAddress(address);
+              setShowPickupMap(false);
+              setShowPickupOptions(false);
+            }}
+            onClose={() => setShowPickupMap(false)}
+            title="حدد موقع الانطلاق"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Pickup Options Modal */}
+      <AnimatePresence>
+        {showPickupOptions && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[10000] flex items-center justify-center p-4"
+            onClick={() => setShowPickupOptions(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-4 text-center">اختر طريقة تحديد موقع الانطلاق</h3>
+
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPickupOptions(false);
+                    setShowPickupAreaPicker(true);
+                  }}
+                  className="w-full py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium shadow-lg"
+                >
+                  اختيار من مناطق الخدمة
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPickupOptions(false);
+                    setShowPickupMap(true);
+                  }}
+                  className="w-full py-4 border-2 border-green-600 text-green-600 rounded-xl hover:bg-green-50 transition-colors font-medium"
+                >
+                  تحديد على الخريطة
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPickupOptions(false);
+                    setShowPickupManual(true);
+                  }}
+                  className="w-full py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  كتابة العنوان يدوياً
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowPickupOptions(false)}
+                  className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Pickup Manual Address Input */}
+      <AnimatePresence>
+        {showPickupManual && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[10000] flex items-center justify-center p-4"
+            onClick={() => setShowPickupManual(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-4 text-center">أدخل عنوان الانطلاق</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    العنوان الكامل
+                  </label>
+                  <textarea
+                    value={manualAddress}
+                    onChange={(e) => setManualAddress(e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                    placeholder="مثال: شارع الملك فهد، حي النزهة، جدة"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (manualAddress.trim()) {
+                      setPickupAddress({
+                        address: manualAddress.trim(),
+                        city: 'يدوي',
+                        coordinates: undefined
+                      });
+                      setManualAddress('');
+                      setShowPickupManual(false);
+                      setShowPickupOptions(false);
+                    }
+                  }}
+                  disabled={!manualAddress.trim()}
+                  className="w-full py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  تأكيد
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setManualAddress('');
+                    setShowPickupManual(false);
+                  }}
+                  className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -496,7 +676,87 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    setShowDestinationOptions(false);
+                    setShowDestinationManual(true);
+                  }}
+                  className="w-full py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                >
+                  كتابة العنوان يدوياً
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setShowDestinationOptions(false)}
+                  className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Destination Manual Address Input */}
+      <AnimatePresence>
+        {showDestinationManual && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[10000] flex items-center justify-center p-4"
+            onClick={() => setShowDestinationManual(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-4 text-center">أدخل عنوان الوجهة</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    العنوان الكامل
+                  </label>
+                  <textarea
+                    value={manualAddress}
+                    onChange={(e) => setManualAddress(e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent resize-none"
+                    placeholder="مثال: شارع الملك فهد، حي النزهة، جدة"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (manualAddress.trim()) {
+                      setDestinationAddress({
+                        address: manualAddress.trim(),
+                        city: 'يدوي',
+                        coordinates: undefined
+                      });
+                      setManualAddress('');
+                      setShowDestinationManual(false);
+                      setShowDestinationOptions(false);
+                    }
+                  }}
+                  disabled={!manualAddress.trim()}
+                  className="w-full py-4 bg-brand text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  تأكيد
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setManualAddress('');
+                    setShowDestinationManual(false);
+                  }}
                   className="w-full py-3 text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   إلغاء
