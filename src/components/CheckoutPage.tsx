@@ -10,6 +10,7 @@ import { payFromWallet, getCustomerWalletBalance } from '../lib/wallet';
 import { getCustomerPoints } from '../lib/points';
 import { SavedAddress, getSavedAddresses, saveAddress } from '../lib/storage';
 import OrderTrackingPage from './OrderTrackingPage';
+import AddressForm from './AddressForm';
 import { X } from 'lucide-react';
 
 interface CartItem {
@@ -53,6 +54,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [currentAddress, setCurrentAddress] = useState<SavedAddress | null>(selectedAddress);
   const [orderNotes, setOrderNotes] = useState(notes || '');
   const [showNotesModal, setShowNotesModal] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
 
   const [courierMode, setCourierMode] = useState<'pickup' | 'delivery'>('delivery');
   const [deliveryType, setDeliveryType] = useState<'now' | 'scheduled'>('now');
@@ -581,6 +583,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
+  const handleAddressSave = async (addressData: SavedAddress) => {
+    try {
+      await saveAddress(addressData);
+      setCurrentAddress(addressData);
+      setShowAddressForm(false);
+    } catch (error) {
+      console.error('Error saving address:', error);
+    }
+  };
+
   if (showOrderTracking && orderId) {
     return <OrderTrackingPage orderId={orderId} onClose={onClose} />;
   }
@@ -748,7 +760,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={onBack}
+                onClick={() => setShowAddressForm(true)}
                 className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
                 style={{ color: BRAND, backgroundColor: `${BRAND}15` }}
               >
@@ -1050,6 +1062,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Address Form Modal */}
+      {showAddressForm && (
+        <AddressForm
+          onSave={handleAddressSave}
+          onCancel={() => setShowAddressForm(false)}
+        />
       )}
     </div>
   );
