@@ -512,6 +512,12 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
                 // Check for image in multiple possible locations
                 const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
 
+                // Calculate base price and addons total
+                const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
+                  return sum + (addon.price || 0) * (addon.quantity || 1);
+                }, 0);
+                const basePrice = item.price - addonsTotal;
+
                 return (
                   <div key={index} className="flex items-center gap-3">
                     <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -532,13 +538,33 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
                       )}
                       <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
                       {item.addons && item.addons.length > 0 && (
-                        <div className="text-xs text-gray-500">
-                          الإضافات: {item.addons.map((addon: any) => addon.name).join(', ')}
+                        <div className="mt-1">
+                          <p className="text-xs text-gray-500">الإضافات:</p>
+                          {item.addons.map((addon: any, addonIndex: number) => (
+                            <div key={addonIndex} className="text-xs text-gray-600 flex justify-between">
+                              <span>• {addon.name} (×{addon.quantity})</span>
+                              <span>+{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} شيكل</span>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
+                      {item.addons && item.addons.length > 0 ? (
+                        <div className="space-y-0.5">
+                          <div className="text-gray-700 text-sm">
+                            {basePrice.toFixed(2)} شيكل
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            +{addonsTotal.toFixed(2)} إضافات
+                          </div>
+                          <div className="text-brand font-bold border-t border-gray-200 pt-0.5">
+                            {item.price.toFixed(2)} شيكل
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
+                      )}
                     </div>
                   </div>
                 );
