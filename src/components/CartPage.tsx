@@ -552,7 +552,21 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                     {item.is_custom ? (
                                       <span className="text-amber-600">يحدد لاحقاً</span>
                                     ) : (
-                                      `${(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} شيكل`
+                                      <div className="space-y-0.5">
+                                        <div className="text-gray-700 text-sm">
+                                          {((item.price || 0) * item.quantity).toFixed(2)} شيكل
+                                        </div>
+                                        {item.addons && item.addons.length > 0 && (
+                                          <>
+                                            <div className="text-xs text-gray-500">
+                                              +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} إضافات
+                                            </div>
+                                            <div className="text-brand font-bold border-t border-gray-200 pt-0.5">
+                                              {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} شيكل
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
                                     )}
                                   </div>
                                   <button
