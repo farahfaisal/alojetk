@@ -591,7 +591,9 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                     onClick={() => {
                       setSuccessOrderNumber(null);
                       onClose();
-                      window.dispatchEvent(new CustomEvent('open-parcel-tracking'));
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('open-parcel-tracking'));
+                      }, 100);
                     }}
                     className="w-full bg-gradient-to-r from-brand to-red-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                   >
