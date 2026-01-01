@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Navigation, User, Phone, Package, Loader2, Clock, Banknote, Wallet } from 'lucide-react';
+import { X, MapPin, User, Phone, Loader2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -28,10 +28,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
   const [receiverPhone, setReceiverPhone] = useState('');
   const [pickupAddress, setPickupAddress] = useState<Address | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState<Address | null>(null);
-  const [parcelType, setParcelType] = useState('');
-  const [description, setDescription] = useState('');
   const [notes, setNotes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'wallet'>('cash');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -179,10 +176,8 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
           receiver_city: deliveryAddress.city,
           receiver_latitude: deliveryAddress.coordinates?.lat,
           receiver_longitude: deliveryAddress.coordinates?.lng,
-          parcel_type: parcelType || null,
-          description: description || null,
           notes: notes || null,
-          payment_method: paymentMethod,
+          payment_method: 'cash',
           delivery_fee: estimate?.fare || 0,
           distance: estimate?.distance || null,
           status: 'pending'
@@ -204,8 +199,6 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
     }
   };
 
-  const estimatedInfo = calculateEstimatedFee();
-
   return (
     <>
       <motion.div
@@ -221,19 +214,21 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[9999] bg-white overflow-hidden"
+        className="fixed inset-0 z-[9999] bg-gray-50 overflow-hidden"
         style={{
           paddingTop: 'max(env(safe-area-inset-top), 0px)',
           paddingBottom: 'max(env(safe-area-inset-bottom), 0px)'
         }}
       >
         <div className="h-full flex flex-col">
-          <div className="bg-gradient-to-r from-brand to-red-600 text-white px-4 py-4 flex items-center justify-between shadow-lg">
+          <div className="bg-gradient-to-r from-brand to-red-700 text-white px-4 py-4 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
-              <Package className="w-6 h-6" />
+              <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/>
+              </svg>
               <h2 className="text-xl font-bold">توصيل طرد</h2>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {isAuthenticated && (
                 <button
                   onClick={() => {
@@ -255,365 +250,210 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+          <div className="flex-1 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-base text-gray-800">معلومات المرسل</h3>
                   <User className="w-5 h-5 text-brand" />
-                  معلومات المرسل
-                </h3>
+                </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      الاسم الكامل
-                    </label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">الاسم الكامل</label>
                     <input
                       type="text"
                       value={senderName}
                       onChange={(e) => setSenderName(e.target.value)}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent text-right text-sm"
                       placeholder="أدخل اسمك"
+                      dir="rtl"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <Phone className="w-4 h-4 inline ml-1" />
-                      رقم الهاتف
+                    <label className="block text-xs text-gray-500 mb-2 text-right flex items-center justify-end gap-1">
+                      <span>رقم الهاتف</span>
+                      <Phone className="w-3.5 h-3.5" />
                     </label>
                     <input
                       type="tel"
                       value={senderPhone}
-                      onChange={(e) => setSenderPhone(e.target.value)}
-                      required
                       readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent bg-gray-50"
-                      placeholder="05xxxxxxxx"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-right text-sm"
+                      dir="ltr"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+              <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-base text-gray-800">عنوان الاستلام</h3>
                   <MapPin className="w-5 h-5 text-green-600" />
-                  عنوان الاستلام
-                </h3>
+                </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">منطقة الخدمة</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">منطقة الخدمة</label>
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowPickupAreaPicker(true)}
+                        className="px-5 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors text-sm font-medium whitespace-nowrap"
+                      >
+                        اختر
+                      </button>
                       <input
                         type="text"
                         value={pickupArea}
                         readOnly
                         placeholder="اختر منطقة"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                        className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-right text-sm"
+                        dir="rtl"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPickupAreaPicker(true)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                      >
-                        اختر
-                      </button>
-                      {pickupArea && (
-                        <button
-                          type="button"
-                          onClick={() => setPickupArea('')}
-                          className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          ✕
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">الموقع على الخريطة</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">الموقع على الخريطة</label>
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowPickupMap(true)}
+                        className="px-5 py-2.5 border-2 border-green-600 text-green-600 rounded-xl hover:bg-green-50 transition-colors text-sm font-medium whitespace-nowrap"
+                      >
+                        خريطة
+                      </button>
                       <input
                         type="text"
                         value={pickupMapLocation}
                         readOnly
                         placeholder="حدد على الخريطة"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                        className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-right text-sm"
+                        dir="rtl"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPickupMap(true)}
-                        className="px-4 py-2 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors text-sm font-medium"
-                      >
-                        خريطة
-                      </button>
-                      {pickupMapLocation && (
-                        <button
-                          type="button"
-                          onClick={() => { setPickupMapLocation(''); setPickupCoordinates(undefined); }}
-                          className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          ✕
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">تفاصيل إضافية</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">تفاصيل إضافية</label>
                     <textarea
                       value={pickupManualText}
                       onChange={(e) => setPickupManualText(e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-right text-sm"
                       placeholder="مثال: بجانب مسجد النور، عمارة 5"
+                      dir="rtl"
                     />
                   </div>
-
-                  {pickupAddress && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                      <p className="text-xs text-gray-600 mb-1">العنوان الكامل:</p>
-                      <p className="text-sm font-medium text-green-900">{pickupAddress.address}</p>
-                    </div>
-                  )}
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-base text-gray-800">معلومات المستلم</h3>
                   <User className="w-5 h-5 text-blue-600" />
-                  معلومات المستلم
-                </h3>
+                </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      الاسم الكامل
-                    </label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">الاسم الكامل</label>
                     <input
                       type="text"
                       value={receiverName}
                       onChange={(e) => setReceiverName(e.target.value)}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="اسم المستلم"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-sm"
+                      placeholder="إسم المستلم"
+                      dir="rtl"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <Phone className="w-4 h-4 inline ml-1" />
-                      رقم الهاتف
+                    <label className="block text-xs text-gray-500 mb-2 text-right flex items-center justify-end gap-1">
+                      <span>رقم الهاتف</span>
+                      <Phone className="w-3.5 h-3.5" />
                     </label>
                     <input
                       type="tel"
                       value={receiverPhone}
                       onChange={(e) => setReceiverPhone(e.target.value)}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-sm"
                       placeholder="05xxxxxxxx"
+                      dir="ltr"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+              <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-base text-gray-800">عنوان التسليم</h3>
                   <MapPin className="w-5 h-5 text-brand" />
-                  عنوان التسليم
-                </h3>
+                </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">منطقة الخدمة</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">منطقة الخدمة</label>
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowDeliveryAreaPicker(true)}
+                        className="px-5 py-2.5 bg-brand text-white rounded-xl hover:bg-red-700 transition-colors text-sm font-medium whitespace-nowrap"
+                      >
+                        اختر
+                      </button>
                       <input
                         type="text"
                         value={deliveryArea}
                         readOnly
                         placeholder="اختر منطقة"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                        className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-right text-sm"
+                        dir="rtl"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowDeliveryAreaPicker(true)}
-                        className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                      >
-                        اختر
-                      </button>
-                      {deliveryArea && (
-                        <button
-                          type="button"
-                          onClick={() => setDeliveryArea('')}
-                          className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          ✕
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">الموقع على الخريطة</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">الموقع على الخريطة</label>
                     <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowDeliveryMap(true)}
+                        className="px-5 py-2.5 border-2 border-brand text-brand rounded-xl hover:bg-red-50 transition-colors text-sm font-medium whitespace-nowrap"
+                      >
+                        خريطة
+                      </button>
                       <input
                         type="text"
                         value={deliveryMapLocation}
                         readOnly
                         placeholder="حدد على الخريطة"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                        className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-right text-sm"
+                        dir="rtl"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowDeliveryMap(true)}
-                        className="px-4 py-2 border-2 border-brand text-brand rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
-                      >
-                        خريطة
-                      </button>
-                      {deliveryMapLocation && (
-                        <button
-                          type="button"
-                          onClick={() => { setDeliveryMapLocation(''); setDeliveryCoordinates(undefined); }}
-                          className="px-3 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          ✕
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">تفاصيل إضافية</label>
+                    <label className="block text-xs text-gray-500 mb-2 text-right">تفاصيل إضافية</label>
                     <textarea
                       value={deliveryManualText}
                       onChange={(e) => setDeliveryManualText(e.target.value)}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent resize-none"
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent resize-none text-right text-sm"
                       placeholder="مثال: بجانب مسجد النور، عمارة 5"
+                      dir="rtl"
                     />
                   </div>
-
-                  {deliveryAddress && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <p className="text-xs text-gray-600 mb-1">العنوان الكامل:</p>
-                      <p className="text-sm font-medium text-red-900">{deliveryAddress.address}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-purple-600" />
-                  معلومات الطرد
-                </h3>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      نوع الطرد (اختياري)
-                    </label>
-                    <input
-                      type="text"
-                      value={parcelType}
-                      onChange={(e) => setParcelType(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="مثال: مستندات، طعام، ملابس"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      وصف الطرد (اختياري)
-                    </label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                      placeholder="وصف محتويات الطرد"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {estimatedInfo && (
-                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl shadow-md p-4 border border-yellow-200">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-gray-700">المسافة التقديرية:</span>
-                      <span className="text-lg font-bold text-gray-800">{estimatedInfo.distance} كم</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-gray-700">التكلفة التقديرية:</span>
-                      <span className="text-2xl font-bold text-brand">{estimatedInfo.fare} ₪</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-600 mt-2">* السعر النهائي قد يختلف حسب المسافة الفعلية</p>
-                </div>
-              )}
-
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ملاحظات (اختياري)
-                </label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent resize-none"
-                  placeholder="أي تفاصيل إضافية..."
-                />
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
-                <h3 className="font-bold text-lg mb-3">طريقة الدفع</h3>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('cash')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      paymentMethod === 'cash'
-                        ? 'border-brand bg-red-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Banknote className={`w-6 h-6 mx-auto mb-2 ${
-                      paymentMethod === 'cash' ? 'text-brand' : 'text-gray-400'
-                    }`} />
-                    <span className={`text-sm font-medium ${
-                      paymentMethod === 'cash' ? 'text-brand' : 'text-gray-600'
-                    }`}>
-                      كاش
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('wallet')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      paymentMethod === 'wallet'
-                        ? 'border-brand bg-red-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Wallet className={`w-6 h-6 mx-auto mb-2 ${
-                      paymentMethod === 'wallet' ? 'text-brand' : 'text-gray-400'
-                    }`} />
-                    <span className={`text-sm font-medium ${
-                      paymentMethod === 'wallet' ? 'text-brand' : 'text-gray-600'
-                    }`}>
-                      محفظة
-                    </span>
-                  </button>
                 </div>
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm text-right">
                   {error}
                 </div>
               )}
@@ -621,20 +461,19 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={loading || !pickupAddress || !deliveryAddress || !receiverName || !receiverPhone}
-                className="w-full bg-gradient-to-r from-brand to-red-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-brand to-red-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    جاري الإرسال...
+                    <span>جاري الإرسال...</span>
                   </>
                 ) : (
-                  <>
-                    <Package className="w-5 h-5" />
-                    إرسال الطلب
-                  </>
+                  <span>إرسال الطلب</span>
                 )}
               </button>
+
+              <div className="h-8"></div>
             </form>
           </div>
         </div>
