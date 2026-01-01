@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin } from 'lucide-react';
+import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -21,9 +21,31 @@ interface Order {
   payment_method: string;
 }
 
+interface ParcelOrder {
+  id: string;
+  order_number: string;
+  sender_name: string;
+  sender_phone: string;
+  sender_address: string;
+  sender_city?: string;
+  receiver_name: string;
+  receiver_phone: string;
+  receiver_address: string;
+  receiver_city?: string;
+  notes?: string;
+  status: string;
+  delivery_fee: number;
+  distance?: number;
+  payment_method: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'restaurant' | 'parcel'>('restaurant');
   const [orders, setOrders] = useState<Order[]>([]);
+  const [parcelOrders, setParcelOrders] = useState<ParcelOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
@@ -32,8 +54,12 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    fetchOrders();
-  }, [user, statusFilter, searchQuery]);
+    if (activeTab === 'restaurant') {
+      fetchOrders();
+    } else {
+      fetchParcelOrders();
+    }
+  }, [user, statusFilter, searchQuery, activeTab]);
 
   const fetchOrders = async () => {
     const phone = user?.phone;
@@ -54,12 +80,10 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         .eq('customer_phone', phone)
         .order('created_at', { ascending: false });
 
-      // Apply status filter
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
       }
 
-      // Apply search filter
       if (searchQuery.trim()) {
         query = query.or(`order_number.ilike.%${searchQuery}%,vendor_name.ilike.%${searchQuery}%`);
       }
@@ -70,6 +94,45 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       setOrders(data || []);
     } catch (err) {
       console.error('Error fetching orders:', err);
+      setError('حدث خطأ في جلب الطلبات');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchParcelOrders = async () => {
+    if (!user) {
+      setError('يجب تسجيل الدخول لعرض الطلبات');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const customerId = user.customer_id || user.id;
+
+      let query = supabase
+        .from('parcel_orders')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false });
+
+      if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter);
+      }
+
+      if (searchQuery.trim()) {
+        query = query.or(`order_number.ilike.%${searchQuery}%,receiver_name.ilike.%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setParcelOrders(data || []);
+    } catch (err) {
+      console.error('Error fetching parcel orders:', err);
       setError('حدث خطأ في جلب الطلبات');
     } finally {
       setLoading(false);
@@ -158,11 +221,43 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
             طلباتي
           </h2>
           <button
-            onClick={fetchOrders}
+            onClick={activeTab === 'restaurant' ? fetchOrders : fetchParcelOrders}
             className="text-brand hover:text-brand-light"
           >
             <RefreshCw className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="max-w-md mx-auto px-4 pb-4">
+          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+            <button
+              onClick={() => setActiveTab('restaurant')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'restaurant'
+                  ? 'bg-white text-brand shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Package className="w-4 h-4" />
+                <span>طلبات المطاعم</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('parcel')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'parcel'
+                  ? 'bg-white text-brand shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Box className="w-4 h-4" />
+                <span>طلبات الطرود</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -254,7 +349,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
               <Package className="w-12 h-12 text-red-600 mx-auto mb-2" />
               <p>{error}</p>
             </div>
-          ) : orders.length === 0 ? (
+          ) : activeTab === 'restaurant' && orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Package className="w-12 h-12 text-gray-400" />
@@ -268,7 +363,15 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                 ابدأ التسوق
               </button>
             </div>
-          ) : (
+          ) : activeTab === 'parcel' && parcelOrders.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Box className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">لا توجد طلبات طرود</h3>
+              <p className="text-gray-500 mb-6">لم تقم بإنشاء أي طلبات طرود بعد</p>
+            </div>
+          ) : activeTab === 'restaurant' ? (
             <div className="space-y-4">
               {orders.map((order) => (
                 <motion.div
@@ -305,6 +408,58 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                         <span>•</span>
                         <span>{order.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
                       </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {parcelOrders.map((order) => (
+                <motion.div
+                  key={order.id}
+                  whileHover={{ scale: 1.01 }}
+                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                      <Box className="w-6 h-6 text-brand" />
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h3 className="font-bold text-gray-900">
+                            طلب رقم {order.order_number}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            من: {order.sender_city || order.sender_address}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            إلى: {order.receiver_city || order.receiver_address}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-brand">{Number(order.delivery_fee).toFixed(2)} شيكل</p>
+                          <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                            {getStatusText(order.status)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>{new Date(order.created_at).toLocaleDateString('ar')}</span>
+                        <span>•</span>
+                        <span>المستلم: {order.receiver_name}</span>
+                        <span>•</span>
+                        <span>{order.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
+                      </div>
+
+                      {order.notes && (
+                        <p className="mt-2 text-sm text-gray-500 bg-gray-50 p-2 rounded">
+                          {order.notes}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </motion.div>
