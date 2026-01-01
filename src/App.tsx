@@ -701,8 +701,8 @@ const AppContent: React.FC = () => {
           {renderContent()}
         </div>
 
-        {/* Floating Buttons - Only on Home Page */}
-        {!isAnyModalOpen && viewMode === 'restaurants' && (
+        {/* Floating Buttons - Always visible on Home Page */}
+        {!isAnyModalOpen && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
