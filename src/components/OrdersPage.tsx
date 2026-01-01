@@ -36,9 +36,9 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   }, [user, statusFilter, searchQuery]);
 
   const fetchOrders = async () => {
-    const customerId = user?.customer_id || user?.id;
+    const phone = user?.phone;
 
-    if (!customerId) {
+    if (!phone) {
       setError('يجب تسجيل الدخول لعرض الطلبات');
       setLoading(false);
       return;
@@ -51,7 +51,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       let query = supabase
         .from('orders')
         .select('*')
-        .eq('customer_id', customerId)
+        .eq('customer_phone', phone)
         .order('created_at', { ascending: false });
 
       // Apply status filter

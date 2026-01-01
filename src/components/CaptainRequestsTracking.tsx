@@ -85,7 +85,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
           event: '*',
           schema: 'public',
           table: 'captain_requests',
-          filter: `customer_id=eq.${user?.id}`
+          filter: `customer_phone=eq.${user?.phone}`
         },
         () => {
           fetchRequests();
@@ -107,13 +107,13 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
 
     try {
       setLoading(true);
-      const customerId = user.customer_id || user.id;
-      console.log('🔍 Fetching captain requests for customer_id:', customerId, 'Full user:', user);
+      const phone = user.phone;
+      console.log('🔍 Fetching captain requests for phone:', phone, 'Full user:', user);
 
       const { data, error } = await supabase
         .from('captain_requests')
         .select('*')
-        .eq('customer_id', customerId)
+        .eq('customer_phone', phone)
         .order('created_at', { ascending: false });
 
       console.log('📦 Captain requests response:', { data, error, count: data?.length });
