@@ -124,12 +124,10 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const distance = R * c;
 
-    const baseFare = 5;
-    const perKmRate = 3;
-    const estimatedFare = baseFare + (distance * perKmRate);
+    const fixedFare = 20;
 
     return {
-      fare: Math.round(estimatedFare * 10) / 10,
+      fare: fixedFare,
       distance: Math.round(distance * 10) / 10
     };
   };
