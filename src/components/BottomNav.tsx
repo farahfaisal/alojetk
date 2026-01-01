@@ -1,23 +1,28 @@
 import React from 'react';
-import { Home, User, Store, ShoppingCart, Package } from 'lucide-react';
+import { Home, User, Store, ShoppingCart, Package, Menu } from 'lucide-react';
 
 interface BottomNavProps {
   onOpenCart: () => void;
   onOpenAccount: () => void;
   onOpenOrders: () => void;
+  onOpenMenu: () => void;
   viewMode: 'restaurants' | 'supermarket' | 'all';
   onViewModeChange: (mode: 'restaurants' | 'supermarket' | 'all') => void;
   cartItemsCount?: number;
+  isHidden?: boolean;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
   onOpenCart,
   onOpenAccount,
   onOpenOrders,
+  onOpenMenu,
   viewMode,
   onViewModeChange,
-  cartItemsCount = 0
+  cartItemsCount = 0,
+  isHidden = false
 }) => {
+  if (isHidden) return null;
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 w-full shadow-lg"
@@ -130,6 +135,19 @@ const BottomNav: React.FC<BottomNavProps> = ({
             </div>
             <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
               طلباتي
+            </span>
+          </button>
+
+          {/* زر القائمة */}
+          <button
+            onClick={onOpenMenu}
+            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand/10 group-hover:text-brand">
+              <Menu className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
+              القائمة
             </span>
           </button>
         </div>
