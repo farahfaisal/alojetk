@@ -147,11 +147,14 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
 
     try {
       const estimatedFare = calculateEstimatedFare();
+      const customerId = user.customer_id || user.id;
+
+      console.log('📝 Creating captain request with customer_id:', customerId, 'Full user:', user);
 
       const { data, error: insertError } = await supabase
         .from('captain_requests')
         .insert({
-          customer_id: user.id,
+          customer_id: customerId,
           customer_name: customerName,
           customer_phone: user.phone || customerPhone,
           pickup_address: pickupAddress.address,
@@ -167,6 +170,8 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         })
         .select()
         .single();
+
+      console.log('✅ Captain request created:', { data, insertError });
 
       if (insertError) throw insertError;
 

@@ -100,20 +100,28 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
   }, [user]);
 
   const fetchRequests = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('❌ No user found');
+      return;
+    }
 
     try {
       setLoading(true);
+      const customerId = user.customer_id || user.id;
+      console.log('🔍 Fetching captain requests for customer_id:', customerId, 'Full user:', user);
+
       const { data, error } = await supabase
         .from('captain_requests')
         .select('*')
-        .eq('customer_id', user.id)
+        .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
+
+      console.log('📦 Captain requests response:', { data, error, count: data?.length });
 
       if (error) throw error;
       setRequests(data || []);
     } catch (err) {
-      console.error('Error fetching captain requests:', err);
+      console.error('❌ Error fetching captain requests:', err);
     } finally {
       setLoading(false);
     }

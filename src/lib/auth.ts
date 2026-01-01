@@ -109,6 +109,8 @@ export async function verifyOTP(phone: string, otp: string) {
     
     // إذا نجح التحقق، نقوم بتخزين بيانات المستخدم في localStorage
     if (data.success) {
+      console.log('🔐 Verify OTP response user data:', data.user);
+
       const userData = {
         id: data.user?.id || formattedPhone,
         customer_id: data.user?.id || formattedPhone,
@@ -116,12 +118,13 @@ export async function verifyOTP(phone: string, otp: string) {
         name: data.user?.name || '',
         email: data.user?.email || ''
       };
-      
+
+      console.log('💾 Storing user data in localStorage:', userData);
       localStorage.setItem('auth_user', JSON.stringify(userData));
-      
+
       // إرسال حدث تغيير حالة المصادقة
       window.dispatchEvent(new Event('auth-change'));
-      
+
       return {
         success: true,
         message: 'تم التحقق بنجاح',
