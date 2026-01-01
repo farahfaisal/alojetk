@@ -610,7 +610,9 @@ const AppContent: React.FC = () => {
       return;
     }
     closeAllComponents();
-    setIsParcelTrackingOpen(true);
+    setTimeout(() => {
+      setIsParcelTrackingOpen(true);
+    }, 50);
   };
 
   const handlePermissionsPromptClose = () => {
