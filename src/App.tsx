@@ -30,6 +30,8 @@ import CartPage from './components/CartPage';
 import OrdersPage from './components/OrdersPage';
 import CaptainRequestPage from './components/CaptainRequestPage';
 import CaptainRequestsTracking from './components/CaptainRequestsTracking';
+import ParcelOrderPage from './components/ParcelOrderPage';
+import ParcelOrdersTracking from './components/ParcelOrdersTracking';
 import SearchModal from './components/SearchModal';
 import CitySelector from './components/CitySelector';
 import SingleProductPage from './components/SingleProductPage';
@@ -80,6 +82,8 @@ const AppContent: React.FC = () => {
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [isCaptainRequestOpen, setIsCaptainRequestOpen] = useState(false);
   const [isCaptainTrackingOpen, setIsCaptainTrackingOpen] = useState(false);
+  const [isParcelOrderOpen, setIsParcelOrderOpen] = useState(false);
+  const [isParcelTrackingOpen, setIsParcelTrackingOpen] = useState(false);
 
   // Function to detect iOS devices
   const isIOSDevice = () => {
@@ -107,7 +111,8 @@ const AppContent: React.FC = () => {
                         isSidebarOpen || showLoginPrompt || isNotificationCenterOpen ||
                         isPrivacyPolicyOpen || isContactPageOpen || isSignupOpen ||
                         isProductPageOpen || isVariantsModalOpen || isStorePageOpen ||
-                        isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen;
+                        isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
+                        isParcelOrderOpen || isParcelTrackingOpen;
 
   // Update cart items count
   useEffect(() => {
@@ -295,6 +300,14 @@ const AppContent: React.FC = () => {
       handleOpenCaptainRequest();
     };
 
+    const handleOpenParcelOrderEvent = () => {
+      handleOpenParcelOrder();
+    };
+
+    const handleOpenParcelTrackingEvent = () => {
+      handleOpenParcelTracking();
+    };
+
     window.addEventListener('open-account-page', handleOpenAccountPage);
     window.addEventListener('open-login-page', handleOpenLoginPage);
     window.addEventListener('open-signup-page', handleOpenSignupPage);
@@ -305,6 +318,8 @@ const AppContent: React.FC = () => {
     window.addEventListener('show-login-prompt', handleShowLoginPrompt);
     window.addEventListener('open-captain-tracking', handleOpenCaptainTrackingEvent);
     window.addEventListener('open-captain-request', handleOpenCaptainRequestEvent);
+    window.addEventListener('open-parcel-order', handleOpenParcelOrderEvent);
+    window.addEventListener('open-parcel-tracking', handleOpenParcelTrackingEvent);
 
     return () => {
       window.removeEventListener('open-account-page', handleOpenAccountPage);
@@ -317,6 +332,8 @@ const AppContent: React.FC = () => {
       window.removeEventListener('show-login-prompt', handleShowLoginPrompt);
       window.removeEventListener('open-captain-tracking', handleOpenCaptainTrackingEvent);
       window.removeEventListener('open-captain-request', handleOpenCaptainRequestEvent);
+      window.removeEventListener('open-parcel-order', handleOpenParcelOrderEvent);
+      window.removeEventListener('open-parcel-tracking', handleOpenParcelTrackingEvent);
     };
   }, []);
 
@@ -462,6 +479,8 @@ const AppContent: React.FC = () => {
     setIsSidebarOpen(false);
     setShowLoginPrompt(false);
     setIsCaptainRequestOpen(false);
+    setIsParcelOrderOpen(false);
+    setIsParcelTrackingOpen(false);
     setIsCaptainTrackingOpen(false);
     setIsNotificationCenterOpen(false);
     setIsPrivacyPolicyOpen(false);
@@ -574,6 +593,26 @@ const AppContent: React.FC = () => {
     setIsCaptainTrackingOpen(true);
   };
 
+  const handleOpenParcelOrder = () => {
+    if (!isAuthenticated) {
+      closeAllComponents();
+      setIsLoginOpen(true);
+      return;
+    }
+    closeAllComponents();
+    setIsParcelOrderOpen(true);
+  };
+
+  const handleOpenParcelTracking = () => {
+    if (!isAuthenticated) {
+      closeAllComponents();
+      setIsLoginOpen(true);
+      return;
+    }
+    closeAllComponents();
+    setIsParcelTrackingOpen(true);
+  };
+
   const handlePermissionsPromptClose = () => {
     setShowPermissionsPrompt(false);
   };
@@ -671,7 +710,7 @@ const AppContent: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleOpenCaptainRequest}
+              onClick={handleOpenParcelOrder}
               className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all bg-brand text-white hover:bg-brand-light"
               title="توصيل الطرود"
             >
@@ -771,6 +810,18 @@ const AppContent: React.FC = () => {
         {isCaptainTrackingOpen && (
           <CaptainRequestsTracking
             onClose={() => setIsCaptainTrackingOpen(false)}
+          />
+        )}
+
+        {isParcelOrderOpen && (
+          <ParcelOrderPage
+            onClose={() => setIsParcelOrderOpen(false)}
+          />
+        )}
+
+        {isParcelTrackingOpen && (
+          <ParcelOrdersTracking
+            onClose={() => setIsParcelTrackingOpen(false)}
           />
         )}
 
