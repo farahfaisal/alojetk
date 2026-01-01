@@ -746,9 +746,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           )}
 
           <div className="mb-4">
-            <div className="flex items-center justify-start gap-2 mb-3">
-              <MapPin className="w-5 h-5 text-gray-600" />
-              <span className="text-base font-bold text-gray-900">عنوان التوصيل</span>
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={onBack}
+                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                style={{ color: BRAND, backgroundColor: `${BRAND}15` }}
+              >
+                تغيير العنوان
+              </button>
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-gray-900">عنوان التوصيل</span>
+                <MapPin className="w-5 h-5 text-gray-600" />
+              </div>
             </div>
 
             {currentAddress ? (
