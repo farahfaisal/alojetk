@@ -498,7 +498,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                             <div className="flex-1">
                               <div>
-                                <h4 className="font-bold text-gray-900">{item.name}</h4>
+                                <h4 className="font-bold text-gray-900">{item.name} {item.quantity}*</h4>
                               </div>
                               {item.variant_name && (
                                 <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
