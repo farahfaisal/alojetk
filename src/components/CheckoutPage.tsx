@@ -775,19 +775,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             {currentAddress ? (
               <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
                 {/* Service Area Display */}
-                <div className="mb-4 pb-4 border-b-2" style={{ borderColor: BRAND }}>
-                  <div className="flex items-center justify-end gap-2 mb-2">
-                    <span className="text-base font-bold" style={{ color: BRAND }}>منطقة الخدمة</span>
-                    <MapPin className="w-5 h-5" style={{ color: BRAND }} />
-                  </div>
-                  <p className="text-lg font-bold text-right" style={{ color: BRAND }}>
+                <div className="mb-4 flex items-center justify-end gap-2">
+                  <span className="text-lg font-bold" style={{ color: BRAND }}>
                     {(() => {
                       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
                       const storedCity = localStorage.getItem('selectedCity');
                       const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
                       return serviceAreaName || selectedCity || 'لم يتم تحديد المنطقة';
                     })()}
-                  </p>
+                  </span>
+                  <span className="text-base font-bold text-gray-500">-</span>
+                  <span className="text-base font-bold" style={{ color: BRAND }}>منطقة الخدمة</span>
+                  <MapPin className="w-5 h-5" style={{ color: BRAND }} />
                 </div>
 
                 <div className="text-right">
