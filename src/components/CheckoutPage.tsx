@@ -766,7 +766,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               >
                 تغيير العنوان
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-row-reverse">
                 <span className="text-base font-bold text-gray-900">عنوان التوصيل</span>
                 <MapPin className="w-5 h-5 text-gray-600" />
               </div>
@@ -776,7 +776,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
                 {/* Service Area Display */}
                 <div className="mb-4 pb-4 border-b-2" style={{ borderColor: BRAND }}>
-                  <div className="flex items-center justify-end gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-row-reverse justify-end">
                     <span className="text-base font-bold" style={{ color: BRAND }}>منطقة الخدمة</span>
                     <MapPin className="w-5 h-5" style={{ color: BRAND }} />
                   </div>
