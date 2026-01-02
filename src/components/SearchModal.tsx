@@ -236,24 +236,15 @@ const SearchModal: React.FC<SearchModalProps> = ({
             <h2 className="text-xl font-bold text-white">البحث</h2>
           </div>
 
-          {/* Zone Selector */}
+          {/* Zone Display */}
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 mb-4">
-            <div className="flex items-center gap-2 text-white/80 text-sm mb-2">
-              <MapPin className="w-4 h-4" />
-              <span>منطقة التوصيل</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-white/80" />
+                <span className="text-white/80 text-sm">منطقة التوصيل</span>
+              </div>
+              <span className="text-white font-bold text-lg">{selectedZone || 'اختر المنطقة'}</span>
             </div>
-            <select
-              value={selectedZone}
-              onChange={(e) => handleZoneChange(e.target.value)}
-              className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl px-4 py-3 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all"
-            >
-              <option value="" disabled>اختر المنطقة</option>
-              {serviceAreas.map(area => (
-                <option key={area.id} value={area.name} className="bg-gray-800 text-white">
-                  {area.name} {area.status === 'coming_soon' && '(قريباً)'}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Search Input */}
