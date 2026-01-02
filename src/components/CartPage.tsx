@@ -497,13 +497,8 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                             </div>
 
                             <div className="flex-1">
-                              <div className="flex items-start justify-between gap-2">
-                                <h4 className="font-bold text-gray-900 flex-1">{item.name}</h4>
-                                {!item.is_custom && (
-                                  <div className="text-brand text-xl font-bold whitespace-nowrap">
-                                    {(item.price || 0).toFixed(2)} ₪
-                                  </div>
-                                )}
+                              <div>
+                                <h4 className="font-bold text-gray-900">{item.name}</h4>
                               </div>
                               {item.variant_name && (
                                 <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
@@ -518,72 +513,68 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                 </div>
                               )}
 
-                              {/* Addons */}
-                              {item.addons && item.addons.length > 0 && (
-                                <div className="mt-1">
-                                  <p className="text-xs text-gray-500">الإضافات:</p>
-                                  {item.addons.map((addon) => (
-                                    <div key={addon.id} className="text-xs text-gray-600 flex justify-between">
-                                      <span>• {addon.name} (×{addon.quantity})</span>
-                                      <span>+{(addon.price * addon.quantity).toFixed(2)} شيكل</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              <div className="flex items-center justify-between mt-2">
+                              {/* Quantity and Price */}
+                              <div className="mt-2 space-y-1">
                                 {!item.is_custom ? (
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => updateCartItem(item.id, item.quantity - 1)}
-                                      className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                    >
-                                      <Minus className="w-4 h-4" />
-                                    </button>
-                                    <span className="w-8 text-center font-bold">{item.quantity}</span>
-                                    <button
-                                      onClick={() => updateCartItem(item.id, item.quantity + 1)}
-                                      className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                    >
-                                      <Plus className="w-4 h-4" />
-                                    </button>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm text-gray-600">الكمية:</span>
+                                      <button
+                                        onClick={() => updateCartItem(item.id, item.quantity - 1)}
+                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                      >
+                                        <Minus className="w-3 h-3" />
+                                      </button>
+                                      <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
+                                      <button
+                                        onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                    <div className="text-brand text-lg font-bold">
+                                      {((item.price || 0) * item.quantity).toFixed(2)} ₪
+                                    </div>
                                   </div>
                                 ) : (
-                                  <div className="text-sm text-amber-700 font-medium">
-                                    الكمية: 1
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
+                                    <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
                                   </div>
                                 )}
 
-                                <div className="text-right flex flex-col items-end gap-2">
-                                  {item.is_custom ? (
-                                    <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
-                                  ) : (
-                                    <>
-                                      {item.quantity > 1 && (
-                                        <div className="text-gray-900 text-base font-bold">
-                                          المجموع: {((item.price || 0) * item.quantity).toFixed(2)} ₪
-                                        </div>
-                                      )}
-                                      {item.addons && item.addons.length > 0 && (
-                                        <>
-                                          <div className="text-sm text-gray-700 font-semibold">
-                                            +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} ₪ إضافات
-                                          </div>
-                                          <div className="text-brand text-lg font-bold border-t-2 border-gray-300 pt-1.5 leading-none">
-                                            المجموع: {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
-                                          </div>
-                                        </>
-                                      )}
-                                    </>
-                                  )}
-                                  <button
-                                    onClick={() => removeCartItem(item.id)}
-                                    className="text-red-700 hover:text-red-800 text-sm flex items-center gap-1"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                    حذف
-                                  </button>
-                                </div>
+                                {/* Addons */}
+                                {item.addons && item.addons.length > 0 && (
+                                  <div className="space-y-1 pt-2 border-t border-gray-200">
+                                    {item.addons.map((addon) => (
+                                      <div key={addon.id} className="flex items-center justify-between text-sm">
+                                        <span className="text-gray-600">• {addon.name} (×{addon.quantity})</span>
+                                        <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Total with Addons */}
+                                {!item.is_custom && item.addons && item.addons.length > 0 && (
+                                  <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
+                                    <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
+                                    <span className="text-brand text-lg font-bold">
+                                      {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex justify-end mt-2">
+                                <button
+                                  onClick={() => removeCartItem(item.id)}
+                                  className="text-red-700 hover:text-red-800 text-sm flex items-center gap-1"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  حذف
+                                </button>
                               </div>
                             </div>
                           </div>
