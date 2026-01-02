@@ -757,29 +757,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
           )}
 
-          {/* Service Area Display */}
-          <div className="mb-4">
-            <div className="flex items-center justify-end mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold text-gray-900">منطقة الخدمة</span>
-                <MapPin className="w-6 h-6" style={{ color: BRAND }} />
-              </div>
-            </div>
-            <div className="w-full rounded-xl p-5 border-2" style={{
-              backgroundColor: `${BRAND}10`,
-              borderColor: BRAND
-            }}>
-              <p className="text-2xl font-bold text-center" style={{ color: BRAND }}>
-                {(() => {
-                  const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-                  const storedCity = localStorage.getItem('selectedCity');
-                  const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
-                  return serviceAreaName || selectedCity || currentAddress?.city || 'لم يتم تحديد المنطقة';
-                })()}
-              </p>
-            </div>
-          </div>
-
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
               <button
@@ -797,14 +774,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
             {currentAddress ? (
               <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <div className="flex-1 text-right">
+                {/* Service Area Display */}
+                <div className="mb-4 pb-4 border-b-2" style={{ borderColor: BRAND }}>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className="text-base font-bold" style={{ color: BRAND }}>منطقة الخدمة</span>
+                    <MapPin className="w-5 h-5" style={{ color: BRAND }} />
+                  </div>
+                  <p className="text-2xl font-bold text-center" style={{ color: BRAND }}>
+                    {(() => {
+                      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                      const storedCity = localStorage.getItem('selectedCity');
+                      const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+                      return serviceAreaName || selectedCity || currentAddress?.city || 'لم يتم تحديد المنطقة';
+                    })()}
+                  </p>
+                </div>
+
+                <div className="text-right">
                   <p className="font-bold text-gray-900 text-base mb-1">{currentAddress.name}</p>
                   <p className="text-sm text-gray-600 mb-1">{currentAddress.phone}</p>
                   <p className="text-sm text-gray-700 mb-1">{currentAddress.address}</p>
                   {currentAddress.detailedAddress && (
                     <p className="text-sm text-gray-600">{currentAddress.detailedAddress}</p>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">{currentAddress.city}</p>
                 </div>
               </div>
             ) : (
