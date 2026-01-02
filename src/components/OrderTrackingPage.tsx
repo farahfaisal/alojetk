@@ -6,6 +6,7 @@ import RatingModal from './RatingModal';
 
 interface OrderTrackingPageProps {
   orderId: string;
+  orderGroupId?: string;
   onClose: () => void;
 }
 
@@ -36,6 +37,8 @@ interface OrderDetails {
   created_at: string;
   estimated_total_time?: number;
   items_data: any[];
+  is_multi_vendor?: boolean;
+  order_group_id?: string;
 }
 
 interface VendorInfo {
@@ -48,8 +51,9 @@ interface ProductImage {
   [productId: string]: string;
 }
 
-const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose }) => {
+const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGroupId, onClose }) => {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [subOrders, setSubOrders] = useState<OrderDetails[]>([]);
   const [orderHistory, setOrderHistory] = useState<OrderStatus[]>([]);
   const [productImages, setProductImages] = useState<ProductImage>({});
   const [vendorInfo, setVendorInfo] = useState<VendorInfo | null>(null);
@@ -57,6 +61,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
   const [error, setError] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingType, setRatingType] = useState<'driver' | 'store'>('store');
+  const [isMultiVendor, setIsMultiVendor] = useState(false);
 
   useEffect(() => {
     fetchOrderDetails();
@@ -96,46 +101,91 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('id', orderId)
-        .single();
 
-      if (error) throw error;
-      setOrderDetails(data);
+      // Check if this is a multi-vendor order
+      if (orderGroupId) {
+        setIsMultiVendor(true);
 
-      // Fetch vendor info including logo
-      if (data?.vendor_id) {
-        const { data: vendor, error: vendorError } = await supabase
-          .from('vendors')
-          .select('id, name, logo_url')
-          .eq('id', data.vendor_id)
-          .maybeSingle();
+        // Fetch all orders in this group
+        const { data: groupOrders, error: groupError } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('order_group_id', orderGroupId)
+          .order('created_at', { ascending: true });
 
-        if (!vendorError && vendor) {
-          setVendorInfo(vendor);
+        if (groupError) throw groupError;
+
+        if (groupOrders && groupOrders.length > 0) {
+          setSubOrders(groupOrders);
+          setOrderDetails(groupOrders[0]); // Set first order as main
+
+          // Fetch all product images for all orders
+          const allProductIds = groupOrders.flatMap((order: any) =>
+            (order.items_data || [])
+              .map((item: any) => item.product_id)
+              .filter(Boolean)
+          );
+
+          if (allProductIds.length > 0) {
+            const { data: products, error: productsError } = await supabase
+              .from('products')
+              .select('id, image_url')
+              .in('id', allProductIds);
+
+            if (!productsError && products) {
+              const imagesMap: ProductImage = {};
+              products.forEach((product: any) => {
+                imagesMap[product.id] = product.image_url;
+              });
+              setProductImages(imagesMap);
+            }
+          }
         }
-      }
+      } else {
+        // Single vendor order
+        setIsMultiVendor(false);
 
-      // Fetch product images
-      if (data?.items_data && data.items_data.length > 0) {
-        const productIds = data.items_data
-          .map((item: any) => item.product_id)
-          .filter(Boolean);
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', orderId)
+          .single();
 
-        if (productIds.length > 0) {
-          const { data: products, error: productsError } = await supabase
-            .from('products')
-            .select('id, image_url')
-            .in('id', productIds);
+        if (error) throw error;
+        setOrderDetails(data);
 
-          if (!productsError && products) {
-            const imagesMap: ProductImage = {};
-            products.forEach((product: any) => {
-              imagesMap[product.id] = product.image_url;
-            });
-            setProductImages(imagesMap);
+        // Fetch vendor info including logo
+        if (data?.vendor_id) {
+          const { data: vendor, error: vendorError } = await supabase
+            .from('vendors')
+            .select('id, name, logo_url')
+            .eq('id', data.vendor_id)
+            .maybeSingle();
+
+          if (!vendorError && vendor) {
+            setVendorInfo(vendor);
+          }
+        }
+
+        // Fetch product images
+        if (data?.items_data && data.items_data.length > 0) {
+          const productIds = data.items_data
+            .map((item: any) => item.product_id)
+            .filter(Boolean);
+
+          if (productIds.length > 0) {
+            const { data: products, error: productsError } = await supabase
+              .from('products')
+              .select('id, image_url')
+              .in('id', productIds);
+
+            if (!productsError && products) {
+              const imagesMap: ProductImage = {};
+              products.forEach((product: any) => {
+                imagesMap[product.id] = product.image_url;
+              });
+              setProductImages(imagesMap);
+            }
           }
         }
       }
@@ -501,14 +551,131 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
             </div>
           </div>
 
-          {/* Order Items */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Package className="w-5 h-5 text-brand" />
-              تفاصيل الطلب
-            </h3>
-            <div className="divide-y">
-              {orderDetails.items_data?.map((item: any, index: number) => {
+          {/* Multi-Vendor Orders or Single Order Items */}
+          {isMultiVendor && subOrders.length > 0 ? (
+            <div className="space-y-4">
+              <div className="bg-blue-50 rounded-xl p-4">
+                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                  <Store className="w-5 h-5" />
+                  طلب متعدد المتاجر
+                </h3>
+                <p className="text-sm text-blue-700">
+                  هذا الطلب يحتوي على منتجات من {subOrders.length} متاجر مختلفة
+                </p>
+              </div>
+
+              {subOrders.map((subOrder, orderIndex) => (
+                <div key={subOrder.id} className="bg-white rounded-xl p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-3 pb-3 border-b">
+                    <div className="flex items-center gap-2">
+                      <Store className="w-5 h-5 text-brand" />
+                      <div>
+                        <h3 className="font-bold text-gray-900">{subOrder.vendor_name}</h3>
+                        <p className="text-xs text-gray-500">طلب رقم {subOrder.order_number}</p>
+                      </div>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      subOrder.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                      subOrder.status === 'shipping' ? 'bg-orange-100 text-orange-800' :
+                      subOrder.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {getStatusText(subOrder.status)}
+                    </div>
+                  </div>
+
+                  <div className="divide-y">
+                    {subOrder.items_data?.map((item: any, index: number) => {
+                      const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+                      const itemPrice = item.price || 0;
+                      const itemTotal = itemPrice * item.quantity;
+                      const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
+                        return sum + ((addon.price || 0) * (addon.quantity || 1));
+                      }, 0);
+
+                      return (
+                        <div key={index} className="p-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                              {productImage ? (
+                                <img
+                                  src={productImage}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Package className="w-6 h-6 text-gray-400 m-4" />
+                              )}
+                            </div>
+
+                            <div className="flex-1">
+                              <h4 className="font-bold text-gray-900 text-sm">
+                                {item.name}
+                                {item.quantity > 1 && (
+                                  <span className="text-gray-600 mr-1">(×{item.quantity})</span>
+                                )}
+                              </h4>
+                              {item.variant_name && (
+                                <p className="text-xs text-gray-600">النوع: {item.variant_name}</p>
+                              )}
+                              {item.is_custom && item.custom_details && (
+                                <div className="mt-1 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                                  <p className="text-xs text-amber-800 font-medium mb-1">تفاصيل الطلب:</p>
+                                  <p className="text-xs text-amber-900">{item.custom_details}</p>
+                                </div>
+                              )}
+                              <div className="mt-2 flex items-center justify-between">
+                                {!item.is_custom ? (
+                                  <span className="text-brand font-bold">
+                                    {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                  </span>
+                                ) : (
+                                  <span className="text-amber-600 font-bold text-sm">يحدد لاحقاً</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="border-t mt-3 pt-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">المجموع الفرعي</span>
+                      <span className="font-medium">{subOrder.subtotal.toFixed(2)} ₪</span>
+                    </div>
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="text-gray-600">رسوم التوصيل</span>
+                      <span className="font-medium">{subOrder.delivery_fee.toFixed(2)} ₪</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2 mt-2">
+                      <span className="font-bold text-gray-900">المجموع</span>
+                      <span className="font-bold text-brand">{subOrder.total.toFixed(2)} ₪</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Total for all sub-orders */}
+              <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold">المجموع الإجمالي للطلب</span>
+                  <span className="text-2xl font-bold">
+                    {subOrders.reduce((sum, order) => sum + Number(order.total), 0).toFixed(2)} ₪
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Single Vendor Order */
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <Package className="w-5 h-5 text-brand" />
+                تفاصيل الطلب
+              </h3>
+              <div className="divide-y">
+                {orderDetails.items_data?.map((item: any, index: number) => {
                 // Check for image in multiple possible locations
                 const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
 
@@ -614,7 +781,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
                 <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>
               </div>
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Order Notes */}
           {orderDetails.notes && (

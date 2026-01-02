@@ -19,6 +19,14 @@ interface Order {
   items_data: any[];
   address: string;
   payment_method: string;
+  is_multi_vendor?: boolean;
+  order_group_id?: string;
+  order_type?: string;
+}
+
+interface GroupedOrder extends Order {
+  sub_orders?: Order[];
+  total_vendors?: number;
 }
 
 interface ParcelOrder {
@@ -45,10 +53,12 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'restaurant' | 'parcel'>('restaurant');
   const [orders, setOrders] = useState<Order[]>([]);
+  const [groupedOrders, setGroupedOrders] = useState<GroupedOrder[]>([]);
   const [parcelOrders, setParcelOrders] = useState<ParcelOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
@@ -91,13 +101,66 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setOrders(data || []);
+
+      const allOrders = data || [];
+      setOrders(allOrders);
+
+      // Group multi-vendor orders
+      const grouped = groupMultiVendorOrders(allOrders);
+      setGroupedOrders(grouped);
     } catch (err) {
       console.error('Error fetching orders:', err);
       setError('حدث خطأ في جلب الطلبات');
     } finally {
       setLoading(false);
     }
+  };
+
+  const groupMultiVendorOrders = (orders: Order[]): GroupedOrder[] => {
+    const grouped: { [key: string]: GroupedOrder } = {};
+    const standalone: GroupedOrder[] = [];
+
+    orders.forEach(order => {
+      if (order.is_multi_vendor && order.order_group_id) {
+        if (!grouped[order.order_group_id]) {
+          // Create parent order entry
+          grouped[order.order_group_id] = {
+            ...order,
+            id: order.order_group_id, // Use group ID as the ID
+            vendor_name: 'طلب متعدد المتاجر',
+            sub_orders: [],
+            total: 0,
+            total_vendors: 0
+          };
+        }
+
+        // Add to sub-orders
+        grouped[order.order_group_id].sub_orders!.push(order);
+        grouped[order.order_group_id].total += Number(order.total);
+        grouped[order.order_group_id].total_vendors = grouped[order.order_group_id].sub_orders!.length;
+
+        // Use the earliest created_at
+        if (new Date(order.created_at) < new Date(grouped[order.order_group_id].created_at)) {
+          grouped[order.order_group_id].created_at = order.created_at;
+        }
+
+        // Use the order number from the first sub-order
+        if (grouped[order.order_group_id].sub_orders!.length === 1) {
+          grouped[order.order_group_id].order_number = order.order_number;
+        }
+      } else {
+        // Standalone order
+        standalone.push(order);
+      }
+    });
+
+    // Combine grouped and standalone orders
+    const result = [...Object.values(grouped), ...standalone];
+
+    // Sort by created_at descending
+    result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return result;
   };
 
   const fetchParcelOrders = async () => {
@@ -197,7 +260,11 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
     return (
       <OrderTrackingPage
         orderId={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
+        orderGroupId={selectedGroupId || undefined}
+        onClose={() => {
+          setSelectedOrder(null);
+          setSelectedGroupId(null);
+        }}
       />
     );
   }
@@ -349,7 +416,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
               <Package className="w-12 h-12 text-red-600 mx-auto mb-2" />
               <p>{error}</p>
             </div>
-          ) : activeTab === 'restaurant' && orders.length === 0 ? (
+          ) : activeTab === 'restaurant' && groupedOrders.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Package className="w-12 h-12 text-gray-400" />
@@ -373,18 +440,28 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
             </div>
           ) : activeTab === 'restaurant' ? (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {groupedOrders.map((order) => (
                 <motion.div
                   key={order.id}
                   whileHover={{ scale: 1.01 }}
-                  onClick={() => setSelectedOrder(order.id)}
+                  onClick={() => {
+                    if (order.sub_orders && order.sub_orders.length > 0) {
+                      // Multi-vendor order - set the first sub-order as selected
+                      setSelectedOrder(order.sub_orders[0].id);
+                      setSelectedGroupId(order.order_group_id || null);
+                    } else {
+                      // Single vendor order
+                      setSelectedOrder(order.id);
+                      setSelectedGroupId(null);
+                    }
+                  }}
                   className="bg-white rounded-lg p-4 border border-gray-200 transition-all cursor-pointer"
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
                       {getStatusIcon(order.status)}
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -392,22 +469,45 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                             طلب رقم {order.order_number || order.id.slice(-6)}
                           </h3>
                           <p className="text-sm text-gray-600">{order.vendor_name}</p>
+                          {order.sub_orders && order.sub_orders.length > 0 && (
+                            <p className="text-xs text-blue-600 mt-1">
+                              {order.total_vendors} متاجر
+                            </p>
+                          )}
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-brand">{order.total.toFixed(2)} شيكل</p>
+                          <p className="font-bold text-brand">{Number(order.total).toFixed(2)} شيكل</p>
                           <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                             {getStatusText(order.status)}
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+
+                      <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                         <span>{new Date(order.created_at).toLocaleDateString('ar')}</span>
                         <span>•</span>
-                        <span>{order.items_data?.length || 0} منتج</span>
+                        <span>
+                          {order.sub_orders
+                            ? `${order.sub_orders.reduce((acc, o) => acc + (o.items_data?.length || 0), 0)} منتج`
+                            : `${order.items_data?.length || 0} منتج`
+                          }
+                        </span>
                         <span>•</span>
                         <span>{order.payment_method === 'cash' ? 'نقدي' : 'محفظة'}</span>
                       </div>
+
+                      {order.sub_orders && order.sub_orders.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-xs text-gray-500 mb-2">المتاجر في هذا الطلب:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {order.sub_orders.map((subOrder, idx) => (
+                              <div key={subOrder.id} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                {subOrder.vendor_name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
