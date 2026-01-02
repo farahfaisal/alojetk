@@ -547,22 +547,27 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                <div className="text-right">
-                                  <div className="font-bold text-brand">
+                                <div className="text-right flex flex-col items-end gap-2">
+                                  <div>
                                     {item.is_custom ? (
-                                      <span className="text-amber-600">يحدد لاحقاً</span>
+                                      <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
                                     ) : (
-                                      <div className="space-y-0.5">
-                                        <div className="text-gray-700 text-sm">
-                                          {((item.price || 0) * item.quantity).toFixed(2)} شيكل
+                                      <div className="space-y-1">
+                                        {item.quantity > 1 && (
+                                          <div className="text-sm text-gray-500">
+                                            {(item.price || 0).toFixed(2)} ₪ × {item.quantity}
+                                          </div>
+                                        )}
+                                        <div className="text-gray-900 text-2xl font-bold leading-none">
+                                          {((item.price || 0) * item.quantity).toFixed(2)} ₪
                                         </div>
                                         {item.addons && item.addons.length > 0 && (
                                           <>
                                             <div className="text-xs text-gray-500">
                                               +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} إضافات
                                             </div>
-                                            <div className="text-brand font-bold border-t border-gray-200 pt-0.5">
-                                              {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} شيكل
+                                            <div className="text-brand text-xl font-bold border-t border-gray-300 pt-1 leading-none">
+                                              {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
                                             </div>
                                           </>
                                         )}
@@ -571,7 +576,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                   <button
                                     onClick={() => removeCartItem(item.id)}
-                                    className="text-red-700 hover:text-red-800 text-sm flex items-center gap-1 mt-1"
+                                    className="text-red-700 hover:text-red-800 text-sm flex items-center gap-1"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                     حذف
