@@ -759,6 +759,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 flex-row-reverse">
+                <span className="text-base font-bold text-gray-900">عنوان التوصيل</span>
+                <MapPin className="w-5 h-5 text-gray-600" />
+              </div>
               <button
                 onClick={() => setShowAddressForm(true)}
                 className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
@@ -766,10 +770,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               >
                 تغيير العنوان
               </button>
-              <div className="flex items-center gap-2 flex-row-reverse">
-                <span className="text-base font-bold text-gray-900">عنوان التوصيل</span>
-                <MapPin className="w-5 h-5 text-gray-600" />
-              </div>
             </div>
 
             {currentAddress ? (
