@@ -29,23 +29,46 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
   useEffect(() => {
     // Initialize Firebase when component mounts
     initializeFirebase();
-    
+
     // Check if running on a native platform
     setIsNativePlatform(Capacitor.isNativePlatform());
-    
+
     // Check if features are supported
     setLocationSupported(isLocationSupported());
     setNotificationSupported(isNotificationSupported());
-    
+
     // Check current permission status
-    if (isNotificationSupported()) {
-      const status = getNotificationPermissionStatus();
-      if (status === 'granted') {
-        setNotificationPermission('granted');
-      } else if (status === 'denied') {
-        setNotificationPermission('denied');
+    const checkPermissions = async () => {
+      // Check notification permission
+      if (isNotificationSupported()) {
+        const notifStatus = getNotificationPermissionStatus();
+        console.log('🔔 Current notification permission:', notifStatus);
+        if (notifStatus === 'granted') {
+          setNotificationPermission('granted');
+        } else if (notifStatus === 'denied') {
+          setNotificationPermission('denied');
+        }
       }
-    }
+
+      // Check location permission if supported
+      if (isLocationSupported() && !Capacitor.isNativePlatform()) {
+        try {
+          if ('permissions' in navigator) {
+            const locStatus = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+            console.log('📍 Current location permission:', locStatus.state);
+            if (locStatus.state === 'granted') {
+              setLocationPermission('granted');
+            } else if (locStatus.state === 'denied') {
+              setLocationPermission('denied');
+            }
+          }
+        } catch (error) {
+          console.warn('Could not check location permission:', error);
+        }
+      }
+    };
+
+    checkPermissions();
   }, []);
 
   const requestLocation = async () => {
@@ -250,7 +273,15 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">تم رفض الإذن</p>
-              <p className="mt-1 text-sm">يرجى تفعيل الوصول للموقع من إعدادات المتصفح أو الجهاز.</p>
+              <p className="mt-1 text-sm mb-2">يرجى تفعيل الوصول للموقع من إعدادات المتصفح.</p>
+              <details className="mt-2">
+                <summary className="text-sm font-medium cursor-pointer hover:underline">كيفية تفعيل الموقع</summary>
+                <div className="mt-2 text-xs space-y-1 pr-2">
+                  <p><strong>Chrome/Edge:</strong> الإعدادات ← الخصوصية والأمان ← إعدادات الموقع ← الموقع</p>
+                  <p><strong>Safari:</strong> الإعدادات ← Safari ← الموقع</p>
+                  <p><strong>Firefox:</strong> الإعدادات ← الخصوصية والأمان ← الأذونات ← الموقع</p>
+                </div>
+              </details>
             </div>
           </div>
         )}
@@ -293,8 +324,16 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
             <Check className="w-5 h-5" />
             <span>تم منح الإذن</span>
           </>
+        ) : locationPermission === 'denied' ? (
+          <>
+            <MapPin className="w-5 h-5" />
+            <span>إعادة المحاولة</span>
+          </>
         ) : (
-          <span>السماح بالوصول للموقع</span>
+          <>
+            <MapPin className="w-5 h-5" />
+            <span>السماح بالوصول للموقع</span>
+          </>
         )}
       </button>
 
@@ -329,7 +368,15 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">تم رفض الإذن</p>
-              <p className="mt-1 text-sm">يرجى تفعيل الإشعارات من إعدادات المتصفح أو الجهاز.</p>
+              <p className="mt-1 text-sm mb-2">يرجى تفعيل الإشعارات من إعدادات المتصفح.</p>
+              <details className="mt-2">
+                <summary className="text-sm font-medium cursor-pointer hover:underline">كيفية تفعيل الإشعارات</summary>
+                <div className="mt-2 text-xs space-y-1 pr-2">
+                  <p><strong>Chrome/Edge:</strong> انقر على أيقونة القفل بجوار عنوان الموقع ← الإشعارات ← السماح</p>
+                  <p><strong>Safari:</strong> Safari ← الإعدادات ← المواقع ← الإشعارات</p>
+                  <p><strong>Firefox:</strong> انقر على أيقونة القفل ← الأذونات ← الإشعارات</p>
+                </div>
+              </details>
             </div>
           </div>
         )}
@@ -372,6 +419,11 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
           <>
             <Check className="w-5 h-5" />
             <span>تم منح الإذن</span>
+          </>
+        ) : notificationPermission === 'denied' ? (
+          <>
+            <Bell className="w-5 h-5" />
+            <span>إعادة المحاولة (قد تحتاج للتفعيل يدوياً)</span>
           </>
         ) : (
           <>

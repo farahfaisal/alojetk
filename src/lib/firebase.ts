@@ -35,7 +35,7 @@ try {
 export async function requestLocationPermission() {
   try {
     console.log('📍 Requesting location permission...');
-    
+
     if (Capacitor.isNativePlatform()) {
       // For native platforms
       const permissions = await Geolocation.requestPermissions();
@@ -45,28 +45,46 @@ export async function requestLocationPermission() {
       // For web
       if ('geolocation' in navigator) {
         console.log('🌐 Requesting web location permission...');
-        
+
         // Check if we're on iOS Safari
-        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        
+
         if (isIOSDevice) {
           console.log('📱 iOS device detected, requesting location permission');
         }
-        
+
         return new Promise((resolve) => {
+          // Request permission by attempting to get position
+          const timeoutDuration = isIOSDevice ? 20000 : 15000;
+
           navigator.geolocation.getCurrentPosition(
-            () => {
-              console.log('✅ Location permission granted');
+            (position) => {
+              console.log('✅ Location permission granted, position:', position.coords);
               resolve(true);
             },
             (error) => {
-              console.log('⚠️ Location permission denied or failed:', error.message);
-              resolve(false);
+              console.log('⚠️ Location permission error:', {
+                code: error.code,
+                message: error.message
+              });
+
+              // Error codes: 1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT
+              if (error.code === 1) {
+                console.log('❌ User denied location permission');
+                resolve(false);
+              } else if (error.code === 2) {
+                console.log('⚠️ Location unavailable, but permission may be granted');
+                resolve(true); // Permission granted but location unavailable
+              } else {
+                console.log('⏱️ Location request timeout');
+                resolve(false);
+              }
             },
-            { 
-              timeout: isIOSDevice ? 15000 : 10000,
+            {
+              timeout: timeoutDuration,
               enableHighAccuracy: false,
+              maximumAge: 0
             }
           );
         });
@@ -283,50 +301,60 @@ async function setupNativePushNotifications() {
 async function setupWebPushNotifications() {
   try {
     console.log('🌐 Setting up web notifications...');
-    
+
     // Check if notifications are supported
     if (!('Notification' in window)) {
       console.warn('⚠️ This browser does not support notifications');
       return false;
     }
-    
+
     // Check current permission status first
     console.log('📋 Current notification permission:', Notification.permission);
-    
+
     if (Notification.permission === 'granted') {
       console.log('✅ Notification permission already granted');
       await setupWebNotificationHandlers();
       return true;
     }
-    
+
     if (Notification.permission === 'denied') {
       console.warn('❌ Notification permission previously denied');
+      console.warn('💡 User needs to manually enable notifications in browser settings');
       return false;
     }
-    
+
     // Request permission
     console.log('🔔 Requesting notification permission...');
-    const permission = await Notification.requestPermission();
-    console.log('📝 Permission result:', permission);
-    
-    if (permission === 'granted') {
-      console.log('✅ Notification permission granted successfully');
-      await setupWebNotificationHandlers();
-      
-      // Send a welcome notification
-      setTimeout(() => {
-        showNotification(
-          '🔔 تم تفعيل الإشعارات!',
-          'ستصلك إشعارات حول طلباتك والعروض الجديدة.'
-        );
-      }, 1000);
-      
-      return true;
-    } else {
-      console.warn('❌ User denied notification permission');
+
+    try {
+      const permission = await Notification.requestPermission();
+      console.log('📝 Permission result:', permission);
+
+      if (permission === 'granted') {
+        console.log('✅ Notification permission granted successfully');
+        await setupWebNotificationHandlers();
+
+        // Send a welcome notification
+        setTimeout(() => {
+          showNotification(
+            '🔔 تم تفعيل الإشعارات!',
+            'ستصلك إشعارات حول طلباتك والعروض الجديدة.'
+          );
+        }, 1000);
+
+        return true;
+      } else if (permission === 'denied') {
+        console.warn('❌ User denied notification permission');
+        return false;
+      } else {
+        console.warn('⚠️ User dismissed notification permission request');
+        return false;
+      }
+    } catch (permissionError) {
+      console.error('❌ Error requesting notification permission:', permissionError);
       return false;
     }
-    
+
   } catch (error) {
     console.error('❌ Error setting up web push notifications:', error);
     return false;
@@ -642,8 +670,8 @@ export function isNotificationSupported() {
   if (Capacitor.isNativePlatform()) {
     return true;
   }
-  
-  return 'Notification' in window && 'serviceWorker' in navigator;
+
+  return 'Notification' in window;
 }
 
 // Function to check current notification permission status
@@ -660,6 +688,31 @@ export function isLocationSupported() {
   if (Capacitor.isNativePlatform()) {
     return true;
   }
-        
+
   return 'geolocation' in navigator;
+}
+
+// Function to check location permission status
+export async function getLocationPermissionStatus() {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      const permissions = await Geolocation.checkPermissions();
+      return permissions.location;
+    } else {
+      // For web, check using the Permissions API if available
+      if ('permissions' in navigator) {
+        try {
+          const result = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
+          return result.state; // 'granted', 'denied', or 'prompt'
+        } catch (error) {
+          console.warn('Permissions API not available for geolocation:', error);
+          return 'prompt';
+        }
+      }
+      return 'prompt';
+    }
+  } catch (error) {
+    console.warn('Error checking location permission:', error);
+    return 'prompt';
+  }
 }
