@@ -359,7 +359,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         const vendorSubtotal = vendorItems.reduce((total, item) => {
           const itemTotal = item.price * item.quantity;
           const addonsTotal = (item.addons || []).reduce((sum, addon) =>
-            sum + (addon.price * addon.quantity), 0) * item.quantity;
+            sum + (addon.price * addon.quantity), 0);
           return total + itemTotal + addonsTotal;
         }, 0);
 
