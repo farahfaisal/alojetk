@@ -560,16 +560,16 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   ) : (
                                     <>
                                       {item.quantity > 1 && (
-                                        <div className="text-gray-900 text-xl font-bold">
+                                        <div className="text-gray-900 text-base font-bold">
                                           المجموع: {((item.price || 0) * item.quantity).toFixed(2)} ₪
                                         </div>
                                       )}
                                       {item.addons && item.addons.length > 0 && (
                                         <>
-                                          <div className="text-base text-gray-700 font-semibold">
+                                          <div className="text-sm text-gray-700 font-semibold">
                                             +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} ₪ إضافات
                                           </div>
-                                          <div className="text-brand text-2xl font-bold border-t-2 border-gray-300 pt-1.5 leading-none">
+                                          <div className="text-brand text-lg font-bold border-t-2 border-gray-300 pt-1.5 leading-none">
                                             المجموع: {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
                                           </div>
                                         </>
