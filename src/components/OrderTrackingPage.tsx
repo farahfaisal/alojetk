@@ -537,12 +537,12 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
 
                         <div className="mt-2 space-y-1">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                               <span className="text-sm text-gray-600">الكمية:</span>
-                              <span className="font-bold text-sm">{item.quantity} × {((item.price || 0) / item.quantity).toFixed(2)}</span>
+                              <span className="font-bold text-sm">{item.quantity}</span>
                             </div>
                             <div className="text-brand text-lg font-bold">
-                              {(item.price || 0).toFixed(2)} شيكل
+                              {((item.price || 0) * item.quantity).toFixed(2)} شيكل
                             </div>
                           </div>
 
@@ -552,9 +552,9 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
                                 <div key={addonIndex}>
                                   <div className="text-xs text-gray-500 mb-0.5">• {addon.name}</div>
                                   <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                       <span className="text-xs text-gray-600">الكمية:</span>
-                                      <span className="text-sm font-bold">{addon.quantity} × {(addon.price || 0).toFixed(2)}</span>
+                                      <span className="text-sm font-bold">{addon.quantity}</span>
                                     </div>
                                     <span className="text-gray-900 font-semibold text-sm">+{((addon.price || 0) * addon.quantity).toFixed(2)} شيكل</span>
                                   </div>
