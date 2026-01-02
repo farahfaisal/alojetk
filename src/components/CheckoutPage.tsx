@@ -772,24 +772,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </button>
             </div>
 
+            {/* Service Area Display */}
+            <div className="mb-3 bg-white rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center gap-2 flex-row-reverse">
+                <span className="text-sm font-medium text-gray-600">منطقة الخدمة:</span>
+                <MapPin className="w-4 h-4 text-gray-600" />
+              </div>
+              <p className="text-base font-bold text-right text-gray-900 mt-1">
+                {(() => {
+                  const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                  const storedCity = localStorage.getItem('selectedCity');
+                  const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+                  return serviceAreaName || selectedCity || 'لم يتم تحديد المنطقة';
+                })()}
+              </p>
+            </div>
+
             {currentAddress ? (
               <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-200">
-                {/* Service Area Display */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2 flex-row-reverse justify-end">
-                    <span className="text-base font-bold text-gray-900">منطقة الخدمة</span>
-                    <MapPin className="w-5 h-5 text-gray-600" />
-                  </div>
-                  <p className="text-lg font-bold text-right text-gray-900">
-                    {(() => {
-                      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-                      const storedCity = localStorage.getItem('selectedCity');
-                      const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
-                      return serviceAreaName || selectedCity || 'لم يتم تحديد المنطقة';
-                    })()}
-                  </p>
-                </div>
-
                 <div className="text-right">
                   <p className="font-bold text-gray-900 text-base mb-1">{currentAddress.name}</p>
                   <p className="text-sm text-gray-600 mb-1">{currentAddress.phone}</p>
