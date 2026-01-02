@@ -507,64 +507,93 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, onClose 
               <Package className="w-5 h-5 text-brand" />
               تفاصيل الطلب
             </h3>
-            <div className="space-y-3">
+            <div className="divide-y">
               {orderDetails.items_data?.map((item: any, index: number) => {
                 // Check for image in multiple possible locations
                 const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
 
                 // Calculate base price and addons total
+                const itemPrice = item.price || 0;
+                const itemTotal = itemPrice * item.quantity;
                 const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
-                  return sum + (addon.price || 0) * (addon.quantity || 1);
+                  return sum + ((addon.price || 0) * (addon.quantity || 1));
                 }, 0);
-                const basePrice = item.price - addonsTotal;
 
                 return (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {productImage ? (
-                        <img
-                          src={productImage}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Package className="w-6 h-6 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-lg text-gray-900 truncate">{item.name}</h4>
-                      {item.variant_name && (
-                        <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
-                      )}
-                      <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
-                      {item.addons && item.addons.length > 0 && (
-                        <div className="mt-1">
-                          <p className="text-xs text-gray-500">الإضافات:</p>
-                          {item.addons.map((addon: any, addonIndex: number) => (
-                            <div key={addonIndex} className="text-xs text-gray-600 flex justify-between">
-                              <span>• {addon.name} (×{addon.quantity})</span>
-                              <span>+{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} شيكل</span>
+                  <div key={index} className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        {productImage ? (
+                          <img
+                            src={productImage}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Package className="w-8 h-8 text-gray-400 m-4" />
+                        )}
+                      </div>
+
+                      <div className="flex-1">
+                        <div>
+                          <h4 className="font-bold text-gray-900">
+                            {item.name}
+                            {item.quantity > 1 && (
+                              <span className="text-gray-600 mr-1">(×{item.quantity})</span>
+                            )}
+                          </h4>
+                        </div>
+                        {item.variant_name && (
+                          <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
+                        )}
+
+                        {/* Custom Order Details */}
+                        {item.is_custom && item.custom_details && (
+                          <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p className="text-xs text-amber-800 font-medium mb-1">تفاصيل الطلب:</p>
+                            <p className="text-xs text-amber-900">{item.custom_details}</p>
+                          </div>
+                        )}
+
+                        {/* Quantity and Price */}
+                        <div className="mt-2 space-y-1">
+                          {!item.is_custom ? (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
+                              <div className="text-brand text-lg font-bold">
+                                {itemTotal.toFixed(2)} ₪
+                              </div>
                             </div>
-                          ))}
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
+                              <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
+                            </div>
+                          )}
+
+                          {/* Addons */}
+                          {item.addons && item.addons.length > 0 && (
+                            <div className="space-y-1 pt-2 border-t border-gray-200">
+                              {item.addons.map((addon: any, addonIndex: number) => (
+                                <div key={addonIndex} className="flex items-center justify-between text-xs text-gray-600">
+                                  <span>• {addon.name} (×{addon.quantity})</span>
+                                  <span className="text-gray-900 font-semibold">+{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Total with Addons */}
+                          {!item.is_custom && item.addons && item.addons.length > 0 && (
+                            <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
+                              <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
+                              <span className="text-brand text-lg font-bold">
+                                {(itemTotal + addonsTotal).toFixed(2)} ₪
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      {item.addons && item.addons.length > 0 ? (
-                        <div className="space-y-0.5">
-                          <div className="text-gray-700 text-sm">
-                            {basePrice.toFixed(2)} شيكل
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            +{addonsTotal.toFixed(2)} إضافات
-                          </div>
-                          <div className="text-brand font-bold border-t border-gray-200 pt-0.5">
-                            {item.price.toFixed(2)} شيكل
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="font-bold text-brand">{item.price.toFixed(2)} شيكل</p>
-                      )}
+                      </div>
                     </div>
                   </div>
                 );
