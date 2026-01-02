@@ -498,7 +498,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                             <div className="flex-1">
                               <div>
-                                <h4 className="font-bold text-gray-900">{item.name} {item.quantity}*</h4>
+                                <h4 className="font-bold text-gray-900">{item.name}</h4>
                               </div>
                               {item.variant_name && (
                                 <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
@@ -513,16 +513,33 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                 </div>
                               )}
 
-                              {/* Price */}
+                              {/* Quantity and Price */}
                               <div className="mt-2 space-y-1">
                                 {!item.is_custom ? (
                                   <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm text-gray-600">الكمية:</span>
+                                      <button
+                                        onClick={() => updateCartItem(item.id, item.quantity - 1)}
+                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                      >
+                                        <Minus className="w-3 h-3" />
+                                      </button>
+                                      <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
+                                      <button
+                                        onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </button>
+                                    </div>
                                     <div className="text-brand text-lg font-bold">
-                                      {(item.price || 0).toFixed(2)} ₪
+                                      {((item.price || 0) * item.quantity).toFixed(2)} ₪
                                     </div>
                                   </div>
                                 ) : (
                                   <div className="flex items-center justify-between">
+                                    <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
                                     <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
                                   </div>
                                 )}
@@ -545,32 +562,13 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                {/* Total */}
-                                {!item.is_custom && (
+                                {/* Total with Addons */}
+                                {!item.is_custom && item.addons && item.addons.length > 0 && (
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                                     <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
                                     <span className="text-brand text-lg font-bold">
                                       {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
                                     </span>
-                                  </div>
-                                )}
-
-                                {/* Quantity Controls */}
-                                {!item.is_custom && (
-                                  <div className="flex items-center gap-2 pt-2">
-                                    <button
-                                      onClick={() => updateCartItem(item.id, item.quantity + 1)}
-                                      className="w-8 h-8 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                    >
-                                      <Plus className="w-4 h-4" />
-                                    </button>
-                                    <span className="text-sm text-gray-600">الكمية</span>
-                                    <button
-                                      onClick={() => updateCartItem(item.id, item.quantity - 1)}
-                                      className="w-8 h-8 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                    >
-                                      <Minus className="w-4 h-4" />
-                                    </button>
                                   </div>
                                 )}
                               </div>
