@@ -710,7 +710,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand ${
+                    disabled={true}
+                    className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
                       errors.name ? 'border-red-700' : 'border-gray-300'
                     }`}
                     placeholder="الاسم الكامل"
@@ -719,7 +720,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     <p className="mt-1 text-sm text-red-800">{errors.name}</p>
                   )}
                 </div>
-                
+
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                     رقم الهاتف *
@@ -731,12 +732,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="05xxxxxxxx"
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand ${
+                    disabled={true}
+                    className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
                       errors.phone ? 'border-red-700' : 'border-gray-300'
                     }`}
                     dir="ltr"
                   />
-                  <p className="text-xs text-gray-500 mt-1">يمكنك إضافة رقم هاتف إضافي للتواصل لهذا العنوان</p>
+                  <p className="text-xs text-gray-500 mt-1">يتم استخدام رقم الهاتف المسجل في حسابك</p>
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-800">{errors.phone}</p>
                   )}
