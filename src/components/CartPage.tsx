@@ -552,7 +552,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                     {item.is_custom ? (
                                       <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
                                     ) : (
-                                      <div className="space-y-1">
+                                      <div className="space-y-1.5">
                                         {item.quantity > 1 && (
                                           <div className="text-sm text-gray-500">
                                             {(item.price || 0).toFixed(2)} ₪ × {item.quantity}
@@ -563,10 +563,10 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                         </div>
                                         {item.addons && item.addons.length > 0 && (
                                           <>
-                                            <div className="text-xs text-gray-500">
-                                              +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} إضافات
+                                            <div className="text-base text-gray-700 font-semibold">
+                                              +{item.addons.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0).toFixed(2)} ₪ إضافات
                                             </div>
-                                            <div className="text-brand text-xl font-bold border-t border-gray-300 pt-1 leading-none">
+                                            <div className="text-brand text-2xl font-bold border-t-2 border-gray-300 pt-1.5 leading-none">
                                               {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
                                             </div>
                                           </>
