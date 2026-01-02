@@ -518,14 +518,13 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                 {!item.is_custom ? (
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <span className="text-sm text-gray-600">الكمية:</span>
                                       <button
                                         onClick={() => updateCartItem(item.id, item.quantity - 1)}
                                         className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
                                       >
                                         <Minus className="w-3 h-3" />
                                       </button>
-                                      <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
+                                      <span className="w-8 text-center font-bold text-sm">{item.quantity}×</span>
                                       <button
                                         onClick={() => updateCartItem(item.id, item.quantity + 1)}
                                         className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
@@ -539,7 +538,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 ) : (
                                   <div className="flex items-center justify-between">
-                                    <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
+                                    <span className="text-sm text-amber-700 font-medium">1×</span>
                                     <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
                                   </div>
                                 )}
@@ -552,8 +551,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                         <div className="text-xs text-gray-500 mb-0.5">• {addon.name}</div>
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-2">
-                                            <span className="text-xs text-gray-600">الكمية:</span>
-                                            <span className="text-sm font-bold">{addon.quantity}</span>
+                                            <span className="text-sm font-bold">{addon.quantity}×</span>
                                           </div>
                                           <span className="text-gray-900 font-semibold text-sm">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
                                         </div>
