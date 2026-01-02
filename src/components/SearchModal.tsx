@@ -17,6 +17,8 @@ interface SearchResult {
   vendor_name?: string;
   price?: number;
   category?: string;
+  service_areas?: string[];
+  vendor_service_areas?: string[];
 }
 
 interface SearchModalProps {
@@ -152,7 +154,8 @@ const SearchModal: React.FC<SearchModalProps> = ({
             name: v.store_name,
             type: 'vendor' as const,
             image: v.logo_url,
-            category: v.type
+            category: v.type,
+            service_areas: v.service_areas || []
           })),
           ...filteredProducts.map((p: any) => ({
             id: p.id,
@@ -160,7 +163,8 @@ const SearchModal: React.FC<SearchModalProps> = ({
             type: 'product' as const,
             image: p.image_url,
             vendor_name: p.vendor?.store_name,
-            price: p.price
+            price: p.price,
+            vendor_service_areas: p.vendor?.service_areas || []
           }))
         ];
 
@@ -309,14 +313,36 @@ const SearchModal: React.FC<SearchModalProps> = ({
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-gray-900 truncate">{result.name}</h4>
                       {result.type === 'vendor' ? (
-                        <p className="text-sm text-gray-500">{result.category || 'متجر'}</p>
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-500">{result.category || 'متجر'}</p>
+                          {result.service_areas && result.service_areas.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-brand flex-shrink-0" />
+                              <p className="text-xs text-brand font-medium truncate">
+                                {result.service_areas[0]}
+                                {result.service_areas.length > 1 && ` +${result.service_areas.length - 1}`}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm text-gray-500 truncate">{result.vendor_name}</p>
-                          {result.price && (
-                            <p className="text-sm font-bold text-[#c21d14]">
-                              {result.price.toFixed(2)} ₪
-                            </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm text-gray-500 truncate">{result.vendor_name}</p>
+                            {result.price && (
+                              <p className="text-sm font-bold text-[#c21d14]">
+                                {result.price.toFixed(2)} ₪
+                              </p>
+                            )}
+                          </div>
+                          {result.vendor_service_areas && result.vendor_service_areas.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-brand flex-shrink-0" />
+                              <p className="text-xs text-brand font-medium truncate">
+                                {result.vendor_service_areas[0]}
+                                {result.vendor_service_areas.length > 1 && ` +${result.vendor_service_areas.length - 1}`}
+                              </p>
+                            </div>
                           )}
                         </div>
                       )}
