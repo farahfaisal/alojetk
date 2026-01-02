@@ -391,7 +391,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           payment_method: primaryPaymentMethod,
           notes: orderNotes || null,
           address: currentAddress?.address || '',
-          city: serviceAreaName || selectedCity || currentAddress?.city || '',
+          city: serviceAreaName || selectedCity || '',
           customer_name: currentAddress?.name || '',
           customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
@@ -785,7 +785,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
                       const storedCity = localStorage.getItem('selectedCity');
                       const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
-                      return serviceAreaName || selectedCity || currentAddress?.city || 'لم يتم تحديد المنطقة';
+                      return serviceAreaName || selectedCity || 'لم يتم تحديد المنطقة';
                     })()}
                   </p>
                 </div>
