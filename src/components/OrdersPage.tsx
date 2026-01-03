@@ -148,6 +148,27 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         if (grouped[order.order_group_id].sub_orders!.length === 1) {
           grouped[order.order_group_id].order_number = order.order_number;
         }
+
+        // Determine the overall status based on all sub-orders
+        const subOrders = grouped[order.order_group_id].sub_orders!;
+        const statuses = subOrders.map(o => o.status);
+
+        // Priority: cancelled > rejected > pending > processing > shipping > delivered > completed
+        if (statuses.includes('cancelled')) {
+          grouped[order.order_group_id].status = 'cancelled';
+        } else if (statuses.includes('rejected')) {
+          grouped[order.order_group_id].status = 'rejected';
+        } else if (statuses.includes('pending')) {
+          grouped[order.order_group_id].status = 'pending';
+        } else if (statuses.includes('processing') || statuses.includes('accepted') || statuses.includes('ready')) {
+          grouped[order.order_group_id].status = 'processing';
+        } else if (statuses.includes('shipping')) {
+          grouped[order.order_group_id].status = 'shipping';
+        } else if (statuses.every(s => s === 'delivered' || s === 'completed')) {
+          grouped[order.order_group_id].status = 'delivered';
+        } else {
+          grouped[order.order_group_id].status = subOrders[0].status;
+        }
       } else {
         // Standalone order
         standalone.push(order);
