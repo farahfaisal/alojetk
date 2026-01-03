@@ -624,13 +624,49 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   <p className="text-xs text-amber-900">{item.custom_details}</p>
                                 </div>
                               )}
-                              <div className="mt-2 flex items-center justify-between">
+
+                              {/* Price */}
+                              <div className="mt-2">
                                 {!item.is_custom ? (
-                                  <span className="text-brand font-bold">
-                                    {(itemTotal + addonsTotal).toFixed(2)} ₪
-                                  </span>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">السعر</span>
+                                    <span className="text-brand font-bold">
+                                      {itemTotal.toFixed(2)} ₪
+                                    </span>
+                                  </div>
                                 ) : (
                                   <span className="text-amber-600 font-bold text-sm">يحدد لاحقاً</span>
+                                )}
+
+                                {/* Addons */}
+                                {item.addons && item.addons.length > 0 && (
+                                  <div className="mt-2 pt-2 border-t border-gray-200">
+                                    <div className="mb-1">
+                                      <span className="text-xs font-bold text-gray-700">الإضافات:</span>
+                                    </div>
+                                    <div className="space-y-1 bg-blue-50 p-2 rounded-lg">
+                                      {item.addons.map((addon: any, addonIndex: number) => (
+                                        <div key={addonIndex} className="flex items-center justify-between">
+                                          <span className="text-xs text-blue-900 font-medium">
+                                            • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
+                                          </span>
+                                          <span className="text-xs text-blue-900 font-bold">
+                                            +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Total with Addons */}
+                                {!item.is_custom && item.addons && item.addons.length > 0 && (
+                                  <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-brand/20">
+                                    <span className="text-sm font-bold text-gray-900">المجموع:</span>
+                                    <span className="text-brand text-base font-bold">
+                                      {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                    </span>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -723,7 +759,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                         )}
 
                         {/* Quantity and Price */}
-                        <div className="mt-2 space-y-1">
+                        <div className="mt-2 space-y-2">
                           {!item.is_custom ? (
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
@@ -740,21 +776,30 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
                           {/* Addons */}
                           {item.addons && item.addons.length > 0 && (
-                            <div className="space-y-1 pt-2 border-t border-gray-200">
-                              {item.addons.map((addon: any, addonIndex: number) => (
-                                <div key={addonIndex} className="flex items-center justify-between text-xs text-gray-600">
-                                  <span>• {addon.name} (×{addon.quantity})</span>
-                                  <span className="text-gray-900 font-semibold">+{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪</span>
-                                </div>
-                              ))}
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <div className="mb-2">
+                                <span className="text-sm font-bold text-gray-700">الإضافات:</span>
+                              </div>
+                              <div className="space-y-2 bg-blue-50 p-3 rounded-lg">
+                                {item.addons.map((addon: any, addonIndex: number) => (
+                                  <div key={addonIndex} className="flex items-center justify-between">
+                                    <span className="text-sm text-blue-900 font-medium">
+                                      • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
+                                    </span>
+                                    <span className="text-blue-900 font-bold">
+                                      +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
 
                           {/* Total with Addons */}
                           {!item.is_custom && item.addons && item.addons.length > 0 && (
-                            <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
-                              <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
-                              <span className="text-brand text-lg font-bold">
+                            <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-brand/20">
+                              <span className="text-base font-bold text-gray-900">المجموع الكلي:</span>
+                              <span className="text-brand text-xl font-bold">
                                 {(itemTotal + addonsTotal).toFixed(2)} ₪
                               </span>
                             </div>
