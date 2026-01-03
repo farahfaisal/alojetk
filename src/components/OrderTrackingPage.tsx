@@ -333,8 +333,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         <div className="max-w-md mx-auto p-4 space-y-6">
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
-            {/* Vendor Logo and Name */}
-            {vendorInfo && (
+            {/* Vendor Logo and Name - only show for single vendor */}
+            {vendorInfo && !isMultiVendor && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
                   {vendorInfo.logo_url ? (
@@ -356,18 +356,51 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
               </div>
             )}
 
+            {/* Multi-vendor header */}
+            {isMultiVendor && subOrders.length > 0 && (
+              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md bg-brand/10">
+                  <div className="w-full h-full bg-brand flex items-center justify-center">
+                    <Store className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">طلب متعدد المتاجر</p>
+                  <p className="text-lg font-bold text-gray-900">{subOrders.length} متاجر</p>
+                </div>
+              </div>
+            )}
+
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-gray-900">
                 طلب رقم {orderDetails.order_number || orderDetails.id.slice(-6)}
               </h3>
-              <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold mt-2 ${getStatusColor(orderDetails.status)}`}>
-                {getStatusText(orderDetails.status)}
-              </div>
+              {isMultiVendor && subOrders.length > 0 ? (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500 mb-2">حالة المتاجر:</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {subOrders.map((subOrder) => (
+                      <div key={subOrder.id} className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(subOrder.status)}`}>
+                        {subOrder.vendor_name}: {getStatusText(subOrder.status)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold mt-2 ${getStatusColor(orderDetails.status)}`}>
+                  {getStatusText(orderDetails.status)}
+                </div>
+              )}
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-brand">{orderDetails.total.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-brand">
+                  {isMultiVendor && subOrders.length > 0
+                    ? subOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)
+                    : orderDetails.total.toFixed(2)
+                  }
+                </div>
                 <div className="text-sm text-gray-600">المجموع الكلي</div>
               </div>
               <div>
@@ -426,6 +459,35 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
               // Determine current stage index based on order status
               const getCurrentStageIndex = () => {
+                // For multi-vendor orders, use the least advanced status
+                if (isMultiVendor && subOrders.length > 0) {
+                  const statuses = subOrders.map(o => o.status);
+
+                  // If any order is cancelled or rejected, return -1
+                  if (statuses.some(s => ['cancelled', 'rejected'].includes(s))) return -1;
+
+                  // If all orders are delivered/completed, return 3
+                  if (statuses.every(s => ['delivered', 'completed'].includes(s))) return 3;
+
+                  // If any order is pending, return 0
+                  if (statuses.some(s => s === 'pending')) return 0;
+
+                  // If any order is shipping, but not all, return 1 (still processing)
+                  if (statuses.some(s => ['shipping', 'out_for_delivery', 'picked_up'].includes(s))) {
+                    // If all are shipping or delivered, return 2
+                    if (statuses.every(s => ['shipping', 'out_for_delivery', 'picked_up', 'delivered', 'completed'].includes(s))) {
+                      return 2;
+                    }
+                    return 1; // Some still processing
+                  }
+
+                  // All are in processing/accepted/ready state
+                  if (statuses.every(s => ['processing', 'accepted', 'preparing', 'ready'].includes(s))) return 1;
+
+                  return 0;
+                }
+
+                // Single vendor order
                 const status = orderDetails?.status || 'pending';
                 if (['cancelled', 'rejected'].includes(status)) return -1;
                 if (['delivered', 'completed'].includes(status)) return 3;
@@ -487,6 +549,25 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               {isCurrent && orderDetails?.driver_name && index === 2 && (
                                 <p className="text-sm text-white/90">
                                   السائق: {orderDetails.driver_name}
+                                </p>
+                              )}
+                              {/* Show vendor count for multi-vendor orders */}
+                              {isMultiVendor && subOrders.length > 0 && (isCompleted || isCurrent) && (
+                                <p className="text-xs text-white/80 mt-1">
+                                  {(() => {
+                                    const statusGroups = [
+                                      { statuses: ['pending'], label: 'في الانتظار' },
+                                      { statuses: ['processing', 'accepted', 'preparing', 'ready'], label: 'قيد التحضير' },
+                                      { statuses: ['shipping', 'out_for_delivery', 'picked_up'], label: 'في الطريق' },
+                                      { statuses: ['delivered', 'completed'], label: 'تم التوصيل' }
+                                    ];
+                                    const currentGroup = statusGroups[index];
+                                    const count = subOrders.filter(o => currentGroup.statuses.includes(o.status)).length;
+                                    if (count > 0) {
+                                      return `${count} من ${subOrders.length} متجر`;
+                                    }
+                                    return '';
+                                  })()}
                                 </p>
                               )}
                             </div>
