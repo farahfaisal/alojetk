@@ -19,6 +19,8 @@ interface SearchResult {
   category?: string;
   service_areas?: string[];
   vendor_service_areas?: string[];
+  main_area?: string;
+  vendor_main_area?: string;
 }
 
 interface SearchModalProps {
@@ -75,6 +77,33 @@ const SearchModal: React.FC<SearchModalProps> = ({
       setRecentSearches(JSON.parse(stored));
     }
   }, []);
+
+  const getMainArea = async (areaName: string): Promise<string> => {
+    try {
+      const { data: area } = await supabase
+        .from('service_areas')
+        .select('id, name, parent_id, city')
+        .eq('name', areaName)
+        .maybeSingle();
+
+      if (!area) return areaName;
+
+      if (!area.parent_id) {
+        return area.name;
+      }
+
+      const { data: parentArea } = await supabase
+        .from('service_areas')
+        .select('name')
+        .eq('id', area.parent_id)
+        .maybeSingle();
+
+      return parentArea?.name || area.name;
+    } catch (error) {
+      console.error('Error getting main area:', error);
+      return areaName;
+    }
+  };
 
   useEffect(() => {
     const performSearch = async () => {
@@ -148,25 +177,37 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
         console.log('📦 Products found (after filter):', filteredProducts.length);
 
-        const results: SearchResult[] = [
-          ...(vendors || []).map((v: any) => ({
+        // Get main areas for vendors and products
+        const vendorResults = await Promise.all((vendors || []).map(async (v: any) => {
+          const firstArea = v.service_areas && v.service_areas.length > 0 ? v.service_areas[0] : '';
+          const mainArea = firstArea ? await getMainArea(firstArea) : '';
+          return {
             id: v.id,
             name: v.store_name,
             type: 'vendor' as const,
             image: v.logo_url,
             category: v.type,
-            service_areas: v.service_areas || []
-          })),
-          ...filteredProducts.map((p: any) => ({
+            service_areas: v.service_areas || [],
+            main_area: mainArea
+          };
+        }));
+
+        const productResults = await Promise.all(filteredProducts.map(async (p: any) => {
+          const firstArea = p.vendor?.service_areas && p.vendor.service_areas.length > 0 ? p.vendor.service_areas[0] : '';
+          const mainArea = firstArea ? await getMainArea(firstArea) : '';
+          return {
             id: p.id,
             name: p.name,
             type: 'product' as const,
             image: p.image_url,
             vendor_name: p.vendor?.store_name,
             price: p.price,
-            vendor_service_areas: p.vendor?.service_areas || []
-          }))
-        ];
+            vendor_service_areas: p.vendor?.service_areas || [],
+            vendor_main_area: mainArea
+          };
+        }));
+
+        const results: SearchResult[] = [...vendorResults, ...productResults];
 
         console.log('✅ Total results:', results.length);
         setSearchResults(results);
@@ -317,12 +358,12 @@ const SearchModal: React.FC<SearchModalProps> = ({
                       {result.type === 'vendor' ? (
                         <div className="space-y-1">
                           <p className="text-sm text-gray-500">{result.category || 'متجر'}</p>
-                          {result.service_areas && result.service_areas.length > 0 && (
+                          {result.main_area && (
                             <div className="flex items-center gap-1.5 bg-brand/10 rounded-lg px-2 py-1 w-fit">
                               <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
                               <p className="text-sm text-brand font-bold truncate">
-                                {result.service_areas[0]}
-                                {result.service_areas.length > 1 && ` +${result.service_areas.length - 1}`}
+                                {result.main_area}
+                                {result.service_areas && result.service_areas.length > 1 && ` +${result.service_areas.length - 1}`}
                               </p>
                             </div>
                           )}
@@ -331,12 +372,12 @@ const SearchModal: React.FC<SearchModalProps> = ({
                         <div className="space-y-1">
                           <p className="text-sm text-gray-500 truncate">{result.vendor_name}</p>
                           <div className="flex items-center justify-between gap-2">
-                            {result.vendor_service_areas && result.vendor_service_areas.length > 0 && (
+                            {result.vendor_main_area && (
                               <div className="flex items-center gap-1.5 bg-brand/10 rounded-lg px-2 py-1">
                                 <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
                                 <p className="text-sm text-brand font-bold truncate">
-                                  {result.vendor_service_areas[0]}
-                                  {result.vendor_service_areas.length > 1 && ` +${result.vendor_service_areas.length - 1}`}
+                                  {result.vendor_main_area}
+                                  {result.vendor_service_areas && result.vendor_service_areas.length > 1 && ` +${result.vendor_service_areas.length - 1}`}
                                 </p>
                               </div>
                             )}
