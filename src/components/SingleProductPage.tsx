@@ -887,7 +887,6 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
             {selectionStep === 'required' && groupedAddons.required.length > 0 && (
               <div className="mb-4">
                 <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <span className="text-red-600">*</span>
                   المكونات:
                 </h3>
                 <div className="space-y-2">
@@ -1164,12 +1163,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 whileTap={{ scale: 0.98 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  const unselectedRequired = groupedAddons.required.filter(addon => !selectedAddons[addon.id]);
-                  if (unselectedRequired.length > 0) {
-                    setAddToCartError('الرجاء اختيار جميع المكونات');
-                    return;
-                  }
-                  // Move to next step
+                  // Move to next step (components are now optional)
                   if (groupedAddons.optional.length > 0) {
                     setSelectionStep('optional');
                   } else {
