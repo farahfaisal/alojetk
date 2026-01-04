@@ -24,6 +24,7 @@ interface CartItem {
     name: string;
     price: number;
     quantity: number;
+    type?: string;
   }>;
   variant_id?: string;
   variant_name?: string;
@@ -549,10 +550,24 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                {/* Addons */}
-                                {item.addons && item.addons.length > 0 && (
+                                {/* Addons - Default Type */}
+                                {item.addons && item.addons.filter(addon => !addon.type || addon.type === 'default').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
-                                    {item.addons.map((addon) => (
+                                    <p className="text-xs font-medium text-gray-700 mb-1">الإضافات:</p>
+                                    {item.addons.filter(addon => !addon.type || addon.type === 'default').map((addon) => (
+                                      <div key={addon.id} className="flex items-center justify-between text-xs text-gray-600">
+                                        <span>• {addon.name} (×{addon.quantity})</span>
+                                        <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Addons - Components Type */}
+                                {item.addons && item.addons.filter(addon => addon.type === 'components').length > 0 && (
+                                  <div className="space-y-1 pt-2 border-t border-gray-200">
+                                    <p className="text-xs font-medium text-gray-700 mb-1">المكونات:</p>
+                                    {item.addons.filter(addon => addon.type === 'components').map((addon) => (
                                       <div key={addon.id} className="flex items-center justify-between text-xs text-gray-600">
                                         <span>• {addon.name} (×{addon.quantity})</span>
                                         <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>

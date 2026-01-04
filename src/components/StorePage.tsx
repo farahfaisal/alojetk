@@ -299,7 +299,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               name,
               price,
               is_required,
-              is_default
+              is_default,
+              type
             )
           `)
           .eq('status', 'active')

@@ -19,6 +19,7 @@ interface ProductAddon {
   price: number;
   is_required: boolean;
   is_default: boolean;
+  type?: string;
   quantity?: number;
 }
 
