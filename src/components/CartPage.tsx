@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, Trash2, X, MapPin, CreditCard, Wallet, DollarSign, Clock, Truck, AlertCircle, Check, ChevronLeft, Store, Package } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2, X, MapPin, CreditCard, Wallet, DollarSign, Clock, Truck, AlertCircle, Check, ChevronLeft, Store, Package, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -54,6 +54,10 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
   const [vendorInfo, setVendorInfo] = useState<any>(null);
   const [vendorsInfo, setVendorsInfo] = useState<{[vendorId: string]: any}>({});
   const [estimatedTime, setEstimatedTime] = useState('30-45');
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   // Calculate multi-vendor delivery fee
   useEffect(() => {
@@ -358,8 +362,90 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     }, 0);
   };
 
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+
+    const subtotal = calculateSubtotal();
+    let discount = 0;
+
+    if (appliedCoupon.type === 'percentage') {
+      discount = (subtotal * appliedCoupon.value) / 100;
+      if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
+        discount = appliedCoupon.max_discount;
+      }
+    } else if (appliedCoupon.type === 'fixed') {
+      discount = appliedCoupon.value;
+    }
+
+    return Math.min(discount, subtotal);
+  };
+
   const calculateTotal = () => {
-    return calculateSubtotal() + totalDeliveryFee;
+    return calculateSubtotal() + totalDeliveryFee - calculateDiscount();
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError('الرجاء إدخال كود الكوبون');
+      return;
+    }
+
+    setApplyingCoupon(true);
+    setCouponError('');
+
+    try {
+      const { data: coupon, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .eq('code', couponCode.trim().toUpperCase())
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!coupon) {
+        setCouponError('الكوبون غير صالح أو منتهي الصلاحية');
+        return;
+      }
+
+      // Check if coupon is within date range
+      const now = new Date();
+      const startDate = new Date(coupon.start_date);
+      const endDate = new Date(coupon.end_date);
+
+      if (now < startDate || now > endDate) {
+        setCouponError('الكوبون غير صالح أو منتهي الصلاحية');
+        return;
+      }
+
+      // Check if coupon has reached usage limit
+      if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+        setCouponError('لقد تم استخدام هذا الكوبون بالكامل');
+        return;
+      }
+
+      // Check minimum order amount
+      const subtotal = calculateSubtotal();
+      if (coupon.min_order_amount && subtotal < coupon.min_order_amount) {
+        setCouponError(`الحد الأدنى للطلب ${coupon.min_order_amount.toFixed(2)} شيكل`);
+        return;
+      }
+
+      setAppliedCoupon(coupon);
+      setCouponCode('');
+      setCouponError('');
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      setCouponError('حدث خطأ في تطبيق الكوبون');
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError('');
   };
 
   const groupItemsByVendor = () => {
@@ -647,6 +733,62 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                   </div>
                 )}
 
+                {/* Coupon Input */}
+                <div className="mb-4">
+                  {!appliedCoupon ? (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                        <Tag className="w-4 h-4" />
+                        كود الخصم
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value.toUpperCase());
+                            setCouponError('');
+                          }}
+                          placeholder="أدخل كود الخصم"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                        />
+                        <button
+                          onClick={applyCoupon}
+                          disabled={applyingCoupon || !couponCode.trim()}
+                          className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                        >
+                          {applyingCoupon ? 'جاري التحقق...' : 'تطبيق'}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-xs text-red-600 mt-1">{couponError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Tag className="w-4 h-4 text-green-600" />
+                          <div>
+                            <p className="text-sm font-bold text-green-900">{appliedCoupon.code}</p>
+                            <p className="text-xs text-green-700">
+                              {appliedCoupon.type === 'percentage'
+                                ? `خصم ${appliedCoupon.value}%`
+                                : `خصم ${appliedCoupon.value} شيكل`}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={removeCoupon}
+                          className="text-red-600 hover:text-red-700 text-sm"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
@@ -666,6 +808,15 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                     </span>
                     <span className="font-medium">{totalDeliveryFee.toFixed(2)} شيكل</span>
                   </div>
+                  {appliedCoupon && calculateDiscount() > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span className="flex items-center gap-1">
+                        <Tag className="w-4 h-4" />
+                        الخصم
+                      </span>
+                      <span className="font-medium">-{calculateDiscount().toFixed(2)} شيكل</span>
+                    </div>
+                  )}
                   <div className="border-t pt-2 flex justify-between">
                     <span className="font-bold text-gray-900">المجموع الكلي</span>
                     <span className="font-bold text-brand text-lg">{calculateTotal().toFixed(2)} شيكل</span>
