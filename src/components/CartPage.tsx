@@ -550,27 +550,27 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                {/* Addons - Default Type */}
-                                {item.addons && item.addons.filter(addon => !addon.type || addon.type === 'default').length > 0 && (
+                                {/* Addons - Components Type */}
+                                {item.addons && item.addons.filter(addon => addon.type === 'components').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
-                                    <p className="text-xs font-medium text-gray-700 mb-1">الإضافات:</p>
-                                    {item.addons.filter(addon => !addon.type || addon.type === 'default').map((addon) => (
-                                      <div key={addon.id} className="flex items-center justify-between text-xs text-gray-600">
-                                        <span>• {addon.name} (×{addon.quantity})</span>
-                                        <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                    <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
+                                    {item.addons.filter(addon => addon.type === 'components').map((addon) => (
+                                      <div key={addon.id} className="flex items-center justify-between text-xs">
+                                        <span className="text-emerald-700">• {addon.name} (×{addon.quantity})</span>
+                                        <span className="text-emerald-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
                                       </div>
                                     ))}
                                   </div>
                                 )}
 
-                                {/* Addons - Components Type */}
-                                {item.addons && item.addons.filter(addon => addon.type === 'components').length > 0 && (
+                                {/* Addons - Optional Type */}
+                                {item.addons && item.addons.filter(addon => addon.type !== 'components').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
-                                    <p className="text-xs font-medium text-gray-700 mb-1">المكونات:</p>
-                                    {item.addons.filter(addon => addon.type === 'components').map((addon) => (
-                                      <div key={addon.id} className="flex items-center justify-between text-xs text-gray-600">
-                                        <span>• {addon.name} (×{addon.quantity})</span>
-                                        <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                    <p className="text-xs font-bold text-blue-700 mb-1.5">الإضافات الاختيارية:</p>
+                                    {item.addons.filter(addon => addon.type !== 'components').map((addon) => (
+                                      <div key={addon.id} className="flex items-center justify-between text-xs">
+                                        <span className="text-blue-700">• {addon.name} (×{addon.quantity})</span>
+                                        <span className="text-blue-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
                                       </div>
                                     ))}
                                   </div>
