@@ -550,11 +550,11 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                {/* Addons - Components Type */}
-                                {item.addons && item.addons.filter(addon => addon.type === 'components').length > 0 && (
+                                {/* Addons - Components Type (regular type) */}
+                                {item.addons && item.addons.filter(addon => addon.type === 'regular').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
                                     <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
-                                    {item.addons.filter(addon => addon.type === 'components').map((addon) => (
+                                    {item.addons.filter(addon => addon.type === 'regular').map((addon) => (
                                       <div key={addon.id} className="flex items-center justify-between text-xs">
                                         <span className="text-emerald-700">• {addon.name} (×{addon.quantity})</span>
                                         <span className="text-emerald-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
@@ -563,11 +563,11 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   </div>
                                 )}
 
-                                {/* Addons - Optional Type */}
-                                {item.addons && item.addons.filter(addon => addon.type !== 'components').length > 0 && (
+                                {/* Addons - Optional Type (non-regular addons) */}
+                                {item.addons && item.addons.filter(addon => addon.type !== 'regular').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
                                     <p className="text-xs font-bold text-blue-700 mb-1.5">الإضافات الاختيارية:</p>
-                                    {item.addons.filter(addon => addon.type !== 'components').map((addon) => (
+                                    {item.addons.filter(addon => addon.type !== 'regular').map((addon) => (
                                       <div key={addon.id} className="flex items-center justify-between text-xs">
                                         <span className="text-blue-700">• {addon.name} (×{addon.quantity})</span>
                                         <span className="text-blue-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
