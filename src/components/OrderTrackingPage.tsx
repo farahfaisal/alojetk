@@ -725,13 +725,13 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                     <div className="mb-1">
                                       <span className="text-xs font-bold text-gray-700">الإضافات:</span>
                                     </div>
-                                    <div className="flex flex-wrap gap-1 bg-blue-50 p-2 rounded-lg">
+                                    <div className="space-y-1 bg-blue-50 p-2 rounded-lg">
                                       {item.addons.map((addon: any, addonIndex: number) => (
-                                        <div key={addonIndex} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 rounded text-xs">
-                                          <span className="text-blue-900 font-medium">
+                                        <div key={addonIndex} className="flex items-center justify-between">
+                                          <span className="text-xs text-blue-900 font-medium">
                                             • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
                                           </span>
-                                          <span className="text-blue-900 font-bold">
+                                          <span className="text-xs text-blue-900 font-bold">
                                             +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
                                           </span>
                                         </div>
@@ -861,9 +861,9 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               <div className="mb-2">
                                 <span className="text-sm font-bold text-gray-700">الإضافات:</span>
                               </div>
-                              <div className="flex flex-wrap gap-2 bg-blue-50 p-3 rounded-lg">
+                              <div className="space-y-2 bg-blue-50 p-3 rounded-lg">
                                 {item.addons.map((addon: any, addonIndex: number) => (
-                                  <div key={addonIndex} className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 rounded-lg">
+                                  <div key={addonIndex} className="flex items-center justify-between">
                                     <span className="text-sm text-blue-900 font-medium">
                                       • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
                                     </span>

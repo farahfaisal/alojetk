@@ -551,15 +551,13 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                                 {/* Addons */}
                                 {item.addons && item.addons.length > 0 && (
-                                  <div className="pt-2 border-t border-gray-200">
-                                    <div className="flex flex-wrap gap-2">
-                                      {item.addons.map((addon) => (
-                                        <div key={addon.id} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs text-gray-700">
-                                          <span>• {addon.name} (×{addon.quantity})</span>
-                                          <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
-                                        </div>
-                                      ))}
-                                    </div>
+                                  <div className="space-y-1 pt-2 border-t border-gray-200">
+                                    {item.addons.map((addon) => (
+                                      <div key={addon.id} className="flex items-center justify-between text-xs text-gray-600">
+                                        <span>• {addon.name} (×{addon.quantity})</span>
+                                        <span className="text-gray-900 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
 
