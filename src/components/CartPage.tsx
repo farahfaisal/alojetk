@@ -101,7 +101,11 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
               item.addons = item.addons.map((addon: any) => {
                 if (!addon.type) {
                   hasUpdates = true;
-                  return { ...addon, type: 'regular' };
+                  // Determine type based on addon properties
+                  // If required or default -> regular (components)
+                  // Otherwise -> optional (optional addons)
+                  const addonType = (addon.is_required || addon.is_default) ? 'regular' : 'optional';
+                  return { ...addon, type: addonType };
                 }
                 return addon;
               });
