@@ -72,6 +72,36 @@ const SearchModal: React.FC<SearchModalProps> = ({
     }
   }, []);
 
+  const getAllSubAreas = useCallback(async (mainAreaName: string): Promise<string[]> => {
+    try {
+      // Get the main area ID
+      const { data: mainArea } = await supabase
+        .from('service_areas')
+        .select('id, name')
+        .eq('name', mainAreaName)
+        .maybeSingle();
+
+      if (!mainArea) return [mainAreaName];
+
+      // Get all sub-areas with this parent_id
+      const { data: subAreas } = await supabase
+        .from('service_areas')
+        .select('name')
+        .eq('parent_id', mainArea.id);
+
+      // Return main area + all sub-areas
+      const allAreas = [mainArea.name];
+      if (subAreas && subAreas.length > 0) {
+        allAreas.push(...subAreas.map(area => area.name));
+      }
+
+      return allAreas;
+    } catch (error) {
+      console.error('Error getting sub areas:', error);
+      return [mainAreaName];
+    }
+  }, []);
+
   useEffect(() => {
     const loadServiceAreas = async () => {
       try {
@@ -81,20 +111,20 @@ const SearchModal: React.FC<SearchModalProps> = ({
           .order('name');
 
         if (error) throw error;
-        setServiceAreas(data || []);
+
+        // Filter to show only main areas (no parent_id) in the dropdown
+        const mainAreas = data?.filter(area => !area.parent_id) || [];
+        setServiceAreas(mainAreas);
 
         // Set default zone from localStorage
         const storedZone = localStorage.getItem('selectedCity');
         if (storedZone) {
           const parsedZone = JSON.parse(storedZone);
-          const zone = data?.find(area => area.name === parsedZone);
-          if (zone) {
-            setSelectedZone(zone.name);
 
-            // Get main area for display
-            const mainArea = await getMainArea(zone.name);
-            setDisplayedZone(mainArea);
-          }
+          // Get main area for the stored zone
+          const mainArea = await getMainArea(parsedZone);
+          setSelectedZone(mainArea);
+          setDisplayedZone(mainArea);
         }
       } catch (error) {
         console.error('Error loading service areas:', error);
@@ -122,6 +152,10 @@ const SearchModal: React.FC<SearchModalProps> = ({
       try {
         console.log('🔍 Search started:', { searchQuery, selectedZone });
 
+        // Get all areas to search in (main + sub areas)
+        const searchAreas = selectedZone ? await getAllSubAreas(selectedZone) : [];
+        console.log('📍 Search areas:', searchAreas);
+
         // Build vendor query
         let vendorQuery = supabase
           .from('vendors')
@@ -129,16 +163,20 @@ const SearchModal: React.FC<SearchModalProps> = ({
           .ilike('store_name', `%${searchQuery}%`)
           .eq('status', 'active');
 
-        // Filter by zone if selected
-        if (selectedZone) {
-          vendorQuery = vendorQuery.contains('service_areas', [selectedZone]);
-        }
-
-        const { data: vendors, error: vendorsError } = await vendorQuery.limit(5);
+        const { data: allVendors, error: vendorsError } = await vendorQuery.limit(50);
 
         if (vendorsError) {
           console.error('❌ Vendors query error:', vendorsError);
           throw vendorsError;
+        }
+
+        // Filter vendors by zone (including sub-areas)
+        let vendors = allVendors || [];
+        if (selectedZone && searchAreas.length > 0) {
+          vendors = vendors.filter((v: any) => {
+            return v.service_areas && Array.isArray(v.service_areas) &&
+                   v.service_areas.some((area: string) => searchAreas.includes(area));
+          });
         }
 
         console.log('✅ Vendors found:', vendors?.length || 0, vendors);
@@ -160,11 +198,11 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
         // Filter products by zone if selected and vendor is active
         let filteredProducts = products || [];
-        if (selectedZone) {
+        if (selectedZone && searchAreas.length > 0) {
           filteredProducts = filteredProducts.filter((p: any) => {
             const hasServiceArea = p.vendor?.service_areas &&
                                   Array.isArray(p.vendor.service_areas) &&
-                                  p.vendor.service_areas.includes(selectedZone);
+                                  p.vendor.service_areas.some((area: string) => searchAreas.includes(area));
             const isVendorActive = p.vendor?.status === 'active';
             console.log(`Product "${p.name}":`, {
               vendorName: p.vendor?.store_name,
@@ -225,7 +263,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
     const debounce = setTimeout(performSearch, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery, selectedZone, getMainArea]);
+  }, [searchQuery, selectedZone, getMainArea, getAllSubAreas]);
 
   const handleSearchSubmit = (query: string) => {
     if (query.trim()) {
