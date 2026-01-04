@@ -722,19 +722,17 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                 {/* Addons */}
                                 {item.addons && item.addons.length > 0 && (
                                   <div className="mt-2 pt-2 border-t border-gray-200">
-                                    <div className="mb-1">
+                                    <div className="mb-2">
                                       <span className="text-xs font-bold text-gray-700">الإضافات:</span>
                                     </div>
-                                    <div className="space-y-1 bg-blue-50 p-2 rounded-lg">
+                                    <div className="flex flex-wrap gap-2">
                                       {item.addons.map((addon: any, addonIndex: number) => (
-                                        <div key={addonIndex} className="flex items-center justify-between">
-                                          <span className="text-xs text-blue-900 font-medium">
-                                            • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
-                                          </span>
-                                          <span className="text-xs text-blue-900 font-bold">
-                                            +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
-                                          </span>
-                                        </div>
+                                        <span
+                                          key={addonIndex}
+                                          className="px-3 py-1 bg-blue-50 text-blue-900 rounded-full text-xs font-medium border border-blue-200"
+                                        >
+                                          {addon.name}
+                                        </span>
                                       ))}
                                     </div>
                                   </div>
@@ -861,16 +859,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               <div className="mb-2">
                                 <span className="text-sm font-bold text-gray-700">الإضافات:</span>
                               </div>
-                              <div className="space-y-2 bg-blue-50 p-3 rounded-lg">
+                              <div className="flex flex-wrap gap-2">
                                 {item.addons.map((addon: any, addonIndex: number) => (
-                                  <div key={addonIndex} className="flex items-center justify-between">
-                                    <span className="text-sm text-blue-900 font-medium">
-                                      • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
-                                    </span>
-                                    <span className="text-blue-900 font-bold">
-                                      +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
-                                    </span>
-                                  </div>
+                                  <span
+                                    key={addonIndex}
+                                    className="px-3 py-1.5 bg-blue-50 text-blue-900 rounded-full text-xs font-medium border border-blue-200"
+                                  >
+                                    {addon.name}
+                                  </span>
                                 ))}
                               </div>
                             </div>
