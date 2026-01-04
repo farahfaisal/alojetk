@@ -439,7 +439,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             price: addon.price,
             quantity: addon.quantity || 1,
             is_required: addon.is_required || false,
-            is_default: addon.is_default || false
+            is_default: addon.is_default || false,
+            type: addon.type || 'regular'
           }));
         }
       } else {
@@ -449,7 +450,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           price: addon.price,
           quantity: addon.quantity || 1,
           is_required: addon.is_required || false,
-          is_default: addon.is_default || false
+          is_default: addon.is_default || false,
+          type: addon.type || 'regular'
         }));
 
         cart[cartItemId] = {
