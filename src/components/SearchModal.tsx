@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X, MapPin, Store, Package, TrendingUp, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
@@ -38,47 +38,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedZone, setSelectedZone] = useState<string>('');
+  const [displayedZone, setDisplayedZone] = useState<string>('');
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [popularSearches] = useState<string[]>(['بيتزا', 'برجر', 'شاورما', 'حلويات', 'مشروبات']);
 
-  useEffect(() => {
-    const loadServiceAreas = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('service_areas')
-          .select('*')
-          .order('name');
-
-        if (error) throw error;
-        setServiceAreas(data || []);
-
-        // Set default zone from localStorage
-        const storedZone = localStorage.getItem('selectedCity');
-        if (storedZone) {
-          const parsedZone = JSON.parse(storedZone);
-          const zone = data?.find(area => area.name === parsedZone);
-          if (zone) {
-            setSelectedZone(zone.name);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading service areas:', error);
-      }
-    };
-
-    loadServiceAreas();
-
-    // Load recent searches
-    const stored = localStorage.getItem('recentSearches');
-    if (stored) {
-      setRecentSearches(JSON.parse(stored));
-    }
-  }, []);
-
-  const getMainArea = async (areaName: string): Promise<string> => {
+  const getMainArea = useCallback(async (areaName: string): Promise<string> => {
     try {
       const { data: area } = await supabase
         .from('service_areas')
@@ -103,7 +70,45 @@ const SearchModal: React.FC<SearchModalProps> = ({
       console.error('Error getting main area:', error);
       return areaName;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const loadServiceAreas = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('service_areas')
+          .select('*')
+          .order('name');
+
+        if (error) throw error;
+        setServiceAreas(data || []);
+
+        // Set default zone from localStorage
+        const storedZone = localStorage.getItem('selectedCity');
+        if (storedZone) {
+          const parsedZone = JSON.parse(storedZone);
+          const zone = data?.find(area => area.name === parsedZone);
+          if (zone) {
+            setSelectedZone(zone.name);
+
+            // Get main area for display
+            const mainArea = await getMainArea(zone.name);
+            setDisplayedZone(mainArea);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading service areas:', error);
+      }
+    };
+
+    loadServiceAreas();
+
+    // Load recent searches
+    const stored = localStorage.getItem('recentSearches');
+    if (stored) {
+      setRecentSearches(JSON.parse(stored));
+    }
+  }, [getMainArea]);
 
   useEffect(() => {
     const performSearch = async () => {
@@ -220,7 +225,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
     const debounce = setTimeout(performSearch, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery, selectedZone]);
+  }, [searchQuery, selectedZone, getMainArea]);
 
   const handleSearchSubmit = (query: string) => {
     if (query.trim()) {
@@ -241,10 +246,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
     onClose();
   };
 
-  const handleZoneChange = (zoneName: string) => {
+  const handleZoneChange = async (zoneName: string) => {
     setSelectedZone(zoneName);
     localStorage.setItem('selectedCity', JSON.stringify(zoneName));
     window.dispatchEvent(new Event('storage'));
+
+    // Update displayed zone to main area
+    const mainArea = await getMainArea(zoneName);
+    setDisplayedZone(mainArea);
   };
 
   if (!isOpen) return null;
@@ -283,9 +292,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
           {/* Zone Selector */}
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 mb-4">
-            <div className="flex items-center gap-2 text-white/80 text-sm mb-2">
-              <MapPin className="w-4 h-4" />
-              <span>منطقة التوصيل</span>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2 text-white/80 text-sm">
+                <MapPin className="w-4 h-4" />
+                <span>منطقة التوصيل</span>
+              </div>
+              {displayedZone && (
+                <span className="text-white font-bold text-sm">{displayedZone}</span>
+              )}
             </div>
             <select
               value={selectedZone}
