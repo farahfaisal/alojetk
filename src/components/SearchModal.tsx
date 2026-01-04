@@ -311,14 +311,16 @@ const SearchModal: React.FC<SearchModalProps> = ({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 truncate">{result.name}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-bold text-gray-900 truncate">{result.name}</h4>
+                      </div>
                       {result.type === 'vendor' ? (
                         <div className="space-y-1">
                           <p className="text-sm text-gray-500">{result.category || 'متجر'}</p>
                           {result.service_areas && result.service_areas.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand flex-shrink-0" />
-                              <p className="text-xs text-brand font-medium truncate">
+                            <div className="flex items-center gap-1.5 bg-brand/10 rounded-lg px-2 py-1 w-fit">
+                              <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
+                              <p className="text-sm text-brand font-bold truncate">
                                 {result.service_areas[0]}
                                 {result.service_areas.length > 1 && ` +${result.service_areas.length - 1}`}
                               </p>
@@ -327,23 +329,23 @@ const SearchModal: React.FC<SearchModalProps> = ({
                         </div>
                       ) : (
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm text-gray-500 truncate">{result.vendor_name}</p>
+                          <p className="text-sm text-gray-500 truncate">{result.vendor_name}</p>
+                          <div className="flex items-center justify-between gap-2">
+                            {result.vendor_service_areas && result.vendor_service_areas.length > 0 && (
+                              <div className="flex items-center gap-1.5 bg-brand/10 rounded-lg px-2 py-1">
+                                <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
+                                <p className="text-sm text-brand font-bold truncate">
+                                  {result.vendor_service_areas[0]}
+                                  {result.vendor_service_areas.length > 1 && ` +${result.vendor_service_areas.length - 1}`}
+                                </p>
+                              </div>
+                            )}
                             {result.price && (
-                              <p className="text-sm font-bold text-[#c21d14]">
+                              <p className="text-sm font-bold text-[#c21d14] whitespace-nowrap">
                                 {result.price.toFixed(2)} ₪
                               </p>
                             )}
                           </div>
-                          {result.vendor_service_areas && result.vendor_service_areas.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand flex-shrink-0" />
-                              <p className="text-xs text-brand font-medium truncate">
-                                {result.vendor_service_areas[0]}
-                                {result.vendor_service_areas.length > 1 && ` +${result.vendor_service_areas.length - 1}`}
-                              </p>
-                            </div>
-                          )}
                         </div>
                       )}
                     </div>
