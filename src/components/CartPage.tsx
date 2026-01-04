@@ -92,6 +92,27 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         const storedItems = localStorage.getItem('cartItems');
         if (storedItems) {
           const parsedItems = JSON.parse(storedItems);
+
+          // Update old cart items to include type field for addons
+          let hasUpdates = false;
+          Object.keys(parsedItems).forEach(key => {
+            const item = parsedItems[key];
+            if (item.addons && Array.isArray(item.addons)) {
+              item.addons = item.addons.map((addon: any) => {
+                if (!addon.type) {
+                  hasUpdates = true;
+                  return { ...addon, type: 'regular' };
+                }
+                return addon;
+              });
+            }
+          });
+
+          // Save updated cart if there were changes
+          if (hasUpdates) {
+            localStorage.setItem('cartItems', JSON.stringify(parsedItems));
+          }
+
           const itemsArray = Object.values(parsedItems) as CartItem[];
           setCartItems(itemsArray);
 
