@@ -75,6 +75,8 @@ const AppContent: React.FC = () => {
   const [showPermissionsPrompt, setShowPermissionsPrompt] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedVendor, setSelectedVendor] = useState<any | null>(null);
   const { toast } = useToast();
   const [showServiceAreaSelection, setShowServiceAreaSelection] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -134,6 +136,44 @@ const AppContent: React.FC = () => {
     window.addEventListener('storage', updateCartCount);
     return () => window.removeEventListener('storage', updateCartCount);
   }, []);
+
+  // Fetch vendor data when vendorId is set
+  useEffect(() => {
+    if (selectedVendorId) {
+      supabase
+        .from('vendors')
+        .select('*')
+        .eq('id', selectedVendorId)
+        .single()
+        .then(({ data, error }) => {
+          if (data && !error) {
+            setSelectedVendor(data);
+          } else {
+            console.error('Error fetching vendor:', error);
+            setSelectedVendorId(null);
+          }
+        });
+    }
+  }, [selectedVendorId]);
+
+  // Fetch product data when productId is set
+  useEffect(() => {
+    if (selectedProductId) {
+      supabase
+        .from('products')
+        .select('*, vendor:vendor_id(id, store_name, logo_url, rating, rating_count, status), category:category_id(id, name)')
+        .eq('id', selectedProductId)
+        .single()
+        .then(({ data, error }) => {
+          if (data && !error) {
+            setSelectedProduct(data);
+          } else {
+            console.error('Error fetching product:', error);
+            setSelectedProductId(null);
+          }
+        });
+    }
+  }, [selectedProductId]);
 
   useEffect(() => {
     const fetchServiceAreas = async () => {
@@ -851,11 +891,11 @@ const AppContent: React.FC = () => {
           onClose={() => setIsSearchOpen(false)}
           onVendorSelect={(vendorId) => {
             setIsSearchOpen(false);
-            setSelectedVendorId(vendorId);
+            setSelectedVendorId(String(vendorId));
           }}
           onProductSelect={(productId) => {
             setIsSearchOpen(false);
-            setSelectedProductId(productId);
+            setSelectedProductId(String(productId));
           }}
         />
 
@@ -876,19 +916,34 @@ const AppContent: React.FC = () => {
         )}
 
         {/* Single Product Page */}
-        {selectedProductId && (
+        {selectedProduct && (
           <SingleProductPage
-            productId={selectedProductId}
-            onClose={() => setSelectedProductId(null)}
+            product={selectedProduct}
+            onClose={() => {
+              setSelectedProductId(null);
+              setSelectedProduct(null);
+            }}
             onAddToCart={() => {}}
           />
         )}
 
         {/* Store Page */}
-        {selectedVendorId && (
+        {selectedVendor && (
           <StorePage
-            vendorId={selectedVendorId}
-            onClose={() => setSelectedVendorId(null)}
+            vendor={{
+              id: selectedVendor.id,
+              store_name: selectedVendor.store_name,
+              banner: selectedVendor.banner_url,
+              logo: selectedVendor.logo_url,
+              rating: selectedVendor.rating,
+              status: { is_open: selectedVendor.status === 'active' },
+              address: selectedVendor.address
+            }}
+            categoryId={null}
+            onClose={() => {
+              setSelectedVendorId(null);
+              setSelectedVendor(null);
+            }}
           />
         )}
       </div>
