@@ -577,14 +577,15 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                                 {/* Addons - Components Type (regular type) */}
                                 {item.addons && item.addons.filter(addon => addon.type === 'regular').length > 0 && (
-                                  <div className="space-y-1 pt-2 border-t border-gray-200">
+                                  <div className="pt-2 border-t border-gray-200">
                                     <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
-                                    {item.addons.filter(addon => addon.type === 'regular').map((addon) => (
-                                      <div key={addon.id} className="flex items-center justify-between text-xs">
-                                        <span className="text-emerald-700">• {addon.name} (×{addon.quantity})</span>
-                                        <span className="text-emerald-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
-                                      </div>
-                                    ))}
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {item.addons.filter(addon => addon.type === 'regular').map((addon) => (
+                                        <span key={addon.id} className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                                          {addon.name}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 )}
 
