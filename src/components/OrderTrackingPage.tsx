@@ -719,14 +719,28 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   <span className="text-amber-600 font-bold text-sm">يحدد لاحقاً</span>
                                 )}
 
-                                {/* Addons */}
-                                {item.addons && item.addons.length > 0 && (
+                                {/* Addons - Components (regular type) */}
+                                {item.addons && item.addons.filter((a: any) => a.type === 'regular').length > 0 && (
+                                  <div className="mt-2 pt-2 border-t border-gray-200">
+                                    <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {item.addons.filter((a: any) => a.type === 'regular').map((addon: any, addonIndex: number) => (
+                                        <span key={addonIndex} className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                                          {addon.name}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Addons - Optional Type */}
+                                {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                                   <div className="mt-2 pt-2 border-t border-gray-200">
                                     <div className="mb-1">
-                                      <span className="text-xs font-bold text-gray-700">الإضافات:</span>
+                                      <span className="text-xs font-bold text-blue-700">الإضافات الاختيارية:</span>
                                     </div>
                                     <div className="space-y-1 bg-blue-50 p-2 rounded-lg">
-                                      {item.addons.map((addon: any, addonIndex: number) => (
+                                      {item.addons.filter((a: any) => a.type !== 'regular').map((addon: any, addonIndex: number) => (
                                         <div key={addonIndex} className="flex items-center justify-between">
                                           <span className="text-xs text-blue-900 font-medium">
                                             • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
@@ -855,14 +869,28 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                             </div>
                           )}
 
-                          {/* Addons */}
-                          {item.addons && item.addons.length > 0 && (
+                          {/* Addons - Components (regular type) */}
+                          {item.addons && item.addons.filter((a: any) => a.type === 'regular').length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {item.addons.filter((a: any) => a.type === 'regular').map((addon: any, addonIndex: number) => (
+                                  <span key={addonIndex} className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                                    {addon.name}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Addons - Optional Type */}
+                          {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                             <div className="mt-3 pt-3 border-t border-gray-200">
                               <div className="mb-2">
-                                <span className="text-sm font-bold text-gray-700">الإضافات:</span>
+                                <span className="text-sm font-bold text-blue-700">الإضافات الاختيارية:</span>
                               </div>
                               <div className="space-y-2 bg-blue-50 p-3 rounded-lg">
-                                {item.addons.map((addon: any, addonIndex: number) => (
+                                {item.addons.filter((a: any) => a.type !== 'regular').map((addon: any, addonIndex: number) => (
                                   <div key={addonIndex} className="flex items-center justify-between">
                                     <span className="text-sm text-blue-900 font-medium">
                                       • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
