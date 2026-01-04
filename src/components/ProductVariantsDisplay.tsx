@@ -70,8 +70,9 @@ export default function ProductVariantsModal({
       const defaultSelected: {[key: number | string]: boolean} = {};
       const defaultQuantities: {[key: number | string]: number} = {};
 
+      // Only select required addons, not default ones
       addons.forEach(addon => {
-        if (addon.is_required || addon.is_default) {
+        if (addon.is_required) {
           defaultSelected[addon.id] = true;
           defaultQuantities[addon.id] = 1;
         }
@@ -395,12 +396,12 @@ export default function ProductVariantsModal({
                     )}
 
                     {groupedAddons.default.length > 0 && (
-                      <div className="bg-white rounded-lg p-3 border-2 border-green-200">
+                      <div className="bg-white rounded-lg p-3 border-2 border-blue-200">
                         <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                          <Check className="w-5 h-5 text-green-600" />
-                          المكونات
+                          <Plus className="w-5 h-5 text-blue-600" />
+                          المكونات المقترحة
                         </h4>
-                        <p className="text-xs text-gray-600 mb-3">محددة مسبقاً - يمكنك إلغاؤها أو تغيير الكمية</p>
+                        <p className="text-xs text-gray-600 mb-3">اختيارية - اختر ما تريده وحدد الكمية</p>
 
                         <div className={`space-y-2 ${groupedAddons.default.length > 4 ? 'max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
                           {groupedAddons.default.map((addon) => (
