@@ -308,15 +308,22 @@ export default function ProductVariantsModal({
                     </div>
 
                     {variants.map((variant) => (
-                      <button
+                      <label
                         key={variant.id}
-                        onClick={() => handleVariantSelect(variant)}
-                        className={`w-full p-3 rounded-lg border-2 transition-all ${
+                        className={`w-full p-3 rounded-lg border-2 transition-all cursor-pointer block ${
                           selectedVariant?.id === variant.id
                             ? 'bg-green-50 border-green-500 shadow-lg'
                             : 'bg-white border-gray-200 hover:border-brand/50'
                         }`}
                       >
+                        <input
+                          type="radio"
+                          name="variant-selection"
+                          value={variant.id}
+                          checked={selectedVariant?.id === variant.id}
+                          onChange={() => handleVariantSelect(variant)}
+                          className="hidden"
+                        />
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
@@ -330,7 +337,7 @@ export default function ProductVariantsModal({
                           </div>
                           <span className="font-bold text-brand text-sm">{variant.price.toFixed(2)} شيكل</span>
                         </div>
-                      </button>
+                      </label>
                     ))}
                   </motion.div>
                 )}
