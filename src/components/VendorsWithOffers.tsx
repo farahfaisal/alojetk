@@ -104,7 +104,9 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
         // Filter by selectedCity if specified
         if (selectedCity) {
           vendorsWithActiveOffers = vendorsWithActiveOffers.filter(v => {
-            if (!v.delivery_zones || !Array.isArray(v.delivery_zones)) return false;
+            // If vendor has no delivery zones or empty array, show them (they deliver everywhere)
+            if (!v.delivery_zones || !Array.isArray(v.delivery_zones) || v.delivery_zones.length === 0) return true;
+            // Otherwise, check if they deliver to selected city
             return v.delivery_zones.some((zone: any) => zone.name === selectedCity);
           });
         }
