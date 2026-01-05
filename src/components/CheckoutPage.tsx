@@ -469,6 +469,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             });
           } else {
             // Regular order item
+            // Check if variant_id is a valid UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+            const isValidUUID = item.variant_id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.variant_id);
+
             regularItems.push({
               order_id: (order as any).id,
               product_id: item.product_id,
@@ -480,7 +483,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               product_name: item.name || 'منتج',
               notes: null,
               addons_data: item.addons || [],
-              variant_id: item.variant_id || null,
+              variant_id: isValidUUID ? item.variant_id : null,
               variant_name: item.variant_name || null,
               preparation_time: item.preparation_time || null,
             });
