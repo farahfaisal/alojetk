@@ -195,13 +195,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     
     // Initialize selected addons
     if (product.addons && product.addons.length > 0) {
-      const requiredAddons = product.addons.filter(addon => addon.is_required);
       const initialAddons: {[key: number]: boolean} = {};
-
-      // Auto-select first required addon only (since they are radio buttons)
-      if (requiredAddons.length > 0) {
-        initialAddons[requiredAddons[0].id] = true;
-      }
 
       // Select default addons
       product.addons.forEach(addon => {
@@ -945,36 +939,26 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 <div className="space-y-2">
                   {groupedAddons.required.map((addon) => (
                     <div key={addon.id} className="space-y-2">
-                      <label
+                      <div
                         className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
                           selectedAddons[addon.id]
                             ? 'border-[#B91C1C] bg-red-50'
                             : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
-                      >
-                        <input
-                          type="radio"
-                          name="required-addon-selection"
-                          value={addon.id}
-                          checked={selectedAddons[addon.id] || false}
-                          onChange={() => {
-                            // Clear all required addons and select only this one
-                            const newSelected: {[key: number]: boolean} = {};
-                            groupedAddons.required.forEach(reqAddon => {
-                              newSelected[reqAddon.id] = reqAddon.id === addon.id;
-                            });
-                            setSelectedAddons(prev => ({
-                              ...prev,
-                              ...newSelected
-                            }));
+                        onClick={() => {
+                          setSelectedAddons(prev => ({
+                            ...prev,
+                            [addon.id]: !prev[addon.id]
+                          }));
+                          if (!selectedAddons[addon.id]) {
                             setAddonQuantities(prev => ({
                               ...prev,
                               [addon.id]: 1
                             }));
-                            setAddToCartError(null);
-                          }}
-                          className="hidden"
-                        />
+                          }
+                          setAddToCartError(null);
+                        }}
+                      >
                         <div className="flex items-center gap-3 flex-1">
                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                             selectedAddons[addon.id]
@@ -995,7 +979,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           <div className="font-semibold text-gray-900">{addon.name}</div>
                         </div>
                         <div className="font-bold text-[#B91C1C] flex-shrink-0">₪{addon.price}</div>
-                      </label>
+                      </div>
                       {selectedAddons[addon.id] && (
                         <div className="flex items-center justify-center gap-2 px-4">
                           <span className="text-sm text-gray-600">الكمية:</span>

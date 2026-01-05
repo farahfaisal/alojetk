@@ -67,20 +67,6 @@ export default function ProductVariantsModal({
       setAddonQuantities({});
       setQuantity(1);
       setError(null);
-
-      const defaultSelected: {[key: number | string]: boolean} = {};
-      const defaultQuantities: {[key: number | string]: number} = {};
-
-      // Auto-select first required addon only (since they are radio buttons)
-      const requiredAddons = addons.filter(addon => addon.is_required);
-      if (requiredAddons.length > 0) {
-        const firstRequired = requiredAddons[0];
-        defaultSelected[firstRequired.id] = true;
-        defaultQuantities[firstRequired.id] = 1;
-      }
-
-      setSelectedAddons(defaultSelected);
-      setAddonQuantities(defaultQuantities);
     }
   }, [isOpen, addons]);
 
@@ -132,11 +118,6 @@ export default function ProductVariantsModal({
   };
 
   const handleAddonToggle = (addonId: number | string) => {
-    const addon = addons.find(a => a.id === addonId);
-    if (addon?.is_required) {
-      return;
-    }
-
     setSelectedAddons(prev => {
       const newSelected = { ...prev };
       if (newSelected[addonId]) {
@@ -364,42 +345,21 @@ export default function ProductVariantsModal({
                       <div className="bg-white rounded-lg p-3 border-2 border-red-200">
                         <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
                           <AlertCircle className="w-5 h-5 text-red-600" />
-                          الإضافات المطلوبة - اختر واحد
+                          المكونات المطلوبة
                         </h4>
-                        <p className="text-xs text-red-700 mb-3 bg-red-50 p-2 rounded">اختر خيار واحد من الخيارات التالية</p>
+                        <p className="text-xs text-red-700 mb-3 bg-red-50 p-2 rounded">يمكنك اختيار أكثر من مكون</p>
 
                         <div className={`space-y-2 ${groupedAddons.required.length > 4 ? 'max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
                           {groupedAddons.required.map((addon) => (
-                            <label
+                            <div
                               key={addon.id}
-                              className={`p-3 rounded-lg border-2 cursor-pointer transition-all block ${
+                              onClick={() => handleAddonToggle(addon.id)}
+                              className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                                 selectedAddons[addon.id]
                                   ? 'bg-red-50 border-red-500'
                                   : 'bg-white border-gray-200 hover:border-red-300'
                               }`}
                             >
-                              <input
-                                type="radio"
-                                name="required-addon-group"
-                                value={addon.id}
-                                checked={selectedAddons[addon.id] || false}
-                                onChange={() => {
-                                  // Clear all required addons and select only this one
-                                  const newSelected: {[key: number | string]: boolean} = {};
-                                  groupedAddons.required.forEach(reqAddon => {
-                                    newSelected[reqAddon.id] = reqAddon.id === addon.id;
-                                  });
-                                  setSelectedAddons(prev => ({
-                                    ...prev,
-                                    ...newSelected
-                                  }));
-                                  setAddonQuantities(prev => ({
-                                    ...prev,
-                                    [addon.id]: 1
-                                  }));
-                                }}
-                                className="hidden"
-                              />
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 flex-1">
                                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
@@ -432,7 +392,7 @@ export default function ProductVariantsModal({
                                   </div>
                                 )}
                               </div>
-                            </label>
+                            </div>
                           ))}
                         </div>
                       </div>
