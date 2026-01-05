@@ -422,8 +422,25 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       const variantInfo = addons?.find(addon => addon.isVariant);
       const regularAddons = addons?.filter(addon => !addon.isVariant) || [];
 
+      // Determine base product price (use discount price if available)
+      const baseProductPrice = product.discount_price && product.discount_price > 0
+        ? product.discount_price
+        : product.price;
+
       // Use variant price if available, otherwise use product base price
-      const finalPrice = variantInfo?.variant_price || product.price;
+      // If variant exists and product has discount, apply same discount percentage to variant
+      let finalPrice = baseProductPrice;
+      if (variantInfo) {
+        const variantPrice = variantInfo.variant_price;
+        if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+          // Apply the same discount percentage to variant price
+          const discountPercentage = (product.price - product.discount_price) / product.price;
+          finalPrice = variantPrice * (1 - discountPercentage);
+        } else {
+          finalPrice = variantPrice;
+        }
+      }
+
       const finalName = variantInfo ? `${product.name} - ${variantInfo.variant_name}` : product.name;
       const cartItemId = variantInfo ? `${productId}_${variantInfo.variant_id}` : productId;
 
