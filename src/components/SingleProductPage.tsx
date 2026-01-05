@@ -188,10 +188,21 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     
     // Initialize selected addons
     if (product.addons && product.addons.length > 0) {
-      const initialAddons = product.addons.reduce((acc, addon) => ({
-        ...acc,
-        [addon.id]: addon.is_required || addon.is_default
-      }), {});
+      const requiredAddons = product.addons.filter(addon => addon.is_required);
+      const initialAddons: {[key: number]: boolean} = {};
+
+      // Auto-select first required addon only (since they are radio buttons)
+      if (requiredAddons.length > 0) {
+        initialAddons[requiredAddons[0].id] = true;
+      }
+
+      // Select default addons
+      product.addons.forEach(addon => {
+        if (addon.is_default) {
+          initialAddons[addon.id] = true;
+        }
+      });
+
       setSelectedAddons(initialAddons);
     }
   }, [product]);
@@ -900,30 +911,32 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                             ? 'border-[#B91C1C] bg-red-50'
                             : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
-                        onClick={() => {
-                          setSelectedAddons(prev => {
-                            const newState = {
-                              ...prev,
-                              [addon.id]: !prev[addon.id]
-                            };
-                            if (!newState[addon.id]) {
-                              setAddonQuantities(prevQty => ({
-                                ...prevQty,
-                                [addon.id]: 1
-                              }));
-                            } else if (!addonQuantities[addon.id]) {
-                              setAddonQuantities(prevQty => ({
-                                ...prevQty,
-                                [addon.id]: 1
-                              }));
-                            }
-                            return newState;
-                          });
-                          setAddToCartError(null);
-                        }}
                       >
+                        <input
+                          type="radio"
+                          name="required-addon-selection"
+                          value={addon.id}
+                          checked={selectedAddons[addon.id] || false}
+                          onChange={() => {
+                            // Clear all required addons and select only this one
+                            const newSelected: {[key: number]: boolean} = {};
+                            groupedAddons.required.forEach(reqAddon => {
+                              newSelected[reqAddon.id] = reqAddon.id === addon.id;
+                            });
+                            setSelectedAddons(prev => ({
+                              ...prev,
+                              ...newSelected
+                            }));
+                            setAddonQuantities(prev => ({
+                              ...prev,
+                              [addon.id]: 1
+                            }));
+                            setAddToCartError(null);
+                          }}
+                          className="hidden"
+                        />
                         <div className="flex items-center gap-3 flex-1">
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                             selectedAddons[addon.id]
                               ? 'bg-[#B91C1C] border-[#B91C1C]'
                               : 'border-gray-300'

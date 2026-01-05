@@ -71,13 +71,13 @@ export default function ProductVariantsModal({
       const defaultSelected: {[key: number | string]: boolean} = {};
       const defaultQuantities: {[key: number | string]: number} = {};
 
-      // Only select required addons, not default ones
-      addons.forEach(addon => {
-        if (addon.is_required) {
-          defaultSelected[addon.id] = true;
-          defaultQuantities[addon.id] = 1;
-        }
-      });
+      // Auto-select first required addon only (since they are radio buttons)
+      const requiredAddons = addons.filter(addon => addon.is_required);
+      if (requiredAddons.length > 0) {
+        const firstRequired = requiredAddons[0];
+        defaultSelected[firstRequired.id] = true;
+        defaultQuantities[firstRequired.id] = 1;
+      }
 
       setSelectedAddons(defaultSelected);
       setAddonQuantities(defaultQuantities);
@@ -364,40 +364,75 @@ export default function ProductVariantsModal({
                       <div className="bg-white rounded-lg p-3 border-2 border-red-200">
                         <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
                           <AlertCircle className="w-5 h-5 text-red-600" />
-                          الإضافات المطلوبة
+                          الإضافات المطلوبة - اختر واحد
                         </h4>
-                        <p className="text-xs text-red-700 mb-3 bg-red-50 p-2 rounded">هذه الإضافات مطلوبة ولا يمكن إلغاؤها</p>
+                        <p className="text-xs text-red-700 mb-3 bg-red-50 p-2 rounded">اختر خيار واحد من الخيارات التالية</p>
 
                         <div className={`space-y-2 ${groupedAddons.required.length > 4 ? 'max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
                           {groupedAddons.required.map((addon) => (
-                            <div key={addon.id} className="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <label
+                              key={addon.id}
+                              className={`p-3 rounded-lg border-2 cursor-pointer transition-all block ${
+                                selectedAddons[addon.id]
+                                  ? 'bg-red-50 border-red-500'
+                                  : 'bg-white border-gray-200 hover:border-red-300'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="required-addon-group"
+                                value={addon.id}
+                                checked={selectedAddons[addon.id] || false}
+                                onChange={() => {
+                                  // Clear all required addons and select only this one
+                                  const newSelected: {[key: number | string]: boolean} = {};
+                                  groupedAddons.required.forEach(reqAddon => {
+                                    newSelected[reqAddon.id] = reqAddon.id === addon.id;
+                                  });
+                                  setSelectedAddons(prev => ({
+                                    ...prev,
+                                    ...newSelected
+                                  }));
+                                  setAddonQuantities(prev => ({
+                                    ...prev,
+                                    [addon.id]: 1
+                                  }));
+                                }}
+                                className="hidden"
+                              />
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 flex-1">
-                                  <div className="w-6 h-6 rounded-full bg-red-600 border-2 border-red-600 flex items-center justify-center">
-                                    <Check className="w-4 h-4 text-white" />
+                                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                                    selectedAddons[addon.id]
+                                      ? 'bg-red-600 border-red-600'
+                                      : 'border-gray-300'
+                                  }`}>
+                                    {selectedAddons[addon.id] && <Check className="w-4 h-4 text-white" />}
                                   </div>
                                   <div>
                                     <p className="font-bold text-gray-900">{addon.name}</p>
                                     {addon.price > 0 && <p className="text-xs text-gray-600">+{addon.price} شيكل</p>}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => handleAddonQuantityChange(addon.id, -1)}
-                                    className="w-7 h-7 rounded-full bg-white border border-gray-300 flex items-center justify-center"
-                                  >
-                                    <Minus className="w-4 h-4" />
-                                  </button>
-                                  <span className="w-8 text-center font-bold">{addonQuantities[addon.id] || 1}</span>
-                                  <button
-                                    onClick={() => handleAddonQuantityChange(addon.id, 1)}
-                                    className="w-7 h-7 rounded-full bg-white border border-gray-300 flex items-center justify-center"
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                  </button>
-                                </div>
+                                {selectedAddons[addon.id] && (
+                                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                      onClick={() => handleAddonQuantityChange(addon.id, -1)}
+                                      className="w-7 h-7 rounded-full bg-white border border-gray-300 flex items-center justify-center"
+                                    >
+                                      <Minus className="w-4 h-4" />
+                                    </button>
+                                    <span className="w-8 text-center font-bold">{addonQuantities[addon.id] || 1}</span>
+                                    <button
+                                      onClick={() => handleAddonQuantityChange(addon.id, 1)}
+                                      className="w-7 h-7 rounded-full bg-white border border-gray-300 flex items-center justify-center"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
-                            </div>
+                            </label>
                           ))}
                         </div>
                       </div>
