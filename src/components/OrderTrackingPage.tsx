@@ -115,6 +115,15 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
         if (groupError) throw groupError;
 
+        console.log('📦 Multi-vendor orders fetched:', groupOrders?.length || 0);
+        groupOrders?.forEach((order, index) => {
+          console.log(`Order ${index + 1}:`, {
+            vendor: order.vendor_name,
+            items_count: order.items_data?.length || 0,
+            items_data: order.items_data
+          });
+        });
+
         if (groupOrders && groupOrders.length > 0) {
           setSubOrders(groupOrders);
           setOrderDetails(groupOrders[0]); // Set first order as main
@@ -809,6 +818,12 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 {orderDetails.items_data?.map((item: any, index: number) => {
                 // Check for image in multiple possible locations
                 const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
+
+                console.log(`🛍️ Displaying item ${index + 1}:`, {
+                  name: item.name,
+                  addons_count: item.addons?.length || 0,
+                  addons: item.addons
+                });
 
                 // Calculate base price and addons total
                 const itemPrice = item.price || 0;

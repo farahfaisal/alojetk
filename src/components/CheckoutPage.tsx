@@ -403,16 +403,23 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           order_group_id: orderGroupId,
           total_vendors: vendorCount,
           vendor_order_index: i + 1,
-          items_data: vendorItems.map((item) => ({
-            id: item.id,
-            product_id: item.product_id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            variant_id: item.variant_id,
-            variant_name: item.variant_name,
-            addons: item.addons || [],
-          }))
+          items_data: vendorItems.map((item) => {
+            console.log(`📝 Preparing item for order:`, {
+              name: item.name,
+              addons_count: item.addons?.length || 0,
+              addons: item.addons
+            });
+            return {
+              id: item.id,
+              product_id: item.product_id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              variant_id: item.variant_id,
+              variant_name: item.variant_name,
+              addons: item.addons || [],
+            };
+          })
         };
 
         console.log(`📦 Creating order ${i + 1}/${vendorCount} for vendor ${vendorItems[0].vendor_name}`, {
