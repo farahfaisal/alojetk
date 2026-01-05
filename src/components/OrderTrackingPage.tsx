@@ -829,6 +829,31 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           ) : (
             /* Single Vendor Order */
             <div className="bg-white rounded-xl p-4 shadow-sm">
+              {/* Vendor Info Section */}
+              {(orderDetails.vendor_name || orderDetails.vendor_id) && (
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
+                  <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
+                    {vendorInfo?.logo_url ? (
+                      <img
+                        src={vendorInfo.logo_url}
+                        alt={orderDetails.vendor_name || vendorInfo?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
+                        <Store className="w-7 h-7 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-gray-900">
+                      {orderDetails.vendor_name || vendorInfo?.name || 'متجر'}
+                    </p>
+                    <p className="text-xs text-gray-500">المتجر</p>
+                  </div>
+                </div>
+              )}
+
               <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <Package className="w-5 h-5 text-brand" />
                 تفاصيل الطلب
