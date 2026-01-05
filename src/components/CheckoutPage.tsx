@@ -621,7 +621,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           <p className="text-sm text-gray-500 text-center mb-6">جاري الانتقال للصفحة الرئيسية...</p>
           <div className="space-y-3">
             <button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                setTimeout(() => {
+                  window.dispatchEvent(new CustomEvent('open-orders'));
+                }, 200);
+              }}
               className="w-full py-3 rounded-xl text-white"
               style={{ backgroundColor: BRAND }}
             >
