@@ -98,31 +98,12 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
     };
   }, [orderId]);
 
-  // Debug log when orderDetails or vendorInfo changes
-  useEffect(() => {
-    console.log('🔄 State updated:', {
-      hasOrderDetails: !!orderDetails,
-      vendorName: orderDetails?.vendor_name,
-      vendorId: orderDetails?.vendor_id,
-      hasVendorInfo: !!vendorInfo,
-      vendorInfo,
-      isMultiVendor
-    });
-  }, [orderDetails, vendorInfo, isMultiVendor]);
-
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
 
-      console.log('🔍 OrderTrackingPage props:', {
-        orderId,
-        orderGroupId,
-        hasGroupId: !!orderGroupId
-      });
-
       // Check if this is a multi-vendor order
       if (orderGroupId) {
-        console.log('🔍 This is a multi-vendor order, fetching group:', orderGroupId);
         setIsMultiVendor(true);
 
         // Fetch all orders in this group
@@ -133,15 +114,6 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           .order('created_at', { ascending: true });
 
         if (groupError) throw groupError;
-
-        console.log('📦 Multi-vendor orders fetched:', groupOrders?.length || 0);
-        groupOrders?.forEach((order, index) => {
-          console.log(`Order ${index + 1}:`, {
-            vendor: order.vendor_name,
-            items_count: order.items_data?.length || 0,
-            items_data: order.items_data
-          });
-        });
 
         if (groupOrders && groupOrders.length > 0) {
           setSubOrders(groupOrders);
@@ -171,7 +143,6 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         }
       } else {
         // Single vendor order
-        console.log('🔍 This is a single vendor order:', orderId);
         setIsMultiVendor(false);
 
         const { data, error } = await supabase
@@ -181,35 +152,23 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           .single();
 
         if (error) throw error;
-        console.log('📦 Order data fetched:', data);
-        console.log('📦 Has vendor_name:', data.vendor_name);
-        console.log('📦 Has vendor_id:', data.vendor_id);
         setOrderDetails(data);
 
         // Fetch vendor info including logo
         if (data?.vendor_id) {
-          console.log('🏪 Fetching vendor info for ID:', data.vendor_id);
           const { data: vendor, error: vendorError } = await supabase
             .from('vendors')
             .select('id, store_name, logo_url')
             .eq('id', data.vendor_id)
             .maybeSingle();
 
-          console.log('🏪 Vendor data:', { vendor, error: vendorError });
-
           if (!vendorError && vendor) {
-            const vendorData = {
+            setVendorInfo({
               id: vendor.id,
               name: vendor.store_name,
               logo_url: vendor.logo_url
-            };
-            console.log('🏪 Setting vendor info:', vendorData);
-            setVendorInfo(vendorData);
-          } else {
-            console.error('🏪 Error fetching vendor:', vendorError);
+            });
           }
-        } else {
-          console.log('🏪 No vendor_id found in order data');
         }
 
         // Fetch product images
@@ -854,12 +813,6 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 {orderDetails.items_data?.map((item: any, index: number) => {
                 // Check for image in multiple possible locations
                 const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
-
-                console.log(`🛍️ Displaying item ${index + 1}:`, {
-                  name: item.name,
-                  addons_count: item.addons?.length || 0,
-                  addons: item.addons
-                });
 
                 // Calculate base price and addons total
                 const itemPrice = item.price || 0;
