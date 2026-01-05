@@ -9,7 +9,6 @@ import { supabase } from '../lib/supabase';
 import { payFromWallet, getCustomerWalletBalance } from '../lib/wallet';
 import { getCustomerPoints } from '../lib/points';
 import { SavedAddress, getSavedAddresses, saveAddress } from '../lib/storage';
-import OrderTrackingPage from './OrderTrackingPage';
 import AddressForm from './AddressForm';
 import { X } from 'lucide-react';
 
@@ -74,7 +73,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [showOrderTracking, setShowOrderTracking] = useState(false);
   const [totalDeliveryFee, setTotalDeliveryFee] = useState(deliveryFee);
 
   const BRAND = '#C8102E';
@@ -583,7 +581,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         console.log(`✅ تم إنشاء ${totalOrders} طلبات بنجاح من متاجر مختلفة`);
       }
 
-      setTimeout(() => setShowOrderTracking(true), 1200);
+      // Close checkout after showing success message
+      setTimeout(() => onClose(), 2500);
     } catch (err: any) {
       console.error(err);
       setError(err?.message || 'حدث خطأ أثناء إنشاء الطلب');
@@ -602,10 +601,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
-  if (showOrderTracking && orderId) {
-    return <OrderTrackingPage orderId={orderId} onClose={onClose} />;
-  }
-
   if (success) {
     return (
       <div className="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4" dir="rtl">
@@ -619,14 +614,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             <Check className="w-10 h-10" style={{ color: BRAND }} />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2 text-right">تم إنشاء الطلب بنجاح!</h2>
-          <p className="text-gray-600 mb-6 text-right">سيتم تحضير طلبك وتوصيله في أقرب وقت ممكن</p>
+          <p className="text-gray-600 mb-4 text-right">سيتم تحضير طلبك وتوصيله في أقرب وقت ممكن</p>
+          <p className="text-sm text-gray-500 text-center mb-6">جاري الانتقال للصفحة الرئيسية...</p>
           <div className="space-y-3">
             <button
-              onClick={() => setShowOrderTracking(true)}
+              onClick={onClose}
               className="w-full py-3 rounded-xl text-white"
               style={{ backgroundColor: BRAND }}
             >
-              تتبع الطلب
+              عرض طلباتي الآن
             </button>
             <button
               onClick={onClose}
