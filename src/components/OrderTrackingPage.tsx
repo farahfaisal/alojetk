@@ -858,11 +858,25 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
               {/* Total for all sub-orders */}
               <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold">المجموع الإجمالي للطلب</span>
-                  <span className="text-2xl font-bold">
-                    {subOrders.reduce((sum, order) => sum + Number(order.total), 0).toFixed(2)} ₪
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-white/90">
+                    <span className="text-sm">المجموع الفرعي</span>
+                    <span className="font-medium">
+                      {subOrders.reduce((sum, order) => sum + Number(order.subtotal), 0).toFixed(2)} ₪
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-white/90">
+                    <span className="text-sm">رسوم التوصيل ({subOrders.length} متاجر)</span>
+                    <span className="font-medium">
+                      {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-white/30">
+                    <span className="text-lg font-bold">المجموع الإجمالي</span>
+                    <span className="text-2xl font-bold">
+                      {subOrders.reduce((sum, order) => sum + Number(order.total), 0).toFixed(2)} ₪
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
