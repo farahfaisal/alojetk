@@ -351,13 +351,13 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
             {/* Vendor Logo and Name - only show for single vendor */}
-            {vendorInfo && !isMultiVendor && (
+            {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
-                  {vendorInfo.logo_url ? (
+                  {vendorInfo?.logo_url ? (
                     <img
                       src={vendorInfo.logo_url}
-                      alt={vendorInfo.name}
+                      alt={orderDetails.vendor_name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -368,7 +368,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">المتجر</p>
-                  <p className="text-lg font-bold text-gray-900">{vendorInfo.name}</p>
+                  <p className="text-lg font-bold text-gray-900">{orderDetails.vendor_name}</p>
                 </div>
               </div>
             )}
