@@ -65,6 +65,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
 
       if (vendorCount <= 1) {
+        console.log('🚚 Single vendor - Base delivery fee:', deliveryFee);
         setTotalDeliveryFee(deliveryFee);
         return;
       }
@@ -76,11 +77,14 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         });
 
         if (error) throw error;
+        console.log('🚚 Multi-vendor delivery fee calculated:', data);
         setTotalDeliveryFee(data || deliveryFee);
       } catch (error) {
         console.error('Error calculating multi-vendor delivery fee:', error);
         // Fallback to base fee + 5 per additional vendor
-        setTotalDeliveryFee(deliveryFee + ((vendorCount - 1) * 5));
+        const fallbackFee = deliveryFee + ((vendorCount - 1) * 5);
+        console.log('🚚 Using fallback fee:', fallbackFee);
+        setTotalDeliveryFee(fallbackFee);
       }
     };
 
@@ -358,6 +362,14 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         return sum + (addonPrice * addonQuantity);
       }, 0);
 
+      console.log('🛒 Item:', {
+        name: item.name,
+        price: itemPrice,
+        quantity: item.quantity,
+        itemTotal,
+        addonsTotal
+      });
+
       return total + itemTotal + addonsTotal;
     }, 0);
   };
@@ -381,7 +393,18 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + totalDeliveryFee - calculateDiscount();
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscount();
+    const total = subtotal + totalDeliveryFee - discount;
+
+    console.log('💰 Cart Calculation:', {
+      subtotal,
+      deliveryFee: totalDeliveryFee,
+      discount,
+      total
+    });
+
+    return total;
   };
 
   const applyCoupon = async () => {
