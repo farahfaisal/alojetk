@@ -360,6 +360,17 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         <div className="max-w-md mx-auto p-4 space-y-6">
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
+            {/* Debug Info */}
+            {console.log('🏪 Vendor Display Check:', {
+              isMultiVendor,
+              hasVendorName: !!orderDetails.vendor_name,
+              vendorName: orderDetails.vendor_name,
+              hasVendorId: !!orderDetails.vendor_id,
+              vendorId: orderDetails.vendor_id,
+              hasVendorInfo: !!vendorInfo,
+              vendorInfoName: vendorInfo?.name
+            })}
+
             {/* Vendor Logo and Name - show for single vendor or when vendor_name exists */}
             {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
