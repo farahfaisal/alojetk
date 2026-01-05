@@ -108,7 +108,7 @@ const CityPickerModal: React.FC<CityPickerModalProps> = ({
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-full bg-gradient-to-br from-brand via-brand to-brand-dark rounded-t-3xl shadow-2xl max-h-[85vh] overflow-hidden"
+          className="w-full bg-gradient-to-br from-brand via-brand to-brand-dark rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -128,7 +128,9 @@ const CityPickerModal: React.FC<CityPickerModalProps> = ({
           </div>
 
           {/* Content */}
-          <div className="overflow-y-auto p-4" style={{ maxHeight: 'calc(85vh - 80px)' }}>
+          <div className="flex-1 overflow-y-auto p-4" style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
+          }}>
             {selectedMainArea && (
               <motion.button
                 initial={{ opacity: 0, x: -20 }}

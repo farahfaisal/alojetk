@@ -104,7 +104,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[70vh] overflow-hidden"
+          className="w-full bg-white rounded-t-3xl shadow-2xl max-h-[70vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -148,7 +148,9 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           </div>
 
           {/* Content */}
-          <div className="overflow-y-auto" style={{ maxHeight: 'calc(70vh - 160px)' }}>
+          <div className="flex-1 overflow-y-auto" style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
+          }}>
             {loading ? (
               <div className="p-8 flex items-center justify-center">
                 <div className="w-8 h-8 border-3 border-gray-200 border-t-[#c21d14] rounded-full animate-spin" />
