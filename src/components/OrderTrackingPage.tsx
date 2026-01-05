@@ -171,26 +171,21 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         if (error) throw error;
         setOrderDetails(data);
 
-        console.log('📦 Single vendor order details:', {
-          vendor_name: data?.vendor_name,
-          vendor_id: data?.vendor_id,
-          is_multi_vendor: data?.is_multi_vendor,
-          order_group_id: data?.order_group_id
-        });
-
         // Fetch vendor info including logo
         if (data?.vendor_id) {
           const { data: vendor, error: vendorError } = await supabase
             .from('vendors')
-            .select('id, name, logo_url')
+            .select('id, store_name, logo_url')
             .eq('id', data.vendor_id)
             .maybeSingle();
 
           if (!vendorError && vendor) {
-            console.log('�� Vendor info fetched:', vendor);
-            setVendorInfo(vendor);
-          } else {
-            console.log('⚠️ Vendor not found or error:', vendorError);
+            // Map store_name to name for consistency
+            setVendorInfo({
+              id: vendor.id,
+              name: vendor.store_name,
+              logo_url: vendor.logo_url
+            });
           }
         }
 
@@ -360,17 +355,6 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         <div className="max-w-md mx-auto p-4 space-y-6">
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
-            {/* Debug Info */}
-            {console.log('🏪 Vendor Display Check:', {
-              isMultiVendor,
-              hasVendorName: !!orderDetails.vendor_name,
-              vendorName: orderDetails.vendor_name,
-              hasVendorId: !!orderDetails.vendor_id,
-              vendorId: orderDetails.vendor_id,
-              hasVendorInfo: !!vendorInfo,
-              vendorInfoName: vendorInfo?.name
-            })}
-
             {/* Vendor Logo and Name - show for single vendor or when vendor_name exists */}
             {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
