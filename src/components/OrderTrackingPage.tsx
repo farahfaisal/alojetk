@@ -175,12 +175,16 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         if (data?.vendor_id) {
           const { data: vendor, error: vendorError } = await supabase
             .from('vendors')
-            .select('id, name, logo_url')
+            .select('id, store_name, logo_url')
             .eq('id', data.vendor_id)
             .maybeSingle();
 
           if (!vendorError && vendor) {
-            setVendorInfo(vendor);
+            setVendorInfo({
+              id: vendor.id,
+              name: vendor.store_name,
+              logo_url: vendor.logo_url
+            });
           }
         }
 
