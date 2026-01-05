@@ -98,6 +98,18 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
     };
   }, [orderId]);
 
+  // Debug log when orderDetails or vendorInfo changes
+  useEffect(() => {
+    console.log('🔄 State updated:', {
+      hasOrderDetails: !!orderDetails,
+      vendorName: orderDetails?.vendor_name,
+      vendorId: orderDetails?.vendor_id,
+      hasVendorInfo: !!vendorInfo,
+      vendorInfo,
+      isMultiVendor
+    });
+  }, [orderDetails, vendorInfo, isMultiVendor]);
+
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
@@ -169,6 +181,9 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           .single();
 
         if (error) throw error;
+        console.log('📦 Order data fetched:', data);
+        console.log('📦 Has vendor_name:', data.vendor_name);
+        console.log('📦 Has vendor_id:', data.vendor_id);
         setOrderDetails(data);
 
         // Fetch vendor info including logo
@@ -364,15 +379,6 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
             {/* Vendor Logo and Name - only show for single vendor */}
-            {(() => {
-              console.log('🏪 Render check:', {
-                isMultiVendor,
-                vendorName: orderDetails.vendor_name,
-                vendorInfo,
-                shouldShow: !isMultiVendor && orderDetails.vendor_name
-              });
-              return null;
-            })()}
             {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
