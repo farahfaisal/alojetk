@@ -437,7 +437,9 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" style={{
+        paddingBottom: 'max(env(safe-area-inset-bottom), 24px)'
+      }}>
         <div className="max-w-md mx-auto p-4">
           {loading ? (
             <div className="space-y-4">

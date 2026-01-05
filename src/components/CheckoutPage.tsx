@@ -661,7 +661,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto pb-32" style={{
+        paddingBottom: 'calc(8rem + max(env(safe-area-inset-bottom), 8px))'
+      }}>
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
           {error && (
@@ -999,7 +1001,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg" style={{
+        paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
+      }}>
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-3">
           <div className="space-y-2 text-sm">
             <div className="flex justify-between items-center">
