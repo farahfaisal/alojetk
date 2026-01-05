@@ -80,6 +80,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Calculate multi-vendor delivery fee
   useEffect(() => {
     const calculateMultiVendorDeliveryFee = async () => {
+      // If pickup mode, no delivery fee
+      if (courierMode === 'pickup') {
+        setTotalDeliveryFee(0);
+        return;
+      }
+
       const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
 
       if (vendorCount <= 1) {
@@ -103,7 +109,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     };
 
     calculateMultiVendorDeliveryFee();
-  }, [cartItems, deliveryFee]);
+  }, [cartItems, deliveryFee, courierMode]);
 
   useEffect(() => {
     const loadBalances = async () => {
