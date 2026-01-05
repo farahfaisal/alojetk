@@ -857,7 +857,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
             {/* Step 1: Variants Selection */}
             {selectionStep === 'variants' && product.is_variant_product && variants && variants.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">اختر النوع:</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">اختر النوع - خيار واحد فقط:</h3>
                 <div className="space-y-2">
                   {variants.map((variant) => (
                     <label
@@ -867,13 +867,20 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           ? 'border-[#B91C1C] bg-red-50'
                           : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
-                      onClick={() => {
-                        setSelectedVariantId(variant.id);
-                        setAddToCartError(null);
-                      }}
                     >
+                      <input
+                        type="radio"
+                        name="variant-selection"
+                        value={variant.id}
+                        checked={selectedVariantId === variant.id}
+                        onChange={() => {
+                          setSelectedVariantId(variant.id);
+                          setAddToCartError(null);
+                        }}
+                        className="hidden"
+                      />
                       <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                           selectedVariantId === variant.id
                             ? 'bg-[#B91C1C] border-[#B91C1C]'
                             : 'border-gray-300'
