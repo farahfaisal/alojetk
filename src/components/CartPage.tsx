@@ -107,15 +107,14 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
             const item = parsedItems[key];
             if (item.addons && Array.isArray(item.addons)) {
               item.addons = item.addons.map((addon: any) => {
-                if (!addon.type) {
+                // Always recalculate type based on is_required to fix any old data
+                // Only required addons are shown as components (المكونات)
+                // Default and optional addons are shown as optional addons (الإضافات الاختيارية)
+                const addonType = addon.is_required ? 'regular' : 'optional';
+                if (addon.type !== addonType) {
                   hasUpdates = true;
-                  // Determine type based on addon properties
-                  // Only required addons are shown as components (المكونات)
-                  // Default and optional addons are shown as optional addons (الإضافات الاختيارية)
-                  const addonType = addon.is_required ? 'regular' : 'optional';
-                  return { ...addon, type: addonType };
                 }
-                return addon;
+                return { ...addon, type: addonType };
               });
             }
           });
