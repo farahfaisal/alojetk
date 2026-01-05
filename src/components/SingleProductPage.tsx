@@ -380,7 +380,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
           quantity: addonQuantities[addon.id] || 1,
           is_required: addon.is_required || false,
           is_default: addon.is_default || false,
-          type: addon.type || 'regular'
+          type: addon.type || (addon.is_required ? 'regular' : 'optional')
         })) || [];
 
       console.log('🔧 Selected addons for direct add:', selectedAddonsList);

@@ -110,9 +110,9 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                 if (!addon.type) {
                   hasUpdates = true;
                   // Determine type based on addon properties
-                  // If required or default -> regular (components)
-                  // Otherwise -> optional (optional addons)
-                  const addonType = (addon.is_required || addon.is_default) ? 'regular' : 'optional';
+                  // Only required addons are shown as components (المكونات)
+                  // Default and optional addons are shown as optional addons (الإضافات الاختيارية)
+                  const addonType = addon.is_required ? 'regular' : 'optional';
                   return { ...addon, type: addonType };
                 }
                 return addon;
