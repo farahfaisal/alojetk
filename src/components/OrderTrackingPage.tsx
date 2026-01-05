@@ -704,7 +704,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                   <div key={subOrder.id} className="bg-white rounded-xl p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-3 pb-3 border-b">
                       <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
+                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
                           {currentVendor?.logo_url ? (
                             <img
                               src={currentVendor.logo_url}
@@ -872,7 +872,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
               {/* Vendor Info Section */}
               {(orderDetails.vendor_name || orderDetails.vendor_id) && (
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
-                  <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
                     {vendorInfo?.logo_url ? (
                       <img
                         src={vendorInfo.logo_url}
