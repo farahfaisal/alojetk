@@ -274,10 +274,15 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     });
 
     // Create cart item object
+    // Use discount price if available, otherwise use regular price
+    const finalPrice = product.discount_price && product.discount_price > 0
+      ? product.discount_price
+      : product.price;
+
     return {
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: finalPrice,
       quantity: quantity,
       image: product.image_url,
       vendor_id: product.vendor.id,
@@ -534,13 +539,21 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         setAddToCartError('المتجر غير متاح حالياً، لا يمكن إضافة المنتج للسلة');
         return;
       }
-      
+
+      // Calculate final variant price considering product discount
+      let finalVariantPrice = variant.price;
+      if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+        // Apply the same discount percentage to variant price
+        const discountPercentage = (product.price - product.discount_price) / product.price;
+        finalVariantPrice = variant.price * (1 - discountPercentage);
+      }
+
       // Add the selected variant to cart
       const cartItem = {
         id: `${product.id}_${variant.id}`,
         product_id: product.id, // Store the actual product UUID
         name: `${product.name} - ${variant.name}`,
-        price: variant.price,
+        price: finalVariantPrice,
         quantity: quantity,
         image: variant.image_url || product.image_url,
         vendor_id: product.vendor.id,
@@ -595,13 +608,21 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         setAddToCartError('المتجر غير متاح حالياً، لا يمكن إضافة المنتج للسلة');
         return;
       }
-      
+
+      // Calculate final variant price considering product discount
+      let finalVariantPrice = variant.price;
+      if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+        // Apply the same discount percentage to variant price
+        const discountPercentage = (product.price - product.discount_price) / product.price;
+        finalVariantPrice = variant.price * (1 - discountPercentage);
+      }
+
       // Create cart item with the selected variant
       const cartItem = {
         id: `${product.id}_${variant.id}`,
         product_id: product.id,
         name: `${product.name} - ${variant.name}`,
-        price: variant.price,
+        price: finalVariantPrice,
         quantity: quantity,
         image: variant.image_url || product.image_url,
         vendor_id: product.vendor.id,
@@ -667,10 +688,15 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   // Calculate total price including addons
   const calculateTotal = () => {
-    // Ensure price is a number for calculations
-    const productPrice = typeof product.price === 'string' 
-      ? parseFloat(product.price) 
+    // Use discount price if available, otherwise use regular price
+    let productPrice = product.discount_price && product.discount_price > 0
+      ? product.discount_price
       : product.price;
+
+    // Ensure price is a number for calculations
+    productPrice = typeof productPrice === 'string'
+      ? parseFloat(productPrice)
+      : productPrice;
     
     // Add variant price adjustments
     let variantAdjustment = 0;
