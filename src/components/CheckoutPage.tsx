@@ -430,7 +430,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           serviceAreaName,
           selectedCity,
           addressCity: currentAddress?.city,
-          finalCity: orderData.city
+          finalCity: orderData.city,
+          orderData_is_multi_vendor: orderData.is_multi_vendor,
+          orderData_order_group_id: orderData.order_group_id
         });
 
         const { data: order, error: orderError } = await supabase

@@ -102,8 +102,15 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
     try {
       setLoading(true);
 
+      console.log('🔍 OrderTrackingPage props:', {
+        orderId,
+        orderGroupId,
+        hasGroupId: !!orderGroupId
+      });
+
       // Check if this is a multi-vendor order
       if (orderGroupId) {
+        console.log('🔍 This is a multi-vendor order, fetching group:', orderGroupId);
         setIsMultiVendor(true);
 
         // Fetch all orders in this group
@@ -152,6 +159,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         }
       } else {
         // Single vendor order
+        console.log('🔍 This is a single vendor order:', orderId);
         setIsMultiVendor(false);
 
         const { data, error } = await supabase

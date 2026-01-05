@@ -105,8 +105,29 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       const allOrders = data || [];
       setOrders(allOrders);
 
+      console.log('📦 All orders fetched:', allOrders.length);
+      allOrders.forEach((order, index) => {
+        console.log(`Order ${index + 1}:`, {
+          id: order.id,
+          order_number: order.order_number,
+          is_multi_vendor: order.is_multi_vendor,
+          order_group_id: order.order_group_id,
+          vendor_name: order.vendor_name
+        });
+      });
+
       // Group multi-vendor orders
       const grouped = groupMultiVendorOrders(allOrders);
+      console.log('📦 Grouped orders:', grouped.length);
+      grouped.forEach((order, index) => {
+        console.log(`Grouped ${index + 1}:`, {
+          id: order.id,
+          order_number: order.order_number,
+          vendor_name: order.vendor_name,
+          sub_orders_count: order.sub_orders?.length || 0,
+          order_group_id: order.order_group_id
+        });
+      });
       setGroupedOrders(grouped);
     } catch (err) {
       console.error('Error fetching orders:', err);
@@ -466,12 +487,25 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                   key={order.id}
                   whileHover={{ scale: 1.01 }}
                   onClick={() => {
+                    console.log('🔍 Order clicked:', {
+                      id: order.id,
+                      order_number: order.order_number,
+                      has_sub_orders: !!(order.sub_orders && order.sub_orders.length > 0),
+                      sub_orders_count: order.sub_orders?.length || 0,
+                      order_group_id: order.order_group_id
+                    });
+
                     if (order.sub_orders && order.sub_orders.length > 0) {
                       // Multi-vendor order - set the first sub-order as selected
+                      console.log('🔍 Opening multi-vendor order:', {
+                        firstOrderId: order.sub_orders[0].id,
+                        groupId: order.order_group_id
+                      });
                       setSelectedOrder(order.sub_orders[0].id);
                       setSelectedGroupId(order.order_group_id || null);
                     } else {
                       // Single vendor order
+                      console.log('🔍 Opening single vendor order:', order.id);
                       setSelectedOrder(order.id);
                       setSelectedGroupId(null);
                     }
