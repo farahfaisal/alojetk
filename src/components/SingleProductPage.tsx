@@ -173,11 +173,18 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
         // Set the variants in state
         if (productVariants.length > 0) {
-          setVariants(productVariants);
+          // Ensure each variant has an id (use name as fallback if id is missing)
+          const variantsWithIds = productVariants.map((variant, index) => ({
+            ...variant,
+            id: variant.id || `variant-${index}-${variant.name}`,
+            price: typeof variant.price === 'string' ? parseFloat(variant.price) : variant.price
+          }));
+
+          setVariants(variantsWithIds);
 
           // Auto-select the first variant if there's only one
-          if (productVariants.length === 1) {
-            setSelectedVariantId(productVariants[0].id);
+          if (variantsWithIds.length === 1) {
+            setSelectedVariantId(variantsWithIds[0].id);
           }
         }
       } catch (error) {
