@@ -171,6 +171,13 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         if (error) throw error;
         setOrderDetails(data);
 
+        console.log('📦 Single vendor order details:', {
+          vendor_name: data?.vendor_name,
+          vendor_id: data?.vendor_id,
+          is_multi_vendor: data?.is_multi_vendor,
+          order_group_id: data?.order_group_id
+        });
+
         // Fetch vendor info including logo
         if (data?.vendor_id) {
           const { data: vendor, error: vendorError } = await supabase
@@ -180,7 +187,10 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
             .maybeSingle();
 
           if (!vendorError && vendor) {
+            console.log('�� Vendor info fetched:', vendor);
             setVendorInfo(vendor);
+          } else {
+            console.log('⚠️ Vendor not found or error:', vendorError);
           }
         }
 
@@ -350,7 +360,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         <div className="max-w-md mx-auto p-4 space-y-6">
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
-            {/* Vendor Logo and Name - only show for single vendor */}
+            {/* Vendor Logo and Name - show for single vendor or when vendor_name exists */}
             {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
@@ -369,6 +379,21 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 <div className="text-right">
                   <p className="text-sm text-gray-500">المتجر</p>
                   <p className="text-lg font-bold text-gray-900">{orderDetails.vendor_name}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Fallback: Show vendor name without logo if not shown above */}
+            {!isMultiVendor && !orderDetails.vendor_name && orderDetails.vendor_id && (
+              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
+                  <div className="w-full h-full bg-brand flex items-center justify-center">
+                    <Store className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">المتجر</p>
+                  <p className="text-lg font-bold text-gray-900">{vendorInfo?.name || 'متجر'}</p>
                 </div>
               </div>
             )}
