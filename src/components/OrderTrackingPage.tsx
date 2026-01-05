@@ -57,6 +57,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
   const [orderHistory, setOrderHistory] = useState<OrderStatus[]>([]);
   const [productImages, setProductImages] = useState<ProductImage>({});
   const [vendorInfo, setVendorInfo] = useState<VendorInfo | null>(null);
+  const [vendorsInfo, setVendorsInfo] = useState<{ [vendorId: string]: VendorInfo }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -154,6 +155,30 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 imagesMap[product.id] = product.image_url;
               });
               setProductImages(imagesMap);
+            }
+          }
+
+          // Fetch all vendor info (logos) for all orders
+          const allVendorIds = groupOrders
+            .map((order: any) => order.vendor_id)
+            .filter(Boolean);
+
+          if (allVendorIds.length > 0) {
+            const { data: vendors, error: vendorsError } = await supabase
+              .from('vendors')
+              .select('id, store_name, logo_url')
+              .in('id', allVendorIds);
+
+            if (!vendorsError && vendors) {
+              const vendorsMap: { [vendorId: string]: VendorInfo } = {};
+              vendors.forEach((vendor: any) => {
+                vendorsMap[vendor.id] = {
+                  id: vendor.id,
+                  name: vendor.store_name,
+                  logo_url: vendor.logo_url
+                };
+              });
+              setVendorsInfo(vendorsMap);
             }
           }
         }
@@ -673,25 +698,39 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 </p>
               </div>
 
-              {subOrders.map((subOrder, orderIndex) => (
-                <div key={subOrder.id} className="bg-white rounded-xl p-4 shadow-sm">
-                  <div className="flex items-center justify-between mb-3 pb-3 border-b">
-                    <div className="flex items-center gap-2">
-                      <Store className="w-5 h-5 text-brand" />
-                      <div>
-                        <h3 className="font-bold text-gray-900">{subOrder.vendor_name}</h3>
-                        <p className="text-xs text-gray-500">طلب رقم {subOrder.order_number}</p>
+              {subOrders.map((subOrder, orderIndex) => {
+                const currentVendor = subOrder.vendor_id ? vendorsInfo[subOrder.vendor_id] : null;
+                return (
+                  <div key={subOrder.id} className="bg-white rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center justify-between mb-3 pb-3 border-b">
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-brand shadow-sm flex-shrink-0">
+                          {currentVendor?.logo_url ? (
+                            <img
+                              src={currentVendor.logo_url}
+                              alt={subOrder.vendor_name || currentVendor.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
+                              <Store className="w-7 h-7 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <h3 className="font-bold text-gray-900">{subOrder.vendor_name}</h3>
+                          <p className="text-xs text-gray-500">طلب رقم {subOrder.order_number}</p>
+                        </div>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        subOrder.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                        subOrder.status === 'shipping' ? 'bg-orange-100 text-orange-800' :
+                        subOrder.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {getStatusText(subOrder.status)}
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      subOrder.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                      subOrder.status === 'shipping' ? 'bg-orange-100 text-orange-800' :
-                      subOrder.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {getStatusText(subOrder.status)}
-                    </div>
-                  </div>
 
                   <div className="divide-y">
                     {subOrder.items_data?.map((item: any, index: number) => {
@@ -814,7 +853,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
 
               {/* Total for all sub-orders */}
               <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
