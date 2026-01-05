@@ -202,10 +202,9 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[9999] bg-white overflow-hidden"
+        className="fixed inset-0 z-[9999] bg-white"
         style={{
-          paddingTop: 'max(env(safe-area-inset-top), 0px)',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 0px)'
+          paddingTop: 'max(env(safe-area-inset-top), 0px)'
         }}
       >
         <div className="h-full flex flex-col">
@@ -239,7 +238,9 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4" style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom), 24px)'
+          }}>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Customer Info */}
               <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
