@@ -352,62 +352,53 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-md mx-auto p-4 space-y-6">
-          {/* Order Header */}
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            {/* Vendor Logo and Name - show for single vendor or when vendor_name exists */}
-            {!isMultiVendor && orderDetails.vendor_name && (
-              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
+        <div className="max-w-md mx-auto p-4 space-y-4">
+          {/* Vendor Info Card - Top Section */}
+          {!isMultiVendor && (orderDetails.vendor_name || orderDetails.vendor_id) && (
+            <div className="bg-white rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-brand shadow-md flex-shrink-0">
                   {vendorInfo?.logo_url ? (
                     <img
                       src={vendorInfo.logo_url}
-                      alt={orderDetails.vendor_name}
+                      alt={orderDetails.vendor_name || vendorInfo?.name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-brand flex items-center justify-center">
-                      <Store className="w-8 h-8 text-white" />
+                    <div className="w-full h-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
+                      <Store className="w-10 h-10 text-white" />
                     </div>
                   )}
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">المتجر</p>
-                  <p className="text-lg font-bold text-gray-900">{orderDetails.vendor_name}</p>
+                <div className="flex-1 text-right">
+                  <p className="text-xs text-gray-500 mb-1">الطلب من</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {orderDetails.vendor_name || vendorInfo?.name || 'متجر'}
+                  </p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Fallback: Show vendor name without logo if not shown above */}
-            {!isMultiVendor && !orderDetails.vendor_name && orderDetails.vendor_id && (
-              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
-                  <div className="w-full h-full bg-brand flex items-center justify-center">
-                    <Store className="w-8 h-8 text-white" />
+          {/* Multi-vendor Info Card */}
+          {isMultiVendor && subOrders.length > 0 && (
+            <div className="bg-white rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-brand shadow-md flex-shrink-0">
+                  <div className="w-full h-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
+                    <Store className="w-10 h-10 text-white" />
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">المتجر</p>
-                  <p className="text-lg font-bold text-gray-900">{vendorInfo?.name || 'متجر'}</p>
+                <div className="flex-1 text-right">
+                  <p className="text-xs text-gray-500 mb-1">طلب متعدد المتاجر</p>
+                  <p className="text-xl font-bold text-gray-900">{subOrders.length} متاجر</p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Multi-vendor header */}
-            {isMultiVendor && subOrders.length > 0 && (
-              <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md bg-brand/10">
-                  <div className="w-full h-full bg-brand flex items-center justify-center">
-                    <Store className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">طلب متعدد المتاجر</p>
-                  <p className="text-lg font-bold text-gray-900">{subOrders.length} متاجر</p>
-                </div>
-              </div>
-            )}
-
+          {/* Order Header */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-gray-900">
                 طلب رقم {orderDetails.order_number || orderDetails.id.slice(-6)}
