@@ -173,19 +173,28 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
         // Fetch vendor info including logo
         if (data?.vendor_id) {
+          console.log('🏪 Fetching vendor info for ID:', data.vendor_id);
           const { data: vendor, error: vendorError } = await supabase
             .from('vendors')
             .select('id, store_name, logo_url')
             .eq('id', data.vendor_id)
             .maybeSingle();
 
+          console.log('🏪 Vendor data:', { vendor, error: vendorError });
+
           if (!vendorError && vendor) {
-            setVendorInfo({
+            const vendorData = {
               id: vendor.id,
               name: vendor.store_name,
               logo_url: vendor.logo_url
-            });
+            };
+            console.log('🏪 Setting vendor info:', vendorData);
+            setVendorInfo(vendorData);
+          } else {
+            console.error('🏪 Error fetching vendor:', vendorError);
           }
+        } else {
+          console.log('🏪 No vendor_id found in order data');
         }
 
         // Fetch product images
@@ -355,6 +364,15 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           {/* Order Header */}
           <div className="bg-white rounded-xl p-6 shadow-sm">
             {/* Vendor Logo and Name - only show for single vendor */}
+            {(() => {
+              console.log('🏪 Render check:', {
+                isMultiVendor,
+                vendorName: orderDetails.vendor_name,
+                vendorInfo,
+                shouldShow: !isMultiVendor && orderDetails.vendor_name
+              });
+              return null;
+            })()}
             {!isMultiVendor && orderDetails.vendor_name && (
               <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand shadow-md">
