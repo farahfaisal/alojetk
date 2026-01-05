@@ -88,10 +88,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-t-3xl shadow-2xl max-h-[85vh] overflow-hidden"
-        style={{
-          paddingBottom: 'max(env(safe-area-inset-bottom), 0px)'
-        }}
+        className="fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-t-3xl shadow-2xl max-h-[85vh]"
       >
         <div className="flex flex-col h-full">
           <div className="bg-gradient-to-r from-brand to-red-600 text-white px-6 py-4 flex items-center justify-between rounded-t-3xl">
@@ -121,7 +118,9 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4" style={{
+            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
+          }}>
             {required && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />

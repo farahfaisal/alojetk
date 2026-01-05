@@ -115,7 +115,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-brand via-brand to-brand-dark flex flex-col z-50 overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-br from-brand via-brand to-brand-dark flex flex-col z-50">
       {/* Decorative Background */}
       <div className="absolute inset-0">
         {/* Animated circles */}
@@ -199,7 +199,9 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
       </motion.div>
 
       {/* Service Areas Grid */}
-      <div className="flex-1 overflow-y-auto px-4 pb-24">
+      <div className="flex-1 overflow-y-auto px-4" style={{
+        paddingBottom: 'calc(96px + max(env(safe-area-inset-bottom), 0px))'
+      }}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
