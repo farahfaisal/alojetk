@@ -75,20 +75,34 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [orderId, setOrderId] = useState<string | null>(null);
   const [totalDeliveryFee, setTotalDeliveryFee] = useState(deliveryFee);
 
+  // Log when totalDeliveryFee changes
+  useEffect(() => {
+    console.log('📊 totalDeliveryFee changed to:', totalDeliveryFee);
+  }, [totalDeliveryFee]);
+
   const BRAND = '#C8102E';
 
   // Calculate multi-vendor delivery fee
   useEffect(() => {
     const calculateMultiVendorDeliveryFee = async () => {
+      console.log('🚚 Calculating delivery fee...', {
+        courierMode,
+        deliveryFee,
+        cartItemsCount: cartItems.length
+      });
+
       // If pickup mode, no delivery fee
       if (courierMode === 'pickup') {
+        console.log('🚚 Pickup mode - Setting delivery fee to 0');
         setTotalDeliveryFee(0);
         return;
       }
 
       const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
+      console.log('🚚 Vendor count:', vendorCount);
 
       if (vendorCount <= 1) {
+        console.log('🚚 Single vendor - Setting delivery fee to:', deliveryFee);
         setTotalDeliveryFee(deliveryFee);
         return;
       }
@@ -100,11 +114,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         });
 
         if (error) throw error;
+        console.log('🚚 Multi-vendor delivery fee from DB:', data);
         setTotalDeliveryFee(data || deliveryFee);
       } catch (error) {
         console.error('Error calculating multi-vendor delivery fee:', error);
         // Fallback to base fee + 5 per additional vendor
-        setTotalDeliveryFee(deliveryFee + ((vendorCount - 1) * 5));
+        const fallbackFee = deliveryFee + ((vendorCount - 1) * 5);
+        console.log('🚚 Using fallback fee:', fallbackFee);
+        setTotalDeliveryFee(fallbackFee);
       }
     };
 
@@ -199,7 +216,18 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     const subtotal = calculateSubtotal();
     const couponDiscount = calculateCouponDiscount();
     const pointsDiscount = calculatePointsDiscount();
-    return Math.max(0, subtotal + totalDeliveryFee - couponDiscount - pointsDiscount);
+    const total = Math.max(0, subtotal + totalDeliveryFee - couponDiscount - pointsDiscount);
+
+    console.log('💰 Checkout Total Calculation:', {
+      subtotal,
+      totalDeliveryFee,
+      courierMode,
+      couponDiscount,
+      pointsDiscount,
+      total
+    });
+
+    return total;
   };
 
   const handleApplyCoupon = async () => {
