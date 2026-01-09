@@ -75,10 +75,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [orderId, setOrderId] = useState<string | null>(null);
   const [totalDeliveryFee, setTotalDeliveryFee] = useState(deliveryFee);
 
+  // Log initial props
+  useEffect(() => {
+    console.log('📦 CheckoutPage mounted with props:', {
+      deliveryFee,
+      cartItemsCount: cartItems.length,
+      paymentMethod
+    });
+  }, []);
+
   // Log when totalDeliveryFee changes
   useEffect(() => {
     console.log('📊 totalDeliveryFee changed to:', totalDeliveryFee);
   }, [totalDeliveryFee]);
+
+  // Log when deliveryFee prop changes
+  useEffect(() => {
+    console.log('📊 deliveryFee prop changed to:', deliveryFee);
+  }, [deliveryFee]);
 
   const BRAND = '#C8102E';
 
@@ -216,16 +230,19 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     const subtotal = calculateSubtotal();
     const couponDiscount = calculateCouponDiscount();
     const pointsDiscount = calculatePointsDiscount();
-    const total = Math.max(0, subtotal + totalDeliveryFee - couponDiscount - pointsDiscount);
 
-    console.log('💰 Checkout Total Calculation:', {
+    console.log('💰 Checkout Total Calculation DETAILED:', {
       subtotal,
       totalDeliveryFee,
       courierMode,
       couponDiscount,
       pointsDiscount,
-      total
+      calculation: `${subtotal} + ${totalDeliveryFee} - ${couponDiscount} - ${pointsDiscount}`,
+      result: subtotal + totalDeliveryFee - couponDiscount - pointsDiscount
     });
+
+    const total = Math.max(0, subtotal + totalDeliveryFee - couponDiscount - pointsDiscount);
+    console.log('💰 Final total after Math.max:', total);
 
     return total;
   };
@@ -405,12 +422,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           }
         }
 
-        // Distribute points discount proportionally based on vendor subtotal
+        // Distribute discounts proportionally based on vendor subtotal
         const vendorPointsDiscount = totalSubtotal > 0
           ? (vendorSubtotal / totalSubtotal) * pointsDiscount
           : 0;
 
-        const vendorTotal = Math.max(0, vendorSubtotal + vendorDeliveryFee - vendorPointsDiscount);
+        const vendorCouponDiscount = totalSubtotal > 0
+          ? (vendorSubtotal / totalSubtotal) * couponDiscount
+          : 0;
+
+        const vendorTotal = Math.max(0, vendorSubtotal + vendorDeliveryFee - vendorPointsDiscount - vendorCouponDiscount);
 
         const orderData: any = {
           customer_id: customerId,
@@ -1044,19 +1065,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <span className="text-gray-900 font-medium">₪{calculateSubtotal().toFixed(2)}</span>
               <span className="text-gray-600">تكلفة الطلبية</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-900 font-medium">₪{totalDeliveryFee.toFixed(2)}</span>
-              <span className="text-gray-600">
-                توصيل
-                {(() => {
-                  const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
-                  if (vendorCount > 1) {
-                    return ` (${vendorCount} متاجر)`;
-                  }
-                  return '';
-                })()}
-              </span>
-            </div>
+            {courierMode === 'delivery' && (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-900 font-medium">₪{totalDeliveryFee.toFixed(2)}</span>
+                <span className="text-gray-600">
+                  توصيل
+                  {(() => {
+                    const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
+                    if (vendorCount > 1) {
+                      return ` (${vendorCount} متاجر)`;
+                    }
+                    return '';
+                  })()}
+                </span>
+              </div>
+            )}
 
             {appliedCoupon && calculateCouponDiscount() > 0 && (
               <div className="flex justify-between items-center text-green-600">
