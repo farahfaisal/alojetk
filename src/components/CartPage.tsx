@@ -59,13 +59,24 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
   const [couponError, setCouponError] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
+  // Track totalDeliveryFee changes
+  useEffect(() => {
+    console.log('📊 CartPage - totalDeliveryFee changed to:', totalDeliveryFee);
+  }, [totalDeliveryFee]);
+
   // Calculate multi-vendor delivery fee
   useEffect(() => {
     const calculateMultiVendorDeliveryFee = async () => {
       const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
 
+      console.log('🚚 CartPage - Calculating delivery fee:', {
+        vendorCount,
+        deliveryFee,
+        cartItemsCount: cartItems.length
+      });
+
       if (vendorCount <= 1) {
-        console.log('🚚 Single vendor - Base delivery fee:', deliveryFee);
+        console.log('🚚 CartPage - Single vendor - Setting totalDeliveryFee to:', deliveryFee);
         setTotalDeliveryFee(deliveryFee);
         return;
       }
@@ -77,13 +88,13 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         });
 
         if (error) throw error;
-        console.log('🚚 Multi-vendor delivery fee calculated:', data);
+        console.log('🚚 CartPage - Multi-vendor delivery fee calculated:', data);
         setTotalDeliveryFee(data || deliveryFee);
       } catch (error) {
         console.error('Error calculating multi-vendor delivery fee:', error);
         // Fallback to base fee + 5 per additional vendor
         const fallbackFee = deliveryFee + ((vendorCount - 1) * 5);
-        console.log('🚚 Using fallback fee:', fallbackFee);
+        console.log('🚚 CartPage - Using fallback fee:', fallbackFee);
         setTotalDeliveryFee(fallbackFee);
       }
     };
@@ -394,14 +405,18 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const discount = calculateDiscount();
+
+    console.log('💰 Cart Calculation STEP BY STEP:', {
+      'subtotal': subtotal,
+      'totalDeliveryFee': totalDeliveryFee,
+      'discount': discount,
+      'calculation': `${subtotal} + ${totalDeliveryFee} - ${discount}`,
+      'result': subtotal + totalDeliveryFee - discount
+    });
+
     const total = subtotal + totalDeliveryFee - discount;
 
-    console.log('💰 Cart Calculation:', {
-      subtotal,
-      deliveryFee: totalDeliveryFee,
-      discount,
-      total
-    });
+    console.log('💰 Cart Final Total:', total);
 
     return total;
   };
