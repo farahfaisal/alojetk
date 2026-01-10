@@ -199,9 +199,13 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
       </motion.div>
 
       {/* Service Areas Grid */}
-      <div className="flex-1 overflow-y-auto px-4" style={{
-        paddingBottom: 'calc(96px + max(env(safe-area-inset-bottom), 0px))'
-      }}>
+      <div
+        className="flex-1 overflow-y-auto px-4 scrollbar-thin scrollbar-thumb-brand scrollbar-track-gray-100"
+        style={{
+          paddingBottom: 'calc(96px + max(env(safe-area-inset-bottom), 0px))',
+          overscrollBehavior: 'contain'
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

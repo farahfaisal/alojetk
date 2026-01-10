@@ -128,9 +128,13 @@ const CityPickerModal: React.FC<CityPickerModalProps> = ({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4" style={{
-            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
-          }}>
+          <div
+            className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-brand scrollbar-track-gray-100"
+            style={{
+              paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
+              overscrollBehavior: 'contain'
+            }}
+          >
             {selectedMainArea && (
               <motion.button
                 initial={{ opacity: 0, x: -20 }}

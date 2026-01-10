@@ -118,9 +118,14 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4" style={{
-            paddingBottom: 'max(env(safe-area-inset-bottom), 16px)'
-          }}>
+          <div
+            className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-brand scrollbar-track-gray-100"
+            style={{
+              paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
+              maxHeight: 'calc(85vh - 80px)',
+              overscrollBehavior: 'contain'
+            }}
+          >
             {required && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
