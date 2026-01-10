@@ -248,6 +248,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   };
 
   const handleApplyCoupon = async () => {
+    console.log('🎟️ Applying coupon:', coupon);
+
     if (!coupon.trim()) {
       setCouponError('يرجى إدخال رمز الكوبون');
       return;
@@ -257,24 +259,42 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setCouponError(null);
 
     try {
+      const couponCode = coupon.trim().toUpperCase();
+      console.log('🎟️ Searching for coupon code:', couponCode);
+
       const { data, error } = await supabase
         .from('coupons')
         .select('*')
-        .eq('code', coupon.trim().toUpperCase())
+        .eq('code', couponCode)
         .eq('status', 'active')
         .maybeSingle();
 
-      if (error) throw error;
+      console.log('🎟️ Coupon query result:', { data, error });
+
+      if (error) {
+        console.error('🎟️ Coupon query error:', error);
+        throw error;
+      }
 
       if (!data) {
+        console.log('🎟️ No coupon found with code:', couponCode);
         setCouponError('الكوبون غير صالح');
         setCouponLoading(false);
         return;
       }
 
+      console.log('🎟️ Coupon found:', data);
+
       const now = new Date();
-      const startDate = new Date(data.start_date);
-      const endDate = new Date(data.end_date);
+      const startDate = new Date(data.start_date + 'T00:00:00');
+      const endDate = new Date(data.end_date + 'T23:59:59');
+
+      console.log('🎟️ Coupon date validation:', {
+        now: now.toISOString(),
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        isValid: now >= startDate && now <= endDate
+      });
 
       if (now < startDate || now > endDate) {
         setCouponError('انتهت صلاحية الكوبون');
@@ -289,16 +309,23 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       }
 
       const subtotal = calculateSubtotal();
+      console.log('🎟️ Checking minimum order amount:', {
+        subtotal,
+        minOrderAmount: data.min_order_amount,
+        isValid: !data.min_order_amount || subtotal >= data.min_order_amount
+      });
+
       if (data.min_order_amount && subtotal < data.min_order_amount) {
         setCouponError(`الحد الأدنى للطلب ₪${data.min_order_amount}`);
         setCouponLoading(false);
         return;
       }
 
+      console.log('✅ Coupon applied successfully:', data);
       setAppliedCoupon(data);
       setCouponError(null);
     } catch (err: any) {
-      console.error('Error applying coupon:', err);
+      console.error('❌ Error applying coupon:', err);
       setCouponError('حدث خطأ أثناء تطبيق الكوبون');
     } finally {
       setCouponLoading(false);
