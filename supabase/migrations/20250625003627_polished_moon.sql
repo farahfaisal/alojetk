@@ -51,7 +51,7 @@ BEGIN
     100, -- Points for the referred user
     50,  -- Points for the referrer
     NEW.id,
-    'https://ben-edek.shop/signup?ref=' || v_code
+    'https://app.alojetk.site/signup?ref=' || v_code
   );
   
   RETURN NEW;
@@ -404,8 +404,8 @@ BEGIN
   
   -- If referral link is NULL but code exists, generate a link
   IF referral_link IS NULL AND code IS NOT NULL THEN
-    referral_link := 'https://ben-edek.shop/signup?ref=' || code;
-    
+    referral_link := 'https://app.alojetk.site/signup?ref=' || code;
+
     -- Update the referral code record with the link
     UPDATE referral_codes
     SET referral_link = referral_link
