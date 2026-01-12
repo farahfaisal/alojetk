@@ -847,6 +847,18 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                       <span className="text-gray-600">رسوم التوصيل</span>
                       <span className="font-medium">{subOrder.delivery_fee.toFixed(2)} ₪</span>
                     </div>
+                    {subOrder.coupon_discount > 0 && (
+                      <div className="flex justify-between text-sm mt-1 text-green-600">
+                        <span>خصم الكوبون</span>
+                        <span className="font-medium">-{subOrder.coupon_discount.toFixed(2)} ₪</span>
+                      </div>
+                    )}
+                    {subOrder.points_discount > 0 && (
+                      <div className="flex justify-between text-sm mt-1 text-blue-600">
+                        <span>خصم النقاط</span>
+                        <span className="font-medium">-{subOrder.points_discount.toFixed(2)} ₪</span>
+                      </div>
+                    )}
                     <div className="flex justify-between border-t pt-2 mt-2">
                       <span className="font-bold text-gray-900">المجموع</span>
                       <span className="font-bold text-brand">{subOrder.total.toFixed(2)} ₪</span>
@@ -871,6 +883,22 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                       {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
                     </span>
                   </div>
+                  {subOrders.some(order => order.coupon_discount > 0) && (
+                    <div className="flex justify-between items-center text-white/90">
+                      <span className="text-sm">خصم الكوبون</span>
+                      <span className="font-medium">
+                        -{subOrders.reduce((sum, order) => sum + Number(order.coupon_discount || 0), 0).toFixed(2)} ₪
+                      </span>
+                    </div>
+                  )}
+                  {subOrders.some(order => order.points_discount > 0) && (
+                    <div className="flex justify-between items-center text-white/90">
+                      <span className="text-sm">خصم النقاط</span>
+                      <span className="font-medium">
+                        -{subOrders.reduce((sum, order) => sum + Number(order.points_discount || 0), 0).toFixed(2)} ₪
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center pt-2 border-t border-white/30">
                     <span className="text-lg font-bold">المجموع الإجمالي</span>
                     <span className="text-2xl font-bold">
@@ -1043,6 +1071,18 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 <span className="text-gray-600">رسوم التوصيل</span>
                 <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
               </div>
+              {orderDetails.coupon_discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>خصم الكوبون</span>
+                  <span className="font-medium">-{orderDetails.coupon_discount.toFixed(2)} شيكل</span>
+                </div>
+              )}
+              {orderDetails.points_discount > 0 && (
+                <div className="flex justify-between text-blue-600">
+                  <span>خصم النقاط</span>
+                  <span className="font-medium">-{orderDetails.points_discount.toFixed(2)} شيكل</span>
+                </div>
+              )}
               <div className="flex justify-between border-t pt-2">
                 <span className="font-bold text-gray-900">المجموع الكلي</span>
                 <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>

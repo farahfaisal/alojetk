@@ -470,6 +470,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           subtotal: vendorSubtotal,
           delivery_fee: vendorDeliveryFee,
           points_discount: vendorPointsDiscount,
+          coupon_discount: vendorCouponDiscount,
           payment_method: primaryPaymentMethod,
           notes: orderNotes || null,
           address: currentAddress?.address || '',
