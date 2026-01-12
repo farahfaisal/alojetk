@@ -259,7 +259,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     setCouponError(null);
 
     try {
-      const couponCode = coupon.trim().toUpperCase();
+      const couponCode = coupon.trim();
       console.log('🎟️ Searching for coupon code:', couponCode);
 
       const { data, error } = await supabase
@@ -1034,7 +1034,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   type="text"
                   placeholder="ادخل رقم الكوبون"
                   value={coupon}
-                  onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                  onChange={(e) => setCoupon(e.target.value)}
                   disabled={appliedCoupon !== null}
                   className="flex-1 text-right text-gray-900 bg-gray-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 disabled:opacity-50 border border-gray-200"
                   style={{ focusRing: BRAND }}
