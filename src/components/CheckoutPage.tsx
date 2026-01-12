@@ -34,6 +34,7 @@ interface CheckoutPageProps {
   deliveryFee: number;
   notes: string;
   selectedCity?: string;
+  appliedCoupon?: any;
   onClose: () => void;
   onBack: () => void;
 }
@@ -45,6 +46,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   deliveryFee,
   notes,
   selectedCity,
+  appliedCoupon: initialAppliedCoupon,
   onClose,
   onBack
 }) => {
@@ -60,7 +62,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [scheduledDate, setScheduledDate] = useState<string>('');
   const [scheduledTime, setScheduledTime] = useState<string>('');
   const [coupon, setCoupon] = useState<string>('');
-  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(initialAppliedCoupon || null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>([paymentMethod]);

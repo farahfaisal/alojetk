@@ -434,7 +434,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       const { data: coupon, error } = await supabase
         .from('coupons')
         .select('*')
-        .eq('code', couponCode.trim().toUpperCase())
+        .eq('code', couponCode.trim())
         .eq('status', 'active')
         .maybeSingle();
 
@@ -545,6 +545,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         deliveryFee={deliveryFee}
         notes={notes}
         selectedCity={selectedCity}
+        appliedCoupon={appliedCoupon}
         onClose={onClose}
         onBack={() => setShowCheckout(false)}
       />
@@ -785,7 +786,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                           type="text"
                           value={couponCode}
                           onChange={(e) => {
-                            setCouponCode(e.target.value.toUpperCase());
+                            setCouponCode(e.target.value);
                             setCouponError('');
                           }}
                           placeholder="أدخل كود الخصم"
