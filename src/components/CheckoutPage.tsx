@@ -205,22 +205,34 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }, 0);
 
   const calculateCouponDiscount = () => {
-    if (!appliedCoupon) return 0;
+    if (!appliedCoupon) {
+      console.log('🎫 No coupon applied');
+      return 0;
+    }
 
     const subtotal = calculateSubtotal();
     let discount = 0;
 
     if (appliedCoupon.type === 'percentage') {
-      discount = subtotal * (appliedCoupon.value / 100);
+      discount = (subtotal * appliedCoupon.value) / 100;
+      if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
+        discount = appliedCoupon.max_discount;
+      }
     } else if (appliedCoupon.type === 'fixed') {
       discount = appliedCoupon.value;
     }
 
-    if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
-      discount = appliedCoupon.max_discount;
-    }
+    const finalDiscount = Math.min(discount, subtotal);
+    console.log('🎫 Coupon Discount Calculation:', {
+      code: appliedCoupon.code,
+      type: appliedCoupon.type,
+      value: appliedCoupon.value,
+      subtotal,
+      rawDiscount: discount,
+      finalDiscount
+    });
 
-    return discount;
+    return finalDiscount;
   };
 
   const calculatePointsDiscount = () => {
@@ -383,6 +395,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       const couponDiscount = calculateCouponDiscount();
       const pointsDiscount = calculatePointsDiscount();
 
+      console.log('💰 Order Creation - Discounts:', {
+        appliedCoupon: appliedCoupon ? appliedCoupon.code : 'none',
+        couponType: appliedCoupon?.type,
+        couponValue: appliedCoupon?.value,
+        couponDiscount,
+        pointsDiscount
+      });
+
       const primaryPaymentMethod = selectedPaymentMethods.find(m => m === 'cash' || m === 'card') || 'cash';
       const paymentMethodsUsed = [];
       if (selectedPaymentMethods.includes('cash') || selectedPaymentMethods.includes('card')) {
@@ -461,6 +481,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           : 0;
 
         const vendorTotal = Math.max(0, vendorSubtotal + vendorDeliveryFee - vendorPointsDiscount - vendorCouponDiscount);
+
+        console.log(`💰 Vendor ${i + 1} Calculation:`, {
+          vendorName: vendorItems[0].vendor_name,
+          vendorSubtotal,
+          vendorDeliveryFee,
+          vendorCouponDiscount,
+          vendorPointsDiscount,
+          vendorTotal,
+          calculation: `${vendorSubtotal} + ${vendorDeliveryFee} - ${vendorCouponDiscount} - ${vendorPointsDiscount} = ${vendorTotal}`
+        });
 
         const orderData: any = {
           customer_id: customerId,
