@@ -64,20 +64,56 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       // If referral code is provided, process the referral
       if (referralCode && customerData && customerData.length > 0) {
         try {
-          // Process the referral code
-          const { data: referralData, error: referralError } = await supabase.rpc('process_referral', {
-            p_referral_code: referralCode,
-            p_referred_user_id: customerData[0].id
-          });
-          
-          if (referralError) {
-            console.error('Error processing referral:', referralError);
-            setReferralError('فشل في معالجة رمز الإحالة');
-          } else if (referralData && referralData.success) {
-            setReferralSuccess(referralData.message || 'تم تطبيق رمز الإحالة بنجاح');
-            setPointsAwarded(referralData.points_awarded || 0);
+          const customerId = customerData[0].id;
+
+          const { data: referrerData, error: referrerError } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('referral_code', referralCode)
+            .maybeSingle();
+
+          if (referrerError || !referrerData) {
+            console.error('Error finding referrer:', referrerError);
+            setReferralError('رمز الإحالة غير صالح');
+          } else if (referrerData.id === customerId) {
+            setReferralError('لا يمكنك استخدام رمز الإحالة الخاص بك');
           } else {
-            setReferralError(referralData?.message || 'فشل في معالجة رمز الإحالة');
+            const { data: settings } = await supabase
+              .from('referral_settings')
+              .select('*')
+              .eq('is_active', true)
+              .maybeSingle();
+
+            const referrerPoints = settings?.referrer_points || 50;
+            const referredPoints = settings?.referred_points || 50;
+
+            const { error: referralInsertError } = await supabase
+              .from('referrals')
+              .insert({
+                referrer_id: referrerData.id,
+                referred_id: customerId,
+                used_referral_code: referralCode,
+                status: 'pending',
+                referrer_reward_points: referrerPoints,
+                referred_reward_points: referredPoints
+              });
+
+            if (referralInsertError) {
+              console.error('Error creating referral:', referralInsertError);
+              if (referralInsertError.code === '23505') {
+                setReferralError('تم استخدام رمز الإحالة من قبل');
+              } else {
+                setReferralError('فشل في معالجة رمز الإحالة');
+              }
+            } else {
+              await supabase
+                .from('customers')
+                .update({ referred_by: referrerData.id })
+                .eq('id', customerId);
+
+              setReferralSuccess(`تم تطبيق رمز الإحالة بنجاح! ستحصل على ${referredPoints} نقطة عند أول طلب`);
+              setPointsAwarded(referredPoints);
+            }
           }
         } catch (referralErr) {
           console.error('Error processing referral:', referralErr);

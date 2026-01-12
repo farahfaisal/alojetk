@@ -57,6 +57,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
   const [showPointsSettings, setShowPointsSettings] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+  const [referralStats, setReferralStats] = useState({ count: 0, earned: 0 });
+  const [referralsList, setReferralsList] = useState<any[]>([]);
 
   // Get current time for greeting
   const getGreeting = () => {
@@ -219,93 +221,76 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
     fetchUserPoints();
   }, [user]);
 
-  // Fetch referral code
+  // Fetch referral code and stats
   useEffect(() => {
-    const fetchReferralCode = async () => {
-      if (!user?.customer_id && !user?.id) return;
-      
+    const fetchReferralData = async () => {
+      if (!user?.id) return;
+
       try {
         setReferralLoading(true);
         setReferralError(null);
-        
-        // First try to fetch by customer_id
-        let query = supabase
-          .from('referral_codes')
-          .select('code, referral_link');
-          
-        if (user?.customer_id) {
-          query = query.eq('customer_id', user.customer_id);
-        } else if (user?.id) {
-          query = query.eq('user_id', user.id);
-        } else {
-          throw new Error('No user ID available');
-        }
-        
-        const { data, error } = await query.maybeSingle();
-        
-        if (error) {
-          console.error('Error fetching referral code:', error);
+
+        const { data: customerData, error: customerError } = await supabase
+          .from('customers')
+          .select('referral_code, referral_count')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (customerError) {
+          console.error('Error fetching referral code:', customerError);
           setReferralError('حدث خطأ في جلب رمز الإحالة');
           return;
         }
-        
-        console.log('Referral code data:', data);
-        
-        if (data) {
-          setReferralCode(data.code);
-          
-          // Use the referral_link from the database if available
-          if (data.referral_link) {
-            setReferralLink(data.referral_link);
-          } else {
-            // If no referral link in database, create one
-            setReferralLink(`https://app.alojetk.site/signup?ref=${data.code}`);
-          }
+
+        if (customerData && customerData.referral_code) {
+          setReferralCode(customerData.referral_code);
+          setReferralLink(`https://app.jetekapp.site?ref=${customerData.referral_code}`);
+
+          const { data: rewards } = await supabase
+            .from('referrals')
+            .select('referrer_reward_points')
+            .eq('referrer_id', user.id)
+            .eq('status', 'rewarded');
+
+          const totalEarned = rewards?.reduce((sum, r) => sum + r.referrer_reward_points, 0) || 0;
+
+          setReferralStats({
+            count: customerData.referral_count || 0,
+            earned: totalEarned
+          });
+
+          const { data: referralRecords } = await supabase
+            .from('referrals')
+            .select(`
+              id,
+              referred_id,
+              status,
+              referrer_reward_points,
+              created_at,
+              referred:customers!referrals_referred_id_fkey(name)
+            `)
+            .eq('referrer_id', user.id)
+            .order('created_at', { ascending: false });
+
+          const formattedReferrals = referralRecords?.map((r: any) => ({
+            ...r,
+            customer_name: r.referred?.name || 'مستخدم جديد'
+          })) || [];
+
+          setReferralsList(formattedReferrals);
         } else {
-          // Try a different approach - query without filters and check results
-          const { data: allCodes, error: allCodesError } = await supabase
-            .from('referral_codes')
-            .select('*');
-            
-          if (allCodesError) {
-            console.error('Error fetching all referral codes:', allCodesError);
-            setReferralError('حدث خطأ في جلب رموز الإحالة');
-            return;
-          }
-          
-          console.log('All referral codes:', allCodes);
-          
-          // Check if there are any codes at all
-          if (allCodes && allCodes.length > 0) {
-            // Try to find a code for this user
-            const userCode = allCodes.find(code => 
-              code.customer_id === user?.customer_id || 
-              code.user_id === user?.id
-            );
-            
-            if (userCode) {
-              setReferralCode(userCode.code);
-              setReferralLink(userCode.referral_link || `https://app.alojetk.site/signup?ref=${userCode.code}`);
-            } else {
-              setReferralCode(null);
-              setReferralLink('');
-              setReferralError('لم يتم العثور على رمز إحالة للمستخدم الحالي');
-            }
-          } else {
-            setReferralCode(null);
-            setReferralLink('');
-            setReferralError('لم يتم العثور على رمز إحالة');
-          }
+          setReferralCode(null);
+          setReferralLink('');
         }
       } catch (err) {
-        console.error('Error fetching referral code:', err);
-        setReferralError('حدث خطأ في جلب رمز الإحالة');
+        console.error('Error fetching referral data:', err);
+        setReferralError('حدث خطأ في جلب بيانات الإحالة');
       } finally {
         setReferralLoading(false);
       }
     };
-    
-    fetchReferralCode();
+
+    fetchReferralData();
   }, [user]);
 
   // Fetch wallet balance
@@ -464,70 +449,18 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
     if (referralLink) {
       if (navigator.share) {
         navigator.share({
-          title: 'انضم إلى الو جيتك واحصل على نقاط مجانية!',
-          text: `استخدم رمز الإحالة الخاص بي ${referralCode} للحصول على 100 نقطة مجانية عند التسجيل في تطبيق الو جيتك!`,
+          title: 'انضم إلى جيتك واحصل على نقاط مجانية!',
+          text: `استخدم رمز الإحالة الخاص بي للحصول على 50 نقطة مجانية عند التسجيل في تطبيق جيتك!`,
           url: referralLink
         }).catch(err => {
           console.error('Error sharing:', err);
-          // Set user-friendly error message and copy link as fallback
           setShareError('لا يمكن مشاركة الرابط، تم نسخه إلى الحافظة بدلاً من ذلك');
           handleCopyReferralLink();
-          // Clear error message after 3 seconds
           setTimeout(() => setShareError(null), 3000);
         });
       } else {
         handleCopyReferralLink();
       }
-    }
-  };
-
-  const handleCreateReferralCode = async () => {
-    if (!user?.customer_id && !user?.id) {
-      setReferralError('يجب تسجيل الدخول لإنشاء رمز إحالة');
-      return;
-    }
-    
-    try {
-      setCreatingReferralCode(true);
-      setReferralError(null);
-      
-      // Generate a random code
-      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      const referralLink = `https://app.alojetk.site/signup?ref=${code}`;
-
-      // Insert the code into the database
-      const { data, error } = await supabase
-        .from('referral_codes')
-        .insert({
-          customer_id: user.customer_id,
-          user_id: user.customer_id, // Use customer_id for both fields
-          code: code,
-          type: 'user',
-          status: 'active',
-          points_reward: 100,
-          points_referrer: 50,
-          referral_link: referralLink
-        })
-        .select();
-        
-      if (error) {
-        console.error('Error creating referral code:', error);
-        setReferralError('حدث خطأ في إنشاء رمز الإحالة');
-        return;
-      }
-      
-      // Update state with the new code
-      setReferralCode(code);
-      setReferralLink(referralLink);
-      
-      // Log success
-      console.log('Referral code created successfully:', data);
-      
-    } catch (err) {
-      console.error('Error creating referral code:', err);
-      setReferralError('حدث خطأ في إنشاء رمز الإحالة');
-    } finally {
-      setCreatingReferralCode(false);
     }
   };
 
@@ -691,32 +624,13 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
                   <h3 className="text-accent text-lg font-bold mb-2">رابط الإحالة الخاص بك</h3>
                   <div className="text-sm text-accent/80 mb-4">شارك هذا الرابط مع أصدقائك واكسب نقاط عندما يستخدمونه</div>
                   
-                  {referralCode ? (
-                    <div className="bg-white/80 rounded-lg p-3 text-center">
+                  <div className="bg-white/80 rounded-lg p-3 text-center">
+                    {referralCode ? (
                       <p className="font-bold text-accent text-lg">{referralCode}</p>
-                    </div>
-                  ) : (
-                    <div className="bg-white/80 rounded-lg p-3 text-center">
-                      <p className="text-gray-500">لم يتم إنشاء رمز إحالة بعد</p>
-                      <button
-                        onClick={handleCreateReferralCode}
-                        disabled={creatingReferralCode}
-                        className="mt-2 bg-accent text-white px-4 py-2 rounded-lg text-sm hover:bg-accent-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mx-auto"
-                      >
-                        {creatingReferralCode ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            جاري الإنشاء...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="w-4 h-4" />
-                            إنشاء رمز إحالة
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-gray-500">يتم إنشاء رمز الإحالة تلقائياً</p>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -792,18 +706,49 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
             {/* Referral Stats */}
             <div className="bg-white rounded-xl shadow-sm p-4">
               <h3 className="font-bold text-gray-900 mb-4">إحصائيات الإحالة</h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                   <p className="text-sm text-gray-500">عدد الإحالات</p>
-                  <p className="text-2xl font-bold text-brand">0</p>
+                  <p className="text-2xl font-bold text-brand">{referralStats.count}</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                   <p className="text-sm text-gray-500">النقاط المكتسبة</p>
-                  <p className="text-2xl font-bold text-brand">0</p>
+                  <p className="text-2xl font-bold text-brand">{referralStats.earned}</p>
                 </div>
               </div>
             </div>
+
+            {/* Referrals List */}
+            {referralsList.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm p-4">
+                <h3 className="font-bold text-gray-900 mb-4">إحالاتي</h3>
+                <div className="space-y-3">
+                  {referralsList.map((referral) => (
+                    <div key={referral.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                      <div>
+                        <p className="font-semibold text-gray-900">{referral.customer_name}</p>
+                        <p className="text-sm text-gray-600">
+                          {new Date(referral.created_at).toLocaleDateString('ar')}
+                        </p>
+                      </div>
+                      <div className="text-left">
+                        {referral.status === 'rewarded' ? (
+                          <div className="flex items-center gap-1 text-green-600">
+                            <Check className="w-4 h-4" />
+                            <span className="text-sm font-semibold">+{referral.referrer_reward_points} نقطة</span>
+                          </div>
+                        ) : referral.status === 'completed' ? (
+                          <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">قيد المعالجة</span>
+                        ) : (
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">قيد الانتظار</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
