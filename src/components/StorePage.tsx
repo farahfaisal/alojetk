@@ -483,7 +483,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           variant_id: variantInfo?.variant_id,
           variant_name: variantInfo?.variant_name,
           addons: mappedAddons,
-          preparation_time: product.details?.preparation_time
+          preparation_time: product.preparation_time
         };
       }
 

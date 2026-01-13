@@ -64,6 +64,25 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     console.log('📊 CartPage - totalDeliveryFee changed to:', totalDeliveryFee);
   }, [totalDeliveryFee]);
 
+  // Calculate estimated delivery time based on preparation time
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      setEstimatedTime('30-45');
+      return;
+    }
+
+    const maxPreparationTime = Math.max(
+      ...cartItems.map(item => item.preparation_time || 15),
+      15
+    );
+
+    const deliveryTime = 15;
+    const totalMinTime = maxPreparationTime + deliveryTime;
+    const totalMaxTime = totalMinTime + 15;
+
+    setEstimatedTime(`${totalMinTime}-${totalMaxTime}`);
+  }, [cartItems]);
+
   // Calculate multi-vendor delivery fee
   useEffect(() => {
     const calculateMultiVendorDeliveryFee = async () => {

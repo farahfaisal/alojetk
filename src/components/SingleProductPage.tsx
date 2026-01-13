@@ -35,8 +35,8 @@ interface Product {
     ingredients?: string[];
     allergens?: string[];
     calories?: number;
-    preparation_time?: number;
   };
+  preparation_time?: number;
   price: number;
   image_url?: string;
   vendor: {
@@ -283,7 +283,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       vendor_name: product.vendor.store_name,
       addons: selectedAddonsList,
       variants: selectedVariantsList,
-      preparation_time: product.details?.preparation_time
+      preparation_time: product.preparation_time
     };
   };
 
@@ -554,7 +554,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         vendor_name: product.vendor.store_name,
         variant_id: variant.id,
         variant_name: variant.name,
-        preparation_time: product.details?.preparation_time
+        preparation_time: product.preparation_time
       };
       
       // Check for multi-vendor conflict
@@ -624,7 +624,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         variant_id: variant.id,
         variant_name: variant.name,
         addons: addons || [],
-        preparation_time: product.details?.preparation_time
+        preparation_time: product.preparation_time
       };
       
       // Check for multi-vendor conflict
