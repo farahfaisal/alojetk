@@ -57,7 +57,10 @@ Deno.serve(async (req: Request) => {
     const isTestPhone = standardizedPhone === "0595284308";
 
     const hasTwilioCredentials = accountSid && authToken && (twilioPhoneNumber || twilioMessageServiceSid);
-    const hasTwilioValidCredentials = hasTwilioCredentials && accountSid.startsWith('AC');
+    const hasValidAccountSid = accountSid && accountSid.startsWith('AC');
+    const hasValidPhoneNumber = twilioPhoneNumber && twilioPhoneNumber.startsWith('+');
+    const hasValidMessageServiceSid = twilioMessageServiceSid && twilioMessageServiceSid.startsWith('MG');
+    const hasTwilioValidCredentials = hasTwilioCredentials && hasValidAccountSid && (hasValidPhoneNumber || hasValidMessageServiceSid);
 
     const isTestMode = isTestPhone || !hasTwilioValidCredentials;
     const otp = isTestMode ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
@@ -73,6 +76,9 @@ Deno.serve(async (req: Request) => {
       console.log("🧪 Running in TEST MODE:", {
         isTestPhone,
         hasTwilioCredentials,
+        hasValidAccountSid,
+        hasValidPhoneNumber,
+        hasValidMessageServiceSid,
         hasTwilioValidCredentials
       });
     }
