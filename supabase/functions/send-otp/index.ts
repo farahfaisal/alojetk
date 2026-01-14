@@ -12,8 +12,14 @@ const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID")!;
 const authToken = Deno.env.get("TWILIO_AUTH_TOKEN")!;
-const twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
-const twilioMessageServiceSid = Deno.env.get("TWILIO_MESSAGE_SERVICE_SID");
+let twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
+let twilioMessageServiceSid = Deno.env.get("TWILIO_MESSAGE_SERVICE_SID");
+
+if (twilioMessageServiceSid && twilioMessageServiceSid.startsWith('+')) {
+  console.log("⚠️ MESSAGE_SERVICE_SID contains a phone number, moving to PHONE_NUMBER");
+  twilioPhoneNumber = twilioMessageServiceSid;
+  twilioMessageServiceSid = undefined;
+}
 
 let twilioClient;
 try {
