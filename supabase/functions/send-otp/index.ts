@@ -54,52 +54,27 @@ Deno.serve(async (req: Request) => {
 
     console.log("Sending OTP to phone:", standardizedPhone);
 
-    const isTest = standardizedPhone === "0595284308";
-    const otp = isTest ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
+    const isTestPhone = standardizedPhone === "0595284308";
+
+    const hasTwilioCredentials = accountSid && authToken && (twilioPhoneNumber || twilioMessageServiceSid);
+    const hasTwilioValidCredentials = hasTwilioCredentials && accountSid.startsWith('AC');
+
+    const isTestMode = isTestPhone || !hasTwilioValidCredentials;
+    const otp = isTestMode ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    if (!isTest) {
+    if (!isTestMode) {
       console.log("🔧 Twilio Configuration Check for real number:");
       console.log("- ACCOUNT_SID exists:", !!accountSid);
       console.log("- AUTH_TOKEN exists:", !!authToken);
       console.log("- PHONE_NUMBER exists:", !!twilioPhoneNumber);
       console.log("- MESSAGE_SERVICE_SID exists:", !!twilioMessageServiceSid);
-
-      if (!accountSid || !authToken || (!twilioPhoneNumber && !twilioMessageServiceSid)) {
-        console.error("❌ Missing Twilio credentials for real number!");
-        return new Response(JSON.stringify({
-          success: false,
-          sms_sent: false,
-          message: "خدمة الرسائل النصية غير متاحة حالياً. يرجى استخدام الرقم التجريبي: 0595284308",
-          debug: {
-            isTestMode: false,
-            missingCredentials: {
-              accountSid: !accountSid,
-              authToken: !authToken,
-              phoneNumber: !twilioPhoneNumber,
-              messageServiceSid: !twilioMessageServiceSid
-            }
-          }
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 500,
-        });
-      }
-
-      if (!accountSid.startsWith('AC')) {
-        console.error("❌ Invalid Account SID format!");
-        return new Response(JSON.stringify({
-          success: false,
-          sms_sent: false,
-          message: "إعدادات خدمة الرسائل غير صحيحة. يرجى استخدام الرقم التجريبي: 0595284308",
-          debug: {
-            accountSidFormat: "يجب أن يبدأ بـ AC"
-          }
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 500,
-        });
-      }
+    } else {
+      console.log("🧪 Running in TEST MODE:", {
+        isTestPhone,
+        hasTwilioCredentials,
+        hasTwilioValidCredentials
+      });
     }
 
     const otpResponse = await fetch(`${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}`, {
@@ -165,8 +140,12 @@ Deno.serve(async (req: Request) => {
       expires_at: expiresAt.toISOString()
     });
 
-    if (isTest) {
-      console.log("✅ Test account - OTP stored successfully");
+    if (isTestMode) {
+      console.log("✅ Test mode - OTP stored successfully");
+      const testMessage = isTestPhone
+        ? "حساب تجريبي - استخدم الرمز 123456"
+        : "وضع الاختبار مفعل (Twilio غير متاح) - استخدم الرمز 123456";
+
       return new Response(JSON.stringify({
         success: true,
         sms_sent: false,
@@ -174,7 +153,7 @@ Deno.serve(async (req: Request) => {
         debug: {
           isTestMode: true,
           otp: otp,
-          message: "حساب تجريبي - استخدم الرمز 123456"
+          message: testMessage
         }
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
