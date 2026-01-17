@@ -361,9 +361,40 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           initialCategoryId: categoryId
         });
 
-        setAllProducts(data);
+        // Merge addons_data and variants_data with data from tables
+        const productsWithAddons = data.map(product => {
+          let mergedAddons = product.addons || [];
+          let mergedVariants = product.variants || [];
+
+          // If product has addons_data, merge it with addons from table
+          if (product.addons_data && Array.isArray(product.addons_data)) {
+            const addonsFromData = product.addons_data.map((addon: any, index: number) => ({
+              id: addon.id || `addon-${product.id}-${index}`,
+              name: addon.name,
+              price: parseFloat(addon.price) || 0,
+              is_required: addon.is_required || false,
+              is_default: addon.is_default || false,
+              type: addon.type || 'optional',
+              image_url: addon.image_url || null
+            }));
+            mergedAddons = [...mergedAddons, ...addonsFromData];
+          }
+
+          // If product has variants_data, use it
+          if (product.variants_data && Array.isArray(product.variants_data) && product.variants_data.length > 0) {
+            mergedVariants = product.variants_data;
+          }
+
+          return {
+            ...product,
+            addons: mergedAddons,
+            variants: mergedVariants
+          };
+        });
+
+        setAllProducts(productsWithAddons);
         // Show all products initially (no category filter)
-        filterAndGroupProducts(data, null, null, searchQuery);
+        filterAndGroupProducts(productsWithAddons, null, null, searchQuery);
       } catch (err) {
         console.error('Error in fetchAllProducts:', err);
         

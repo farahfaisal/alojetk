@@ -192,19 +192,38 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         setAddToCartError('حدث خطأ في تحميل خيارات المنتج');
       }
     }
-    
-    // Initialize selected addons
-    if (product.addons && product.addons.length > 0) {
+
+    // Initialize selected addons - merge from addons array and addons_data
+    let productAddons = product.addons || [];
+
+    // If product has addons_data, merge it
+    if ((product as any).addons_data && Array.isArray((product as any).addons_data)) {
+      const addonsFromData = (product as any).addons_data.map((addon: any, index: number) => ({
+        id: addon.id || `addon-${product.id}-${index}`,
+        name: addon.name,
+        price: parseFloat(addon.price) || 0,
+        is_required: addon.is_required || false,
+        is_default: addon.is_default || false,
+        type: addon.type || 'optional',
+        image_url: addon.image_url || null
+      }));
+      productAddons = [...productAddons, ...addonsFromData];
+    }
+
+    if (productAddons.length > 0) {
       const initialAddons: {[key: number]: boolean} = {};
 
       // Select default addons
-      product.addons.forEach(addon => {
+      productAddons.forEach(addon => {
         if (addon.is_default) {
           initialAddons[addon.id] = true;
         }
       });
 
       setSelectedAddons(initialAddons);
+
+      // Update product.addons with merged addons
+      (product as any).addons = productAddons;
     }
   }, [product]);
 
