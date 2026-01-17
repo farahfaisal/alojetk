@@ -29,7 +29,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [isVendorAvailable, setIsVendorAvailable] = useState(true);
   const [vendorStatusMessage, setVendorStatusMessage] = useState<string>('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-  const [storeCategories, setStoreCategories] = useState<{id: number, name: string}[]>([]);
+  const [selectedCategoryType, setSelectedCategoryType] = useState<'regular' | 'custom' | null>(null);
+  const [storeCategories, setStoreCategories] = useState<{id: number, name: string, type: 'regular' | 'custom'}[]>([]);
   const [showFilters, setShowFilters] = useState(true);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [showSearch, setShowSearch] = useState(false);
@@ -235,36 +236,56 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [vendor]);
 
-  // Fetch store categories
+  // Fetch store categories (both regular and custom)
   useEffect(() => {
     const fetchStoreCategories = async () => {
       try {
         if (!vendor.id) return;
-        
+
+        // Fetch products with both category types
         const { data, error } = await supabase
           .from('products')
-          .select('category:category_id(id, name)')
+          .select(`
+            category:category_id(id, name),
+            custom_category:custom_category_id(id, name)
+          `)
           .eq('vendor_id', vendor.id)
           .eq('status', 'active');
-          
+
         if (error) throw error;
-        
+
         if (data) {
-          const uniqueCategories = Array.from(
-            new Map(
-              data
-                .filter(item => item.category)
-                .map(item => [item.category.id, item.category])
-            ).values()
-          );
-          
-          setStoreCategories(uniqueCategories);
+          const allCategories = new Map();
+
+          // Add regular categories
+          data
+            .filter(item => item.category)
+            .forEach(item => {
+              allCategories.set(`regular_${item.category.id}`, {
+                id: item.category.id,
+                name: item.category.name,
+                type: 'regular'
+              });
+            });
+
+          // Add custom categories
+          data
+            .filter(item => item.custom_category)
+            .forEach(item => {
+              allCategories.set(`custom_${item.custom_category.id}`, {
+                id: item.custom_category.id,
+                name: item.custom_category.name,
+                type: 'custom'
+              });
+            });
+
+          setStoreCategories(Array.from(allCategories.values()));
         }
       } catch (err) {
         console.error('Error fetching store categories:', err);
       }
     };
-    
+
     fetchStoreCategories();
   }, [vendor.id]);
 
@@ -293,6 +314,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               id,
               name,
               type
+            ),
+            custom_category:custom_category_id (
+              id,
+              name,
+              description,
+              color
             ),
             addons:product_addons (
               id,
@@ -336,7 +363,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
         setAllProducts(data);
         // Show all products initially (no category filter)
-        filterAndGroupProducts(data, null, searchQuery);
+        filterAndGroupProducts(data, null, null, searchQuery);
       } catch (err) {
         console.error('Error in fetchAllProducts:', err);
         
@@ -367,41 +394,65 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   // Filter and group products when filters change
   useEffect(() => {
     if (allProducts.length > 0) {
-      filterAndGroupProducts(allProducts, selectedCategoryId, searchQuery);
+      filterAndGroupProducts(allProducts, selectedCategoryId, selectedCategoryType, searchQuery);
     }
-  }, [selectedCategoryId, searchQuery, allProducts]);
+  }, [selectedCategoryId, selectedCategoryType, searchQuery, allProducts]);
 
   // Function to filter and group products
-  const filterAndGroupProducts = (allProds: any[], categoryId: number | null, query: string) => {
+  const filterAndGroupProducts = (
+    allProds: any[],
+    categoryId: number | null,
+    categoryType: 'regular' | 'custom' | null,
+    query: string
+  ) => {
     let filteredProducts = [...allProds];
-    
-    if (categoryId) {
-      filteredProducts = filteredProducts.filter(product => 
-        product.category?.id === categoryId
-      );
+
+    // Filter by category (regular or custom)
+    if (categoryId && categoryType) {
+      filteredProducts = filteredProducts.filter(product => {
+        if (categoryType === 'regular') {
+          return product.category?.id === categoryId;
+        } else if (categoryType === 'custom') {
+          return product.custom_category?.id === categoryId;
+        }
+        return false;
+      });
     }
-    
+
+    // Filter by search query
     if (query) {
-      filteredProducts = filteredProducts.filter(product => 
+      filteredProducts = filteredProducts.filter(product =>
         product.name.toLowerCase().includes(query.toLowerCase())
       );
     }
-    
+
     setProducts(filteredProducts);
-    
+
+    // Group products by category (regular or custom)
     const groupedProducts = filteredProducts.reduce((acc: { [key: string]: any }, product: any) => {
-      const categoryId = product.category?.id;
-      const categoryName = product.category?.name;
+      // Try regular category first
+      let categoryId = product.category?.id;
+      let categoryName = product.category?.name;
+      let categoryTypeKey = 'regular';
+
+      // If no regular category, try custom category
+      if (!categoryId && product.custom_category) {
+        categoryId = product.custom_category.id;
+        categoryName = product.custom_category.name;
+        categoryTypeKey = 'custom';
+      }
 
       if (categoryId && categoryName) {
-        if (!acc[categoryId]) {
-          acc[categoryId] = {
+        const key = `${categoryTypeKey}_${categoryId}`;
+        if (!acc[key]) {
+          acc[key] = {
             id: categoryId,
             name: categoryName,
+            type: categoryTypeKey,
             products: []
           };
         }
-        acc[categoryId].products.push(product);
+        acc[key].products.push(product);
       }
       return acc;
     }, {});
@@ -500,8 +551,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   };
 
-  const handleCategoryClick = (catId: number | null) => {
+  const handleCategoryClick = (catId: number | null, catType: 'regular' | 'custom' | null = null) => {
     setSelectedCategoryId(catId);
+    setSelectedCategoryType(catType);
   };
 
   if (loading) {
@@ -776,7 +828,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 <div className="overflow-x-auto pb-2">
                   <div className="flex gap-2 min-w-max">
                     <button
-                      onClick={() => handleCategoryClick(null)}
+                      onClick={() => handleCategoryClick(null, null)}
                       className={`px-4 py-2 rounded-full text-sm font-medium ${
                         selectedCategoryId === null
                           ? 'bg-red-800 text-white'
@@ -785,18 +837,21 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     >
                       الكل
                     </button>
-                    
+
                     {storeCategories.map(category => (
                       <button
-                        key={category.id}
-                        onClick={() => handleCategoryClick(category.id)}
+                        key={`${category.type}_${category.id}`}
+                        onClick={() => handleCategoryClick(category.id, category.type)}
                         className={`px-4 py-2 rounded-full text-sm font-medium ${
-                          selectedCategoryId === category.id
+                          selectedCategoryId === category.id && selectedCategoryType === category.type
                             ? 'bg-red-800 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         } transition-colors whitespace-nowrap`}
                       >
                         {category.name}
+                        {category.type === 'custom' && (
+                          <span className="mr-1 text-xs opacity-75">★</span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -825,7 +880,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       <div className="flex items-center justify-between mb-3">
                         <h2 className="text-xl font-bold text-gray-900">{selectedCategory.name}</h2>
                         <button
-                          onClick={() => setSelectedCategoryId(null)}
+                          onClick={() => handleCategoryClick(null, null)}
                           className="text-brand hover:text-brand-light text-sm font-medium"
                         >
                           رجوع
