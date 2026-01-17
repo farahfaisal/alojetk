@@ -366,18 +366,21 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           let mergedAddons = product.addons || [];
           let mergedVariants = product.variants || [];
 
-          // If product has addons_data, merge it with addons from table
+          // If product has addons_data, use it only if there are no table addons
           if (product.addons_data && Array.isArray(product.addons_data)) {
-            const addonsFromData = product.addons_data.map((addon: any, index: number) => ({
-              id: addon.id || `addon-${product.id}-${index}`,
-              name: addon.name,
-              price: parseFloat(addon.price) || 0,
-              is_required: addon.is_required || false,
-              is_default: addon.is_default || false,
-              type: addon.type || 'optional',
-              image_url: addon.image_url || null
-            }));
-            mergedAddons = [...mergedAddons, ...addonsFromData];
+            // Only use addons_data if table addons are empty
+            if (mergedAddons.length === 0) {
+              const addonsFromData = product.addons_data.map((addon: any, index: number) => ({
+                id: addon.id || `addon-${product.id}-${index}`,
+                name: addon.name,
+                price: parseFloat(addon.price) || 0,
+                is_required: addon.is_required || false,
+                is_default: addon.is_default || false,
+                type: addon.type || 'optional',
+                image_url: addon.image_url || null
+              }));
+              mergedAddons = addonsFromData;
+            }
           }
 
           // If product has variants_data, use it

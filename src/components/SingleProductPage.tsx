@@ -108,6 +108,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   const [justAddedToCart, setJustAddedToCart] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [showProductAddedPopup, setShowProductAddedPopup] = useState(false);
+  const [mergedAddons, setMergedAddons] = useState<ProductAddon[]>([]);
 
   useEffect(() => {
     // Check if vendor is available (status is active)
@@ -196,19 +197,25 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     // Initialize selected addons - merge from addons array and addons_data
     let productAddons = product.addons || [];
 
-    // If product has addons_data, merge it
+    // If product has addons_data, merge it (only if table addons are empty)
     if ((product as any).addons_data && Array.isArray((product as any).addons_data)) {
-      const addonsFromData = (product as any).addons_data.map((addon: any, index: number) => ({
-        id: addon.id || `addon-${product.id}-${index}`,
-        name: addon.name,
-        price: parseFloat(addon.price) || 0,
-        is_required: addon.is_required || false,
-        is_default: addon.is_default || false,
-        type: addon.type || 'optional',
-        image_url: addon.image_url || null
-      }));
-      productAddons = [...productAddons, ...addonsFromData];
+      // Only use addons_data if there are no table addons
+      if (productAddons.length === 0) {
+        const addonsFromData = (product as any).addons_data.map((addon: any, index: number) => ({
+          id: addon.id || `addon-${product.id}-${index}`,
+          name: addon.name,
+          price: parseFloat(addon.price) || 0,
+          is_required: addon.is_required || false,
+          is_default: addon.is_default || false,
+          type: addon.type || 'optional',
+          image_url: addon.image_url || null
+        }));
+        productAddons = addonsFromData;
+      }
     }
+
+    // Store merged addons in state
+    setMergedAddons(productAddons);
 
     if (productAddons.length > 0) {
       const initialAddons: {[key: number]: boolean} = {};
@@ -221,9 +228,6 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       });
 
       setSelectedAddons(initialAddons);
-
-      // Update product.addons with merged addons
-      (product as any).addons = productAddons;
     }
   }, [product]);
 
@@ -231,9 +235,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   useEffect(() => {
     if (variants.length > 0) {
       setSelectionStep('variants');
-    } else if (product.addons && product.addons.length > 0) {
-      const requiredAddons = product.addons.filter(addon => addon.is_required);
-      const optionalAddons = product.addons.filter(addon => !addon.is_required);
+    } else if (mergedAddons && mergedAddons.length > 0) {
+      const requiredAddons = mergedAddons.filter(addon => addon.is_required);
+      const optionalAddons = mergedAddons.filter(addon => !addon.is_required);
 
       if (requiredAddons.length > 0) {
         setSelectionStep('required');
@@ -241,7 +245,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         setSelectionStep('optional');
       }
     }
-  }, [variants, product.addons]);
+  }, [variants, mergedAddons]);
 
   const checkMultiVendor = () => {
     // Check if there are items from a different vendor in the cart
@@ -257,12 +261,12 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   const prepareCartItem = () => {
     // Get selected addons with their individual quantities
-    const selectedAddonsList = product.addons
-      ?.filter(addon => selectedAddons[addon.id])
+    const selectedAddonsList = mergedAddons
+      .filter(addon => selectedAddons[addon.id])
       .map(addon => ({
         ...addon,
         quantity: addonQuantities[addon.id] || 1
-      })) || [];
+      }));
 
     // Get selected variants information
     const selectedVariantsList = variants.map(variant => {
@@ -324,15 +328,15 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       }
       
       // If product has no variants and no addons, add directly to cart
-      if ((!product.variants || !product.variants.length) && (!product.addons || !product.addons.length)) {
+      if ((!product.variants || !product.variants.length) && (!mergedAddons || !mergedAddons.length)) {
         handleAddToCart(e);
         return;
       }
-      
+
       // If product has variants, start with them
       if (product.variants && product.variants.length > 0) {
         setSelectionStep('variants');
-      } else if (product.addons?.some(addon => addon.is_required)) {
+      } else if (mergedAddons?.some(addon => addon.is_required)) {
         // If no variants but has required addons
         setSelectionStep('required');
       } else {
@@ -355,7 +359,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   const handleAddonToggle = (addonId: number) => {
     // Don't allow toggling required addons
-    const addon = product.addons?.find(a => a.id === addonId);
+    const addon = mergedAddons.find(a => a.id === addonId);
     if (addon?.is_required) return;
     
     setSelectedAddons(prev => ({
@@ -390,8 +394,8 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       }
       
       // Get selected addons with their individual quantities
-      const selectedAddonsList = product.addons
-        ?.filter(addon => selectedAddons[addon.id])
+      const selectedAddonsList = mergedAddons
+        .filter(addon => selectedAddons[addon.id])
         .map(addon => ({
           id: addon.id,
           name: addon.name,
@@ -400,7 +404,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
           is_required: addon.is_required || false,
           is_default: addon.is_default || false,
           type: addon.type || (addon.is_required ? 'regular' : 'optional')
-        })) || [];
+        }));
 
       console.log('🔧 Selected addons for direct add:', selectedAddonsList);
       console.log('🔧 Selected variant ID:', selectedVariantId);
@@ -464,9 +468,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   // Group addons by type
   const groupedAddons = {
-    default: product.addons?.filter(addon => !addon.is_required && addon.is_default) || [],
-    optional: product.addons?.filter(addon => !addon.is_required && !addon.is_default) || [],
-    required: product.addons?.filter(addon => addon.is_required) || [],
+    default: mergedAddons.filter(addon => !addon.is_required && addon.is_default),
+    optional: mergedAddons.filter(addon => !addon.is_required && !addon.is_default),
+    required: mergedAddons.filter(addon => addon.is_required),
   };
   
   const handleNextStep = () => {
@@ -483,9 +487,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       }
       
       // Move to required addons if they exist
-      if (product.addons?.some(addon => addon.is_required)) {
+      if (mergedAddons.some(addon => addon.is_required)) {
         setSelectionStep('required');
-      } else if (product.addons?.some(addon => !addon.is_required)) {
+      } else if (mergedAddons.some(addon => !addon.is_required)) {
         setSelectionStep('optional');
       } else {
         handleAddToCart();
@@ -729,13 +733,13 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     }
       
     const basePrice = productPrice * quantity;
-    const addonsPrice = (product.addons || [])
+    const addonsPrice = mergedAddons
       .filter(addon => selectedAddons[addon.id])
       .reduce((sum, addon) => {
         // Use the addon's individual quantity from state
         const addonQuantity = addonQuantities[addon.id] || 1;
         return sum + (addon.price * addonQuantity);
-      }, 0) * quantity || 0;
+      }, 0) * quantity;
 
     return basePrice + addonsPrice + (variantAdjustment * quantity);
   };
@@ -1284,7 +1288,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         onAddToCart={handleVariantSelectFromModal}
         productName={product.name}
         productBasePrice={product.price}
-        addons={product.addons}
+        addons={mergedAddons}
       />
 
       {/* Confirmation Modal */}
