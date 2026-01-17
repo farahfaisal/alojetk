@@ -13,7 +13,7 @@ import { calculateDistance, calculateDeliveryFee } from '../lib/delivery';
 
 interface StorePageProps {
   vendor: any;
-  categoryId: number | null;
+  categoryId: number | string | null;
   onClose: () => void;
 }
 
@@ -28,9 +28,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [newVendorData, setNewVendorData] = useState<any>(null);
   const [isVendorAvailable, setIsVendorAvailable] = useState(true);
   const [vendorStatusMessage, setVendorStatusMessage] = useState<string>('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCategoryType, setSelectedCategoryType] = useState<'regular' | 'custom' | null>(null);
-  const [storeCategories, setStoreCategories] = useState<{id: number, name: string, type: 'regular' | 'custom'}[]>([]);
+  const [storeCategories, setStoreCategories] = useState<{id: string, name: string, type: 'regular' | 'custom'}[]>([]);
   const [showFilters, setShowFilters] = useState(true);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [showSearch, setShowSearch] = useState(false);
@@ -401,7 +401,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   // Function to filter and group products
   const filterAndGroupProducts = (
     allProds: any[],
-    categoryId: number | null,
+    categoryId: string | null,
     categoryType: 'regular' | 'custom' | null,
     query: string
   ) => {
@@ -430,30 +430,44 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
     // Group products by category (regular or custom)
     const groupedProducts = filteredProducts.reduce((acc: { [key: string]: any }, product: any) => {
-      // Try regular category first
-      let categoryId = product.category?.id;
-      let categoryName = product.category?.name;
-      let categoryTypeKey = 'regular';
+      // Check both regular and custom categories for grouping
+      const categoriesToGroup = [];
 
-      // If no regular category, try custom category
-      if (!categoryId && product.custom_category) {
-        categoryId = product.custom_category.id;
-        categoryName = product.custom_category.name;
-        categoryTypeKey = 'custom';
+      // Add regular category if exists
+      if (product.category?.id && product.category?.name) {
+        categoriesToGroup.push({
+          id: product.category.id,
+          name: product.category.name,
+          type: 'regular'
+        });
       }
 
-      if (categoryId && categoryName) {
-        const key = `${categoryTypeKey}_${categoryId}`;
+      // Add custom category if exists
+      if (product.custom_category?.id && product.custom_category?.name) {
+        categoriesToGroup.push({
+          id: product.custom_category.id,
+          name: product.custom_category.name,
+          type: 'custom'
+        });
+      }
+
+      // Add product to all its categories
+      categoriesToGroup.forEach(cat => {
+        const key = `${cat.type}_${cat.id}`;
         if (!acc[key]) {
           acc[key] = {
-            id: categoryId,
-            name: categoryName,
-            type: categoryTypeKey,
+            id: cat.id,
+            name: cat.name,
+            type: cat.type,
             products: []
           };
         }
-        acc[key].products.push(product);
-      }
+        // Avoid duplicates
+        if (!acc[key].products.find((p: any) => p.id === product.id)) {
+          acc[key].products.push(product);
+        }
+      });
+
       return acc;
     }, {});
 
@@ -551,7 +565,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   };
 
-  const handleCategoryClick = (catId: number | null, catType: 'regular' | 'custom' | null = null) => {
+  const handleCategoryClick = (catId: string | null, catType: 'regular' | 'custom' | null = null) => {
     setSelectedCategoryId(catId);
     setSelectedCategoryType(catType);
   };
