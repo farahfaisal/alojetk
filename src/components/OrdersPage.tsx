@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin, Box } from 'lucide-react';
+import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin, Box, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -613,9 +613,15 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                       </div>
 
                       {order.notes && (
-                        <p className="mt-2 text-sm text-gray-500 bg-gray-50 p-2 rounded">
-                          {order.notes}
-                        </p>
+                        <div className="mt-2 bg-orange-50 p-3 rounded-lg border border-orange-200">
+                          <div className="flex items-center gap-1 mb-1">
+                            <MessageSquare className="w-3 h-3 text-orange-600" />
+                            <span className="text-xs font-semibold text-orange-700">ملاحظات:</span>
+                          </div>
+                          <p className="text-sm text-gray-700 font-medium">
+                            {order.notes}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
