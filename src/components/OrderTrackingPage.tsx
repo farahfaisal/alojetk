@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Clock, Truck, Check, MapPin, Phone, Star, ChevronLeft, RefreshCw, Store, User, Headphones, MessageSquare } from 'lucide-react';
+import { Package, Clock, Truck, Check, MapPin, Phone, Star, ChevronLeft, RefreshCw, Store, User, Headphones } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import RatingModal from './RatingModal';
@@ -1093,12 +1093,9 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
           {/* Order Notes */}
           {orderDetails.notes && (
-            <div className="bg-white rounded-xl p-4 shadow-sm border-r-4 border-orange-500">
-              <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="w-5 h-5 text-orange-500" />
-                <h3 className="font-bold text-gray-900">ملاحظات الطلب</h3>
-              </div>
-              <p className="text-gray-700 bg-orange-50 p-3 rounded-lg font-medium">{orderDetails.notes}</p>
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">ملاحظات الطلب</h3>
+              <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{orderDetails.notes}</p>
             </div>
           )}
         </div>

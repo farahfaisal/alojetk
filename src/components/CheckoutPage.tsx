@@ -944,16 +944,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           <button
             onClick={() => setShowNotesModal(true)}
-            className="w-full bg-white rounded-lg p-4 border-2 border-dashed border-gray-300 flex items-center justify-between hover:bg-gray-50 hover:border-brand transition-colors"
+            className="w-full bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between hover:bg-gray-50 transition-colors"
           >
             <div className="flex-1 text-right">
-              <div className="flex items-center justify-end gap-2 mb-1">
-                <span className="text-sm font-semibold text-gray-700">ملاحظات الطلب</span>
-                <MessageSquare className="w-4 h-4 text-gray-600" />
-              </div>
-              <p className={`text-sm ${orderNotes ? 'text-gray-900 font-medium' : 'text-gray-500 italic'}`}>
-                {orderNotes || 'اضغط لإضافة ملاحظات (مثل: صرافة، عدم الاتصال، إلخ...)'}
+              <p className={`text-base ${orderNotes ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                {orderNotes || 'ملاحظة للطلب (اختياري)'}
               </p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+              <MessageSquare className="w-5 h-5 text-gray-600" />
             </div>
           </button>
 
