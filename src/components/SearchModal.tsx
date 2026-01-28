@@ -72,33 +72,57 @@ const SearchModal: React.FC<SearchModalProps> = ({
     }
   }, []);
 
-  const getAllSubAreas = useCallback(async (mainAreaName: string): Promise<string[]> => {
+  const getAllSubAreas = useCallback(async (areaName: string): Promise<string[]> => {
     try {
-      // Get the main area ID
-      const { data: mainArea } = await supabase
+      // Get the selected area
+      const { data: selectedArea } = await supabase
         .from('service_areas')
-        .select('id, name')
-        .eq('name', mainAreaName)
+        .select('id, name, parent_id')
+        .eq('name', areaName)
         .maybeSingle();
 
-      if (!mainArea) return [mainAreaName];
+      if (!selectedArea) return [areaName];
+
+      // Find the main (parent) area
+      let mainAreaId = selectedArea.id;
+      let mainAreaName = selectedArea.name;
+
+      // If this is a sub-area, get the parent area
+      if (selectedArea.parent_id) {
+        const { data: parentArea } = await supabase
+          .from('service_areas')
+          .select('id, name')
+          .eq('id', selectedArea.parent_id)
+          .maybeSingle();
+
+        if (parentArea) {
+          mainAreaId = parentArea.id;
+          mainAreaName = parentArea.name;
+        }
+      }
 
       // Get all sub-areas with this parent_id
       const { data: subAreas } = await supabase
         .from('service_areas')
         .select('name')
-        .eq('parent_id', mainArea.id);
+        .eq('parent_id', mainAreaId);
 
       // Return main area + all sub-areas
-      const allAreas = [mainArea.name];
+      const allAreas = [mainAreaName];
       if (subAreas && subAreas.length > 0) {
         allAreas.push(...subAreas.map(area => area.name));
       }
 
+      console.log(`📍 getAllSubAreas for "${areaName}":`, {
+        selectedArea: areaName,
+        mainArea: mainAreaName,
+        allAreas
+      });
+
       return allAreas;
     } catch (error) {
       console.error('Error getting sub areas:', error);
-      return [mainAreaName];
+      return [areaName];
     }
   }, []);
 

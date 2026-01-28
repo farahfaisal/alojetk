@@ -59,8 +59,48 @@ const VendorsList: React.FC<VendorsListProps> = ({
     const fetchVendors = async () => {
       setLoading(true);
       try {
+        // Get all areas to search in (main + sub areas) if selectedCity is provided
+        let searchAreas: string[] = [];
+        if (selectedCity) {
+          const { data: selectedArea } = await supabase
+            .from('service_areas')
+            .select('id, name, parent_id')
+            .eq('name', selectedCity)
+            .maybeSingle();
+
+          if (selectedArea) {
+            let mainAreaId = selectedArea.id;
+            let mainAreaName = selectedArea.name;
+
+            if (selectedArea.parent_id) {
+              const { data: parentArea } = await supabase
+                .from('service_areas')
+                .select('id, name')
+                .eq('id', selectedArea.parent_id)
+                .maybeSingle();
+
+              if (parentArea) {
+                mainAreaId = parentArea.id;
+                mainAreaName = parentArea.name;
+              }
+            }
+
+            const { data: subAreas } = await supabase
+              .from('service_areas')
+              .select('name')
+              .eq('parent_id', mainAreaId);
+
+            searchAreas = [mainAreaName];
+            if (subAreas && subAreas.length > 0) {
+              searchAreas.push(...subAreas.map(area => area.name));
+            }
+
+            console.log('📍 VendorsList search areas:', searchAreas);
+          }
+        }
+
         let query;
-        
+
         // Check if we need to filter by category
         if (categoryId) {
           // First get all products in this category
@@ -118,20 +158,40 @@ const VendorsList: React.FC<VendorsListProps> = ({
             break;
         }
 
-        // Apply limit AFTER getting unique vendors
-        if (limit) {
-          query = query.limit(limit);
-        }
-
-        // Execute query
-        const { data: vendors, error: fetchError, count } = await query;
+        // Execute query without limit first if we need to filter by city
+        const { data: allVendors, error: fetchError, count } = await query;
 
         if (fetchError) throw fetchError;
 
-        console.log("Fetched vendors:", vendors);
+        // Filter by city/area if specified
+        let filteredVendors = allVendors || [];
+        if (selectedCity && searchAreas.length > 0) {
+          filteredVendors = filteredVendors.filter((v: any) => {
+            // Check service_areas (primary method)
+            if (v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0) {
+              const hasServiceArea = v.service_areas.some((area: string) => searchAreas.includes(area));
+              if (hasServiceArea) return true;
+            }
 
-        setVendors(vendors || []);
-        setTotalCount(count || vendors?.length || 0);
+            // Fallback: check delivery_zones
+            if (v.delivery_zones && Array.isArray(v.delivery_zones) && v.delivery_zones.length > 0) {
+              return v.delivery_zones.some((zone: any) => searchAreas.includes(zone.name));
+            }
+
+            // If vendor has no zones at all, don't show them
+            return false;
+          });
+        }
+
+        // Apply limit AFTER filtering by city
+        if (limit) {
+          filteredVendors = filteredVendors.slice(0, limit);
+        }
+
+        console.log("Fetched vendors:", filteredVendors);
+
+        setVendors(filteredVendors);
+        setTotalCount(filteredVendors.length);
       } catch (err) {
         console.error('Error fetching vendors:', err);
         setError('حدث خطأ في جلب قائمة المتاجر');
@@ -141,7 +201,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
     };
 
     fetchVendors();
-  }, [categoryId, type, includeInactive, sortBy, limit]);
+  }, [categoryId, type, includeInactive, sortBy, limit, selectedCity]);
 
   const handleVendorClick = (vendor: Vendor) => {
     if (vendor) {

@@ -47,6 +47,46 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
 
         console.log('🔍 VendorsWithOffers: Fetching vendors with type:', type, 'dbType:', dbType, 'city:', selectedCity);
 
+        // Get all areas to search in (main + sub areas)
+        let searchAreas: string[] = [];
+        if (selectedCity) {
+          const { data: selectedArea } = await supabase
+            .from('service_areas')
+            .select('id, name, parent_id')
+            .eq('name', selectedCity)
+            .maybeSingle();
+
+          if (selectedArea) {
+            let mainAreaId = selectedArea.id;
+            let mainAreaName = selectedArea.name;
+
+            if (selectedArea.parent_id) {
+              const { data: parentArea } = await supabase
+                .from('service_areas')
+                .select('id, name')
+                .eq('id', selectedArea.parent_id)
+                .maybeSingle();
+
+              if (parentArea) {
+                mainAreaId = parentArea.id;
+                mainAreaName = parentArea.name;
+              }
+            }
+
+            const { data: subAreas } = await supabase
+              .from('service_areas')
+              .select('name')
+              .eq('parent_id', mainAreaId);
+
+            searchAreas = [mainAreaName];
+            if (subAreas && subAreas.length > 0) {
+              searchAreas.push(...subAreas.map(area => area.name));
+            }
+
+            console.log('📍 VendorsWithOffers search areas:', searchAreas);
+          }
+        }
+
         let query = supabase
           .from('vendors')
           .select(`
@@ -59,7 +99,8 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
             status,
             type,
             address,
-            delivery_zones
+            delivery_zones,
+            service_areas
           `)
           .eq('status', 'active');
 
@@ -102,12 +143,21 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
           }));
 
         // Filter by selectedCity if specified
-        if (selectedCity) {
-          vendorsWithActiveOffers = vendorsWithActiveOffers.filter(v => {
-            // If vendor has no delivery zones or empty array, show them (they deliver everywhere)
-            if (!v.delivery_zones || !Array.isArray(v.delivery_zones) || v.delivery_zones.length === 0) return true;
-            // Otherwise, check if they deliver to selected city
-            return v.delivery_zones.some((zone: any) => zone.name === selectedCity);
+        if (selectedCity && searchAreas.length > 0) {
+          vendorsWithActiveOffers = vendorsWithActiveOffers.filter((v: any) => {
+            // Check service_areas (primary method)
+            if (v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0) {
+              const hasServiceArea = v.service_areas.some((area: string) => searchAreas.includes(area));
+              if (hasServiceArea) return true;
+            }
+
+            // Fallback: check delivery_zones
+            if (v.delivery_zones && Array.isArray(v.delivery_zones) && v.delivery_zones.length > 0) {
+              return v.delivery_zones.some((zone: any) => searchAreas.includes(zone.name));
+            }
+
+            // If vendor has no zones at all, don't show them
+            return false;
           });
         }
 
