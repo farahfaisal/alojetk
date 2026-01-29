@@ -10,6 +10,7 @@ import StoreStatus from './StoreStatus';
 import SingleProductPage from './SingleProductPage';
 import CustomOrderModal from './CustomOrderModal';
 import { calculateDistance, calculateDeliveryFee } from '../lib/delivery';
+import { getSavedAddresses } from '../lib/storage';
 
 interface StorePageProps {
   vendor: any;
@@ -36,7 +37,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [showSearch, setShowSearch] = useState(false);
   const [deliveryInfo, setDeliveryInfo] = useState({
     fee: 0,
-    time: '30-45',
+    time: '',
     minOrder: 0,
     freeDeliveryMin: null as number | null
   });
@@ -60,66 +61,48 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     };
   }, []);
 
-  // Get user address
+  // Get user address from saved addresses
   useEffect(() => {
     const fetchUserAddress = async () => {
-      const savedAddress = localStorage.getItem('selectedAddress');
-      if (savedAddress) {
-        try {
-          const address = JSON.parse(savedAddress);
-          setUserAddress({
-            address: address.address,
-            city: address.city,
-            latitude: address.latitude,
-            longitude: address.longitude
-          });
-        } catch (error) {
-          console.error('Error parsing saved address:', error);
-        }
+      const addresses = getSavedAddresses();
+      const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
+
+      if (defaultAddress) {
+        console.log('📍 StorePage - تحميل العنوان الافتراضي:', defaultAddress);
+        setUserAddress({
+          address: defaultAddress.address,
+          city: defaultAddress.city,
+          latitude: defaultAddress.coordinates?.lat,
+          longitude: defaultAddress.coordinates?.lng
+        });
+      } else {
+        console.warn('⚠️ StorePage - لا يوجد عنوان محفوظ');
       }
     };
 
     fetchUserAddress();
   }, []);
 
-  // Get user location for delivery calculation
+  // Get user location from saved address
   useEffect(() => {
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            });
-          },
-          (error) => {
-            console.warn('Could not get user location:', error);
-            // Use default location (Jenin center)
-            setUserLocation({ lat: 32.4594, lng: 35.2956 });
-          }
-        );
-      } else {
-        // Use default location
-        setUserLocation({ lat: 32.4594, lng: 35.2956 });
-      }
-    };
-
-    getUserLocation();
-  }, []);
+    if (userAddress?.latitude && userAddress?.longitude) {
+      setUserLocation({
+        lat: userAddress.latitude,
+        lng: userAddress.longitude
+      });
+    } else {
+      setUserLocation(null);
+      console.warn('⚠️ لا يوجد موقع دقيق للعنوان المحفوظ');
+    }
+  }, [userAddress]);
 
   // Calculate delivery info
   useEffect(() => {
     const fetchDeliveryInfo = async () => {
       if (!vendor) return;
 
-      const vendorLocation = {
-        lat: vendor.latitude || 32.4594,
-        lng: vendor.longitude || 35.2956
-      };
-
       let deliveryFee = 7;
-      let estimatedTime = '30-45';
+      let estimatedTime = '';
 
       try {
         const selectedServiceArea = localStorage.getItem('selectedServiceArea');
@@ -149,12 +132,31 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           }
         }
 
-        if (userLocation) {
+        // حساب الوقت الحقيقي فقط إذا توفرت الإحداثيات الدقيقة
+        if (userLocation && vendor.latitude && vendor.longitude) {
+          const vendorLocation = {
+            lat: vendor.latitude,
+            lng: vendor.longitude
+          };
+
           const distance = calculateDistance(userLocation, vendorLocation);
+          const prepTime = vendor.preparation_time || 30;
+          const deliveryTime = Math.ceil(distance * 3); // 3 دقائق لكل كيلومتر
+
+          console.log('📏 StorePage - حساب وقت التوصيل:', {
+            userLocation,
+            vendorLocation,
+            distance: `${distance.toFixed(2)} كم`,
+            prepTime: `${prepTime} دقيقة`,
+            deliveryTime: `${deliveryTime} دقيقة`
+          });
+
+          const totalMinTime = prepTime + deliveryTime;
+          const totalMaxTime = totalMinTime + 15;
+          estimatedTime = `${totalMinTime}-${totalMaxTime}`;
 
           if (vendor.delivery_type === 'distance' && vendor.price_per_km) {
             deliveryFee = Math.max(deliveryFee, Math.ceil(distance * vendor.price_per_km));
-            estimatedTime = `${Math.ceil(20 + distance * 3)}-${Math.ceil(30 + distance * 3)}`;
           } else if (vendor.delivery_type === 'fixed' && vendor.delivery_fee_per_km) {
             deliveryFee = Math.max(deliveryFee, vendor.delivery_fee_per_km);
           } else if (vendor.delivery_zones && Array.isArray(vendor.delivery_zones)) {
@@ -163,6 +165,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
               deliveryFee = Math.max(deliveryFee, zone.cost);
             }
           }
+        } else {
+          console.warn('⚠️ StorePage - لا يمكن حساب وقت التوصيل بدقة:', {
+            hasUserLocation: !!userLocation,
+            hasVendorLatitude: !!vendor.latitude,
+            hasVendorLongitude: !!vendor.longitude
+          });
         }
       } catch (error) {
         console.error('Error fetching delivery info:', error);
@@ -741,17 +749,23 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                  {/* الدائرة الكبيرة (يسار) لوقت التوصيل */}
 <div className="absolute -top-10 left-4 flex flex-col items-center">
   <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex items-center justify-center">
-    <div className="w-full h-full rounded-full bg-[#B50F2B] text-white flex items-center justify-center gap-1">
-      <span className="text-2xl font-extrabold">
-        {Number((deliveryInfo.time || '30-45').split('-')[0]) || 30}
-      </span>
-      <span className="text-[10px] font-medium">دقيقة</span>
-    </div>
+    {deliveryInfo.time ? (
+      <div className="w-full h-full rounded-full bg-[#B50F2B] text-white flex items-center justify-center gap-1">
+        <span className="text-2xl font-extrabold">
+          {Number(deliveryInfo.time.split('-')[0])}
+        </span>
+        <span className="text-[10px] font-medium">دقيقة</span>
+      </div>
+    ) : (
+      <div className="w-full h-full rounded-full bg-amber-500 text-white flex items-center justify-center">
+        <AlertCircle className="w-8 h-8" />
+      </div>
+    )}
   </div>
 
-  {/* ✅ النص تحت الدائرة */}
+  {/* النص تحت الدائرة */}
   <span className="text-[11px] font-semibold text-gray-700 mt-1">
-    وقت التوصيل
+    {deliveryInfo.time ? 'وقت التوصيل' : 'حدد موقعك'}
   </span>
 </div>
 
@@ -817,6 +831,23 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       </div>
                     </button>
                   </div>
+
+                  {/* رسالة تنبيه إذا لم يتوفر وقت دقيق */}
+                  {!deliveryInfo.time && (
+                    <div className="mt-4 bg-amber-50 rounded-xl border border-amber-200 px-4 py-3">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-amber-900 text-sm">يرجى تحديد عنوان التوصيل</p>
+                          <p className="text-xs text-amber-700 mt-1">
+                            {!userLocation ? 'لم يتم تحديد عنوان التوصيل بدقة' :
+                             !vendor.latitude || !vendor.longitude ? 'معلومات موقع المتجر غير متوفرة' :
+                             'يرجى تحديد موقعك على الخريطة لحساب وقت التوصيل بدقة'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* زر المشاركة الدائري الأحمر على اليمين */}
                   <button

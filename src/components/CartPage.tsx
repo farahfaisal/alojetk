@@ -53,7 +53,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [vendorInfo, setVendorInfo] = useState<any>(null);
   const [vendorsInfo, setVendorsInfo] = useState<{[vendorId: string]: any}>({});
-  const [estimatedTime, setEstimatedTime] = useState('30-45');
+  const [estimatedTime, setEstimatedTime] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const [couponError, setCouponError] = useState('');
@@ -64,24 +64,8 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     console.log('📊 CartPage - totalDeliveryFee changed to:', totalDeliveryFee);
   }, [totalDeliveryFee]);
 
-  // Calculate estimated delivery time based on preparation time
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      setEstimatedTime('30-45');
-      return;
-    }
-
-    const maxPreparationTime = Math.max(
-      ...cartItems.map(item => item.preparation_time || 15),
-      15
-    );
-
-    const deliveryTime = 15;
-    const totalMinTime = maxPreparationTime + deliveryTime;
-    const totalMaxTime = totalMinTime + 15;
-
-    setEstimatedTime(`${totalMinTime}-${totalMaxTime}`);
-  }, [cartItems]);
+  // Calculate estimated delivery time is now handled in the main delivery calculation
+  // This useEffect is removed to avoid using default/estimated times
 
   // Calculate multi-vendor delivery fee
   useEffect(() => {
@@ -258,7 +242,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
       try {
         let fee = 7;
-        let deliveryTime = 15;
+        let deliveryTime = null; // سيكون null إذا لم تتوفر بيانات دقيقة
         const prepTime = vendorInfo.preparation_time || 30;
 
         const selectedServiceArea = localStorage.getItem('selectedServiceArea');
@@ -288,31 +272,51 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
           }
         }
 
-        if (selectedAddress) {
-          const userLocation = selectedAddress.coordinates || { lat: 32.4594, lng: 35.2956 };
+        // حساب الوقت الحقيقي فقط إذا توفرت الإحداثيات الدقيقة
+        if (selectedAddress?.coordinates && vendorInfo.latitude && vendorInfo.longitude) {
+          const userLocation = selectedAddress.coordinates;
           const vendorLocation = {
-            lat: vendorInfo.latitude || 32.4594,
-            lng: vendorInfo.longitude || 35.2956
+            lat: vendorInfo.latitude,
+            lng: vendorInfo.longitude
           };
 
           const distance = calculateDistance(userLocation, vendorLocation);
-          deliveryTime = Math.ceil(distance * 3);
+          deliveryTime = Math.ceil(distance * 3); // 3 دقائق لكل كيلومتر
+
+          console.log('📏 حساب وقت التوصيل:', {
+            userLocation,
+            vendorLocation,
+            distance: `${distance.toFixed(2)} كم`,
+            deliveryTime: `${deliveryTime} دقيقة`
+          });
 
           if (vendorInfo.delivery_type === 'distance' && vendorInfo.price_per_km) {
             fee = Math.max(fee, Math.ceil(distance * vendorInfo.price_per_km));
           } else if (vendorInfo.delivery_fee_per_km) {
             fee = Math.max(fee, vendorInfo.delivery_fee_per_km);
           }
+        } else {
+          console.warn('⚠️ لا يمكن حساب وقت التوصيل بدقة:', {
+            hasAddressCoordinates: !!selectedAddress?.coordinates,
+            hasVendorLatitude: !!vendorInfo.latitude,
+            hasVendorLongitude: !!vendorInfo.longitude
+          });
         }
 
-        const totalMinTime = prepTime + deliveryTime;
-        const totalMaxTime = totalMinTime + 15;
+        // تحديث الوقت التقديري فقط إذا توفر وقت التوصيل الحقيقي
+        if (deliveryTime !== null) {
+          const totalMinTime = prepTime + deliveryTime;
+          const totalMaxTime = totalMinTime + 15;
+          setEstimatedTime(`${totalMinTime}-${totalMaxTime}`);
+        } else {
+          setEstimatedTime(''); // لا يوجد وقت دقيق
+        }
 
         setDeliveryFee(fee);
-        setEstimatedTime(`${totalMinTime}-${totalMaxTime}`);
       } catch (error) {
         console.error('Error calculating delivery:', error);
         setDeliveryFee(7);
+        setEstimatedTime('');
       }
     };
 
@@ -882,9 +886,26 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-4 h-4" />
-                  <span>وقت التوصيل المتوقع: {estimatedTime} دقيقة</span>
+                <div className="mt-4">
+                  {estimatedTime ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4 text-green-600" />
+                      <span>وقت التوصيل المتوقع: {estimatedTime} دقيقة</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium">يرجى تحديد موقع التوصيل بدقة</p>
+                        <p className="text-xs mt-1 text-amber-700">
+                          {!selectedAddress ? 'لم يتم اختيار عنوان' :
+                           !selectedAddress.coordinates ? 'العنوان المحدد لا يحتوي على موقع دقيق' :
+                           !vendorInfo?.latitude || !vendorInfo?.longitude ? 'معلومات موقع المتجر غير متوفرة' :
+                           'لا يمكن حساب الوقت بدقة'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
