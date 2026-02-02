@@ -86,13 +86,17 @@ export const isVendorOpen = (
   timezone: string = 'Asia/Jerusalem',
   vacationMode: boolean = false
 ): boolean => {
+  console.log('🔧 isVendorOpen called:', { status, vacationMode, hasWorkingHours: !!workingHours, timezone });
+
   // If vendor is not active or in vacation mode, it's closed
   if (status !== 'active' || vacationMode) {
+    console.log('❌ Closed: status is', status, 'or vacationMode is', vacationMode);
     return false;
   }
 
   // If no working hours defined, assume closed
   if (!workingHours) {
+    console.log('❌ Closed: no working hours');
     return false;
   }
 
@@ -104,8 +108,17 @@ export const isVendorOpen = (
     const dayName = getDayName(currentDay);
     const todayHours = workingHours[dayName];
 
+    console.log('⏰ Time check:', {
+      currentDay,
+      dayName,
+      currentTime: `${currentTime.hours}:${currentTime.minutes}`,
+      currentMinutes,
+      todayHours
+    });
+
     // If today is disabled or no hours defined, store is closed
     if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+      console.log('❌ Closed: today disabled or no hours');
       return false;
     }
 
@@ -116,8 +129,17 @@ export const isVendorOpen = (
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
+    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+
+    console.log('🕐 Final decision:', {
+      openTime: `${todayHours.open} (${openTime} mins)`,
+      closeTime: `${todayHours.close} (${closeTime} mins)`,
+      currentMinutes,
+      isOpen
+    });
+
     // Check if current time is within working hours
-    return currentMinutes >= openTime && currentMinutes < closeTime;
+    return isOpen;
   } catch (error) {
     console.error('Error checking vendor status:', error);
     return false;
