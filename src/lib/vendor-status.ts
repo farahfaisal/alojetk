@@ -104,8 +104,20 @@ export const isVendorOpen = (
     const dayName = getDayName(currentDay);
     const todayHours = workingHours[dayName];
 
+    console.log('🔍 Vendor Status Check:', {
+      timezone,
+      currentTime: `${String(currentTime.hours).padStart(2, '0')}:${String(currentTime.minutes).padStart(2, '0')}`,
+      dayName,
+      dayNumber: currentDay,
+      currentMinutes,
+      todayHours,
+      status,
+      vacationMode
+    });
+
     // If today is disabled or no hours defined, store is closed
     if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+      console.log('❌ Closed: No hours or disabled');
       return false;
     }
 
@@ -119,13 +131,24 @@ export const isVendorOpen = (
     // Check if this is an overnight shift (e.g., 22:00 - 09:00)
     const isOvernightShift = closeTime <= openTime;
 
+    console.log('⏰ Time Calculation:', {
+      open: todayHours.open,
+      close: todayHours.close,
+      openTime,
+      closeTime,
+      currentMinutes,
+      isOvernightShift
+    });
+
     let isOpen: boolean;
     if (isOvernightShift) {
       // For overnight shifts: open if time >= openTime OR time < closeTime
       isOpen = currentMinutes >= openTime || currentMinutes < closeTime;
+      console.log(`🌙 Overnight shift: ${isOpen ? '✅ OPEN' : '❌ CLOSED'}`);
     } else {
       // For normal shifts: open if time >= openTime AND time < closeTime
       isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+      console.log(`☀️ Normal shift: ${isOpen ? '✅ OPEN' : '❌ CLOSED'}`);
     }
 
     // Check if current time is within working hours
