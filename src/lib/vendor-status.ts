@@ -92,8 +92,22 @@ export const isVendorOpen = (
     const dayName = getDayName(currentDay);
     const todayHours = workingHours[dayName];
 
+    console.log('🔍 isVendorOpen - Checking:', {
+      timezone,
+      currentDay,
+      dayName,
+      currentTime: `${currentTime.hours}:${String(currentTime.minutes).padStart(2, '0')}`,
+      currentMinutes,
+      todayHours: todayHours ? {
+        enabled: todayHours.enabled,
+        open: todayHours.open,
+        close: todayHours.close
+      } : null
+    });
+
     // If today is disabled or no hours defined, store is closed
     if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+      console.log('❌ Store closed: hours not available or not enabled');
       return false;
     }
 
@@ -104,8 +118,17 @@ export const isVendorOpen = (
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
+    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+
+    console.log('⏰ Time comparison:', {
+      openTime: `${openHour}:${String(openMin).padStart(2, '0')} (${openTime} mins)`,
+      closeTime: `${closeHour}:${String(closeMin).padStart(2, '0')} (${closeTime} mins)`,
+      currentTime: `${currentTime.hours}:${String(currentTime.minutes).padStart(2, '0')} (${currentMinutes} mins)`,
+      isOpen
+    });
+
     // Check if current time is within working hours
-    return currentMinutes >= openTime && currentMinutes < closeTime;
+    return isOpen;
   } catch (error) {
     console.error('Error checking vendor status:', error);
     return false;
