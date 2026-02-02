@@ -86,24 +86,13 @@ export const isVendorOpen = (
   timezone: string = 'Asia/Jerusalem',
   vacationMode: boolean = false
 ): boolean => {
-  console.log('📍 isVendorOpen called with:', {
-    status,
-    statusType: typeof status,
-    statusStringified: JSON.stringify(status),
-    timezone,
-    vacationMode,
-    hasWorkingHours: !!workingHours
-  });
-
   // If vendor is not active or in vacation mode, it's closed
   if (status !== 'active' || vacationMode) {
-    console.log('❌ Closed because status:', status, 'Type:', typeof status, 'String:', JSON.stringify(status), 'or vacationMode:', vacationMode);
     return false;
   }
 
   // If no working hours defined, assume closed
   if (!workingHours) {
-    console.log('❌ Closed because no working hours');
     return false;
   }
 
@@ -115,17 +104,8 @@ export const isVendorOpen = (
     const dayName = getDayName(currentDay);
     const todayHours = workingHours[dayName];
 
-    console.log('⏰ Time check:', {
-      day: currentDay,
-      dayName,
-      currentTime: `${currentTime.hours}:${String(currentTime.minutes).padStart(2, '0')}`,
-      currentMinutes,
-      todayHours
-    });
-
     // If today is disabled or no hours defined, store is closed
     if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
-      console.log('❌ Closed because today hours not valid');
       return false;
     }
 
@@ -136,17 +116,8 @@ export const isVendorOpen = (
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
-
-    console.log('🕐 Final check:', {
-      openTime: `${todayHours.open} (${openTime} mins)`,
-      closeTime: `${todayHours.close} (${closeTime} mins)`,
-      currentMinutes,
-      isOpen
-    });
-
     // Check if current time is within working hours
-    return isOpen;
+    return currentMinutes >= openTime && currentMinutes < closeTime;
   } catch (error) {
     console.error('Error checking vendor status:', error);
     return false;
