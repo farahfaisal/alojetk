@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import { supabase } from '../lib/supabase';
-import { isVendorOpen, getVendorStatusMessage } from '../lib/vendor-status';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -193,34 +192,19 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
 
                 {/* Status Badge - Fixed Height */}
                 <div className="flex items-center justify-center" style={{ height: '20px' }}>
-                  {(() => {
-                    const vendorOpen = isVendorOpen(
-                      vendor.status,
-                      (vendor as any).working_hours,
-                      (vendor as any).timezone || 'Asia/Jerusalem',
-                      (vendor as any).vacation_mode || false
-                    );
-                    const statusMessage = getVendorStatusMessage(
-                      vendor.status,
-                      (vendor as any).working_hours,
-                      (vendor as any).timezone || 'Asia/Jerusalem',
-                      (vendor as any).vacation_mode || false
-                    );
-
-                    return (
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                        vendorOpen
-                          ? 'bg-green-500/90 text-white'
-                          : vendor.status === 'busy'
-                            ? 'bg-orange-500/90 text-white'
-                            : vendor.status === 'suspended'
-                              ? 'bg-red-500/90 text-white'
-                              : 'bg-red-700/90 text-white'
-                      }`}>
-                        {statusMessage}
-                      </span>
-                    );
-                  })()}
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                    vendor.status === 'active'
+                      ? 'bg-green-500/90 text-white'
+                      : vendor.status === 'busy'
+                        ? 'bg-orange-500/90 text-white'
+                        : vendor.status === 'suspended'
+                          ? 'bg-red-500/90 text-white'
+                          : 'bg-red-700/90 text-white'
+                  }`}>
+                    {vendor.status === 'active' ? 'مفتوح الآن' :
+                     vendor.status === 'busy' ? 'مشغول' :
+                     vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
+                  </span>
                 </div>
               </div>
             </motion.button>

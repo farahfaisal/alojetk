@@ -23,7 +23,6 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [vendorTimezone, setVendorTimezone] = useState<string>('Asia/Jerusalem');
 
   const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
     if (!workingHours) return defaultStoreHours;
@@ -40,83 +39,20 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
     return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => ({
       day: dayMapping[dayName.toLowerCase()],
-      open: hours?.open || null,
-      close: hours?.close || null,
-      enabled: hours?.enabled === true
+      open: hours?.open || '09:00',
+      close: hours?.close || '21:00',
+      enabled: hours?.enabled !== false
     })).sort((a, b) => a.day - b.day);
   };
 
-  const getCurrentTimeInTimezone = (timezone: string) => {
-    try {
-      const now = new Date();
-
-      console.log('🏪 StoreStatus - Getting time for timezone:', timezone);
-      console.log('   Server time:', now.toISOString());
-
-      // Get the time in the target timezone using Intl.DateTimeFormat
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: timezone,
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        weekday: 'long',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
-
-      const parts = formatter.formatToParts(now);
-
-      const getValue = (type: string) => {
-        const part = parts.find(p => p.type === type);
-        return part ? part.value : '0';
-      };
-
-      const weekday = getValue('weekday');
-      const hours = parseInt(getValue('hour'), 10);
-      const minutes = parseInt(getValue('minute'), 10);
-
-      const dayMap: { [key: string]: number } = {
-        'Sunday': 0,
-        'Monday': 1,
-        'Tuesday': 2,
-        'Wednesday': 3,
-        'Thursday': 4,
-        'Friday': 5,
-        'Saturday': 6
-      };
-
-      const day = dayMap[weekday] ?? 0;
-
-      console.log(`   ✅ Result: ${weekday} (${day}) at ${hours}:${minutes}`);
-
-      return { day, hours, minutes };
-    } catch (error) {
-      console.error('❌ Error getting time in timezone:', timezone, error);
-      const now = new Date();
-      return {
-        day: now.getDay(),
-        hours: now.getHours(),
-        minutes: now.getMinutes()
-      };
-    }
-  };
-
-  const checkIfOpen = (storeHours: StoreHours[], timezone: string): boolean => {
-    const currentTime = getCurrentTimeInTimezone(timezone);
-    const currentDay = currentTime.day;
-    const currentMinutes = currentTime.hours * 60 + currentTime.minutes;
-
-    console.log('🔍 StoreStatus - Checking if open:');
-    console.log('   Current day:', currentDay);
-    console.log('   Current time:', `${currentTime.hours}:${currentTime.minutes} (${currentMinutes} minutes)`);
+  const checkIfOpen = (storeHours: StoreHours[]): boolean => {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
 
     const todayHours = storeHours.find(h => h.day === currentDay);
-    console.log('   Today hours:', todayHours);
 
-    if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
-      console.log('   ❌ Store closed - no hours configured for today');
+    if (!todayHours || !todayHours.enabled) {
       return false;
     }
 
@@ -126,24 +62,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    console.log('   Opening time:', `${openHour}:${openMin} (${openTime} minutes)`);
-    console.log('   Closing time:', `${closeHour}:${closeMin} (${closeTime} minutes)`);
-
-    // Check if this is an overnight shift (e.g., 22:00 - 09:00)
-    const isOvernightShift = closeTime <= openTime;
-    console.log('   Is overnight shift:', isOvernightShift);
-
-    let isOpen: boolean;
-    if (isOvernightShift) {
-      // For overnight shifts: open if time >= openTime OR time < closeTime
-      isOpen = currentMinutes >= openTime || currentMinutes < closeTime;
-    } else {
-      // For normal shifts: open if time >= openTime AND time < closeTime
-      isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
-    }
-
-    console.log('   📊 Result:', isOpen ? '✅ OPEN' : '❌ CLOSED');
-    return isOpen;
+    return currentTime >= openTime && currentTime <= closeTime;
   };
 
   useEffect(() => {
@@ -154,23 +73,20 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, timezone')
+          .select('working_hours, vacation_mode')
           .eq('id', vendorId)
           .maybeSingle();
 
         if (vendorError) throw vendorError;
 
-        const timezone = vendorData?.timezone || 'Asia/Jerusalem';
-        setVendorTimezone(timezone);
-
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
-        const isOpen = checkIfOpen(storeHours, timezone);
+        const isOpen = checkIfOpen(storeHours);
 
         setStoreStatus({
           store_hours: storeHours,
-          vacation_mode: false,
+          vacation_mode: vendorData?.vacation_mode || false,
           closed_dates: [],
-          is_open_now: isOpen
+          is_open_now: isOpen && !vendorData?.vacation_mode
         });
 
         setLoading(false);
@@ -182,7 +98,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           store_hours: storeHours,
           vacation_mode: false,
           closed_dates: [],
-          is_open_now: checkIfOpen(storeHours, vendorTimezone)
+          is_open_now: checkIfOpen(storeHours)
         });
 
         setError(err instanceof Error ? err.message : 'حدث خطأ في جلب البيانات');
@@ -256,7 +172,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     }
   };
 
-  const currentDay = getCurrentTimeInTimezone(vendorTimezone).day;
+  const currentDay = new Date().getDay();
   const todayHours = storeStatus.store_hours.find(hours => hours.day === currentDay);
 
   return (
@@ -333,14 +249,14 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 };
 
 // ساعات العمل الافتراضية
-const defaultStoreHours: StoreHours[] = [
-  { day: 0, open: "09:00", close: "21:00", enabled: true }, // الأحد
-  { day: 1, open: "09:00", close: "21:00", enabled: true }, // الاثنين
-  { day: 2, open: "09:00", close: "21:00", enabled: true }, // الثلاثاء
-  { day: 3, open: "09:00", close: "21:00", enabled: true }, // الأربعاء
-  { day: 4, open: "09:00", close: "21:00", enabled: true }, // الخميس
-  { day: 5, open: "14:00", close: "21:00", enabled: true }, // الجمعة
-  { day: 6, open: "09:00", close: "21:00", enabled: true }  // السبت
+const defaultStoreHours = [
+  { day: 0, open: "09:00", close: "21:00" }, // الأحد
+  { day: 1, open: "09:00", close: "21:00" }, // الاثنين
+  { day: 2, open: "09:00", close: "21:00" }, // الثلاثاء
+  { day: 3, open: "09:00", close: "21:00" }, // الأربعاء
+  { day: 4, open: "09:00", close: "21:00" }, // الخميس
+  { day: 5, open: "14:00", close: "21:00" }, // الجمعة
+  { day: 6, open: "09:00", close: "21:00" }  // السبت
 ];
 
 export default StoreStatus;
