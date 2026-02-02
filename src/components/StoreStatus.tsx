@@ -23,6 +23,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [vendorTimezone, setVendorTimezone] = useState<string>('Asia/Jerusalem');
 
   const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
     if (!workingHours) return defaultStoreHours;
@@ -45,14 +46,37 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     })).sort((a, b) => a.day - b.day);
   };
 
-  const checkIfOpen = (storeHours: StoreHours[]): boolean => {
+  const getCurrentTimeInTimezone = (timezone: string) => {
     const now = new Date();
-    const currentDay = now.getDay();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const timeString = now.toLocaleString('en-US', { timeZone: timezone });
+    const localTime = new Date(timeString);
+
+    return {
+      day: localTime.getDay(),
+      hours: localTime.getHours(),
+      minutes: localTime.getMinutes()
+    };
+  };
+
+  const checkIfOpen = (storeHours: StoreHours[], timezone: string): boolean => {
+    const currentTime = getCurrentTimeInTimezone(timezone);
+    const currentDay = currentTime.day;
+    const currentMinutes = currentTime.hours * 60 + currentTime.minutes;
+
+    console.log('🕐 Checking store status:', {
+      timezone,
+      currentDay,
+      currentHour: currentTime.hours,
+      currentMinute: currentTime.minutes,
+      currentMinutes
+    });
 
     const todayHours = storeHours.find(h => h.day === currentDay);
 
+    console.log('📅 Today hours:', todayHours);
+
     if (!todayHours || !todayHours.enabled) {
+      console.log('❌ Store closed: hours not enabled or not found');
       return false;
     }
 
@@ -62,7 +86,16 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    return currentTime >= openTime && currentTime <= closeTime;
+    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+
+    console.log('⏰ Time check:', {
+      openTime: `${openHour}:${openMin}`,
+      closeTime: `${closeHour}:${closeMin}`,
+      currentTime: `${currentTime.hours}:${currentTime.minutes}`,
+      isOpen
+    });
+
+    return isOpen;
   };
 
   useEffect(() => {
@@ -73,14 +106,17 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode')
+          .select('working_hours, vacation_mode, timezone')
           .eq('id', vendorId)
           .maybeSingle();
 
         if (vendorError) throw vendorError;
 
+        const timezone = vendorData?.timezone || 'Asia/Jerusalem';
+        setVendorTimezone(timezone);
+
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
-        const isOpen = checkIfOpen(storeHours);
+        const isOpen = checkIfOpen(storeHours, timezone);
 
         setStoreStatus({
           store_hours: storeHours,
@@ -98,7 +134,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           store_hours: storeHours,
           vacation_mode: false,
           closed_dates: [],
-          is_open_now: checkIfOpen(storeHours)
+          is_open_now: checkIfOpen(storeHours, vendorTimezone)
         });
 
         setError(err instanceof Error ? err.message : 'حدث خطأ في جلب البيانات');
@@ -172,7 +208,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     }
   };
 
-  const currentDay = new Date().getDay();
+  const currentDay = getCurrentTimeInTimezone(vendorTimezone).day;
   const todayHours = storeStatus.store_hours.find(hours => hours.day === currentDay);
 
   return (
@@ -249,14 +285,14 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 };
 
 // ساعات العمل الافتراضية
-const defaultStoreHours = [
-  { day: 0, open: "09:00", close: "21:00" }, // الأحد
-  { day: 1, open: "09:00", close: "21:00" }, // الاثنين
-  { day: 2, open: "09:00", close: "21:00" }, // الثلاثاء
-  { day: 3, open: "09:00", close: "21:00" }, // الأربعاء
-  { day: 4, open: "09:00", close: "21:00" }, // الخميس
-  { day: 5, open: "14:00", close: "21:00" }, // الجمعة
-  { day: 6, open: "09:00", close: "21:00" }  // السبت
+const defaultStoreHours: StoreHours[] = [
+  { day: 0, open: "09:00", close: "21:00", enabled: true }, // الأحد
+  { day: 1, open: "09:00", close: "21:00", enabled: true }, // الاثنين
+  { day: 2, open: "09:00", close: "21:00", enabled: true }, // الثلاثاء
+  { day: 3, open: "09:00", close: "21:00", enabled: true }, // الأربعاء
+  { day: 4, open: "09:00", close: "21:00", enabled: true }, // الخميس
+  { day: 5, open: "14:00", close: "21:00", enabled: true }, // الجمعة
+  { day: 6, open: "09:00", close: "21:00", enabled: true }  // السبت
 ];
 
 export default StoreStatus;
