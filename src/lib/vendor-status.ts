@@ -116,7 +116,17 @@ export const isVendorOpen = (
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+    // Check if this is an overnight shift (e.g., 22:00 - 09:00)
+    const isOvernightShift = closeTime <= openTime;
+
+    let isOpen: boolean;
+    if (isOvernightShift) {
+      // For overnight shifts: open if time >= openTime OR time < closeTime
+      isOpen = currentMinutes >= openTime || currentMinutes < closeTime;
+    } else {
+      // For normal shifts: open if time >= openTime AND time < closeTime
+      isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
+    }
 
     // Check if current time is within working hours
     return isOpen;
