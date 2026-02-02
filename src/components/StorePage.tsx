@@ -229,13 +229,32 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       const getCurrentTimeInTimezone = (tz: string) => {
         try {
           const now = new Date();
-          const timeString = now.toLocaleString('en-US', { timeZone: tz });
-          const localTime = new Date(timeString);
-          return {
-            day: localTime.getDay(),
-            hours: localTime.getHours(),
-            minutes: localTime.getMinutes()
+
+          const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+            weekday: 'short'
+          });
+
+          const parts = formatter.formatToParts(now);
+          const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
+
+          const weekdayMap: { [key: string]: number } = {
+            'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
           };
+
+          const weekday = getValue('weekday');
+          const day = weekdayMap[weekday] || 0;
+          const hours = parseInt(getValue('hour'), 10);
+          const minutes = parseInt(getValue('minute'), 10);
+
+          return { day, hours, minutes };
         } catch (error) {
           const now = new Date();
           return {
