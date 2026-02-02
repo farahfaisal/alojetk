@@ -132,7 +132,10 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           }
         }
 
-        // حساب الوقت الحقيقي فقط إذا توفرت الإحداثيات الدقيقة
+        // استخدام وقت التحضير الثابت من البائع
+        const prepTime = vendor.estimated_delivery_time || 30;
+
+        // حساب الوقت الحقيقي إذا توفرت الإحداثيات الدقيقة
         if (userLocation && vendor.latitude && vendor.longitude) {
           const vendorLocation = {
             lat: vendor.latitude,
@@ -140,7 +143,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           };
 
           const distance = calculateDistance(userLocation, vendorLocation);
-          const prepTime = vendor.estimated_delivery_time || 30;
           const deliveryTime = Math.ceil(distance * 3); // 3 دقائق لكل كيلومتر
 
           console.log('📏 StorePage - حساب وقت التوصيل:', {
@@ -166,10 +168,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             }
           }
         } else {
-          console.warn('⚠️ StorePage - لا يمكن حساب وقت التوصيل بدقة:', {
-            hasUserLocation: !!userLocation,
-            hasVendorLatitude: !!vendor.latitude,
-            hasVendorLongitude: !!vendor.longitude
+          // استخدام وقت التحضير الثابت من البائع
+          const totalMaxTime = prepTime + 15;
+          estimatedTime = `${prepTime}-${totalMaxTime}`;
+
+          console.log('⏱️ StorePage - استخدام وقت التحضير الثابت:', {
+            prepTime: `${prepTime} دقيقة`,
+            estimatedTime
           });
         }
       } catch (error) {
