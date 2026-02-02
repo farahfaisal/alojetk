@@ -759,6 +759,29 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     />
                   </div>
 
+                  {/* الدائرة الكبيرة (يسار) لعدد الدقائق */}
+                 {/* الدائرة الكبيرة (يسار) لوقت التوصيل */}
+<div className="absolute -top-10 left-4 flex flex-col items-center">
+  <div className="w-20 h-20 rounded-full bg-white shadow-xl border-4 border-white flex items-center justify-center">
+    {deliveryInfo.time ? (
+      <div className="w-full h-full rounded-full bg-[#B50F2B] text-white flex items-center justify-center gap-1">
+        <span className="text-2xl font-extrabold">
+          {Number(deliveryInfo.time.split('-')[0])}
+        </span>
+        <span className="text-[10px] font-medium">دقيقة</span>
+      </div>
+    ) : (
+      <div className="w-full h-full rounded-full bg-amber-500 text-white flex items-center justify-center">
+        <AlertCircle className="w-8 h-8" />
+      </div>
+    )}
+  </div>
+
+  {/* النص تحت الدائرة */}
+  <span className="text-[11px] font-semibold text-gray-700 mt-1">
+    {deliveryInfo.time ? 'وقت التوصيل' : 'حدد موقعك'}
+  </span>
+</div>
 
                   {/* الدائرة الكبيرة (يمين) لسعر التوصيل */}
                 {/* الدائرة الكبيرة (يمين) لسعر التوصيل */}
@@ -823,6 +846,22 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </button>
                   </div>
 
+                  {/* رسالة تنبيه إذا لم يكن الوقت دقيق */}
+                  {deliveryInfo.time && !deliveryInfo.isAccurate && (
+                    <div className="mt-4 bg-amber-50 rounded-xl border border-amber-200 px-4 py-3">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-amber-900 text-sm">⏱️ وقت التوصيل تقريبي</p>
+                          <p className="text-xs text-amber-700 mt-1">
+                            {!userLocation ? '📍 لم يتم تحديد عنوان التوصيل بدقة - يرجى إضافة عنوان مع الإحداثيات' :
+                             !vendor.latitude || !vendor.longitude ? '🏪 معلومات موقع المتجر غير محددة بدقة في النظام' :
+                             '📍 يرجى تحديد موقعك على الخريطة لحساب وقت التوصيل بدقة'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* زر المشاركة الدائري الأحمر على اليمين */}
                   <button
