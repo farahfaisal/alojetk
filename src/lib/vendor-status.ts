@@ -86,11 +86,18 @@ export const isVendorOpen = (
   timezone: string = 'Asia/Jerusalem',
   vacationMode: boolean = false
 ): boolean => {
-  console.log('📍 isVendorOpen called with:', { status, timezone, vacationMode, hasWorkingHours: !!workingHours });
+  console.log('📍 isVendorOpen called with:', {
+    status,
+    statusType: typeof status,
+    statusStringified: JSON.stringify(status),
+    timezone,
+    vacationMode,
+    hasWorkingHours: !!workingHours
+  });
 
   // If vendor is not active or in vacation mode, it's closed
   if (status !== 'active' || vacationMode) {
-    console.log('❌ Closed because status:', status, 'or vacationMode:', vacationMode);
+    console.log('❌ Closed because status:', status, 'Type:', typeof status, 'String:', JSON.stringify(status), 'or vacationMode:', vacationMode);
     return false;
   }
 
