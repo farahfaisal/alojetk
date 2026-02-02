@@ -11,6 +11,7 @@ import { getCustomerPoints } from '../lib/points';
 import { SavedAddress, getSavedAddresses, saveAddress } from '../lib/storage';
 import AddressForm from './AddressForm';
 import { X } from 'lucide-react';
+import { createOrder } from '../lib/ordersEdgeFunctionApi';
 
 interface CartItem {
   id: string;
@@ -548,11 +549,46 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           orderData_order_group_id: orderData.order_group_id
         });
 
-        const { data: order, error: orderError } = await supabase
-          .from('orders')
-          .insert(orderData)
-          .select()
-          .single();
+        // استخدام Edge Function لإنشاء الطلب
+        const { data: order, error: orderError } = await createOrder({
+          customer_id: customerId,
+          vendor_id: vendorId,
+          customer_name: orderData.customer_name,
+          customer_phone: orderData.customer_phone,
+          address: orderData.address,
+          city: orderData.city,
+          items: vendorItems.map(item => ({
+            product_id: item.product_id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            variant_id: item.variant_id,
+            variant_name: item.variant_name,
+            addons: item.addons || [],
+            vendor_id: item.vendor_id || vendorId,
+            vendor_name: item.vendor_name || vendorItems[0].vendor_name,
+            is_custom: (item as any).is_custom || false,
+            custom_details: (item as any).custom_details || '',
+            preparation_time: item.preparation_time || null,
+          })),
+          delivery_fee: vendorDeliveryFee,
+          subtotal: vendorSubtotal,
+          total: vendorTotal,
+          payment_method: primaryPaymentMethod,
+          notes: orderData.notes,
+          geocoded_latitude: orderData.geocoded_latitude,
+          geocoded_longitude: orderData.geocoded_longitude,
+          scheduled_delivery_time: scheduledDeliveryTime,
+          delivery_method: courierMode,
+          is_multi_vendor: isMultiVendor,
+          order_group_id: orderGroupId,
+          total_vendors: vendorCount,
+          vendor_order_index: i + 1,
+          points_discount: vendorPointsDiscount,
+          coupon_discount: vendorCouponDiscount,
+          service_area_id: orderData.service_area_id,
+          vendor_name: vendorItems[0].vendor_name,
+        });
 
         if (orderError) {
           console.error('❌ Error creating order:', orderError);
@@ -561,73 +597,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
         console.log(`✅ Order created successfully:`, order);
         createdOrders.push(order);
-
-        // Separate custom orders from regular orders
-        const regularItems = [];
-        const customItems = [];
-
-        for (const item of vendorItems) {
-          const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
-          const itemPriceWithAddons = item.price + addonsTotal;
-
-          if ((item as any).is_custom) {
-            // Custom order item
-            customItems.push({
-              order_id: (order as any).id,
-              vendor_id: item.vendor_id || vendorId,
-              custom_product_name: item.name || 'طلب خاص',
-              description: (item as any).custom_details || '',
-              quantity: item.quantity || 1,
-              price: item.price,
-              total_price: itemPriceWithAddons * (item.quantity || 1),
-              notes: (item as any).custom_details || null,
-            });
-          } else {
-            // Regular order item
-            // Check if variant_id is a valid UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
-            const isValidUUID = item.variant_id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.variant_id);
-
-            regularItems.push({
-              order_id: (order as any).id,
-              product_id: item.product_id,
-              quantity: item.quantity || 1,
-              price: itemPriceWithAddons,
-              vendor_id: item.vendor_id || vendorId,
-              vendor_name: item.vendor_name || vendorItems[0].vendor_name,
-              name: item.name || 'منتج',
-              product_name: item.name || 'منتج',
-              notes: null,
-              addons_data: item.addons || [],
-              variant_id: isValidUUID ? item.variant_id : null,
-              variant_name: item.variant_name || null,
-              preparation_time: item.preparation_time || null,
-            });
-          }
-        }
-
-        if (regularItems.length === 0 && customItems.length === 0) {
-          throw new Error('لا توجد منتجات صالحة في السلة');
-        }
-
-        // Insert regular items
-        if (regularItems.length > 0) {
-          console.log('📝 Regular order items to insert:', regularItems);
-          const { error: itemsError } = await supabase.from('order_items').insert(regularItems);
-          if (itemsError) {
-            console.error('❌ Error inserting order items:', itemsError);
-            throw itemsError;
-          }
-        }
-
-        // Insert custom items
-        if (customItems.length > 0) {
-          console.log('📝 Custom order items to insert:', customItems);
-          const { error: customItemsError } = await supabase.from('custom_order_items').insert(customItems);
-          if (customItemsError) {
-            console.error('❌ Error inserting custom order items:', customItemsError);
-            throw customItemsError;
-          }
-        }
       }
 
       // Use the first order for remaining operations
