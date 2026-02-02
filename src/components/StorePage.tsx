@@ -39,7 +39,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     fee: 0,
     time: '',
     minOrder: 0,
-    freeDeliveryMin: null as number | null
+    freeDeliveryMin: null as number | null,
+    isAccurate: false
   });
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
@@ -172,9 +173,16 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           const totalMaxTime = prepTime + 15;
           estimatedTime = `${prepTime}-${totalMaxTime}`;
 
-          console.log('⏱️ StorePage - استخدام وقت التحضير الثابت:', {
-            prepTime: `${prepTime} دقيقة`,
-            estimatedTime
+          console.warn('⚠️ StorePage - لا يمكن حساب وقت التوصيل بدقة!', {
+            hasUserLocation: !!userLocation,
+            hasVendorLatitude: !!vendor.latitude,
+            hasVendorLongitude: !!vendor.longitude,
+            userLocation,
+            vendorLatitude: vendor.latitude,
+            vendorLongitude: vendor.longitude,
+            vendorId: vendor.id,
+            vendorName: vendor.store_name,
+            usingEstimatedTime: estimatedTime
           });
         }
       } catch (error) {
@@ -185,7 +193,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         fee: deliveryFee,
         time: estimatedTime,
         minOrder: vendor.min_order_amount || 0,
-        freeDeliveryMin: vendor.free_delivery_min || null
+        freeDeliveryMin: vendor.free_delivery_min || null,
+        isAccurate: !!(userLocation && vendor.latitude && vendor.longitude)
       });
     };
 
@@ -837,17 +846,17 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </button>
                   </div>
 
-                  {/* رسالة تنبيه إذا لم يتوفر وقت دقيق */}
-                  {!deliveryInfo.time && (
+                  {/* رسالة تنبيه إذا لم يكن الوقت دقيق */}
+                  {deliveryInfo.time && !deliveryInfo.isAccurate && (
                     <div className="mt-4 bg-amber-50 rounded-xl border border-amber-200 px-4 py-3">
                       <div className="flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-semibold text-amber-900 text-sm">يرجى تحديد عنوان التوصيل</p>
+                          <p className="font-semibold text-amber-900 text-sm">⏱️ وقت التوصيل تقريبي</p>
                           <p className="text-xs text-amber-700 mt-1">
-                            {!userLocation ? 'لم يتم تحديد عنوان التوصيل بدقة' :
-                             !vendor.latitude || !vendor.longitude ? 'معلومات موقع المتجر غير متوفرة' :
-                             'يرجى تحديد موقعك على الخريطة لحساب وقت التوصيل بدقة'}
+                            {!userLocation ? '📍 لم يتم تحديد عنوان التوصيل بدقة - يرجى إضافة عنوان مع الإحداثيات' :
+                             !vendor.latitude || !vendor.longitude ? '🏪 معلومات موقع المتجر غير محددة بدقة في النظام' :
+                             '📍 يرجى تحديد موقعك على الخريطة لحساب وقت التوصيل بدقة'}
                           </p>
                         </div>
                       </div>
