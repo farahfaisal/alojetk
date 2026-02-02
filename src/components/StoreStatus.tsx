@@ -40,9 +40,9 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
     return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => ({
       day: dayMapping[dayName.toLowerCase()],
-      open: hours?.open || '09:00',
-      close: hours?.close || '21:00',
-      enabled: hours?.enabled !== false
+      open: hours?.open || null,
+      close: hours?.close || null,
+      enabled: hours?.enabled === true
     })).sort((a, b) => a.day - b.day);
   };
 

@@ -11,6 +11,7 @@ import SingleProductPage from './SingleProductPage';
 import CustomOrderModal from './CustomOrderModal';
 import { calculateDistance, calculateDeliveryFee } from '../lib/delivery';
 import { getSavedAddresses } from '../lib/storage';
+import { isVendorOpen, getVendorStatusMessage, WorkingHours } from '../lib/vendor-status';
 
 interface StorePageProps {
   vendor: any;
@@ -44,6 +45,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
   const [userAddress, setUserAddress] = useState<{address: string, city: string, latitude?: number, longitude?: number} | null>(null);
+  const [todayWorkingHours, setTodayWorkingHours] = useState<string>('09:00 - 21:00');
 
   // Don't auto-filter by category - show all products initially
   // useEffect(() => {
@@ -216,30 +218,70 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
-  // Check vendor status
+  // Check vendor status based on working hours
   useEffect(() => {
     if (vendor) {
-      if (typeof vendor.status === 'string') {
-        setIsVendorAvailable(vendor.status === 'active');
-        if (vendor.status !== 'active') {
-          setVendorStatusMessage(vendor.status === 'busy'
-            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
-            : vendor.status === 'suspended'
-              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
-              : 'المتجر مغلق حالياً');
+      const workingHours = vendor.working_hours as WorkingHours | null;
+      const timezone = vendor.timezone || 'Asia/Jerusalem';
+      const vacationMode = false; // vacation_mode not implemented yet
+
+      // Get current time in vendor's timezone
+      const getCurrentTimeInTimezone = (tz: string) => {
+        try {
+          const now = new Date();
+          const timeString = now.toLocaleString('en-US', { timeZone: tz });
+          const localTime = new Date(timeString);
+          return {
+            day: localTime.getDay(),
+            hours: localTime.getHours(),
+            minutes: localTime.getMinutes()
+          };
+        } catch (error) {
+          const now = new Date();
+          return {
+            day: now.getDay(),
+            hours: now.getHours(),
+            minutes: now.getMinutes()
+          };
         }
-      } else if (typeof vendor.status === 'object' && vendor.status !== null) {
-        setIsVendorAvailable(vendor.status.is_open === true);
-        if (!vendor.status.is_open) {
-          setVendorStatusMessage(vendor.status.reason === 'busy'
-            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
-            : vendor.status.reason === 'suspended'
-              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
-              : 'المتجر مغلق حالياً');
-        }
+      };
+
+      const getDayName = (dayNumber: number): keyof WorkingHours => {
+        const days: (keyof WorkingHours)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        return days[dayNumber];
+      };
+
+      // Get today's working hours
+      const currentTime = getCurrentTimeInTimezone(timezone);
+      const dayName = getDayName(currentTime.day);
+      const todayHours = workingHours?.[dayName];
+
+      // Set today's hours for display
+      if (todayHours && todayHours.enabled && todayHours.open && todayHours.close) {
+        setTodayWorkingHours(`${todayHours.open} - ${todayHours.close}`);
       } else {
-        console.log("Vendor status not provided, defaulting to available");
-        setIsVendorAvailable(true);
+        setTodayWorkingHours('مغلق');
+      }
+
+      // Check if vendor is open now
+      const vendorOpen = isVendorOpen(vendor.status, workingHours, timezone, vacationMode);
+      const statusMessage = getVendorStatusMessage(vendor.status, workingHours, timezone, vacationMode);
+
+      setIsVendorAvailable(vendorOpen);
+      if (!vendorOpen) {
+        if (vacationMode) {
+          setVendorStatusMessage('المتجر في إجازة');
+        } else if (vendor.status === 'busy') {
+          setVendorStatusMessage('المتجر مشغول حالياً، يرجى المحاولة لاحقاً');
+        } else if (vendor.status === 'suspended') {
+          setVendorStatusMessage('المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي');
+        } else if (todayHours && !todayHours.enabled) {
+          setVendorStatusMessage('المتجر مغلق اليوم');
+        } else if (todayHours && todayHours.enabled && todayHours.open && todayHours.close) {
+          setVendorStatusMessage(`المتجر مغلق حالياً - ساعات العمل: ${todayHours.open} - ${todayHours.close}`);
+        } else {
+          setVendorStatusMessage('المتجر مغلق حالياً');
+        }
       }
     }
   }, [vendor]);
@@ -826,7 +868,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">09:00 - 21:00</span>
+                        <span className={`text-sm ${todayWorkingHours === 'مغلق' ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
+                          {todayWorkingHours}
+                        </span>
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
