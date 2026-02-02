@@ -20,34 +20,46 @@ const getCurrentTimeInTimezone = (timezone: string) => {
   try {
     const now = new Date();
 
-    // Use Intl.DateTimeFormat to get the correct time components in the specified timezone
-    const formatter = new Intl.DateTimeFormat('en-US', {
+    // Use toLocaleString to get time in the specific timezone
+    const options: Intl.DateTimeFormatOptions = {
       timeZone: timezone,
+      hour12: false,
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false,
       weekday: 'short'
-    });
-
-    const parts = formatter.formatToParts(now);
-    const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
-
-    const weekdayMap: { [key: string]: number } = {
-      'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
     };
 
-    const weekday = getValue('weekday');
-    const day = weekdayMap[weekday] || 0;
-    const hours = parseInt(getValue('hour'), 10);
-    const minutes = parseInt(getValue('minute'), 10);
+    // Format the date in the target timezone
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const parts = formatter.formatToParts(now);
 
-    return { day, hours, minutes };
+    // Extract values from parts
+    const getPartValue = (partType: Intl.DateTimeFormatPartTypes) =>
+      parts.find((part) => part.type === partType)?.value || '';
+
+    const weekdayShort = getPartValue('weekday');
+    const hour = parseInt(getPartValue('hour'), 10);
+    const minute = parseInt(getPartValue('minute'), 10);
+    const year = parseInt(getPartValue('year'), 10);
+    const month = parseInt(getPartValue('month'), 10);
+    const dayNum = parseInt(getPartValue('day'), 10);
+
+    // Create a date object in the target timezone to get the correct day of week
+    const tzDate = new Date(year, month - 1, dayNum);
+    const day = tzDate.getDay();
+
+    return {
+      day,
+      hours: hour,
+      minutes: minute
+    };
   } catch (error) {
     console.error('Error getting time in timezone:', timezone, error);
+    // Fallback to local time
     const now = new Date();
     return {
       day: now.getDay(),
@@ -92,22 +104,8 @@ export const isVendorOpen = (
     const dayName = getDayName(currentDay);
     const todayHours = workingHours[dayName];
 
-    console.log('🔍 isVendorOpen - Checking:', {
-      timezone,
-      currentDay,
-      dayName,
-      currentTime: `${currentTime.hours}:${String(currentTime.minutes).padStart(2, '0')}`,
-      currentMinutes,
-      todayHours: todayHours ? {
-        enabled: todayHours.enabled,
-        open: todayHours.open,
-        close: todayHours.close
-      } : null
-    });
-
     // If today is disabled or no hours defined, store is closed
     if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
-      console.log('❌ Store closed: hours not available or not enabled');
       return false;
     }
 
@@ -118,17 +116,8 @@ export const isVendorOpen = (
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
-
-    console.log('⏰ Time comparison:', {
-      openTime: `${openHour}:${String(openMin).padStart(2, '0')} (${openTime} mins)`,
-      closeTime: `${closeHour}:${String(closeMin).padStart(2, '0')} (${closeTime} mins)`,
-      currentTime: `${currentTime.hours}:${String(currentTime.minutes).padStart(2, '0')} (${currentMinutes} mins)`,
-      isOpen
-    });
-
     // Check if current time is within working hours
-    return isOpen;
+    return currentMinutes >= openTime && currentMinutes < closeTime;
   } catch (error) {
     console.error('Error checking vendor status:', error);
     return false;

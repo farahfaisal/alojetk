@@ -50,31 +50,34 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     try {
       const now = new Date();
 
-      const formatter = new Intl.DateTimeFormat('en-US', {
+      const options: Intl.DateTimeFormatOptions = {
         timeZone: timezone,
+        hour12: false,
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false,
         weekday: 'short'
-      });
-
-      const parts = formatter.formatToParts(now);
-      const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
-
-      const weekdayMap: { [key: string]: number } = {
-        'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
       };
 
-      const weekday = getValue('weekday');
-      const day = weekdayMap[weekday] || 0;
-      const hours = parseInt(getValue('hour'), 10);
-      const minutes = parseInt(getValue('minute'), 10);
+      const formatter = new Intl.DateTimeFormat('en-US', options);
+      const parts = formatter.formatToParts(now);
 
-      return { day, hours, minutes };
+      const getPartValue = (partType: Intl.DateTimeFormatPartTypes) =>
+        parts.find((part) => part.type === partType)?.value || '';
+
+      const hour = parseInt(getPartValue('hour'), 10);
+      const minute = parseInt(getPartValue('minute'), 10);
+      const year = parseInt(getPartValue('year'), 10);
+      const month = parseInt(getPartValue('month'), 10);
+      const dayNum = parseInt(getPartValue('day'), 10);
+
+      const tzDate = new Date(year, month - 1, dayNum);
+      const day = tzDate.getDay();
+
+      return { day, hours: hour, minutes: minute };
     } catch (error) {
       const now = new Date();
       return {
