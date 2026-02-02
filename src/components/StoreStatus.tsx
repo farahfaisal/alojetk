@@ -50,34 +50,38 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     try {
       const now = new Date();
 
-      const options: Intl.DateTimeFormatOptions = {
+      // Get day of week in target timezone
+      const dayString = now.toLocaleDateString('en-US', {
         timeZone: timezone,
-        hour12: false,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        weekday: 'short'
+        weekday: 'long'
+      });
+
+      const dayMap: { [key: string]: number } = {
+        'Sunday': 0,
+        'Monday': 1,
+        'Tuesday': 2,
+        'Wednesday': 3,
+        'Thursday': 4,
+        'Friday': 5,
+        'Saturday': 6
       };
 
-      const formatter = new Intl.DateTimeFormat('en-US', options);
-      const parts = formatter.formatToParts(now);
+      const day = dayMap[dayString] ?? 0;
 
-      const getPartValue = (partType: Intl.DateTimeFormatPartTypes) =>
-        parts.find((part) => part.type === partType)?.value || '';
+      // Get the time string in the target timezone
+      const timeString = now.toLocaleString('en-US', {
+        timeZone: timezone,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+      });
 
-      const hour = parseInt(getPartValue('hour'), 10);
-      const minute = parseInt(getPartValue('minute'), 10);
-      const year = parseInt(getPartValue('year'), 10);
-      const month = parseInt(getPartValue('month'), 10);
-      const dayNum = parseInt(getPartValue('day'), 10);
+      // Extract hours and minutes from the formatted string
+      const timeMatch = timeString.match(/(\d{2}):(\d{2})/);
+      const hours = timeMatch ? parseInt(timeMatch[1], 10) : 0;
+      const minutes = timeMatch ? parseInt(timeMatch[2], 10) : 0;
 
-      const tzDate = new Date(year, month - 1, dayNum);
-      const day = tzDate.getDay();
-
-      return { day, hours: hour, minutes: minute };
+      return { day, hours, minutes };
     } catch (error) {
       const now = new Date();
       return {
