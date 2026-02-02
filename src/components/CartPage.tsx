@@ -175,8 +175,8 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       setVendorInfo(data);
 
       // Set preparation time from vendor data
-      if (data?.preparation_time) {
-        const prepTime = data.preparation_time;
+      if (data?.estimated_delivery_time) {
+        const prepTime = data.estimated_delivery_time;
         setEstimatedTime(`${prepTime}-${prepTime + 15}`);
       }
     } catch (error) {
@@ -243,7 +243,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
       try {
         let fee = 7;
         let deliveryTime = null; // سيكون null إذا لم تتوفر بيانات دقيقة
-        const prepTime = vendorInfo.preparation_time || 30;
+        const prepTime = vendorInfo.estimated_delivery_time || 30;
 
         const selectedServiceArea = localStorage.getItem('selectedServiceArea');
         const selectedCity = localStorage.getItem('selectedCity');

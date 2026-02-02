@@ -140,7 +140,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           };
 
           const distance = calculateDistance(userLocation, vendorLocation);
-          const prepTime = vendor.preparation_time || 30;
+          const prepTime = vendor.estimated_delivery_time || 30;
           const deliveryTime = Math.ceil(distance * 3); // 3 دقائق لكل كيلومتر
 
           console.log('📏 StorePage - حساب وقت التوصيل:', {
