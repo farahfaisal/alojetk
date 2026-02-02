@@ -221,6 +221,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   // Check vendor status based on working hours
   useEffect(() => {
     if (vendor) {
+      console.log('📦 Vendor Object in StorePage:', vendor);
+      console.log('📦 Vendor working_hours:', vendor.working_hours);
+      console.log('📦 Vendor timezone:', vendor.timezone);
+      console.log('📦 Vendor status:', vendor.status);
+
       const workingHours = vendor.working_hours as WorkingHours | null;
       const timezone = vendor.timezone || 'Asia/Jerusalem';
       const vacationMode = false; // vacation_mode not implemented yet
