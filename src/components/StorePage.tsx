@@ -265,8 +265,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
       // Check if vendor is open now
       const vendorOpen = isVendorOpen(vendor.status, workingHours, timezone, vacationMode);
-      const statusMessage = getVendorStatusMessage(vendor.status, workingHours, timezone, vacationMode);
-
       setIsVendorAvailable(vendorOpen);
       if (!vendorOpen) {
         if (vacationMode) {

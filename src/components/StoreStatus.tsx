@@ -63,20 +63,9 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     const currentDay = currentTime.day;
     const currentMinutes = currentTime.hours * 60 + currentTime.minutes;
 
-    console.log('🕐 Checking store status:', {
-      timezone,
-      currentDay,
-      currentHour: currentTime.hours,
-      currentMinute: currentTime.minutes,
-      currentMinutes
-    });
-
     const todayHours = storeHours.find(h => h.day === currentDay);
 
-    console.log('📅 Today hours:', todayHours);
-
-    if (!todayHours || !todayHours.enabled) {
-      console.log('❌ Store closed: hours not enabled or not found');
+    if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
       return false;
     }
 
@@ -87,13 +76,6 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     const closeTime = closeHour * 60 + closeMin;
 
     const isOpen = currentMinutes >= openTime && currentMinutes < closeTime;
-
-    console.log('⏰ Time check:', {
-      openTime: `${openHour}:${openMin}`,
-      closeTime: `${closeHour}:${closeMin}`,
-      currentTime: `${currentTime.hours}:${currentTime.minutes}`,
-      isOpen
-    });
 
     return isOpen;
   };
@@ -106,7 +88,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode, timezone')
+          .select('working_hours, timezone')
           .eq('id', vendorId)
           .maybeSingle();
 
@@ -120,9 +102,9 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         setStoreStatus({
           store_hours: storeHours,
-          vacation_mode: vendorData?.vacation_mode || false,
+          vacation_mode: false,
           closed_dates: [],
-          is_open_now: isOpen && !vendorData?.vacation_mode
+          is_open_now: isOpen
         });
 
         setLoading(false);
