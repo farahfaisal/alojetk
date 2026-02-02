@@ -20,20 +20,33 @@ const getCurrentTimeInTimezone = (timezone: string) => {
   try {
     const now = new Date();
 
-    // Get the time string in the target timezone
-    const timeString = now.toLocaleString('en-US', {
+    console.log('📅 Getting time for timezone:', timezone);
+    console.log('   Server time:', now.toISOString());
+
+    // Get the time in the target timezone using Intl.DateTimeFormat
+    const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: timezone,
       hour12: false,
       hour: '2-digit',
       minute: '2-digit',
-      weekday: 'long'
+      second: '2-digit',
+      weekday: 'long',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
     });
 
-    // Get day of week in target timezone
-    const dayString = now.toLocaleDateString('en-US', {
-      timeZone: timezone,
-      weekday: 'long'
-    });
+    const parts = formatter.formatToParts(now);
+    console.log('   Formatted parts:', parts);
+
+    const getValue = (type: string) => {
+      const part = parts.find(p => p.type === type);
+      return part ? part.value : '0';
+    };
+
+    const weekday = getValue('weekday');
+    const hours = parseInt(getValue('hour'), 10);
+    const minutes = parseInt(getValue('minute'), 10);
 
     const dayMap: { [key: string]: number } = {
       'Sunday': 0,
@@ -45,12 +58,9 @@ const getCurrentTimeInTimezone = (timezone: string) => {
       'Saturday': 6
     };
 
-    const day = dayMap[dayString] ?? 0;
+    const day = dayMap[weekday] ?? 0;
 
-    // Extract hours and minutes from the formatted string
-    const timeMatch = timeString.match(/(\d{2}):(\d{2})/);
-    const hours = timeMatch ? parseInt(timeMatch[1], 10) : 0;
-    const minutes = timeMatch ? parseInt(timeMatch[2], 10) : 0;
+    console.log(`   ✅ Result: ${weekday} (${day}) at ${hours}:${minutes}`);
 
     return {
       day,
@@ -58,7 +68,7 @@ const getCurrentTimeInTimezone = (timezone: string) => {
       minutes
     };
   } catch (error) {
-    console.error('Error getting time in timezone:', timezone, error);
+    console.error('❌ Error getting time in timezone:', timezone, error);
     // Fallback to local time
     const now = new Date();
     return {
