@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة مواقع المتاجر - لوحة التحكم</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .logo svg {
+      width: 40px;
+      height: 40px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #2d3748;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 16px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f7fafc;
+      color: #4a5568;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: #edf2f7;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-box {
+      background: #edf2f7;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      text-align: right;
+    }
+
+    .info-box h3 {
+      color: #2d3748;
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .info-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-box li {
+      color: #4a5568;
+      font-size: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid #cbd5e0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-box li:last-child {
+      border-bottom: none;
+    }
+
+    .check-icon {
+      color: #48bb78;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </div>
+
+    <h1>إدارة مواقع المتاجر</h1>
+    <p class="subtitle">
+      نظام متقدم لتحديد مواقع GPS للمتاجر بدقة عالية باستخدام خرائط Google التفاعلية
+    </p>
+
+    <button class="btn" onclick="openManager()">
+      🗺️ فتح لوحة التحكم
+    </button>
+
+    <button class="btn btn-secondary" onclick="openDocs()">
+      📖 دليل الاستخدام
+    </button>
+
+    <div class="info-box">
+      <h3>✨ المميزات الرئيسية:</h3>
+      <ul>
+        <li>
+          <span class="check-icon">✓</span>
+          <span>خرائط Google التفاعلية</span>
+        </li>
+        <li>
+          <span class="check-icon">✓</span>
+          <span>تحديد الموقع بالنقر أو السحب</span>
+        </li>
+        <li>
+          <span class="check-icon">✓</span>
+          <span>بحث وفلترة المتاجر</span>
+        </li>
+        <li>
+          <span class="check-icon">✓</span>
+          <span>عرض المتاجر بدون موقع</span>
+        </li>
+        <li>
+          <span class="check-icon">✓</span>
+          <span>حفظ تلقائي في قاعدة البيانات</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function openManager() {
+      // الطريقة 1: إذا كان المسار محدد في React Router
+      window.location.href = '/admin/vendor-locations';
+
+      // الطريقة 2: إذا كنت تستخدم صفحة منفصلة
+      // window.open('/admin-locations-page.html', '_self');
+    }
+
+    function openDocs() {
+      // فتح الدليل
+      const answer = confirm('هل تريد فتح دليل الاستخدام؟\n\nسيتم فتح ملف VENDOR_LOCATION_ADMIN_GUIDE.md');
+      if (answer) {
+        alert('الدليل موجود في ملف: VENDOR_LOCATION_ADMIN_GUIDE.md\n\nيمكنك فتحه من محرر الأكواد الخاص بك.');
+      }
+    }
+
+    // رسالة ترحيب في Console
+    console.log('%c🎯 نظام إدارة مواقع المتاجر ', 'font-size: 20px; font-weight: bold; color: #667eea;');
+    console.log('%cمرحباً بك في لوحة التحكم المتقدمة!', 'font-size: 14px; color: #4a5568;');
+    console.log('%cلبدء الاستخدام، اضغط على زر "فتح لوحة التحكم"', 'font-size: 12px; color: #718096;');
+  </script>
+</body>
+</html>
