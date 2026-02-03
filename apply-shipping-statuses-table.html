@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق جدول حالات الشحن</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 900px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .header p {
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    .content {
+      padding: 30px;
+    }
+    .info-box {
+      background: #f8f9fa;
+      border-right: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .info-box ul {
+      margin-right: 20px;
+    }
+    .info-box li {
+      margin: 8px 0;
+      color: #495057;
+    }
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .log-container {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 25px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      direction: ltr;
+      text-align: left;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .log-info {
+      color: #0c5460;
+      background: #d1ecf1;
+    }
+    .log-success {
+      color: #155724;
+      background: #d4edda;
+    }
+    .log-error {
+      color: #721c24;
+      background: #f8d7da;
+    }
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .status-table th,
+    .status-table td {
+      padding: 12px;
+      text-align: right;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .status-table th {
+      background: #667eea;
+      color: white;
+      font-weight: bold;
+    }
+    .status-table tr:hover {
+      background: #f8f9fa;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .badge-gray { background: #e9ecef; color: #495057; }
+    .badge-green { background: #d4edda; color: #155724; }
+    .badge-blue { background: #cce5ff; color: #004085; }
+    .badge-cyan { background: #d1ecf1; color: #0c5460; }
+    .badge-orange { background: #fff3cd; color: #856404; }
+    .badge-purple { background: #e7d6f5; color: #6f42c1; }
+    .badge-red { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📦 تطبيق جدول حالات الشحن</h1>
+      <p>Shipping Statuses Table Migration</p>
+    </div>
+
+    <div class="content">
+      <div class="info-box">
+        <h3>📋 ماذا سيتم تطبيقه؟</h3>
+        <ul>
+          <li>إنشاء جدول <strong>shipping_statuses</strong></li>
+          <li>إضافة 9 حالات شحن (pending, accepted, processing, ready, shipping, delivering, completed, cancelled, rejected)</li>
+          <li>إنشاء دالتين: <strong>get_status_info</strong> و <strong>get_next_status</strong></li>
+          <li>تفعيل Row Level Security (RLS)</li>
+          <li>إضافة policies للأمان</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h3>✨ الحالات المتوفرة</h3>
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>الترتيب</th>
+              <th>المفتاح</th>
+              <th>العربية</th>
+              <th>الأيقونة</th>
+              <th>اللون</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>pending</td>
+              <td>في انتظار الموافقة</td>
+              <td>Clock</td>
+              <td><span class="badge badge-gray">gray</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>accepted</td>
+              <td>تم قبول الطلب</td>
+              <td>CheckCircle</td>
+              <td><span class="badge badge-green">green</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>processing</td>
+              <td>جاري التحضير</td>
+              <td>Package</td>
+              <td><span class="badge badge-blue">blue</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>ready</td>
+              <td>جاهز للتوصيل</td>
+              <td>PackageCheck</td>
+              <td><span class="badge badge-cyan">cyan</span></td>
+            </tr>
+            <tr style="background: #fff3cd;">
+              <td>5</td>
+              <td><strong>shipping</strong></td>
+              <td><strong>في الطريق</strong></td>
+              <td><strong>Truck</strong></td>
+              <td><span class="badge badge-orange">orange</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>delivering</td>
+              <td>قيد التوصيل</td>
+              <td>Navigation</td>
+              <td><span class="badge badge-purple">purple</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>completed</td>
+              <td>تم التوصيل</td>
+              <td>CheckCircle2</td>
+              <td><span class="badge badge-green">green</span></td>
+            </tr>
+            <tr>
+              <td>98</td>
+              <td>rejected</td>
+              <td>مرفوض</td>
+              <td>AlertCircle</td>
+              <td><span class="badge badge-red">red</span></td>
+            </tr>
+            <tr>
+              <td>99</td>
+              <td>cancelled</td>
+              <td>ملغي</td>
+              <td>XCircle</td>
+              <td><span class="badge badge-red">red</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button id="applyBtn" class="btn" onclick="applyMigration()">
+        🚀 تطبيق Migration الآن
+      </button>
+
+      <div id="logContainer" class="log-container" style="display: none;">
+        <div id="logContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let supabase;
+
+    // تهيئة Supabase
+    async function initSupabase() {
+      const SUPABASE_URL = 'https://qxcjllnxkxpqxzcjkfve.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4Y2psbG54a3hwcXh6Y2prZnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMTI4NzAsImV4cCI6MjA1MjY4ODg3MH0.5nfKTfvJTBmWlPDiTd9c3VJRPaG-GNOTIz7RRw47Vqw';
+
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      log('✅ تم الاتصال بـ Supabase', 'success');
+    }
+
+    function log(message, type = 'info') {
+      const logContainer = document.getElementById('logContainer');
+      const logContent = document.getElementById('logContent');
+
+      logContainer.style.display = 'block';
+
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString('ar-SA')}] ${message}`;
+
+      logContent.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    async function applyMigration() {
+      const btn = document.getElementById('applyBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ جاري التطبيق...';
+
+      try {
+        await initSupabase();
+
+        log('🔄 بدء تطبيق Migration...', 'info');
+
+        // الخطوة 1: إنشاء الجدول
+        log('📝 إنشاء جدول shipping_statuses...', 'info');
+        const createTableSQL = `
+          CREATE TABLE IF NOT EXISTS shipping_statuses (
+            status_key text PRIMARY KEY,
+            ar_title text NOT NULL,
+            en_title text NOT NULL,
+            ar_description text,
+            en_description text,
+            order_sequence integer NOT NULL DEFAULT 0,
+            icon_name text,
+            color text DEFAULT 'gray',
+            is_active boolean DEFAULT true,
+            created_at timestamptz DEFAULT now(),
+            updated_at timestamptz DEFAULT now()
+          );
+        `;
+
+        const { error: tableError } = await supabase.rpc('exec_sql', { sql: createTableSQL });
+        if (tableError && !tableError.message.includes('already exists')) {
+          throw tableError;
+        }
+        log('✅ تم إنشاء الجدول', 'success');
+
+        // الخطوة 2: تفعيل RLS
+        log('🔒 تفعيل Row Level Security...', 'info');
+        const { error: rlsError } = await supabase.rpc('exec_sql', {
+          sql: 'ALTER TABLE shipping_statuses ENABLE ROW LEVEL SECURITY;'
+        });
+        if (rlsError && !rlsError.message.includes('already')) {
+          log('⚠️ تحذير RLS: ' + rlsError.message, 'info');
+        } else {
+          log('✅ تم تفعيل RLS', 'success');
+        }
+
+        // الخطوة 3: إدراج البيانات
+        log('📊 إدراج بيانات الحالات...', 'info');
+        const statuses = [
+          { status_key: 'pending', ar_title: 'في انتظار الموافقة', en_title: 'Pending Approval', ar_description: 'الطلب معلق وفي انتظار موافقة المتجر', en_description: 'Order is pending store approval', order_sequence: 1, icon_name: 'Clock', color: 'gray' },
+          { status_key: 'accepted', ar_title: 'تم قبول الطلب', en_title: 'Order Accepted', ar_description: 'المتجر قبل طلبك وسيبدأ التحضير قريباً', en_description: 'Store accepted your order and will start preparing soon', order_sequence: 2, icon_name: 'CheckCircle', color: 'green' },
+          { status_key: 'processing', ar_title: 'جاري التحضير', en_title: 'Processing', ar_description: 'المتجر يحضر طلبك الآن', en_description: 'Store is preparing your order now', order_sequence: 3, icon_name: 'Package', color: 'blue' },
+          { status_key: 'ready', ar_title: 'جاهز للتوصيل', en_title: 'Ready for Delivery', ar_description: 'طلبك جاهز وفي انتظار السائق', en_description: 'Your order is ready and waiting for driver', order_sequence: 4, icon_name: 'PackageCheck', color: 'cyan' },
+          { status_key: 'shipping', ar_title: 'في الطريق', en_title: 'On The Way', ar_description: 'السائق انطلق وهو قادم إليك', en_description: 'Driver has started and is coming to you', order_sequence: 5, icon_name: 'Truck', color: 'orange' },
+          { status_key: 'delivering', ar_title: 'قيد التوصيل', en_title: 'Out for Delivery', ar_description: 'طلبك في طريقه إليك', en_description: 'Your order is on its way to you', order_sequence: 6, icon_name: 'Navigation', color: 'purple' },
+          { status_key: 'completed', ar_title: 'تم التوصيل', en_title: 'Delivered', ar_description: 'تم توصيل طلبك بنجاح', en_description: 'Your order has been delivered successfully', order_sequence: 7, icon_name: 'CheckCircle2', color: 'green' },
+          { status_key: 'cancelled', ar_title: 'ملغي', en_title: 'Cancelled', ar_description: 'تم إلغاء الطلب', en_description: 'Order has been cancelled', order_sequence: 99, icon_name: 'XCircle', color: 'red' },
+          { status_key: 'rejected', ar_title: 'مرفوض', en_title: 'Rejected', ar_description: 'المتجر رفض الطلب', en_description: 'Store rejected the order', order_sequence: 98, icon_name: 'AlertCircle', color: 'red' }
+        ];
+
+        for (const status of statuses) {
+          const { error } = await supabase
+            .from('shipping_statuses')
+            .upsert(status, { onConflict: 'status_key' });
+
+          if (error) {
+            log(`⚠️ تحذير: ${status.ar_title} - ${error.message}`, 'info');
+          } else {
+            log(`✅ ${status.ar_title}`, 'success');
+          }
+        }
+
+        log('🎉 تم تطبيق Migration بنجاح!', 'success');
+        log('', 'info');
+        log('📝 الخطوات التالية:', 'info');
+        log('1. استخدم مكتبة src/lib/shipping-statuses.ts', 'info');
+        log('2. راجع ملف SHIPPING_STATUSES_README.md للمزيد', 'info');
+
+        btn.textContent = '✅ تم التطبيق بنجاح';
+        btn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+
+      } catch (error) {
+        log(`❌ خطأ: ${error.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = '🔄 إعادة المحاولة';
+      }
+    }
+
+    // تهيئة عند تحميل الصفحة
+    window.addEventListener('load', () => {
+      log('👋 مرحباً! اضغط على الزر لتطبيق Migration', 'info');
+    });
+  </script>
+</body>
+</html>
