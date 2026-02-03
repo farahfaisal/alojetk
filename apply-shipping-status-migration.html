@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق تحديث حالة "في الطريق"</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 16px;
+    }
+
+    .steps {
+      margin: 30px 0;
+    }
+
+    .step {
+      background: #f7fafc;
+      border-right: 4px solid #667eea;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-left: 10px;
+      font-weight: bold;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+
+    .step-content {
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    .code-box {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .info-box {
+      background: #ebf8ff;
+      border: 2px solid #90cdf4;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .info-box strong {
+      color: #2c5282;
+    }
+
+    .warning-box {
+      background: #fffaf0;
+      border: 2px solid #fbd38d;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .success-box {
+      background: #f0fff4;
+      border: 2px solid #9ae6b4;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    ul {
+      margin-right: 20px;
+      color: #4a5568;
+    }
+
+    ul li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="icon">🚚</div>
+      <h1>تطبيق تحديث حالة "في الطريق"</h1>
+      <p class="subtitle">تحديث تلقائي لحالة الطلب عند بدء رحلة السائق</p>
+    </div>
+
+    <div class="info-box">
+      <strong>📋 ما الذي سيتم تطبيقه؟</strong><br>
+      ستتغير حالة الطلب تلقائياً إلى "في الطريق" (shipping) بمجرد أن يبدأ السائق رحلة التوصيل.
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">1</span>
+          افتح Supabase Dashboard
+        </div>
+        <div class="step-content">
+          <p>اذهب إلى:</p>
+          <div class="code-box">https://supabase.com/dashboard</div>
+          <p>واختر مشروعك</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">2</span>
+          افتح SQL Editor
+        </div>
+        <div class="step-content">
+          <p>من القائمة الجانبية:</p>
+          <ul>
+            <li>اضغط على <strong>SQL Editor</strong></li>
+            <li>اضغط <strong>New Query</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">3</span>
+          انسخ محتوى Migration
+        </div>
+        <div class="step-content">
+          <p>افتح الملف التالي من مجلد المشروع:</p>
+          <div class="code-box">
+supabase/migrations/20260202220000_add_shipping_status_and_auto_update.sql
+          </div>
+          <p>وانسخ كل محتوياته</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">4</span>
+          الصق وشغّل
+        </div>
+        <div class="step-content">
+          <ul>
+            <li>الصق الكود في SQL Editor</li>
+            <li>اضغط زر <strong>Run</strong> أو <strong>Ctrl+Enter</strong></li>
+            <li>انتظر حتى تكتمل العملية</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-title">
+          <span class="step-number">5</span>
+          تحقق من النجاح
+        </div>
+        <div class="step-content">
+          <p>شغّل الاستعلام التالي للتحقق:</p>
+          <div class="code-box">
+SELECT routine_name
+FROM information_schema.routines
+WHERE routine_name IN (
+  'start_delivery_trip',
+  'start_multi_delivery_trip',
+  'update_delivery_status_with_driver'
+);
+          </div>
+          <p>يجب أن تظهر الدوال الثلاث ✅</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-box">
+      <strong>✅ بعد التطبيق:</strong><br>
+      <ul style="margin-top: 10px;">
+        <li>عند تعيين سائق للطلب → الحالة تتغير تلقائياً إلى 'shipping'</li>
+        <li>العميل يرى "السائق في الطريق إليك"</li>
+        <li>يُسجل كل تغيير في order_status_history</li>
+      </ul>
+    </div>
+
+    <div class="warning-box">
+      <strong>⚠️ ملاحظات مهمة:</strong><br>
+      <ul style="margin-top: 10px;">
+        <li>تأكد من أخذ نسخة احتياطية قبل التطبيق</li>
+        <li>لا تقاطع العملية حتى تكتمل</li>
+        <li>إذا ظهر خطأ، راجع ملف التوثيق</li>
+      </ul>
+    </div>
+
+    <button class="btn" onclick="openDocs()">
+      📖 فتح دليل الاستخدام الكامل
+    </button>
+
+    <button class="btn" style="background: #48bb78; margin-top: 10px;" onclick="openSupabase()">
+      🚀 فتح Supabase Dashboard
+    </button>
+  </div>
+
+  <script>
+    function openDocs() {
+      alert('افتح الملف التالي من المشروع:\n\ndocs/shipping-status-auto-update.md\n\nيحتوي على شرح كامل وأمثلة للاستخدام.');
+    }
+
+    function openSupabase() {
+      window.open('https://supabase.com/dashboard', '_blank');
+    }
+
+    console.log('%c🚚 نظام تحديث حالة "في الطريق"', 'font-size: 20px; font-weight: bold; color: #667eea;');
+    console.log('%cاتبع الخطوات أعلاه لتطبيق التحديث', 'font-size: 14px; color: #4a5568;');
+  </script>
+</body>
+</html>
