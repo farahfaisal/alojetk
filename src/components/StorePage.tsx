@@ -846,22 +846,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </button>
                   </div>
 
-                  {/* رسالة تنبيه إذا لم يكن الوقت دقيق */}
-                  {deliveryInfo.time && !deliveryInfo.isAccurate && (
-                    <div className="mt-4 bg-amber-50 rounded-xl border border-amber-200 px-4 py-3">
-                      <div className="flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-semibold text-amber-900 text-sm">⏱️ وقت التوصيل تقريبي</p>
-                          <p className="text-xs text-amber-700 mt-1">
-                            {!userLocation ? '📍 لم يتم تحديد عنوان التوصيل بدقة - يرجى إضافة عنوان مع الإحداثيات' :
-                             !vendor.latitude || !vendor.longitude ? '🏪 معلومات موقع المتجر غير محددة بدقة في النظام' :
-                             '📍 يرجى تحديد موقعك على الخريطة لحساب وقت التوصيل بدقة'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {/* زر المشاركة الدائري الأحمر على اليمين */}
                   <button

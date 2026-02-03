@@ -303,20 +303,27 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
           });
         }
 
-        // تحديث الوقت التقديري فقط إذا توفر وقت التوصيل الحقيقي
+        // تحديث الوقت التقديري
         if (deliveryTime !== null) {
           const totalMinTime = prepTime + deliveryTime;
           const totalMaxTime = totalMinTime + 15;
           setEstimatedTime(`${totalMinTime}-${totalMaxTime}`);
         } else {
-          setEstimatedTime(''); // لا يوجد وقت دقيق
+          // استخدام وقت التحضير من البائع
+          const totalMaxTime = prepTime + 15;
+          setEstimatedTime(`${prepTime}-${totalMaxTime}`);
         }
 
         setDeliveryFee(fee);
       } catch (error) {
         console.error('Error calculating delivery:', error);
         setDeliveryFee(7);
-        setEstimatedTime('');
+        // استخدام وقت التحضير من البائع في حالة الخطأ
+        if (vendorInfo?.estimated_delivery_time) {
+          const prepTime = vendorInfo.estimated_delivery_time;
+          const totalMaxTime = prepTime + 15;
+          setEstimatedTime(`${prepTime}-${totalMaxTime}`);
+        }
       }
     };
 
@@ -887,23 +894,10 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                 </div>
 
                 <div className="mt-4">
-                  {estimatedTime ? (
+                  {estimatedTime && (
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Clock className="w-4 h-4 text-green-600" />
                       <span>وقت التوصيل المتوقع: {estimatedTime} دقيقة</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-medium">يرجى تحديد موقع التوصيل بدقة</p>
-                        <p className="text-xs mt-1 text-amber-700">
-                          {!selectedAddress ? 'لم يتم اختيار عنوان' :
-                           !selectedAddress.coordinates ? 'العنوان المحدد لا يحتوي على موقع دقيق' :
-                           !vendorInfo?.latitude || !vendorInfo?.longitude ? 'معلومات موقع المتجر غير متوفرة' :
-                           'لا يمكن حساب الوقت بدقة'}
-                        </p>
-                      </div>
                     </div>
                   )}
                 </div>
