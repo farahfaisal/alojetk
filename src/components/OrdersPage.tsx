@@ -229,7 +229,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
           grouped[order.order_group_id].status = 'rejected';
         } else if (statuses.includes('pending')) {
           grouped[order.order_group_id].status = 'pending';
-        } else if (statuses.includes('processing') || statuses.includes('accepted') || statuses.includes('ready')) {
+        } else if (statuses.includes('processing') || statuses.includes('accepted') || statuses.includes('ready') || statuses.includes('waiting-for-driver')) {
           grouped[order.order_group_id].status = 'processing';
         } else if (statuses.includes('shipping')) {
           grouped[order.order_group_id].status = 'shipping';
@@ -297,6 +297,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       'pending': 'في انتظار الموافقة',
       'accepted': 'تم قبول الطلب',
       'processing': 'جاري التحضير',
+      'waiting-for-driver': 'قيد التحضير',
       'ready': 'جاهز للتوصيل',
       'shipping': 'في الطريق',
       'delivered': 'تم التوصيل',
@@ -313,6 +314,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         return <Clock className="w-4 h-4 text-yellow-500" />;
       case 'accepted':
       case 'processing':
+      case 'waiting-for-driver':
         return <Package className="w-4 h-4 text-blue-500" />;
       case 'ready':
       case 'shipping':
@@ -331,6 +333,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
         return 'bg-yellow-100 text-yellow-800';
       case 'accepted':
       case 'processing':
+      case 'waiting-for-driver':
         return 'bg-blue-100 text-blue-800';
       case 'ready':
       case 'shipping':

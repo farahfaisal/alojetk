@@ -171,6 +171,16 @@ export const DEFAULT_STATUSES: Record<string, StatusInfo> = {
     icon_name: 'Package',
     color: 'blue'
   },
+  'waiting-for-driver': {
+    status_key: 'waiting-for-driver',
+    ar_title: 'قيد التحضير',
+    en_title: 'Being Prepared',
+    ar_description: 'طلبك قيد التحضير وسيتم توصيله قريباً',
+    en_description: 'Your order is being prepared and will be delivered soon',
+    order_sequence: 3.5,
+    icon_name: 'Package',
+    color: 'blue'
+  },
   ready: {
     status_key: 'ready',
     ar_title: 'جاهز للتوصيل',

@@ -361,6 +361,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
       'pending': 'في انتظار الموافقة',
       'accepted': 'تم قبول الطلب',
       'processing': 'جاري التحضير',
+      'waiting-for-driver': 'قيد التحضير',
       'ready': 'جاهز للتوصيل',
       'shipping': 'في الطريق',
       'delivered': 'تم التوصيل',
@@ -377,6 +378,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         return <Clock className="w-5 h-5 text-yellow-500" />;
       case 'accepted':
       case 'processing':
+      case 'waiting-for-driver':
         return <Package className="w-5 h-5 text-blue-500" />;
       case 'ready':
       case 'shipping':
@@ -395,6 +397,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         return 'bg-yellow-100 text-yellow-800';
       case 'accepted':
       case 'processing':
+      case 'waiting-for-driver':
         return 'bg-blue-100 text-blue-800';
       case 'ready':
       case 'shipping':
@@ -819,7 +822,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                         subOrder.status === 'delivered' ? 'bg-green-100 text-green-800' :
                         subOrder.status === 'shipping' ? 'bg-orange-100 text-orange-800' :
-                        subOrder.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                        subOrder.status === 'processing' || subOrder.status === 'waiting-for-driver' ? 'bg-blue-100 text-blue-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
                         {getStatusText(subOrder.status)}
