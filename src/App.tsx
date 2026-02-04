@@ -36,6 +36,7 @@ import SearchModal from './components/SearchModal';
 import CitySelector from './components/CitySelector';
 import SingleProductPage from './components/SingleProductPage';
 import StorePage from './components/StorePage';
+import InstallPrompt from './components/InstallPrompt';
 
 interface ServiceArea {
   id: string;
@@ -949,6 +950,9 @@ const AppContent: React.FC = () => {
       </div>
       </div>
       )}
+
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </>
   );
 };

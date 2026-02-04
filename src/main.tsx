@@ -4,6 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { registerSW } from 'virtual:pwa-register';
 
 // Configure status bar on app load
 const configureStatusBar = async () => {
@@ -16,6 +17,18 @@ const configureStatusBar = async () => {
     console.log('Status bar configuration not available on web');
   }
 };
+
+// Register PWA Service Worker
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm('تحديث جديد متوفر! هل تريد تحديث التطبيق؟')) {
+      updateSW(true);
+    }
+  },
+  onOfflineReady() {
+    console.log('التطبيق جاهز للعمل بدون اتصال');
+  },
+});
 
 configureStatusBar();
 

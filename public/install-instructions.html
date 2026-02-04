@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيفية تثبيت التطبيق - Benedek</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #10b981;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .platform {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .platform h2 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            background: #10b981;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            padding: 12px 0;
+            padding-right: 40px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .steps li:before {
+            content: counter(step-counter);
+            position: absolute;
+            right: 0;
+            top: 12px;
+            width: 28px;
+            height: 28px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .benefit {
+            background: #e8f5f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .benefit h3 {
+            color: #059669;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .benefit ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefit li {
+            padding: 5px 0;
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .benefit li:before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .cta {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .cta a {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .cta a:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>كيفية تثبيت تطبيق Benedek</h1>
+        <p class="subtitle">اتبع الخطوات البسيطة التالية لتثبيت التطبيق على جهازك</p>
+
+        <div class="platform">
+            <h2>
+                <span class="icon">A</span>
+                على أجهزة Android
+            </h2>
+            <ol class="steps">
+                <li>افتح الموقع في متصفح Chrome أو Edge</li>
+                <li>سيظهر لك إشعار في أسفل الشاشة "أضف إلى الشاشة الرئيسية"</li>
+                <li>اضغط على "إضافة" أو "تثبيت"</li>
+                <li>سيتم تثبيت التطبيق على شاشتك الرئيسية</li>
+            </ol>
+            <div class="note">
+                إذا لم يظهر الإشعار، اضغط على قائمة المتصفح (⋮) واختر "إضافة إلى الشاشة الرئيسية"
+            </div>
+        </div>
+
+        <div class="platform">
+            <h2>
+                <span class="icon">🍎</span>
+                على أجهزة iPhone/iPad
+            </h2>
+            <ol class="steps">
+                <li>افتح الموقع في متصفح Safari</li>
+                <li>اضغط على زر المشاركة في الأسفل</li>
+                <li>مرر للأسفل واختر "Add to Home Screen"</li>
+                <li>اضغط "إضافة" في الأعلى</li>
+            </ol>
+            <div class="note">
+                تأكد من استخدام متصفح Safari (وليس Chrome) على iPhone
+            </div>
+        </div>
+
+        <div class="platform">
+            <h2>
+                <span class="icon">💻</span>
+                على الكمبيوتر (Desktop)
+            </h2>
+            <ol class="steps">
+                <li>افتح الموقع في Chrome أو Edge</li>
+                <li>ابحث عن أيقونة التثبيت في شريط العناوين</li>
+                <li>اضغط على أيقونة التثبيت</li>
+                <li>أو اذهب إلى قائمة المتصفح واختر "Install App"</li>
+            </ol>
+        </div>
+
+        <div class="benefit">
+            <h3>لماذا تثبت التطبيق؟</h3>
+            <ul>
+                <li>سرعة فائقة في التحميل والاستخدام</li>
+                <li>يعمل بدون اتصال بالإنترنت</li>
+                <li>يستهلك بيانات أقل</li>
+                <li>يبدو ويعمل كتطبيق أصلي</li>
+                <li>إشعارات فورية بتحديثات الطلبات</li>
+                <li>سهولة الوصول من الشاشة الرئيسية</li>
+            </ul>
+        </div>
+
+        <div class="cta">
+            <a href="/">ابدأ التسوق الآن</a>
+        </div>
+    </div>
+</body>
+</html>
