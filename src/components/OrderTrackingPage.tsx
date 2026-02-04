@@ -124,6 +124,54 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         if (groupError) throw groupError;
 
         console.log('📦 Multi-vendor orders fetched:', groupOrders?.length || 0);
+
+        // جلب items_data لكل طلب إذا كان فارغاً
+        if (groupOrders && groupOrders.length > 0) {
+          for (const order of groupOrders) {
+            if (!order.items_data || order.items_data.length === 0) {
+              console.log('⚠️ items_data is empty for order', order.id, ', fetching from tables');
+
+              const [regularItemsResult, customItemsResult] = await Promise.all([
+                supabase.from('order_items').select('*').eq('order_id', order.id),
+                supabase.from('custom_order_items').select('*').eq('order_id', order.id)
+              ]);
+
+              const items_data = [];
+
+              if (regularItemsResult.data) {
+                regularItemsResult.data.forEach(item => {
+                  items_data.push({
+                    product_id: item.product_id,
+                    name: item.name || item.product_name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    variant_id: item.variant_id,
+                    variant_name: item.variant_name,
+                    addons: item.addons_data || [],
+                    is_custom: false
+                  });
+                });
+              }
+
+              if (customItemsResult.data) {
+                customItemsResult.data.forEach(item => {
+                  items_data.push({
+                    product_id: null,
+                    name: item.custom_product_name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    custom_details: item.description || item.notes,
+                    is_custom: true
+                  });
+                });
+              }
+
+              order.items_data = items_data;
+              console.log('✅ Loaded items for order', order.id, ':', items_data.length, 'items');
+            }
+          }
+        }
+
         groupOrders?.forEach((order, index) => {
           console.log(`Order ${index + 1}:`, {
             vendor: order.vendor_name,
@@ -194,6 +242,52 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
           .single();
 
         if (error) throw error;
+
+        // إذا كان items_data فارغاً، جلب البيانات من جداول order_items و custom_order_items
+        if (!data.items_data || data.items_data.length === 0) {
+          console.log('⚠️ items_data is empty, fetching from order_items and custom_order_items');
+
+          const [regularItemsResult, customItemsResult] = await Promise.all([
+            supabase.from('order_items').select('*').eq('order_id', orderId),
+            supabase.from('custom_order_items').select('*').eq('order_id', orderId)
+          ]);
+
+          const items_data = [];
+
+          // إضافة العناصر العادية
+          if (regularItemsResult.data) {
+            regularItemsResult.data.forEach(item => {
+              items_data.push({
+                product_id: item.product_id,
+                name: item.name || item.product_name,
+                price: item.price,
+                quantity: item.quantity,
+                variant_id: item.variant_id,
+                variant_name: item.variant_name,
+                addons: item.addons_data || [],
+                is_custom: false
+              });
+            });
+          }
+
+          // إضافة العناصر المخصصة
+          if (customItemsResult.data) {
+            customItemsResult.data.forEach(item => {
+              items_data.push({
+                product_id: null,
+                name: item.custom_product_name,
+                price: item.price,
+                quantity: item.quantity,
+                custom_details: item.description || item.notes,
+                is_custom: true
+              });
+            });
+          }
+
+          data.items_data = items_data;
+          console.log('✅ Loaded items from separate tables:', items_data.length, 'items');
+        }
+
         setOrderDetails(data);
 
         // Fetch vendor info including logo

@@ -103,6 +103,52 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       if (error) throw error;
 
       const allOrders = data || [];
+
+      // جلب items_data من جداول order_items و custom_order_items إذا كان فارغاً
+      for (const order of allOrders) {
+        if (!order.items_data || order.items_data.length === 0) {
+          console.log('⚠️ items_data is empty for order', order.id, ', fetching from tables');
+
+          const [regularItemsResult, customItemsResult] = await Promise.all([
+            supabase.from('order_items').select('*').eq('order_id', order.id),
+            supabase.from('custom_order_items').select('*').eq('order_id', order.id)
+          ]);
+
+          const items_data = [];
+
+          if (regularItemsResult.data) {
+            regularItemsResult.data.forEach(item => {
+              items_data.push({
+                product_id: item.product_id,
+                name: item.name || item.product_name,
+                price: item.price,
+                quantity: item.quantity,
+                variant_id: item.variant_id,
+                variant_name: item.variant_name,
+                addons: item.addons_data || [],
+                is_custom: false
+              });
+            });
+          }
+
+          if (customItemsResult.data) {
+            customItemsResult.data.forEach(item => {
+              items_data.push({
+                product_id: null,
+                name: item.custom_product_name,
+                price: item.price,
+                quantity: item.quantity,
+                custom_details: item.description || item.notes,
+                is_custom: true
+              });
+            });
+          }
+
+          order.items_data = items_data;
+          console.log('✅ Loaded items for order', order.id, ':', items_data.length, 'items');
+        }
+      }
+
       setOrders(allOrders);
 
       console.log('📦 All orders fetched:', allOrders.length);
@@ -112,7 +158,9 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
           order_number: order.order_number,
           is_multi_vendor: order.is_multi_vendor,
           order_group_id: order.order_group_id,
-          vendor_name: order.vendor_name
+          vendor_name: order.vendor_name,
+          items_data: order.items_data,
+          items_count: order.items_data?.length || 0
         });
       });
 
