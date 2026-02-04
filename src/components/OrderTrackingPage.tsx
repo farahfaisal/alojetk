@@ -632,7 +632,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                   }
 
                   // All are in processing/accepted/ready state
-                  if (statuses.every(s => ['processing', 'accepted', 'preparing', 'ready'].includes(s))) return 1;
+                  if (statuses.every(s => ['processing', 'accepted', 'preparing', 'ready', 'waiting-for-driver'].includes(s))) return 1;
 
                   return 0;
                 }
@@ -642,7 +642,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 if (['cancelled', 'rejected'].includes(status)) return -1;
                 if (['delivered', 'completed'].includes(status)) return 3;
                 if (['shipping', 'out_for_delivery', 'picked_up'].includes(status)) return 2;
-                if (['processing', 'accepted', 'preparing', 'ready'].includes(status)) return 1;
+                if (['processing', 'accepted', 'preparing', 'ready', 'waiting-for-driver'].includes(status)) return 1;
                 return 0; // pending
               };
 
