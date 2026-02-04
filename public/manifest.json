@@ -1,6 +1,6 @@
 {
-  "name": "Benedek - بنادك",
-  "short_name": "Benedek",
+  "name": "الو اجيتك - توصيل طلبات",
+  "short_name": "الو اجيتك",
   "description": "تطبيق توصيل الطلبات من المتاجر المحلية",
   "start_url": "/",
   "display": "standalone",

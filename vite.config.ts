@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Benedek - بنادك',
-        short_name: 'Benedek',
+        name: 'الو اجيتك - توصيل طلبات',
+        short_name: 'الو اجيتك',
         description: 'تطبيق توصيل الطلبات من المتاجر المحلية',
         theme_color: '#10b981',
         background_color: '#ffffff',
