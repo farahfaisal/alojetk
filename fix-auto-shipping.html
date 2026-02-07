@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إصلاح التحديث التلقائي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alert strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .alert p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .steps {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: start;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .step-content strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .sql-box {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-top: 20px;
+            direction: ltr;
+            text-align: left;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+
+        .copy-btn.copied {
+            background: #48bb78;
+        }
+
+        .link-box {
+            background: #e7eaf6;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .link-box a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .link-box a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 2px solid #0c5460;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .info-box strong {
+            color: #0c5460;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            color: #0c5460;
+            padding-right: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 إصلاح التحديث التلقائي</h1>
+        <p class="subtitle">تعطيل تحويل الطلب إلى "في الطريق" عند تعيين السائق</p>
+
+        <div class="alert">
+            <strong>⚠️ المشكلة الحالية:</strong>
+            <p>عند تعيين سائق للطلب، يتحول الطلب تلقائيًا إلى حالة "في الطريق" حتى لو لم يبدأ السائق الرحلة بعد!</p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <strong>افتح لوحة تحكم Supabase</strong>
+                    <p>اذهب إلى مشروعك في Supabase Dashboard</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <strong>افتح SQL Editor</strong>
+                    <p>من القائمة الجانبية، اضغط على "SQL Editor"</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <strong>انسخ والصق الكود التالي</strong>
+                    <p>اضغط على زر "نسخ" ثم الصق الكود في محرر SQL</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <strong>شغل الكود (Run)</strong>
+                    <p>اضغط على زر "Run" أو اضغط Ctrl+Enter</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="position: relative;">
+            <button class="copy-btn" onclick="copySQL()">📋 نسخ</button>
+            <div class="sql-box" id="sqlCode">-- ===================================
+-- تعطيل التحديث التلقائي
+-- ===================================
+
+-- 1. حذف trigger التحديث التلقائي
+DROP TRIGGER IF EXISTS update_order_with_driver_trigger ON driver_waiting_list;
+
+-- 2. حذف الدالة المرتبطة
+DROP FUNCTION IF EXISTS update_delivery_status_with_driver();</div>
+        </div>
+
+        <div class="link-box">
+            <p style="margin-bottom: 10px; color: #2c3e50;">رابط لوحة التحكم:</p>
+            <a href="https://supabase.com/dashboard/project/fliwyntfvfedslbwkvks/editor" target="_blank">
+                🔗 فتح SQL Editor
+            </a>
+        </div>
+
+        <div class="info-box">
+            <strong>✅ بعد تطبيق الإصلاح:</strong>
+            <ul>
+                <li>لن يتحول الطلب تلقائيًا إلى "في الطريق"</li>
+                <li>السائق يجب أن يبدأ الرحلة يدويًا من تطبيقه</li>
+                <li>الدوال اليدوية ستبقى متاحة (start_delivery_trip)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function copySQL() {
+            const sqlCode = document.getElementById('sqlCode').textContent;
+            const copyBtn = document.querySelector('.copy-btn');
+
+            navigator.clipboard.writeText(sqlCode).then(() => {
+                copyBtn.textContent = '✅ تم النسخ!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 نسخ';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Error copying:', err);
+                alert('حدث خطأ في النسخ. حاول مرة أخرى.');
+            });
+        }
+    </script>
+</body>
+</html>
