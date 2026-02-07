@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إصلاح مشكلة "في الطريق" التلقائية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .problem {
+            background: #fee;
+            border-right: 4px solid #f44;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .problem h2 {
+            color: #c33;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .solution {
+            background: #efe;
+            border-right: 4px solid #4a4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .solution h2 {
+            color: #2a2;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .steps {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #22c55e;
+        }
+
+        .link-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .link-box a {
+            color: #1976d2;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .link-box a:hover {
+            text-decoration: underline;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #856404;
+        }
+
+        .success-icon {
+            color: #22c55e;
+            font-size: 24px;
+            margin-left: 10px;
+        }
+
+        .error-icon {
+            color: #ef4444;
+            font-size: 24px;
+            margin-left: 10px;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-right: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .video-note {
+            background: #e0f2fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚫 إصلاح مشكلة "في الطريق" التلقائية</h1>
+
+        <div class="problem">
+            <h2><span class="error-icon">❌</span> المشكلة</h2>
+            <p>عند تعيين سائق للطلب، يتحول الطلب تلقائياً إلى <strong>"في الطريق"</strong> حتى لو لم يبدأ السائق الرحلة بعد!</p>
+            <ul>
+                <li>العميل يرى معلومات غير دقيقة</li>
+                <li>التوقيت يصبح غير صحيح</li>
+                <li>تجربة مستخدم سيئة</li>
+            </ul>
+        </div>
+
+        <div class="solution">
+            <h2><span class="success-icon">✅</span> الحل</h2>
+            <p>حذف التحديث التلقائي، والسماح للسائق فقط بتحديث الحالة يدوياً عند بدء الرحلة فعلياً.</p>
+        </div>
+
+        <div class="steps">
+            <h2 style="margin-bottom: 20px; color: #667eea;">خطوات الإصلاح (دقيقة واحدة فقط!)</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>افتح SQL Editor في Supabase:</strong>
+                <div class="link-box">
+                    <a href="https://supabase.com/dashboard/project/fliwyntfvfedslbwkvks/sql/new" target="_blank">
+                        👉 افتح SQL Editor الآن
+                    </a>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>انسخ هذا الكود:</strong>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
+                    <pre id="sqlCode">-- حذف التحديث التلقائي
+DROP TRIGGER IF EXISTS update_order_with_driver_trigger ON driver_waiting_list;
+DROP FUNCTION IF EXISTS update_delivery_status_with_driver();
+
+-- تأكيد بتعليق
+COMMENT ON FUNCTION start_delivery_trip IS 'يستخدمها السائق يدوياً لبدء رحلة التوصيل';
+COMMENT ON FUNCTION start_multi_delivery_trip IS 'يستخدمها السائق يدوياً لبدء رحلة متعددة';</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>الصق الكود في SQL Editor واضغط <span class="highlight">Run</span> (أو Ctrl+Enter)</strong>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>انتظر رسالة "Success" ✅</strong>
+            </div>
+        </div>
+
+        <div class="video-note">
+            <h3 style="margin-bottom: 10px; color: #0369a1;">📹 مثال مرئي</h3>
+            <p>إذا كنت بحاجة لمساعدة مرئية:</p>
+            <ol style="margin-top: 10px;">
+                <li>افتح Supabase Dashboard</li>
+                <li>اختر "SQL Editor" من القائمة الجانبية</li>
+                <li>اضغط "+ New query"</li>
+                <li>الصق الكود</li>
+                <li>اضغط "Run" (أو F5)</li>
+            </ol>
+        </div>
+
+        <div class="solution">
+            <h2>✨ النتيجة بعد الإصلاح</h2>
+            <ul>
+                <li>✅ تعيين سائق → الطلب يبقى في حالته الحالية</li>
+                <li>✅ السائق يبدأ الرحلة يدوياً → الطلب يتحول إلى "في الطريق"</li>
+                <li>✅ العميل يرى معلومات دقيقة 100%</li>
+                <li>✅ التوقيت صحيح ودقيق</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ ملاحظة مهمة:</strong>
+            <p>بعد تطبيق الإصلاح، على السائقين استخدام زر <strong>"بدء الرحلة"</strong> في التطبيق عندما يريدون البدء فعلياً.</p>
+        </div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('sqlCode').textContent;
+            const button = document.querySelector('.copy-btn');
+
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✓ تم النسخ!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = 'نسخ الكود';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
