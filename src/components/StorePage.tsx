@@ -11,6 +11,7 @@ import SingleProductPage from './SingleProductPage';
 import CustomOrderModal from './CustomOrderModal';
 import { calculateDistance, calculateDeliveryFee } from '../lib/delivery';
 import { getSavedAddresses } from '../lib/storage';
+import { checkVendorWorkingStatus, getStatusText, getTodayHours, convertWorkingHoursToArray, formatTime } from '../lib/store-hours';
 
 interface StorePageProps {
   vendor: any;
@@ -230,32 +231,58 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
-  // Check vendor status
+  // Check vendor status including working hours
   useEffect(() => {
     if (vendor) {
-      if (typeof vendor.status === 'string') {
-        setIsVendorAvailable(vendor.status === 'active');
-        if (vendor.status !== 'active') {
-          setVendorStatusMessage(vendor.status === 'busy'
-            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
-            : vendor.status === 'suspended'
-              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
-              : 'المتجر مغلق حالياً');
+      const workingStatus = checkVendorWorkingStatus({
+        working_hours: vendor.working_hours,
+        vacation_mode: vendor.vacation_mode,
+        status: vendor.status
+      });
+
+      setIsVendorAvailable(workingStatus.is_open);
+
+      if (!workingStatus.is_open) {
+        let message = 'المتجر مغلق حالياً';
+
+        switch (workingStatus.reason) {
+          case 'vacation':
+            message = 'المتجر في إجازة';
+            break;
+          case 'closed_today':
+            message = 'المتجر مغلق اليوم';
+            break;
+          case 'outside_hours':
+            if (workingStatus.today_hours) {
+              message = `المتجر مغلق حالياً، ساعات العمل: ${formatTime(workingStatus.today_hours.open)} - ${formatTime(workingStatus.today_hours.close)}`;
+            } else {
+              message = 'المتجر مغلق حالياً';
+            }
+            break;
+          case 'suspended':
+            message = 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي';
+            break;
         }
-      } else if (typeof vendor.status === 'object' && vendor.status !== null) {
-        setIsVendorAvailable(vendor.status.is_open === true);
-        if (!vendor.status.is_open) {
-          setVendorStatusMessage(vendor.status.reason === 'busy'
-            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
-            : vendor.status.reason === 'suspended'
-              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
-              : 'المتجر مغلق حالياً');
-        }
+
+        setVendorStatusMessage(message);
       } else {
-        console.log("Vendor status not provided, defaulting to available");
-        setIsVendorAvailable(true);
+        setVendorStatusMessage('');
       }
     }
+
+    // Check status every minute
+    const interval = setInterval(() => {
+      if (vendor) {
+        const workingStatus = checkVendorWorkingStatus({
+          working_hours: vendor.working_hours,
+          vacation_mode: vendor.vacation_mode,
+          status: vendor.status
+        });
+        setIsVendorAvailable(workingStatus.is_open);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, [vendor]);
 
   // Fetch store categories (both regular and custom)
@@ -876,7 +903,16 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">09:00 - 21:00</span>
+                        <span className="text-sm text-gray-600">
+                          {(() => {
+                            const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                            const todayHours = getTodayHours(storeHours);
+                            if (todayHours && todayHours.enabled) {
+                              return `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`;
+                            }
+                            return 'مغلق اليوم';
+                          })()}
+                        </span>
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
