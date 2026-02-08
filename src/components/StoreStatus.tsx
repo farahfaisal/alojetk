@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, Store, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
-interface StoreHours {
-  day: number;
-  open: string;
-  close: string;
-  enabled: boolean;
-}
+import {
+  checkVendorWorkingStatus,
+  convertWorkingHoursToArray,
+  getDefaultStoreHours,
+  formatTime,
+  getDayName,
+  StoreHours
+} from '../lib/store-hours';
 
 interface StoreStatusProps {
   vendorId: string;
@@ -24,46 +25,6 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
-    if (!workingHours) return defaultStoreHours;
-
-    const dayMapping: { [key: string]: number } = {
-      'sunday': 0,
-      'monday': 1,
-      'tuesday': 2,
-      'wednesday': 3,
-      'thursday': 4,
-      'friday': 5,
-      'saturday': 6
-    };
-
-    return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => ({
-      day: dayMapping[dayName.toLowerCase()],
-      open: hours?.open || '09:00',
-      close: hours?.close || '21:00',
-      enabled: hours?.enabled !== false
-    })).sort((a, b) => a.day - b.day);
-  };
-
-  const checkIfOpen = (storeHours: StoreHours[]): boolean => {
-    const now = new Date();
-    const currentDay = now.getDay();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-
-    const todayHours = storeHours.find(h => h.day === currentDay);
-
-    if (!todayHours || !todayHours.enabled) {
-      return false;
-    }
-
-    const [openHour, openMin] = todayHours.open.split(':').map(Number);
-    const [closeHour, closeMin] = todayHours.close.split(':').map(Number);
-
-    const openTime = openHour * 60 + openMin;
-    const closeTime = closeHour * 60 + closeMin;
-
-    return currentTime >= openTime && currentTime <= closeTime;
-  };
 
   useEffect(() => {
     const fetchStoreStatus = async () => {
@@ -73,32 +34,42 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode')
+          .select('working_hours, vacation_mode, status')
           .eq('id', vendorId)
           .maybeSingle();
 
         if (vendorError) throw vendorError;
 
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
-        const isOpen = checkIfOpen(storeHours);
+        const workingStatus = checkVendorWorkingStatus({
+          working_hours: vendorData?.working_hours,
+          vacation_mode: vendorData?.vacation_mode,
+          status: vendorData?.status
+        });
 
         setStoreStatus({
           store_hours: storeHours,
           vacation_mode: vendorData?.vacation_mode || false,
           closed_dates: [],
-          is_open_now: isOpen && !vendorData?.vacation_mode
+          is_open_now: workingStatus.is_open
         });
 
         setLoading(false);
       } catch (err) {
         console.warn('خطأ في جلب حالة المتجر:', err);
 
-        const storeHours = defaultStoreHours;
+        const storeHours = getDefaultStoreHours();
+        const workingStatus = checkVendorWorkingStatus({
+          working_hours: null,
+          vacation_mode: false,
+          status: 'active'
+        });
+
         setStoreStatus({
           store_hours: storeHours,
           vacation_mode: false,
           closed_dates: [],
-          is_open_now: checkIfOpen(storeHours)
+          is_open_now: workingStatus.is_open
         });
 
         setError(err instanceof Error ? err.message : 'حدث خطأ في جلب البيانات');
@@ -158,19 +129,6 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     );
   }
 
-  const getDayName = (day: number) => {
-    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    return days[day];
-  };
-
-  const formatTime = (time: string) => {
-    try {
-      const [hours, minutes] = time.split(':');
-      return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-    } catch {
-      return time;
-    }
-  };
 
   const currentDay = new Date().getDay();
   const todayHours = storeStatus.store_hours.find(hours => hours.day === currentDay);
@@ -247,16 +205,5 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     </div>
   );
 };
-
-// ساعات العمل الافتراضية
-const defaultStoreHours = [
-  { day: 0, open: "09:00", close: "21:00" }, // الأحد
-  { day: 1, open: "09:00", close: "21:00" }, // الاثنين
-  { day: 2, open: "09:00", close: "21:00" }, // الثلاثاء
-  { day: 3, open: "09:00", close: "21:00" }, // الأربعاء
-  { day: 4, open: "09:00", close: "21:00" }, // الخميس
-  { day: 5, open: "14:00", close: "21:00" }, // الجمعة
-  { day: 6, open: "09:00", close: "21:00" }  // السبت
-];
 
 export default StoreStatus;

@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import { supabase } from '../lib/supabase';
 import StorePage from './StorePage';
+import { checkVendorWorkingStatus, getStatusText, getStatusBadgeClasses } from '../lib/store-hours';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -20,6 +21,8 @@ interface Vendor {
   address?: string;
   service_areas?: string[];
   type?: string;
+  working_hours?: any;
+  vacation_mode?: boolean;
 }
 
 interface VendorsListProps {
@@ -320,19 +323,14 @@ const VendorsList: React.FC<VendorsListProps> = ({
 
                 {/* Status Badge - Fixed Height */}
                 <div className="flex items-center justify-center" style={{ height: '18px' }}>
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                    vendor.status === 'active'
-                      ? 'bg-green-500/90 text-white'
-                      : vendor.status === 'busy'
-                        ? 'bg-orange-500/90 text-white'
-                        : vendor.status === 'suspended'
-                          ? 'bg-red-500/90 text-white'
-                          : 'bg-red-700/90 text-white'
-                  }`}>
-                    {vendor.status === 'active' ? 'مفتوح الآن' :
-                     vendor.status === 'busy' ? 'مشغول' :
-                     vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
-                  </span>
+                  {(() => {
+                    const workingStatus = checkVendorWorkingStatus(vendor);
+                    return (
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${getStatusBadgeClasses(workingStatus)}`}>
+                        {getStatusText(workingStatus)}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
             </motion.button>

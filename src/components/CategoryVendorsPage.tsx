@@ -6,6 +6,7 @@ import BottomNav from './BottomNav';
 import FeaturedSlider from './FeaturedSlider';
 import { supabase } from '../lib/supabase';
 import StorePage from './StorePage';
+import { checkVendorWorkingStatus, getStatusText, getStatusBadgeClasses } from '../lib/store-hours';
 
 interface CategoryVendorsPageProps {
   onClose: () => void;
@@ -28,6 +29,8 @@ interface Vendor {
   rating_count?: number;
   status: string;
   address?: string;
+  working_hours?: any;
+  vacation_mode?: boolean;
   type?: string;
 }
 
@@ -223,19 +226,14 @@ const CategoryVendorsPage: React.FC<CategoryVendorsPageProps> = ({
                     </div>
                   )}
 
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                    vendor.status === 'active'
-                      ? 'bg-green-500/90 text-white'
-                      : vendor.status === 'busy'
-                        ? 'bg-orange-500/90 text-white'
-                        : vendor.status === 'suspended'
-                          ? 'bg-red-500/90 text-white'
-                          : 'bg-red-700/90 text-white'
-                  }`}>
-                    {vendor.status === 'active' ? 'مفتوح' :
-                     vendor.status === 'busy' ? 'مشغول' :
-                     vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
-                  </span>
+                  {(() => {
+                    const workingStatus = checkVendorWorkingStatus(vendor);
+                    return (
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClasses(workingStatus)}`}>
+                        {getStatusText(workingStatus)}
+                      </span>
+                    );
+                  })()}
                   
                   {vendor.type && (
                     <span className="bg-brand/10 text-accent text-xs px-2 py-0.5 rounded-full">
