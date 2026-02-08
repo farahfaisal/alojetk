@@ -12,6 +12,7 @@ import StorePage from '../components/StorePage';
 import DeliveryOffersCarousel from '../components/DeliveryOffersCarousel';
 import AllOffersPage from '../components/AllOffersPage';
 import { supabase } from '../lib/supabase';
+import { checkVendorWorkingStatus } from '../lib/store-hours';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
 import { ChevronLeft, Star } from 'lucide-react';
@@ -266,17 +267,30 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
         {/* Status Badge - Fixed Height */}
         <div className="flex items-center justify-center" style={{ height: '18px' }}>
           <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${
-            vendor.status === 'active'
-              ? 'bg-green-500/90 text-white'
-              : vendor.status === 'busy'
-                ? 'bg-orange-500/90 text-white'
+            (() => {
+              const workingStatus = checkVendorWorkingStatus({
+                working_hours: vendor.working_hours,
+                vacation_mode: vendor.vacation_mode,
+                status: vendor.status
+              });
+              return workingStatus.is_open
+                ? 'bg-green-500/90 text-white'
                 : vendor.status === 'suspended'
                   ? 'bg-red-500/90 text-white'
-                  : 'bg-gray-500/90 text-white'
+                  : 'bg-gray-500/90 text-white';
+            })()
           }`}>
-            {vendor.status === 'active' ? 'مفتوح الآن' :
-             vendor.status === 'busy' ? 'مشغول' :
-             vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
+            {(() => {
+              const workingStatus = checkVendorWorkingStatus({
+                working_hours: vendor.working_hours,
+                vacation_mode: vendor.vacation_mode,
+                status: vendor.status
+              });
+              if (workingStatus.is_open) return 'مفتوح الآن';
+              if (vendor.status === 'suspended') return 'معلق';
+              if (workingStatus.reason === 'vacation') return 'في إجازة';
+              return 'مغلق';
+            })()}
           </span>
         </div>
       </div>
