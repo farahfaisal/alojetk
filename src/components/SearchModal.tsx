@@ -176,9 +176,20 @@ const SearchModal: React.FC<SearchModalProps> = ({
       try {
         console.log('🔍 Search started:', { searchQuery, selectedZone });
 
-        // Get all areas to search in (main + sub areas)
-        const searchAreas = selectedZone ? await getAllSubAreas(selectedZone) : [];
-        console.log('📍 Search areas:', searchAreas);
+        // Get area IDs for filtering
+        let searchAreaIds: string[] = [];
+        if (selectedZone) {
+          const searchAreas = await getAllSubAreas(selectedZone);
+          console.log('📍 Search areas (names):', searchAreas);
+
+          const { data: areaData } = await supabase
+            .from('service_areas')
+            .select('id, name')
+            .in('name', searchAreas);
+
+          searchAreaIds = areaData?.map(a => a.id) || [];
+          console.log('📍 Search area IDs:', searchAreaIds);
+        }
 
         // Build vendor query
         let vendorQuery = supabase
@@ -194,29 +205,30 @@ const SearchModal: React.FC<SearchModalProps> = ({
           throw vendorsError;
         }
 
+        console.log('📦 All vendors before filter:', allVendors?.length || 0);
+
         // Filter vendors by zone (including sub-areas)
         let vendors = allVendors || [];
-        if (selectedZone && searchAreas.length > 0) {
-          // Get area IDs for the selected city
-          const { data: areaData } = await supabase
-            .from('service_areas')
-            .select('id')
-            .in('name', searchAreas);
-
-          const searchAreaIds = areaData?.map(a => a.id) || [];
-
+        if (selectedZone && searchAreaIds.length > 0) {
           vendors = vendors.filter((v: any) => {
             // Check main_service_area_id first (most reliable)
-            if (v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id)) {
-              return true;
-            }
-            // Check service_areas as fallback
-            return v.service_areas && Array.isArray(v.service_areas) &&
-                   v.service_areas.some((area: string) => searchAreas.includes(area));
+            const hasMainArea = v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id);
+
+            // Check service_areas as fallback (if vendor uses legacy service_areas)
+            const hasServiceArea = v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0;
+
+            console.log(`Vendor "${v.store_name}":`, {
+              main_service_area_id: v.main_service_area_id,
+              hasMainArea,
+              service_areas: v.service_areas,
+              hasServiceArea
+            });
+
+            return hasMainArea || hasServiceArea;
           });
         }
 
-        console.log('✅ Vendors found:', vendors?.length || 0, vendors);
+        console.log('✅ Vendors found after filter:', vendors?.length || 0, vendors);
 
         // Build products query with vendor zone filter
         let productsQuery = supabase
@@ -231,29 +243,17 @@ const SearchModal: React.FC<SearchModalProps> = ({
           console.error('❌ Products query error:', productsError);
         }
 
-        console.log('📦 Products found (before filter):', products?.length || 0, products);
+        console.log('📦 Products found (before filter):', products?.length || 0);
 
         // Filter products by zone if selected and vendor is active
         let filteredProducts = products || [];
-        if (selectedZone && searchAreas.length > 0) {
-          // Reuse the searchAreaIds from above
+        if (selectedZone && searchAreaIds.length > 0) {
           filteredProducts = filteredProducts.filter((p: any) => {
             const hasMainServiceArea = p.vendor?.main_service_area_id &&
                                        searchAreaIds.includes(p.vendor.main_service_area_id);
-            const hasServiceArea = p.vendor?.service_areas &&
-                                  Array.isArray(p.vendor.service_areas) &&
-                                  p.vendor.service_areas.some((area: string) => searchAreas.includes(area));
             const isVendorActive = p.vendor?.status === 'active';
-            console.log(`Product "${p.name}":`, {
-              vendorName: p.vendor?.store_name,
-              serviceAreas: p.vendor?.service_areas,
-              mainServiceAreaId: p.vendor?.main_service_area_id,
-              hasMainServiceArea,
-              hasServiceArea,
-              vendorStatus: p.vendor?.status,
-              isVendorActive
-            });
-            return (hasMainServiceArea || hasServiceArea) && isVendorActive;
+
+            return hasMainServiceArea && isVendorActive;
           });
         } else {
           // If no zone selected, still filter by vendor status
@@ -328,12 +328,18 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
   const handleZoneChange = async (zoneName: string) => {
     setSelectedZone(zoneName);
-    localStorage.setItem('selectedCity', JSON.stringify(zoneName));
-    window.dispatchEvent(new Event('storage'));
 
-    // Update displayed zone to main area
-    const mainArea = await getMainArea(zoneName);
-    setDisplayedZone(mainArea);
+    if (zoneName) {
+      localStorage.setItem('selectedCity', JSON.stringify(zoneName));
+      window.dispatchEvent(new Event('storage'));
+
+      // Update displayed zone to main area
+      const mainArea = await getMainArea(zoneName);
+      setDisplayedZone(mainArea);
+    } else {
+      // Clear zone selection
+      setDisplayedZone('');
+    }
   };
 
   if (!isOpen) return null;
@@ -375,18 +381,18 @@ const SearchModal: React.FC<SearchModalProps> = ({
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-2 text-white/80 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span>منطقة التوصيل</span>
+                <span>منطقة البحث</span>
               </div>
-              {displayedZone && (
-                <span className="text-white font-bold text-sm">{displayedZone}</span>
-              )}
+              <span className="text-white font-bold text-sm">
+                {displayedZone || 'جميع المناطق'}
+              </span>
             </div>
             <select
               value={selectedZone}
               onChange={(e) => handleZoneChange(e.target.value)}
               className="w-full bg-white/20 backdrop-blur-sm text-white rounded-xl px-4 py-3 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all appearance-none cursor-pointer"
             >
-              <option value="" disabled className="bg-gray-800 text-white">اختر المنطقة</option>
+              <option value="" className="bg-gray-800 text-white">جميع المناطق</option>
               {serviceAreas.map(area => (
                 <option key={area.id} value={area.name} className="bg-gray-800 text-white">
                   {area.name}
