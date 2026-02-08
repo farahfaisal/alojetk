@@ -837,6 +837,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                       const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
                         return sum + ((addon.price || 0) * (addon.quantity || 1));
                       }, 0);
+                      const addonsTotalWithQuantity = addonsTotal * item.quantity;
 
                       return (
                         <div key={index} className="p-3">
@@ -923,7 +924,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-brand/20">
                                     <span className="text-sm font-bold text-gray-900">المجموع:</span>
                                     <span className="text-brand text-base font-bold">
-                                      {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                      {(itemTotal + addonsTotalWithQuantity).toFixed(2)} ₪
                                     </span>
                                   </div>
                                 )}
@@ -1054,6 +1055,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
                   return sum + ((addon.price || 0) * (addon.quantity || 1));
                 }, 0);
+                const addonsTotalWithQuantity = addonsTotal * item.quantity;
 
                 return (
                   <div key={index} className="p-4">
@@ -1147,7 +1149,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                             <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-brand/20">
                               <span className="text-base font-bold text-gray-900">المجموع الكلي:</span>
                               <span className="text-brand text-xl font-bold">
-                                {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                {(itemTotal + addonsTotalWithQuantity).toFixed(2)} ₪
                               </span>
                             </div>
                           )}
