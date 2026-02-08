@@ -210,21 +210,20 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Filter vendors by zone (including sub-areas)
         let vendors = allVendors || [];
         if (selectedZone && searchAreaIds.length > 0) {
+          console.log('🔍 Filtering vendors - Search Area IDs:', searchAreaIds);
+
           vendors = vendors.filter((v: any) => {
             // Check main_service_area_id first (most reliable)
             const hasMainArea = v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id);
 
-            // Check service_areas as fallback (if vendor uses legacy service_areas)
-            const hasServiceArea = v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0;
-
-            console.log(`Vendor "${v.store_name}":`, {
+            console.log(`✓ Vendor "${v.store_name}":`, {
               main_service_area_id: v.main_service_area_id,
-              hasMainArea,
-              service_areas: v.service_areas,
-              hasServiceArea
+              searchAreaIds: searchAreaIds,
+              isInSearchArea: hasMainArea,
+              willShow: hasMainArea ? 'YES ✓' : 'NO ✗'
             });
 
-            return hasMainArea || hasServiceArea;
+            return hasMainArea;
           });
         }
 
