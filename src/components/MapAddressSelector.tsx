@@ -123,9 +123,38 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
         setMarkerPosition(defaultCenter);
         getAddressFromLatLng(defaultCenter.lat, defaultCenter.lng);
       } else {
-        setCenter(vendorLocation);
-        setMarkerPosition(vendorLocation);
-        getAddressFromLatLng(vendorLocation.lat, vendorLocation.lng);
+        // Try to get user's current location first
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              };
+              console.log('✅ Got user location on mount:', userLocation);
+              setCenter(userLocation);
+              setMarkerPosition(userLocation);
+              getAddressFromLatLng(userLocation.lat, userLocation.lng);
+            },
+            (error) => {
+              console.warn('Could not get user location:', error);
+              // Fallback to vendor location if geolocation fails
+              setCenter(vendorLocation);
+              setMarkerPosition(vendorLocation);
+              getAddressFromLatLng(vendorLocation.lat, vendorLocation.lng);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 300000 // 5 minutes cache
+            }
+          );
+        } else {
+          // Fallback if geolocation not supported
+          setCenter(vendorLocation);
+          setMarkerPosition(vendorLocation);
+          getAddressFromLatLng(vendorLocation.lat, vendorLocation.lng);
+        }
       }
     }
   }, [defaultCenter, vendorLocation, isLoaded, ready]);
