@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, Edit3 } from 'lucide-react';
+import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, Edit3, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
@@ -626,6 +626,31 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     setSelectedCategoryType(catType);
   };
 
+  const handleShareStore = async () => {
+    const shareText = `🍽️ أفضل الوجبات من الو جيتك\n\n${vendor.store_name}\n${vendor.description || 'متجر رائع يقدم أشهى المأكولات'}\n\n📍 ${vendor.address || ''}\n⭐ ${vendor.rating || 'جديد'}\n\nاطلب الآن!`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${vendor.store_name} - الو جيتك`,
+          text: shareText,
+          url: window.location.href
+        });
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n\n${window.location.href}`);
+        alert('تم نسخ رابط المتجر إلى الحافظة!');
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-gray-50 z-[99999] flex flex-col">
@@ -800,9 +825,20 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                   {/* اسم المتجر + العنوان */}
                   <div className="text-center mt-2">
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                      {vendor.store_name}
-                    </h1>
+                    <div className="flex items-center justify-center gap-3 mb-1">
+                      <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {vendor.store_name}
+                      </h1>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleShareStore}
+                        className="w-10 h-10 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+                        aria-label="مشاركة المتجر"
+                      >
+                        <Share2 className="w-5 h-5 text-white" />
+                      </motion.button>
+                    </div>
                     <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-sm">
                       <MapPin className="w-4 h-4 text-sky-600" />
                       <span>{vendor.address || 'الموقع غير محدد'}</span>
