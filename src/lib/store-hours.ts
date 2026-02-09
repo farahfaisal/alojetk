@@ -71,6 +71,7 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
   const todayHours = storeHours.find(h => h.day === currentDay);
 
   if (!todayHours || !todayHours.enabled) {
+    console.log('❌ المتجر مغلق اليوم:', { day: currentDay, todayHours });
     return false;
   }
 
@@ -81,7 +82,17 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    return currentTime >= openTime && currentTime <= closeTime;
+    const isOpen = currentTime >= openTime && currentTime < closeTime;
+
+    console.log('🕒 فحص ساعات العمل:', {
+      currentDay,
+      currentTime: `${now.getHours()}:${now.getMinutes()}`,
+      openTime: `${openHour}:${openMin}`,
+      closeTime: `${closeHour}:${closeMin}`,
+      isOpen
+    });
+
+    return isOpen;
   } catch (error) {
     console.error('Error checking store hours:', error);
     return true; // Default to open if there's an error

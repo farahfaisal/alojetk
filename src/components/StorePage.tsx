@@ -231,13 +231,53 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
+  // Refresh vendor data from database to ensure up-to-date working hours
+  useEffect(() => {
+    const refreshVendorData = async () => {
+      if (vendor?.id) {
+        try {
+          const { data: freshVendor, error } = await supabase
+            .from('vendors')
+            .select('working_hours, vacation_mode, status')
+            .eq('id', vendor.id)
+            .single();
+
+          if (!error && freshVendor) {
+            // Update vendor data with fresh values
+            vendor.working_hours = freshVendor.working_hours;
+            vendor.vacation_mode = freshVendor.vacation_mode;
+            vendor.status = freshVendor.status;
+          }
+        } catch (error) {
+          console.error('Error refreshing vendor data:', error);
+        }
+      }
+    };
+
+    refreshVendorData();
+  }, [vendor?.id]);
+
   // Check vendor status including working hours
   useEffect(() => {
     if (vendor) {
+      console.log('🔍 StorePage - فحص حالة المتجر:', {
+        vendorId: vendor.id,
+        storeName: vendor.store_name,
+        working_hours: vendor.working_hours,
+        vacation_mode: vendor.vacation_mode,
+        status: vendor.status
+      });
+
       const workingStatus = checkVendorWorkingStatus({
         working_hours: vendor.working_hours,
         vacation_mode: vendor.vacation_mode,
         status: vendor.status
+      });
+
+      console.log('✅ StorePage - نتيجة الفحص:', {
+        is_open: workingStatus.is_open,
+        reason: workingStatus.reason,
+        today_hours: workingStatus.today_hours
       });
 
       setIsVendorAvailable(workingStatus.is_open);
