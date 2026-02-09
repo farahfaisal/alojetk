@@ -46,6 +46,10 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
   const [userAddress, setUserAddress] = useState<{address: string, city: string, latitude?: number, longitude?: number} | null>(null);
+  const [vendorData, setVendorData] = useState<any>(vendor);
+
+  // Use updated vendor data
+  const currentVendor = vendorData;
 
   // Don't auto-filter by category - show all products initially
   // useEffect(() => {
@@ -101,7 +105,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   // Calculate delivery info
   useEffect(() => {
     const fetchDeliveryInfo = async () => {
-      if (!vendor) return;
+      if (!currentVendor) return;
 
       let deliveryFee = 7;
       let estimatedTime = '';
@@ -122,7 +126,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             const { data: vendorServiceArea } = await supabase
               .from('vendor_service_areas')
               .select('custom_delivery_price')
-              .eq('vendor_id', vendor.id)
+              .eq('vendor_id', currentVendor.id)
               .eq('service_area_id', serviceArea.id)
               .maybeSingle();
 
@@ -135,13 +139,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         }
 
         // استخدام وقت التحضير الثابت من البائع
-        const prepTime = vendor.estimated_delivery_time || 30;
+        const prepTime = currentVendor.estimated_delivery_time || 30;
 
         // حساب الوقت الحقيقي إذا توفرت الإحداثيات الدقيقة
-        if (userLocation && vendor.latitude && vendor.longitude) {
+        if (userLocation && currentVendor.latitude && currentVendor.longitude) {
           const vendorLocation = {
-            lat: vendor.latitude,
-            lng: vendor.longitude
+            lat: currentVendor.latitude,
+            lng: currentVendor.longitude
           };
 
           const distance = calculateDistance(userLocation, vendorLocation);
@@ -159,12 +163,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           const totalMaxTime = totalMinTime + 15;
           estimatedTime = `${totalMinTime}-${totalMaxTime}`;
 
-          if (vendor.delivery_type === 'distance' && vendor.price_per_km) {
-            deliveryFee = Math.max(deliveryFee, Math.ceil(distance * vendor.price_per_km));
-          } else if (vendor.delivery_type === 'fixed' && vendor.delivery_fee_per_km) {
-            deliveryFee = Math.max(deliveryFee, vendor.delivery_fee_per_km);
-          } else if (vendor.delivery_zones && Array.isArray(vendor.delivery_zones)) {
-            const zone = vendor.delivery_zones.find((z: any) => z.distance_km >= distance);
+          if (currentVendor.delivery_type === 'distance' && currentVendor.price_per_km) {
+            deliveryFee = Math.max(deliveryFee, Math.ceil(distance * currentVendor.price_per_km));
+          } else if (currentVendor.delivery_type === 'fixed' && currentVendor.delivery_fee_per_km) {
+            deliveryFee = Math.max(deliveryFee, currentVendor.delivery_fee_per_km);
+          } else if (currentVendor.delivery_zones && Array.isArray(currentVendor.delivery_zones)) {
+            const zone = currentVendor.delivery_zones.find((z: any) => z.distance_km >= distance);
             if (zone) {
               deliveryFee = Math.max(deliveryFee, zone.cost);
             }
@@ -176,13 +180,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
           console.warn('⚠️ StorePage - لا يمكن حساب وقت التوصيل بدقة!', {
             hasUserLocation: !!userLocation,
-            hasVendorLatitude: !!vendor.latitude,
-            hasVendorLongitude: !!vendor.longitude,
+            hasVendorLatitude: !!currentVendor.latitude,
+            hasVendorLongitude: !!currentVendor.longitude,
             userLocation,
-            vendorLatitude: vendor.latitude,
-            vendorLongitude: vendor.longitude,
-            vendorId: vendor.id,
-            vendorName: vendor.store_name,
+            vendorLatitude: currentVendor.latitude,
+            vendorLongitude: currentVendor.longitude,
+            vendorId: currentVendor.id,
+            vendorName: currentVendor.store_name,
             usingEstimatedTime: estimatedTime
           });
         }
@@ -193,14 +197,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       setDeliveryInfo({
         fee: deliveryFee,
         time: estimatedTime,
-        minOrder: vendor.min_order_amount || 0,
-        freeDeliveryMin: vendor.free_delivery_min || null,
-        isAccurate: !!(userLocation && vendor.latitude && vendor.longitude)
+        minOrder: currentVendor.min_order_amount || 0,
+        freeDeliveryMin: currentVendor.free_delivery_min || null,
+        isAccurate: !!(userLocation && currentVendor.latitude && currentVendor.longitude)
       });
     };
 
     fetchDeliveryInfo();
-  }, [vendor, userLocation]);
+  }, [currentVendor, userLocation]);
 
   // Listen for vendor page open events
   useEffect(() => {
@@ -243,10 +247,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             .single();
 
           if (!error && freshVendor) {
+            console.log('🔄 تحديث بيانات المتجر من قاعدة البيانات:', freshVendor);
             // Update vendor data with fresh values
-            vendor.working_hours = freshVendor.working_hours;
-            vendor.vacation_mode = freshVendor.vacation_mode;
-            vendor.status = freshVendor.status;
+            setVendorData({
+              ...vendor,
+              working_hours: freshVendor.working_hours,
+              vacation_mode: freshVendor.vacation_mode,
+              status: freshVendor.status
+            });
           }
         } catch (error) {
           console.error('Error refreshing vendor data:', error);
@@ -259,19 +267,19 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
   // Check vendor status including working hours
   useEffect(() => {
-    if (vendor) {
+    if (vendorData) {
       console.log('🔍 StorePage - فحص حالة المتجر:', {
-        vendorId: vendor.id,
-        storeName: vendor.store_name,
-        working_hours: vendor.working_hours,
-        vacation_mode: vendor.vacation_mode,
-        status: vendor.status
+        vendorId: vendorData.id,
+        storeName: vendorData.store_name,
+        working_hours: vendorData.working_hours,
+        vacation_mode: vendorData.vacation_mode,
+        status: vendorData.status
       });
 
       const workingStatus = checkVendorWorkingStatus({
-        working_hours: vendor.working_hours,
-        vacation_mode: vendor.vacation_mode,
-        status: vendor.status
+        working_hours: vendorData.working_hours,
+        vacation_mode: vendorData.vacation_mode,
+        status: vendorData.status
       });
 
       console.log('✅ StorePage - نتيجة الفحص:', {
@@ -312,18 +320,18 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
     // Check status every minute
     const interval = setInterval(() => {
-      if (vendor) {
+      if (vendorData) {
         const workingStatus = checkVendorWorkingStatus({
-          working_hours: vendor.working_hours,
-          vacation_mode: vendor.vacation_mode,
-          status: vendor.status
+          working_hours: vendorData.working_hours,
+          vacation_mode: vendorData.vacation_mode,
+          status: vendorData.status
         });
         setIsVendorAvailable(workingStatus.is_open);
       }
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [vendor]);
+  }, [vendorData]);
 
   // Fetch store categories (both regular and custom)
   useEffect(() => {
@@ -666,8 +674,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           price: finalPrice,
           quantity: quantity,
           image: product.image_url,
-          vendor_id: vendor.id,
-          vendor_name: vendor.store_name,
+          vendor_id: currentVendor.id,
+          vendor_name: currentVendor.store_name,
           variant_id: variantInfo?.variant_id,
           variant_name: variantInfo?.variant_name,
           addons: mappedAddons,
@@ -694,12 +702,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   };
 
   const handleShareStore = async () => {
-    const shareText = `🍽️ أفضل الوجبات من الو جيتك\n\n${vendor.store_name}\n${vendor.description || 'متجر رائع يقدم أشهى المأكولات'}\n\n📍 ${vendor.address || ''}\n⭐ ${vendor.rating || 'جديد'}\n\nاطلب الآن!`;
+    const shareText = `🍽️ أفضل الوجبات من الو جيتك\n\n${currentVendor.store_name}\n${currentVendor.description || 'متجر رائع يقدم أشهى المأكولات'}\n\n📍 ${currentVendor.address || ''}\n⭐ ${currentVendor.rating || 'جديد'}\n\nاطلب الآن!`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${vendor.store_name} - الو جيتك`,
+          title: `${currentVendor.store_name} - الو جيتك`,
           text: shareText,
           url: window.location.href
         });
@@ -803,8 +811,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             {/* بانر الصورة */}
             <div className="relative h-56 overflow-hidden">
               <img
-                src={vendor.banner || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200"}
-                alt={vendor.store_name}
+                src={currentVendor.banner || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200"}
+                alt={currentVendor.store_name}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -845,8 +853,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   {/* دائرة الشعار في المنتصف فوق البطاقة */}
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-red-700 shadow-xl overflow-hidden flex items-center justify-center">
                     <img
-                      src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
-                      alt={vendor.store_name}
+                      src={currentVendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
+                      alt={currentVendor.store_name}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -894,7 +902,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   <div className="text-center mt-2">
                     <div className="flex items-center justify-center gap-3 mb-1">
                       <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        {vendor.store_name}
+                        {currentVendor.store_name}
                       </h1>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -908,7 +916,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </div>
                     <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-sm">
                       <MapPin className="w-4 h-4 text-sky-600" />
-                      <span>{vendor.address || 'الموقع غير محدد'}</span>
+                      <span>{currentVendor.address || 'الموقع غير محدد'}</span>
                     </div>
                   </div>
 
@@ -946,7 +954,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       </div>
                       <div className="flex items-center gap-2">
                         {(() => {
-                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                          const storeHours = convertWorkingHoursToArray(currentVendor.working_hours);
                           const todayHours = getTodayHours(storeHours);
                           if (todayHours && todayHours.enabled) {
                             return (
@@ -970,7 +978,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   {/* زر المشاركة الدائري الأحمر على اليمين */}
                   <button
                     onClick={() => window.navigator.share?.({
-                      title: vendor.store_name,
+                      title: currentVendor.store_name,
                       text: 'اطلب الآن',
                       url: window.location.href
                     })}
@@ -1354,7 +1362,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 </div>
 
                 <div className="p-4">
-                  <StoreStatus vendorId={vendor.id} />
+                  <StoreStatus vendorId={currentVendor.id} />
                 </div>
               </motion.div>
             </motion.div>
@@ -1381,8 +1389,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         <AnimatePresence>
           {showCustomOrderModal && (
             <CustomOrderModal
-              vendorId={vendor.id}
-              vendorName={vendor.name}
+              vendorId={currentVendor.id}
+              vendorName={currentVendor.name}
               onClose={() => setShowCustomOrderModal(false)}
               userAddress={userAddress || undefined}
             />
