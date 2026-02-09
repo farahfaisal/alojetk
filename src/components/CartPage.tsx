@@ -762,7 +762,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                 {/* Total with Addons */}
                                 {!item.is_custom && item.addons && item.addons.length > 0 && (
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
-                                    <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
+                                    <span className="text-sm font-bold text-gray-700">المجموع الجزئي:</span>
                                     <span className="text-brand text-lg font-bold">
                                       {(((item.price || 0) * item.quantity) + ((item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0) * item.quantity)).toFixed(2)} ₪
                                     </span>
