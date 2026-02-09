@@ -116,8 +116,8 @@ export const checkVendorWorkingStatus = (vendor: {
   vacation_mode?: boolean;
   status?: string;
 }): VendorWorkingStatus => {
-  // Check if vendor is suspended
-  if (vendor.status === 'suspended') {
+  // Check if vendor is suspended or inactive
+  if (vendor.status === 'suspended' || vendor.status === 'inactive') {
     return {
       is_open: false,
       reason: 'suspended'
