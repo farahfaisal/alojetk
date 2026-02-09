@@ -918,9 +918,29 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   <Share2 className="w-5 h-5 text-white" />
                 </motion.button>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed mb-3">
                 {product.description || 'وصف المنتج'}
               </p>
+
+              {/* Price Display */}
+              {selectionStep === 'none' && (
+                <div className="flex items-center justify-center gap-3">
+                  {product.discount_price && product.discount_price > 0 && product.discount_price < product.price ? (
+                    <>
+                      <span className="text-3xl font-bold text-[#B91C1C]">
+                        {product.discount_price.toFixed(2)} ₪
+                      </span>
+                      <span className="text-lg text-gray-400 line-through">
+                        {product.price.toFixed(2)} ₪
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-3xl font-bold text-[#B91C1C]">
+                      {product.price.toFixed(2)} ₪
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Error messages */}
