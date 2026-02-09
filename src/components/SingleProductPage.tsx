@@ -253,15 +253,32 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     }
   }, [variants, mergedAddons]);
 
+  const calculateTotalPrice = () => {
+    // Calculate base price
+    const basePrice = product.discount_price && product.discount_price > 0
+      ? Number(product.discount_price)
+      : Number(product.price);
+
+    // Calculate addons total
+    const addonsTotal = mergedAddons
+      .filter(addon => selectedAddons[addon.id])
+      .reduce((sum, addon) => {
+        const addonQty = addonQuantities[addon.id] || 1;
+        return sum + (addon.price * addonQty);
+      }, 0);
+
+    return basePrice + addonsTotal;
+  };
+
   const checkMultiVendor = () => {
     // Check if there are items from a different vendor in the cart
     const { hasConflict, existingVendorName } = checkCartVendorConflict(product.vendor.id);
-    
+
     if (hasConflict) {
       setExistingVendorName(existingVendorName || 'متجر آخر');
       return true;
     }
-    
+
     return false;
   };
 
