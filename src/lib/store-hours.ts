@@ -33,12 +33,15 @@ export const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
   };
 
   try {
-    return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => ({
-      day: dayMapping[dayName.toLowerCase()],
-      open: hours?.open || '09:00',
-      close: hours?.close || '21:00',
-      enabled: hours?.enabled !== false
-    })).sort((a, b) => a.day - b.day);
+    return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => {
+      const isEnabled = hours?.enabled !== false;
+      return {
+        day: dayMapping[dayName.toLowerCase()],
+        open: isEnabled ? (hours?.open || '09:00') : (hours?.open || ''),
+        close: isEnabled ? (hours?.close || '21:00') : (hours?.close || ''),
+        enabled: isEnabled
+      };
+    }).sort((a, b) => a.day - b.day);
   } catch (error) {
     console.error('Error converting working hours:', error);
     return getDefaultStoreHours();
@@ -70,7 +73,7 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
 
   const todayHours = storeHours.find(h => h.day === currentDay);
 
-  if (!todayHours || !todayHours.enabled) {
+  if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
     console.log('❌ المتجر مغلق اليوم:', { day: currentDay, todayHours });
     return false;
   }
@@ -137,7 +140,7 @@ export const checkVendorWorkingStatus = (vendor: {
   const todayHours = getTodayHours(storeHours);
 
   // Check if closed today
-  if (!todayHours || !todayHours.enabled) {
+  if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
     return {
       is_open: false,
       reason: 'closed_today',
