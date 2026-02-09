@@ -903,16 +903,22 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">
-                          {(() => {
-                            const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                            const todayHours = getTodayHours(storeHours);
-                            if (todayHours && todayHours.enabled) {
-                              return `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`;
-                            }
-                            return 'مغلق اليوم';
-                          })()}
-                        </span>
+                        {(() => {
+                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                          const todayHours = getTodayHours(storeHours);
+                          if (todayHours && todayHours.enabled) {
+                            return (
+                              <span className="text-sm text-gray-600">
+                                {`${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`}
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                              مغلق اليوم
+                            </span>
+                          );
+                        })()}
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
