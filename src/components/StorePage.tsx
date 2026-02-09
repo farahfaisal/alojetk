@@ -898,9 +898,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     >
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
-                        <span className={`font-semibold ${isVendorAvailable ? 'text-lime-600' : 'text-red-600'}`}>
-                          {isVendorAvailable ? 'مفتوح' : 'مغلق'}
-                        </span>
+                        {isVendorAvailable ? (
+                          <span className="font-semibold text-lime-600">مفتوح</span>
+                        ) : (
+                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         {(() => {
