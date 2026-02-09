@@ -898,29 +898,21 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     >
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
-                        {isVendorAvailable ? (
-                          <span className="font-semibold text-lime-600">مفتوح</span>
-                        ) : (
-                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
-                        )}
+                        <span className={`font-semibold ${isVendorAvailable ? 'text-lime-600' : 'text-red-600'}`}>
+                          {isVendorAvailable ? 'مفتوح' : 'مغلق'}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {(() => {
-                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                          const todayHours = getTodayHours(storeHours);
-                          if (todayHours && todayHours.enabled) {
-                            return (
-                              <span className="text-sm text-gray-600">
-                                {`${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`}
-                              </span>
-                            );
-                          }
-                          return (
-                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                              مغلق اليوم
-                            </span>
-                          );
-                        })()}
+                        <span className="text-sm text-gray-600">
+                          {(() => {
+                            const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                            const todayHours = getTodayHours(storeHours);
+                            if (todayHours && todayHours.enabled) {
+                              return `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`;
+                            }
+                            return 'مغلق اليوم';
+                          })()}
+                        </span>
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
