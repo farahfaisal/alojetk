@@ -862,7 +862,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">المجموع الفرعي</span>
+                    <span className="text-gray-600">السعر</span>
                     <span className="font-medium">{calculateSubtotal().toFixed(2)} شيكل</span>
                   </div>
                   <div className="flex justify-between">
