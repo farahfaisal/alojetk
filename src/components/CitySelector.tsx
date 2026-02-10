@@ -81,7 +81,10 @@ const CitySelector: React.FC<CitySelectorProps> = ({
 
   const handleSelectArea = (area: ServiceArea) => {
     if (area.is_active || area.status === 'active') {
-      onSelectCity(area.name);
+      // تنظيف اسم المنطقة من المسافات الزائدة
+      const cleanedAreaName = area.name.trim();
+      console.log('✅ تم اختيار المنطقة:', cleanedAreaName);
+      onSelectCity(cleanedAreaName);
       if (onClose) {
         onClose();
       }

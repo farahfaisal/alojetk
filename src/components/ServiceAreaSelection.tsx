@@ -65,14 +65,18 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
   };
 
   const handleAreaSelect = (areaName: string) => {
-    setSelectedArea(areaName);
-    
+    // تنظيف الاسم من المسافات الزائدة
+    const cleanedAreaName = areaName.trim();
+    setSelectedArea(cleanedAreaName);
+
     // Save selected area to localStorage
-    localStorage.setItem('selectedServiceArea', areaName);
-    
+    localStorage.setItem('selectedServiceArea', cleanedAreaName);
+
+    console.log('✅ تم حفظ منطقة الخدمة:', cleanedAreaName);
+
     // Animate selection and then proceed
     setTimeout(() => {
-      onSelectArea(areaName);
+      onSelectArea(cleanedAreaName);
     }, 800);
   };
 
