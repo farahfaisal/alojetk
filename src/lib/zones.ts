@@ -38,6 +38,8 @@ export const getServiceAreas = async (): Promise<ServiceArea[]> => {
       console.log('Service areas loaded from service_areas table:', serviceAreasData.length);
       return serviceAreasData.map(area => ({
         ...area,
+        // تنظيف الاسم من المسافات الزائدة
+        name: area.name.trim(),
         status: area.is_active ? 'active' : 'coming_soon'
       }));
     }
@@ -179,10 +181,13 @@ export const getMainServiceAreas = async (): Promise<ServiceArea[]> => {
     console.log('✅ Main service areas fetched:', data?.length || 0);
 
     const areas = data.map(area => {
-      const isActive = activeAreasSet.has(area.name);
-      console.log(`🔎 Main Area "${area.name}": ${isActive ? '✅ Active' : '❌ Not Active'}`);
+      // تنظيف الاسم من المسافات الزائدة
+      const cleanName = area.name.trim();
+      const isActive = activeAreasSet.has(area.name) || activeAreasSet.has(cleanName);
+      console.log(`🔎 Main Area "${cleanName}": ${isActive ? '✅ Active' : '❌ Not Active'}`);
       return {
         ...area,
+        name: cleanName,
         status: isActive ? 'active' : 'coming_soon',
         is_active: isActive
       };
@@ -217,6 +222,8 @@ export const getSubServiceAreas = async (parentId: string): Promise<ServiceArea[
     console.log('✅ Sub service areas fetched:', data?.length || 0, data);
     return (data || []).map(area => ({
       ...area,
+      // تنظيف الاسم من المسافات الزائدة
+      name: area.name.trim(),
       status: area.is_active ? 'active' : 'coming_soon'
     }));
   } catch (err) {

@@ -47,15 +47,17 @@ const AddressForm: React.FC<AddressFormProps> = ({
     const selectedCity = localStorage.getItem('selectedCity');
 
     if (selectedServiceArea) {
-      return selectedServiceArea;
+      // تنظيف اسم المنطقة من المسافات الزائدة
+      return selectedServiceArea.trim();
     }
 
     if (selectedCity) {
       try {
         const parsed = JSON.parse(selectedCity);
-        return typeof parsed === 'string' ? parsed : 'يطا';
+        const cityName = typeof parsed === 'string' ? parsed : 'يطا';
+        return cityName.trim();
       } catch {
-        return selectedCity;
+        return selectedCity.trim();
       }
     }
 
