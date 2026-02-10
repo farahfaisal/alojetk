@@ -109,26 +109,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       try {
         const selectedServiceArea = localStorage.getItem('selectedServiceArea');
         const selectedCity = localStorage.getItem('selectedCity');
-        let areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
-
-        // تنظيف اسم المنطقة من المسافات الزائدة
-        if (areaName) {
-          areaName = areaName.trim();
-          console.log('🔍 البحث عن منطقة الخدمة في StorePage:', areaName);
-        }
+        const areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
 
         if (areaName) {
-          const { data: serviceArea, error: areaError } = await supabase
+          const { data: serviceArea } = await supabase
             .from('service_areas')
-            .select('id, delivery_price, name')
+            .select('id, delivery_price')
             .eq('name', areaName)
             .maybeSingle();
-
-          if (areaError) {
-            console.error('❌ خطأ في البحث عن المنطقة:', areaError);
-          }
-
-          console.log('📍 نتيجة البحث في StorePage:', serviceArea || 'لم يتم العثور على المنطقة');
 
           if (serviceArea) {
             const { data: vendorServiceArea } = await supabase

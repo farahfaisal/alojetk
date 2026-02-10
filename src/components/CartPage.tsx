@@ -250,22 +250,11 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         const areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
 
         if (areaName) {
-          // تنظيف اسم المنطقة من المسافات الزائدة
-          const cleanedAreaName = areaName.trim();
-
-          console.log('🔍 البحث عن منطقة الخدمة:', cleanedAreaName);
-
-          const { data: serviceArea, error: areaError } = await supabase
+          const { data: serviceArea } = await supabase
             .from('service_areas')
-            .select('id, delivery_price, name')
-            .eq('name', cleanedAreaName)
+            .select('id, delivery_price')
+            .eq('name', areaName)
             .maybeSingle();
-
-          if (areaError) {
-            console.error('❌ خطأ في البحث عن المنطقة:', areaError);
-          }
-
-          console.log('📍 نتيجة البحث:', serviceArea || 'لم يتم العثور على المنطقة');
 
           if (serviceArea) {
             const { data: vendorServiceArea } = await supabase
