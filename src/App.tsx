@@ -65,7 +65,14 @@ const AppContent: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
-    return stored ? JSON.parse(stored) : 'يطا';
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    const city = stored ? JSON.parse(stored) : 'يطا';
+    console.log('🏁 App.tsx - تحميل منطقة الخدمة من localStorage:', {
+      stored,
+      selectedServiceArea,
+      city
+    });
+    return city;
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
@@ -666,9 +673,14 @@ const AppContent: React.FC = () => {
   };
 
   const handleServiceAreaSelect = (area: string) => {
+    console.log('✅ تم اختيار المنطقة في ServiceAreaSelection:', area);
     setSelectedCity(area);
     localStorage.setItem('selectedServiceArea', area);
     localStorage.setItem('selectedCity', JSON.stringify(area));
+    console.log('💾 تم حفظ المنطقة في localStorage:', {
+      selectedServiceArea: localStorage.getItem('selectedServiceArea'),
+      selectedCity: localStorage.getItem('selectedCity')
+    });
     setShowServiceAreaSelection(false);
 
     // Show permissions prompt after area selection
