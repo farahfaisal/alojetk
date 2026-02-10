@@ -507,9 +507,14 @@ const AppContent: React.FC = () => {
   };
 
   const handleCitySelect = (city: typeof selectedCity) => {
+    console.log('✅ تم اختيار المنطقة في App.tsx:', city);
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
+    console.log('💾 تم حفظ المنطقة في localStorage:', {
+      selectedServiceArea: localStorage.getItem('selectedServiceArea'),
+      selectedCity: localStorage.getItem('selectedCity')
+    });
     setIsCityDropdownOpen(false);
   };
 

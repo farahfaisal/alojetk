@@ -891,7 +891,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 {(() => {
                   const selectedServiceArea = localStorage.getItem('selectedServiceArea');
                   const storedCity = localStorage.getItem('selectedCity');
-                  const serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+                  let serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+
+                  // تنظيف اسم المنطقة من المسافات الزائدة
+                  if (serviceAreaName) {
+                    serviceAreaName = serviceAreaName.trim();
+                  }
+
+                  console.log('📍 عرض منطقة الخدمة في CheckoutPage:', {
+                    selectedServiceArea,
+                    storedCity,
+                    serviceAreaName,
+                    selectedCityProp: selectedCity
+                  });
+
                   return serviceAreaName || selectedCity || 'لم يتم تحديد المنطقة';
                 })()}
               </p>
