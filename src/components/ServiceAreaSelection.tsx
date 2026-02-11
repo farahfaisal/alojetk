@@ -49,11 +49,11 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
         setSubAreas(subs);
       } else {
         console.log('⚠️ No sub areas, selecting main area directly');
-        handleAreaSelect(area.name);
+        handleAreaSelect(area.name, area.id);
       }
     } catch (err) {
       console.error('❌ Error fetching sub areas:', err);
-      handleAreaSelect(area.name);
+      handleAreaSelect(area.name, area.id);
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
     setSubAreas([]);
   };
 
-  const handleAreaSelect = (areaName: string) => {
+  const handleAreaSelect = (areaName: string, areaId?: string) => {
     // تنظيف الاسم من المسافات الزائدة
     const cleanedAreaName = areaName.trim();
     setSelectedArea(cleanedAreaName);
@@ -72,7 +72,13 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
     // Save selected area to localStorage
     localStorage.setItem('selectedServiceArea', cleanedAreaName);
 
-    console.log('✅ تم حفظ منطقة الخدمة:', cleanedAreaName);
+    // Save area ID if provided
+    if (areaId) {
+      localStorage.setItem('selectedServiceAreaId', areaId);
+      console.log('✅ تم حفظ منطقة الخدمة:', cleanedAreaName, 'ID:', areaId);
+    } else {
+      console.log('✅ تم حفظ منطقة الخدمة:', cleanedAreaName);
+    }
 
     // Animate selection and then proceed
     setTimeout(() => {
@@ -250,7 +256,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
                   onClick={() => {
                     if (area.status === 'active') {
                       if (selectedMainArea) {
-                        handleAreaSelect(area.name);
+                        handleAreaSelect(area.name, area.id);
                       } else {
                         handleMainAreaClick(area);
                       }

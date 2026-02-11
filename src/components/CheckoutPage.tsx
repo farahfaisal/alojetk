@@ -370,8 +370,10 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     try {
       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      const selectedServiceAreaId = localStorage.getItem('selectedServiceAreaId');
       const storedCity = localStorage.getItem('selectedCity');
       let serviceAreaName = selectedServiceArea || (storedCity ? JSON.parse(storedCity) : null);
+      let serviceAreaId = selectedServiceAreaId || null;
 
       // تنظيف اسم المنطقة من المسافات الزائدة
       if (serviceAreaName) {
@@ -380,11 +382,28 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
       console.log('📍 Service area for order:', {
         selectedServiceArea,
+        selectedServiceAreaId,
         storedCity,
         serviceAreaName,
+        serviceAreaId,
         propSelectedCity: selectedCity,
         addressCity: currentAddress?.city
       });
+
+      // إذا لم يكن لدينا معرف المنطقة، نحاول جلبه من قاعدة البيانات
+      if (!serviceAreaId && serviceAreaName) {
+        const { data: areaData } = await supabase
+          .from('service_areas')
+          .select('id')
+          .eq('name', serviceAreaName)
+          .maybeSingle();
+
+        if (areaData) {
+          serviceAreaId = areaData.id;
+          localStorage.setItem('selectedServiceAreaId', serviceAreaId);
+          console.log('✅ تم جلب معرف المنطقة من قاعدة البيانات:', serviceAreaId);
+        }
+      }
 
       // التحقق من وجود منطقة الخدمة
       if (!serviceAreaName) {
@@ -516,6 +535,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           notes: orderNotes || null,
           address: currentAddress?.address || '',
           city: serviceAreaName || selectedCity || '',
+          service_area_id: serviceAreaId || null,
           customer_name: currentAddress?.name || '',
           customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
@@ -567,6 +587,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           customer_phone: orderData.customer_phone,
           address: orderData.address,
           city: orderData.city,
+          service_area_id: serviceAreaId || null,
           items: vendorItems.map(item => ({
             product_id: item.product_id,
             name: item.name,
@@ -596,7 +617,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           vendor_order_index: i + 1,
           points_discount: vendorPointsDiscount,
           coupon_discount: vendorCouponDiscount,
-          service_area_id: orderData.service_area_id,
           vendor_name: vendorItems[0].vendor_name,
         });
 

@@ -513,15 +513,32 @@ const AppContent: React.FC = () => {
       });
   };
 
-  const handleCitySelect = (city: typeof selectedCity) => {
+  const handleCitySelect = async (city: typeof selectedCity) => {
     console.log('✅ تم اختيار المنطقة في App.tsx:', city);
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
-    console.log('💾 تم حفظ المنطقة في localStorage:', {
-      selectedServiceArea: localStorage.getItem('selectedServiceArea'),
-      selectedCity: localStorage.getItem('selectedCity')
-    });
+
+    // جلب معرف المنطقة من قاعدة البيانات وحفظه
+    try {
+      const { data: areaData } = await supabase
+        .from('service_areas')
+        .select('id')
+        .eq('name', city)
+        .maybeSingle();
+
+      if (areaData) {
+        localStorage.setItem('selectedServiceAreaId', areaData.id);
+        console.log('💾 تم حفظ المنطقة في localStorage:', {
+          selectedServiceArea: localStorage.getItem('selectedServiceArea'),
+          selectedCity: localStorage.getItem('selectedCity'),
+          selectedServiceAreaId: areaData.id
+        });
+      }
+    } catch (error) {
+      console.error('❌ خطأ في جلب معرف المنطقة:', error);
+    }
+
     setIsCityDropdownOpen(false);
   };
 
