@@ -559,6 +559,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           items_data: vendorItems.map((item) => {
             console.log(`📝 Preparing item for order:`, {
               name: item.name,
+              vendor_id: item.vendor_id,
+              vendor_name: item.vendor_name,
               addons_count: item.addons?.length || 0,
               addons: item.addons
             });
@@ -568,9 +570,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               name: item.name,
               price: item.price,
               quantity: item.quantity,
+              vendor_id: item.vendor_id,
+              vendor_name: item.vendor_name,
               variant_id: item.variant_id,
               variant_name: item.variant_name,
               addons: item.addons || [],
+              is_custom: item.is_custom || false,
+              custom_details: item.custom_details || null
             };
           })
         };
