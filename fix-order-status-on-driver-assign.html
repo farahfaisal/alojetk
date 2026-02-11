@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إصلاح حالة الطلب عند تعيين السائق</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #16a34a;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .problem {
+            background: #fee;
+            border-right: 4px solid #f44;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .problem h2 {
+            color: #c33;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .solution {
+            background: #dcfce7;
+            border-right: 4px solid #22c55e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .solution h2 {
+            color: #16a34a;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .steps {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #22c55e;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+            position: relative;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            position: sticky;
+            top: 10px;
+            left: 10px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #0ea5e9;
+        }
+
+        .link-box {
+            background: #dbeafe;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .link-box a {
+            color: #0369a1;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .link-box a:hover {
+            text-decoration: underline;
+        }
+
+        .flow-diagram {
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 4px solid #22c55e;
+        }
+
+        .flow-step {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .flow-icon {
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        .arrow {
+            text-align: center;
+            color: #22c55e;
+            font-size: 24px;
+            margin: 5px 0;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-right: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: #dcfce7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 إصلاح حالة الطلب عند تعيين السائق</h1>
+
+        <div class="problem">
+            <h2>❌ المشكلة الحالية</h2>
+            <p>عند تعيين سائق للطلب، الطلب يعود إلى <strong>"انتظار الموافقة"</strong> بدلاً من <strong>"قيد التحضير"</strong></p>
+        </div>
+
+        <div class="solution">
+            <h2>✅ الحل الذكي</h2>
+            <p>إنشاء trigger جديد يحول الطلب إلى "قيد التحضير" عند تعيين السائق، دون أن يحوله إلى "في الطريق" تلقائياً</p>
+        </div>
+
+        <div class="flow-diagram">
+            <h3 style="margin-bottom: 15px; color: #16a34a;">📊 كيف سيعمل النظام</h3>
+
+            <div class="flow-step">
+                <div class="flow-icon">📋</div>
+                <div>
+                    <strong>1. طلب جديد</strong><br>
+                    الحالة: <span class="highlight">انتظار الموافقة</span>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-icon">👨‍✈️</div>
+                <div>
+                    <strong>2. تعيين سائق</strong><br>
+                    الحالة تتحول تلقائياً إلى: <span class="highlight">قيد التحضير</span>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-icon">🚀</div>
+                <div>
+                    <strong>3. السائق يبدأ الرحلة يدوياً</strong><br>
+                    الحالة تتحول إلى: <span class="highlight">في الطريق</span>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-icon">✅</div>
+                <div>
+                    <strong>4. توصيل ناجح</strong><br>
+                    الحالة: <span class="highlight">مكتمل</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="steps">
+            <h2 style="margin-bottom: 20px; color: #16a34a;">خطوات التطبيق (دقيقتان فقط!)</h2>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>افتح SQL Editor في Supabase:</strong>
+                <div class="link-box">
+                    <a href="https://supabase.com/dashboard/project/fliwyntfvfedslbwkvks/sql/new" target="_blank">
+                        👉 افتح SQL Editor الآن
+                    </a>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>انسخ والصق هذا الكود:</strong>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode()">نسخ الكود</button>
+                    <pre id="sqlCode">-- حذف التحديث التلقائي القديم إن وجد
+DROP TRIGGER IF EXISTS update_order_with_driver_trigger ON driver_waiting_list;
+DROP FUNCTION IF EXISTS update_delivery_status_with_driver();
+
+-- إنشاء دالة جديدة: تحويل الطلب إلى "قيد التحضير" عند تعيين السائق
+CREATE OR REPLACE FUNCTION update_order_to_processing_on_driver_assign()
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- عند تعيين سائق جديد للطلب
+  IF NEW.driver_id IS NOT NULL AND (OLD.driver_id IS NULL OR OLD.driver_id <> NEW.driver_id) THEN
+
+    -- تحديث حالة الطلب إلى "قيد التحضير"
+    UPDATE orders
+    SET
+      driver_id = NEW.driver_id,
+      driver_name = NEW.driver_name,
+      status = 'processing',  -- الحالة الجديدة: قيد التحضير
+      updated_at = now()
+    WHERE id = NEW.order_id
+      AND status IN ('pending', 'confirmed');  -- فقط إذا كان في انتظار الموافقة أو مؤكد
+
+    -- إنشاء سجل في تاريخ الحالات
+    INSERT INTO order_status_history (
+      order_id,
+      status,
+      note,
+      created_by
+    ) VALUES (
+      NEW.order_id,
+      'processing',
+      'تم تعيين السائق ' || COALESCE(NEW.driver_name, 'غير معروف') || ' - الطلب قيد التحضير',
+      NEW.driver_id
+    );
+
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- إنشاء trigger جديد
+CREATE TRIGGER assign_driver_to_processing_trigger
+  AFTER UPDATE OF driver_id ON driver_waiting_list
+  FOR EACH ROW
+  WHEN (NEW.driver_id IS NOT NULL)
+  EXECUTE FUNCTION update_order_to_processing_on_driver_assign();
+
+-- تعليق توضيحي
+COMMENT ON FUNCTION update_order_to_processing_on_driver_assign() IS 'عند تعيين سائق، يتحول الطلب إلى قيد التحضير (وليس في الطريق)';
+COMMENT ON FUNCTION start_delivery_trip IS 'السائق يستخدمها يدوياً عند البدء الفعلي للرحلة - تحول الطلب إلى في الطريق';
+COMMENT ON FUNCTION start_multi_delivery_trip IS 'السائق يستخدمها يدوياً عند بدء رحلة توصيل متعددة';</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>اضغط <span class="highlight">Run</span> (أو Ctrl+Enter)</strong>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>انتظر رسالة "Success" ✅</strong>
+            </div>
+        </div>
+
+        <div class="solution">
+            <h2>✨ النتيجة النهائية</h2>
+            <ul>
+                <li>✅ طلب جديد → <strong>انتظار الموافقة</strong></li>
+                <li>✅ تعيين سائق → <strong>قيد التحضير</strong> (تلقائياً)</li>
+                <li>✅ السائق يبدأ الرحلة → <strong>في الطريق</strong> (يدوياً)</li>
+                <li>✅ توصيل ناجح → <strong>مكتمل</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('sqlCode').textContent;
+            const button = document.querySelector('.copy-btn');
+
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✓ تم النسخ!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = 'نسخ الكود';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
