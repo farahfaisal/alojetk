@@ -1092,7 +1092,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           <div className="space-y-2 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-gray-900 font-medium">₪{calculateSubtotal().toFixed(2)}</span>
-              <span className="text-gray-600">المجموع الفرعي</span>
+              <span className="text-gray-600">تكلفة الطلبية</span>
             </div>
             {courierMode === 'delivery' && (
               <div className="flex justify-between items-center">
@@ -1126,7 +1126,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
             <div className="flex justify-between items-center pt-2 border-t border-gray-200">
               <span className="font-bold text-lg" style={{ color: BRAND }}>₪{calculateTotal().toFixed(2)}</span>
-              <span className="text-gray-900 font-bold">المجموع الكلي</span>
+              <span className="text-gray-900 font-bold">السعر الكلي</span>
             </div>
           </div>
 
