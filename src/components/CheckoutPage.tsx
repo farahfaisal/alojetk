@@ -597,6 +597,25 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         });
 
         // استخدام Edge Function لإنشاء الطلب
+        const mappedItems = vendorItems.map(item => ({
+          product_id: item.product_id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          variant_id: item.variant_id,
+          variant_name: item.variant_name,
+          addons: item.addons || [],
+          vendor_id: item.vendor_id || vendorId,
+          vendor_name: item.vendor_name || vendorItems[0]?.vendor_name || 'غير معروف',
+          is_custom: (item as any).is_custom || false,
+          custom_details: (item as any).custom_details || '',
+          preparation_time: item.preparation_time || null,
+        }));
+
+        console.log('🔍 Mapped items for order:', mappedItems);
+        console.log('🔍 First item vendor_name:', mappedItems[0]?.vendor_name);
+        console.log('🔍 All items have vendor_name:', mappedItems.every(i => i.vendor_name));
+
         const { data: order, error: orderError } = await createOrder({
           customer_id: customerId,
           vendor_id: vendorId,
@@ -604,20 +623,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           customer_phone: orderData.customer_phone,
           address: orderData.address,
           city: orderData.city,
-          items: vendorItems.map(item => ({
-            product_id: item.product_id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            variant_id: item.variant_id,
-            variant_name: item.variant_name,
-            addons: item.addons || [],
-            vendor_id: item.vendor_id || vendorId,
-            vendor_name: item.vendor_name || vendorItems[0].vendor_name,
-            is_custom: (item as any).is_custom || false,
-            custom_details: (item as any).custom_details || '',
-            preparation_time: item.preparation_time || null,
-          })),
+          items: mappedItems,
           delivery_fee: vendorDeliveryFee,
           subtotal: vendorSubtotal,
           total: vendorTotal,
