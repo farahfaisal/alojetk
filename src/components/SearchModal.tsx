@@ -183,7 +183,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Build vendor query
         let vendorQuery = supabase
           .from('vendors')
-          .select('id, store_name, logo_url, type, service_areas, main_service_area_id')
+          .select('id, store_name, logo_url, type, service_areas')
           .ilike('store_name', `%${searchQuery}%`)
           .eq('status', 'active');
 
@@ -197,20 +197,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Filter vendors by zone (including sub-areas)
         let vendors = allVendors || [];
         if (selectedZone && searchAreas.length > 0) {
-          // Get area IDs for the selected city
-          const { data: areaData } = await supabase
-            .from('service_areas')
-            .select('id')
-            .in('name', searchAreas);
-
-          const searchAreaIds = areaData?.map(a => a.id) || [];
-
           vendors = vendors.filter((v: any) => {
-            // Check main_service_area_id first (most reliable)
-            if (v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id)) {
-              return true;
-            }
-            // Check service_areas as fallback
             return v.service_areas && Array.isArray(v.service_areas) &&
                    v.service_areas.some((area: string) => searchAreas.includes(area));
           });
@@ -221,7 +208,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Build products query with vendor zone filter
         let productsQuery = supabase
           .from('products')
-          .select('id, name, price, image_url, vendor:vendor_id(id, store_name, service_areas, main_service_area_id, status)')
+          .select('id, name, price, image_url, vendor:vendor_id(id, store_name, service_areas, status)')
           .ilike('name', `%${searchQuery}%`)
           .eq('status', 'active');
 
@@ -236,10 +223,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         // Filter products by zone if selected and vendor is active
         let filteredProducts = products || [];
         if (selectedZone && searchAreas.length > 0) {
-          // Reuse the searchAreaIds from above
           filteredProducts = filteredProducts.filter((p: any) => {
-            const hasMainServiceArea = p.vendor?.main_service_area_id &&
-                                       searchAreaIds.includes(p.vendor.main_service_area_id);
             const hasServiceArea = p.vendor?.service_areas &&
                                   Array.isArray(p.vendor.service_areas) &&
                                   p.vendor.service_areas.some((area: string) => searchAreas.includes(area));
@@ -247,13 +231,11 @@ const SearchModal: React.FC<SearchModalProps> = ({
             console.log(`Product "${p.name}":`, {
               vendorName: p.vendor?.store_name,
               serviceAreas: p.vendor?.service_areas,
-              mainServiceAreaId: p.vendor?.main_service_area_id,
-              hasMainServiceArea,
               hasServiceArea,
               vendorStatus: p.vendor?.status,
               isVendorActive
             });
-            return (hasMainServiceArea || hasServiceArea) && isVendorActive;
+            return hasServiceArea && isVendorActive;
           });
         } else {
           // If no zone selected, still filter by vendor status

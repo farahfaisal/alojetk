@@ -166,21 +166,8 @@ const VendorsList: React.FC<VendorsListProps> = ({
         // Filter by city/area if specified
         let filteredVendors = allVendors || [];
         if (selectedCity && searchAreas.length > 0) {
-          // Get area IDs for the selected city
-          const { data: areaData } = await supabase
-            .from('service_areas')
-            .select('id')
-            .in('name', searchAreas);
-
-          const searchAreaIds = areaData?.map(a => a.id) || [];
-
           filteredVendors = filteredVendors.filter((v: any) => {
-            // Check main_service_area_id first (most reliable)
-            if (v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id)) {
-              return true;
-            }
-
-            // Check service_areas (secondary method)
+            // Check service_areas (primary method)
             if (v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0) {
               const hasServiceArea = v.service_areas.some((area: string) => searchAreas.includes(area));
               if (hasServiceArea) return true;
