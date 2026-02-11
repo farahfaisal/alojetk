@@ -33,15 +33,12 @@ export const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
   };
 
   try {
-    return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => {
-      const isEnabled = hours?.enabled !== false;
-      return {
-        day: dayMapping[dayName.toLowerCase()],
-        open: isEnabled ? (hours?.open || '09:00') : (hours?.open || ''),
-        close: isEnabled ? (hours?.close || '21:00') : (hours?.close || ''),
-        enabled: isEnabled
-      };
-    }).sort((a, b) => a.day - b.day);
+    return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => ({
+      day: dayMapping[dayName.toLowerCase()],
+      open: hours?.open || '09:00',
+      close: hours?.close || '21:00',
+      enabled: hours?.enabled !== false
+    })).sort((a, b) => a.day - b.day);
   } catch (error) {
     console.error('Error converting working hours:', error);
     return getDefaultStoreHours();
@@ -73,7 +70,7 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
 
   const todayHours = storeHours.find(h => h.day === currentDay);
 
-  if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+  if (!todayHours || !todayHours.enabled) {
     console.log('❌ المتجر مغلق اليوم:', { day: currentDay, todayHours });
     return false;
   }
@@ -85,21 +82,14 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    // For 24-hour stores (00:00 - 23:59), always return true
-    const is24Hours = openTime === 0 && closeTime === 1439; // 23:59 = 1439 minutes
-    const isOpen = is24Hours ? true : (currentTime >= openTime && currentTime < closeTime);
+    const isOpen = currentTime >= openTime && currentTime < closeTime;
 
     console.log('🕒 فحص ساعات العمل:', {
       currentDay,
       currentTime: `${now.getHours()}:${now.getMinutes()}`,
-      currentTimeMinutes: currentTime,
       openTime: `${openHour}:${openMin}`,
-      openTimeMinutes: openTime,
       closeTime: `${closeHour}:${closeMin}`,
-      closeTimeMinutes: closeTime,
-      is24Hours,
-      isOpen,
-      todayHoursRaw: todayHours
+      isOpen
     });
 
     return isOpen;
@@ -126,15 +116,8 @@ export const checkVendorWorkingStatus = (vendor: {
   vacation_mode?: boolean;
   status?: string;
 }): VendorWorkingStatus => {
-  console.log('🔍 checkVendorWorkingStatus - البيانات المستلمة:', {
-    status: vendor.status,
-    vacation_mode: vendor.vacation_mode,
-    working_hours: vendor.working_hours
-  });
-
   // Check if vendor is suspended or inactive
   if (vendor.status === 'suspended' || vendor.status === 'inactive') {
-    console.log('❌ المتجر معلق أو غير نشط');
     return {
       is_open: false,
       reason: 'suspended'
@@ -143,7 +126,6 @@ export const checkVendorWorkingStatus = (vendor: {
 
   // Check if vendor is in vacation mode
   if (vendor.vacation_mode) {
-    console.log('❌ المتجر في وضع الإجازة');
     return {
       is_open: false,
       reason: 'vacation'
@@ -154,11 +136,8 @@ export const checkVendorWorkingStatus = (vendor: {
   const storeHours = convertWorkingHoursToArray(vendor.working_hours);
   const todayHours = getTodayHours(storeHours);
 
-  console.log('📅 ساعات اليوم:', todayHours);
-
   // Check if closed today
-  if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
-    console.log('❌ المتجر مغلق اليوم');
+  if (!todayHours || !todayHours.enabled) {
     return {
       is_open: false,
       reason: 'closed_today',
@@ -168,8 +147,6 @@ export const checkVendorWorkingStatus = (vendor: {
 
   // Check if within working hours
   const isOpen = checkIfStoreIsOpen(storeHours);
-
-  console.log('✅ النتيجة النهائية:', { isOpen });
 
   return {
     is_open: isOpen,

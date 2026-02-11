@@ -250,22 +250,11 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         const areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
 
         if (areaName) {
-          // تنظيف اسم المنطقة من المسافات الزائدة
-          const cleanedAreaName = areaName.trim();
-
-          console.log('🔍 البحث عن منطقة الخدمة:', cleanedAreaName);
-
-          const { data: serviceArea, error: areaError } = await supabase
+          const { data: serviceArea } = await supabase
             .from('service_areas')
-            .select('id, delivery_price, name')
-            .eq('name', cleanedAreaName)
+            .select('id, delivery_price')
+            .eq('name', areaName)
             .maybeSingle();
-
-          if (areaError) {
-            console.error('❌ خطأ في البحث عن المنطقة:', areaError);
-          }
-
-          console.log('📍 نتيجة البحث:', serviceArea || 'لم يتم العثور على المنطقة');
 
           if (serviceArea) {
             const { data: vendorServiceArea } = await supabase
@@ -773,7 +762,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                 {/* Total with Addons */}
                                 {!item.is_custom && item.addons && item.addons.length > 0 && (
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
-                                    <span className="text-sm font-bold text-gray-700">المجموع الجزئي:</span>
+                                    <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
                                     <span className="text-brand text-lg font-bold">
                                       {(((item.price || 0) * item.quantity) + ((item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0) * item.quantity)).toFixed(2)} ₪
                                     </span>
@@ -873,7 +862,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">السعر</span>
+                    <span className="text-gray-600">المجموع الفرعي</span>
                     <span className="font-medium">{calculateSubtotal().toFixed(2)} شيكل</span>
                   </div>
                   <div className="flex justify-between">

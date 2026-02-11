@@ -65,14 +65,7 @@ const AppContent: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    const city = stored ? JSON.parse(stored) : 'يطا';
-    console.log('🏁 App.tsx - تحميل منطقة الخدمة من localStorage:', {
-      stored,
-      selectedServiceArea,
-      city
-    });
-    return city;
+    return stored ? JSON.parse(stored) : 'يطا';
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
@@ -513,32 +506,10 @@ const AppContent: React.FC = () => {
       });
   };
 
-  const handleCitySelect = async (city: typeof selectedCity) => {
-    console.log('✅ تم اختيار المنطقة في App.tsx:', city);
+  const handleCitySelect = (city: typeof selectedCity) => {
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
-
-    // جلب معرف المنطقة من قاعدة البيانات وحفظه
-    try {
-      const { data: areaData } = await supabase
-        .from('service_areas')
-        .select('id')
-        .eq('name', city)
-        .maybeSingle();
-
-      if (areaData) {
-        localStorage.setItem('selectedServiceAreaId', areaData.id);
-        console.log('💾 تم حفظ المنطقة في localStorage:', {
-          selectedServiceArea: localStorage.getItem('selectedServiceArea'),
-          selectedCity: localStorage.getItem('selectedCity'),
-          selectedServiceAreaId: areaData.id
-        });
-      }
-    } catch (error) {
-      console.error('❌ خطأ في جلب معرف المنطقة:', error);
-    }
-
     setIsCityDropdownOpen(false);
   };
 
@@ -690,14 +661,9 @@ const AppContent: React.FC = () => {
   };
 
   const handleServiceAreaSelect = (area: string) => {
-    console.log('✅ تم اختيار المنطقة في ServiceAreaSelection:', area);
     setSelectedCity(area);
     localStorage.setItem('selectedServiceArea', area);
     localStorage.setItem('selectedCity', JSON.stringify(area));
-    console.log('💾 تم حفظ المنطقة في localStorage:', {
-      selectedServiceArea: localStorage.getItem('selectedServiceArea'),
-      selectedCity: localStorage.getItem('selectedCity')
-    });
     setShowServiceAreaSelection(false);
 
     // Show permissions prompt after area selection

@@ -169,11 +169,6 @@ const VendorsList: React.FC<VendorsListProps> = ({
         // Filter by city/area if specified
         let filteredVendors = allVendors || [];
         if (selectedCity && searchAreas.length > 0) {
-          console.log('🔍 VendorsList - فلترة المتاجر حسب المدينة:', {
-            selectedCity,
-            searchAreas
-          });
-
           // Get area IDs for the selected city
           const { data: areaData } = await supabase
             .from('service_areas')
@@ -182,22 +177,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
 
           const searchAreaIds = areaData?.map(a => a.id) || [];
 
-          console.log('📍 IDs المناطق المطلوبة:', searchAreaIds);
-
           filteredVendors = filteredVendors.filter((v: any) => {
-            // For Wagyu store, log details
-            if (v.id === 'b351af2f-e777-458b-9971-5e0da8f1a2c3') {
-              console.log('🔍 فحص متجر واغيو:', {
-                store_name: v.store_name,
-                main_service_area_id: v.main_service_area_id,
-                searchAreaIds,
-                service_areas: v.service_areas,
-                searchAreas,
-                isMainAreaMatch: searchAreaIds.includes(v.main_service_area_id),
-                isServiceAreaMatch: v.service_areas?.some((area: string) => searchAreas.includes(area))
-              });
-            }
-
             // Check main_service_area_id first (most reliable)
             if (v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id)) {
               return true;
@@ -224,17 +204,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
           filteredVendors = filteredVendors.slice(0, limit);
         }
 
-        console.log("📊 VendorsList - النتيجة النهائية:", {
-          totalFetched: allVendors?.length,
-          afterFilter: filteredVendors.length,
-          vendors: filteredVendors.map((v: any) => ({ id: v.id, name: v.store_name }))
-        });
-
-        // Check if Wagyu is in the list
-        const wagyuExists = filteredVendors.find((v: any) => v.id === 'b351af2f-e777-458b-9971-5e0da8f1a2c3');
-        if (!wagyuExists && allVendors?.find((v: any) => v.id === 'b351af2f-e777-458b-9971-5e0da8f1a2c3')) {
-          console.warn('⚠️ متجر واغيو موجود في البيانات لكن تم فلترته!');
-        }
+        console.log("Fetched vendors:", filteredVendors);
 
         setVendors(filteredVendors);
         setTotalCount(filteredVendors.length);
