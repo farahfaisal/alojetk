@@ -92,9 +92,14 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     console.log('🕒 فحص ساعات العمل:', {
       currentDay,
       currentTime: `${now.getHours()}:${now.getMinutes()}`,
+      currentTimeMinutes: currentTime,
       openTime: `${openHour}:${openMin}`,
+      openTimeMinutes: openTime,
       closeTime: `${closeHour}:${closeMin}`,
-      isOpen
+      closeTimeMinutes: closeTime,
+      is24Hours,
+      isOpen,
+      todayHoursRaw: todayHours
     });
 
     return isOpen;
@@ -121,8 +126,15 @@ export const checkVendorWorkingStatus = (vendor: {
   vacation_mode?: boolean;
   status?: string;
 }): VendorWorkingStatus => {
+  console.log('🔍 checkVendorWorkingStatus - البيانات المستلمة:', {
+    status: vendor.status,
+    vacation_mode: vendor.vacation_mode,
+    working_hours: vendor.working_hours
+  });
+
   // Check if vendor is suspended or inactive
   if (vendor.status === 'suspended' || vendor.status === 'inactive') {
+    console.log('❌ المتجر معلق أو غير نشط');
     return {
       is_open: false,
       reason: 'suspended'
@@ -131,6 +143,7 @@ export const checkVendorWorkingStatus = (vendor: {
 
   // Check if vendor is in vacation mode
   if (vendor.vacation_mode) {
+    console.log('❌ المتجر في وضع الإجازة');
     return {
       is_open: false,
       reason: 'vacation'
@@ -141,8 +154,11 @@ export const checkVendorWorkingStatus = (vendor: {
   const storeHours = convertWorkingHoursToArray(vendor.working_hours);
   const todayHours = getTodayHours(storeHours);
 
+  console.log('📅 ساعات اليوم:', todayHours);
+
   // Check if closed today
   if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+    console.log('❌ المتجر مغلق اليوم');
     return {
       is_open: false,
       reason: 'closed_today',
@@ -152,6 +168,8 @@ export const checkVendorWorkingStatus = (vendor: {
 
   // Check if within working hours
   const isOpen = checkIfStoreIsOpen(storeHours);
+
+  console.log('✅ النتيجة النهائية:', { isOpen });
 
   return {
     is_open: isOpen,
