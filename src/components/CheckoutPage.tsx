@@ -380,6 +380,30 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         propSelectedCity: selectedCity,
         addressCity: currentAddress?.city
       });
+
+      // Get service_area_id from database
+      let serviceAreaId = null;
+      if (serviceAreaName) {
+        try {
+          const { data: areaData, error: areaError } = await supabase
+            .from('service_areas')
+            .select('id')
+            .eq('name', serviceAreaName)
+            .maybeSingle();
+
+          if (areaError) {
+            console.error('❌ Error fetching service area:', areaError);
+          } else if (areaData) {
+            serviceAreaId = areaData.id;
+            console.log('✅ Found service_area_id:', serviceAreaId, 'for area:', serviceAreaName);
+          } else {
+            console.warn('⚠️ No service area found with name:', serviceAreaName);
+          }
+        } catch (err) {
+          console.error('❌ Error looking up service area:', err);
+        }
+      }
+
       if (courierMode === 'delivery' && deliveryType === 'scheduled') {
         if (!scheduledDate || !scheduledTime) {
           setError('يرجى اختيار تاريخ ووقت التوصيل');
@@ -506,6 +530,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           notes: orderNotes || null,
           address: currentAddress?.address || '',
           city: serviceAreaName || selectedCity || '',
+          service_area_id: serviceAreaId,
           customer_name: currentAddress?.name || '',
           customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
@@ -542,9 +567,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           vendorOrderIndex: i + 1,
           totalVendors: vendorCount,
           serviceAreaName,
+          serviceAreaId,
           selectedCity,
           addressCity: currentAddress?.city,
           finalCity: orderData.city,
+          finalServiceAreaId: orderData.service_area_id,
           orderData_is_multi_vendor: orderData.is_multi_vendor,
           orderData_order_group_id: orderData.order_group_id
         });

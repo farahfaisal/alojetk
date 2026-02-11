@@ -7,6 +7,7 @@ import ProductVariantsDisplay from './ProductVariantsDisplay';
 import { checkCartVendorConflict } from '../lib/storage';
 import FloatingCart from './FloatingCart';
 import ProductAddedPopup from './ProductAddedPopup';
+import { checkVendorWorkingStatus } from '../lib/store-hours';
 
 interface ProductVariant {
   id: number | string;
@@ -111,9 +112,14 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   const [mergedAddons, setMergedAddons] = useState<ProductAddon[]>([]);
 
   useEffect(() => {
-    // Check if vendor is available (status is active)
-    if (product.vendor && product.vendor.status) {
-      setIsVendorAvailable(product.vendor.status === 'active');
+    // Check if vendor is available based on working hours and status
+    if (product.vendor) {
+      const workingStatus = checkVendorWorkingStatus({
+        working_hours: product.vendor.working_hours,
+        vacation_mode: product.vendor.vacation_mode,
+        status: product.vendor.status
+      });
+      setIsVendorAvailable(workingStatus.is_open);
     }
   }, [product.vendor]);
 
@@ -456,13 +462,29 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    const shareText = `🍽️ أفضل الوجبات من الو جيتك\n\n${product.name}\n${product.description || ''}\n\n💰 السعر: ₪${product.discount_price || product.price}\n\nاطلب الآن من ${product.vendor.store_name}`;
+
     if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        text: product.description || '',
-        url: window.location.href
-      });
+      try {
+        await navigator.share({
+          title: `${product.name} - الو جيتك`,
+          text: shareText,
+          url: window.location.href
+        });
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n\n${window.location.href}`);
+        alert('تم نسخ رابط المنتج إلى الحافظة!');
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+      }
     }
   };
 
@@ -884,7 +906,18 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
             {/* Product Name and Description */}
             <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
+              <div className="flex items-start justify-center gap-3 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 flex-1">{product.name}</h2>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleShare}
+                  className="w-10 h-10 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+                  aria-label="مشاركة المنتج"
+                >
+                  <Share2 className="w-5 h-5 text-white" />
+                </motion.button>
+              </div>
               <p className="text-gray-600 text-sm leading-relaxed">
                 {product.description || 'وصف المنتج'}
               </p>

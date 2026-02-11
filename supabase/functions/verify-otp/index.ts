@@ -56,18 +56,18 @@ serve(async (req) => {
       .eq('otp_code', otp)
       .gte('expires_at', new Date().toISOString())
       .eq('is_used', false)
-      .single();
+      .maybeSingle();
 
     console.log('OTP verification result:', { otpData, verifyError });
 
     if (verifyError) {
-      console.log("OTP verification failed - invalid or expired code");
+      console.log("OTP verification failed - database error:", verifyError);
       return new Response(
         JSON.stringify({
-          success: false, 
-          message: "رمز التحقق غير صحيح أو منتهي الصلاحية"
+          success: false,
+          message: "فشل في الاستعلام داخل التحقق"
         }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
@@ -75,8 +75,8 @@ serve(async (req) => {
       console.log("OTP verification failed - no matching record");
       return new Response(
         JSON.stringify({
-          success: false, 
-          message: "رمز التحقق غير صحيح أو منتهي الصلاحية" 
+          success: false,
+          message: "رمز التحقق غير صحيح أو منتهي الصلاحية"
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
