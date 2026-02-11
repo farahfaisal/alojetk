@@ -360,6 +360,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       return;
     }
 
+    // Validate all cart items have vendor_name
+    const missingVendorName = cartItems.find(item => !item.vendor_name || !item.vendor_id);
+    if (missingVendorName) {
+      console.error('❌ Cart item missing vendor info:', missingVendorName);
+      setError('يوجد خطأ في بيانات السلة. يرجى إفراغ السلة وإعادة إضافة المنتجات');
+      return;
+    }
+
     if (!selectedPaymentMethods.includes('cash') && !selectedPaymentMethods.includes('card') && !useWallet) {
       setError('يرجى اختيار طريقة دفع واحدة على الأقل (نقدي أو بطاقة أو محفظة)');
       return;
@@ -478,6 +486,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       for (let i = 0; i < vendorIds.length; i++) {
         const vendorId = vendorIds[i];
         const vendorItems = itemsByVendor[vendorId];
+
+        // Validate vendor_name exists
+        if (!vendorItems[0]?.vendor_name) {
+          console.error('❌ Missing vendor_name for vendor:', vendorId, 'items:', vendorItems);
+          throw new Error('المتجر غير موجود - يرجى إعادة إضافة المنتجات للسلة');
+        }
 
         const vendorSubtotal = vendorItems.reduce((total, item) => {
           const itemTotal = item.price * item.quantity;
