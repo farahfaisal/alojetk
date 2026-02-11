@@ -85,7 +85,9 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentTime >= openTime && currentTime < closeTime;
+    // For 24-hour stores (00:00 - 23:59), always return true
+    const is24Hours = openTime === 0 && closeTime === 1439; // 23:59 = 1439 minutes
+    const isOpen = is24Hours ? true : (currentTime >= openTime && currentTime < closeTime);
 
     console.log('🕒 فحص ساعات العمل:', {
       currentDay,
