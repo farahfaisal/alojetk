@@ -918,41 +918,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   <Share2 className="w-5 h-5 text-white" />
                 </motion.button>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {product.description || 'وصف المنتج'}
               </p>
-
-              {/* Price Display - Always show on initial screen */}
-              {product.price && (
-                <div className="flex items-center justify-center gap-3">
-                  {product.discount_price && product.discount_price > 0 && product.discount_price < product.price ? (
-                    <>
-                      <span className="text-3xl font-bold text-[#B91C1C]">
-                        {Number(product.discount_price).toFixed(2)} ₪
-                      </span>
-                      <span className="text-lg text-gray-400 line-through">
-                        {Number(product.price).toFixed(2)} ₪
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-3xl font-bold text-[#B91C1C]">
-                      {Number(product.price).toFixed(2)} ₪
-                    </span>
-                  )}
-                </div>
-              )}
-              {product.sale_price && product.sale_price > 0 && !product.discount_price && (
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl font-bold text-[#B91C1C]">
-                    {Number(product.sale_price).toFixed(2)} ₪
-                  </span>
-                  {product.regular_price && product.regular_price > product.sale_price && (
-                    <span className="text-lg text-gray-400 line-through">
-                      {Number(product.regular_price).toFixed(2)} ₪
-                    </span>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Error messages */}
