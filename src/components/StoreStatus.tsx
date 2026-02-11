@@ -34,7 +34,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode, status')
+          .select('working_hours, status')
           .eq('id', vendorId)
           .maybeSingle();
 
@@ -43,14 +43,13 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
         console.log('📊 Vendor data loaded:', {
           vendorId,
           working_hours: vendorData?.working_hours,
-          vacation_mode: vendorData?.vacation_mode,
           status: vendorData?.status
         });
 
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
         const workingStatus = checkVendorWorkingStatus({
           working_hours: vendorData?.working_hours,
-          vacation_mode: vendorData?.vacation_mode,
+          vacation_mode: false,
           status: vendorData?.status
         });
 
@@ -59,7 +58,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         setStoreStatus({
           store_hours: storeHours,
-          vacation_mode: vendorData?.vacation_mode || false,
+          vacation_mode: false,
           closed_dates: [],
           is_open_now: workingStatus.is_open
         });
@@ -158,7 +157,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           {!storeStatus.vacation_mode && todayHours && (
             <p className="text-sm text-gray-600">
               {!todayHours.enabled || !todayHours.open || !todayHours.close ? (
-                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
+                <span>المتجر مغلق اليوم</span>
               ) : (
                 `ساعات العمل اليوم: ${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`
               )}
@@ -185,7 +184,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
                 <span>{getDayName(hours.day)}</span>
                 <span>
                   {!hours.enabled || !hours.open || !hours.close ? (
-                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                    <span className="text-red-600">مغلق</span>
                   ) : (
                     `${formatTime(hours.open)} - ${formatTime(hours.close)}`
                   )}

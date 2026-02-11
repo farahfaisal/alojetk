@@ -277,7 +277,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
                 ? 'bg-green-500/90 text-white'
                 : vendor.status === 'suspended'
                   ? 'bg-red-500/90 text-white'
-                  : 'bg-red-600 text-white';
+                  : 'bg-gray-500/90 text-white';
             })()
           }`}>
             {(() => {

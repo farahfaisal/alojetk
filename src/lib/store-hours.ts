@@ -71,7 +71,6 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
   const todayHours = storeHours.find(h => h.day === currentDay);
 
   if (!todayHours || !todayHours.enabled) {
-    console.log('❌ المتجر مغلق اليوم:', { day: currentDay, todayHours });
     return false;
   }
 
@@ -82,17 +81,7 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentTime >= openTime && currentTime < closeTime;
-
-    console.log('🕒 فحص ساعات العمل:', {
-      currentDay,
-      currentTime: `${now.getHours()}:${now.getMinutes()}`,
-      openTime: `${openHour}:${openMin}`,
-      closeTime: `${closeHour}:${closeMin}`,
-      isOpen
-    });
-
-    return isOpen;
+    return currentTime >= openTime && currentTime <= closeTime;
   } catch (error) {
     console.error('Error checking store hours:', error);
     return true; // Default to open if there's an error
@@ -116,8 +105,8 @@ export const checkVendorWorkingStatus = (vendor: {
   vacation_mode?: boolean;
   status?: string;
 }): VendorWorkingStatus => {
-  // Check if vendor is suspended or inactive
-  if (vendor.status === 'suspended' || vendor.status === 'inactive') {
+  // Check if vendor is suspended
+  if (vendor.status === 'suspended') {
     return {
       is_open: false,
       reason: 'suspended'
