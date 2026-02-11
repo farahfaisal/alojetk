@@ -14,7 +14,6 @@ import StorePage from '../components/StorePage';
 import DeliveryOffersCarousel from '../components/DeliveryOffersCarousel';
 import AllOffersPage from '../components/AllOffersPage';
 import { supabase } from '../lib/supabase';
-import { checkVendorWorkingStatus } from '../lib/store-hours';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -600,30 +599,17 @@ const Home: React.FC<HomeProps> = ({
                           {/* Status Badge - Fixed Height */}
                           <div className="flex items-center justify-center" style={{ height: '18px' }}>
                             <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                              (() => {
-                                const workingStatus = checkVendorWorkingStatus({
-                                  working_hours: vendor.working_hours,
-                                  vacation_mode: vendor.vacation_mode,
-                                  status: vendor.status
-                                });
-                                return workingStatus.is_open
-                                  ? 'bg-green-500/90 text-white'
+                              vendor.status === 'active'
+                                ? 'bg-green-500/90 text-white'
+                                : vendor.status === 'busy'
+                                  ? 'bg-orange-500/90 text-white'
                                   : vendor.status === 'suspended'
                                     ? 'bg-red-500/90 text-white'
-                                    : 'bg-gray-500/90 text-white';
-                              })()
+                                    : 'bg-gray-500/90 text-white'
                             }`}>
-                              {(() => {
-                                const workingStatus = checkVendorWorkingStatus({
-                                  working_hours: vendor.working_hours,
-                                  vacation_mode: vendor.vacation_mode,
-                                  status: vendor.status
-                                });
-                                if (workingStatus.is_open) return 'مفتوح الآن';
-                                if (vendor.status === 'suspended') return 'معلق';
-                                if (workingStatus.reason === 'vacation') return 'في إجازة';
-                                return 'مغلق';
-                              })()}
+                              {vendor.status === 'active' ? 'مفتوح الآن' :
+                               vendor.status === 'busy' ? 'مشغول' :
+                               vendor.status === 'suspended' ? 'معلق' : 'مغلق'}
                             </span>
                           </div>
                         </div>
@@ -647,9 +633,7 @@ const Home: React.FC<HomeProps> = ({
             banner: selectedVendor.banner_url,
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
-            status: selectedVendor.status,
-            working_hours: selectedVendor.working_hours,
-            vacation_mode: selectedVendor.vacation_mode,
+            status: { is_open: selectedVendor.status === 'active' },
             address: selectedVendor.address
           }}
           categoryId={null}
