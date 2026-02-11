@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, Edit3, Share2 } from 'lucide-react';
+import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
@@ -11,7 +11,6 @@ import SingleProductPage from './SingleProductPage';
 import CustomOrderModal from './CustomOrderModal';
 import { calculateDistance, calculateDeliveryFee } from '../lib/delivery';
 import { getSavedAddresses } from '../lib/storage';
-import { checkVendorWorkingStatus, getStatusText, getTodayHours, convertWorkingHoursToArray, formatTime } from '../lib/store-hours';
 
 interface StorePageProps {
   vendor: any;
@@ -231,58 +230,32 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
-  // Check vendor status including working hours
+  // Check vendor status
   useEffect(() => {
     if (vendor) {
-      const workingStatus = checkVendorWorkingStatus({
-        working_hours: vendor.working_hours,
-        vacation_mode: vendor.vacation_mode,
-        status: vendor.status
-      });
-
-      setIsVendorAvailable(workingStatus.is_open);
-
-      if (!workingStatus.is_open) {
-        let message = 'المتجر مغلق حالياً';
-
-        switch (workingStatus.reason) {
-          case 'vacation':
-            message = 'المتجر في إجازة';
-            break;
-          case 'closed_today':
-            message = 'المتجر مغلق اليوم';
-            break;
-          case 'outside_hours':
-            if (workingStatus.today_hours) {
-              message = `المتجر مغلق حالياً، ساعات العمل: ${formatTime(workingStatus.today_hours.open)} - ${formatTime(workingStatus.today_hours.close)}`;
-            } else {
-              message = 'المتجر مغلق حالياً';
-            }
-            break;
-          case 'suspended':
-            message = 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي';
-            break;
+      if (typeof vendor.status === 'string') {
+        setIsVendorAvailable(vendor.status === 'active');
+        if (vendor.status !== 'active') {
+          setVendorStatusMessage(vendor.status === 'busy'
+            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
+            : vendor.status === 'suspended'
+              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
+              : 'المتجر مغلق حالياً');
         }
-
-        setVendorStatusMessage(message);
+      } else if (typeof vendor.status === 'object' && vendor.status !== null) {
+        setIsVendorAvailable(vendor.status.is_open === true);
+        if (!vendor.status.is_open) {
+          setVendorStatusMessage(vendor.status.reason === 'busy'
+            ? 'المتجر مشغول حالياً، يرجى المحاولة لاحقاً'
+            : vendor.status.reason === 'suspended'
+              ? 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي'
+              : 'المتجر مغلق حالياً');
+        }
       } else {
-        setVendorStatusMessage('');
+        console.log("Vendor status not provided, defaulting to available");
+        setIsVendorAvailable(true);
       }
     }
-
-    // Check status every minute
-    const interval = setInterval(() => {
-      if (vendor) {
-        const workingStatus = checkVendorWorkingStatus({
-          working_hours: vendor.working_hours,
-          vacation_mode: vendor.vacation_mode,
-          status: vendor.status
-        });
-        setIsVendorAvailable(workingStatus.is_open);
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
   }, [vendor]);
 
   // Fetch store categories (both regular and custom)
@@ -653,31 +626,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     setSelectedCategoryType(catType);
   };
 
-  const handleShareStore = async () => {
-    const shareText = `🍽️ أفضل الوجبات من الو جيتك\n\n${vendor.store_name}\n${vendor.description || 'متجر رائع يقدم أشهى المأكولات'}\n\n📍 ${vendor.address || ''}\n⭐ ${vendor.rating || 'جديد'}\n\nاطلب الآن!`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${vendor.store_name} - الو جيتك`,
-          text: shareText,
-          url: window.location.href
-        });
-      } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
-          console.error('Error sharing:', error);
-        }
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n\n${window.location.href}`);
-        alert('تم نسخ رابط المتجر إلى الحافظة!');
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-      }
-    }
-  };
-
   if (loading) {
     return (
       <div className="fixed inset-0 bg-gray-50 z-[99999] flex flex-col">
@@ -852,20 +800,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                   {/* اسم المتجر + العنوان */}
                   <div className="text-center mt-2">
-                    <div className="flex items-center justify-center gap-3 mb-1">
-                      <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        {vendor.store_name}
-                      </h1>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={handleShareStore}
-                        className="w-10 h-10 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
-                        aria-label="مشاركة المتجر"
-                      >
-                        <Share2 className="w-5 h-5 text-white" />
-                      </motion.button>
-                    </div>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                      {vendor.store_name}
+                    </h1>
                     <div className="mt-1 flex items-center justify-center gap-1 text-gray-600 text-sm">
                       <MapPin className="w-4 h-4 text-sky-600" />
                       <span>{vendor.address || 'الموقع غير محدد'}</span>
@@ -903,16 +840,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">
-                          {(() => {
-                            const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                            const todayHours = getTodayHours(storeHours);
-                            if (todayHours && todayHours.enabled) {
-                              return `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`;
-                            }
-                            return 'مغلق اليوم';
-                          })()}
-                        </span>
+                        <span className="text-sm text-gray-600">09:00 - 21:00</span>
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
@@ -1268,10 +1196,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 ...selectedProduct,
                 vendor: {
                   ...selectedProduct.vendor,
-                  ...vendor,
-                  working_hours: vendor.working_hours,
-                  vacation_mode: vendor.vacation_mode,
-                  status: vendor.status
+                  status: isVendorAvailable ? 'active' : 'inactive'
                 }
               }}
               onClose={() => setSelectedProduct(null)}

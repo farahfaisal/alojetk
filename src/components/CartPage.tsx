@@ -407,11 +407,10 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
         price: itemPrice,
         quantity: item.quantity,
         itemTotal,
-        addonsTotal,
-        addonsTotalWithQuantity: addonsTotal * item.quantity
+        addonsTotal
       });
 
-      return total + itemTotal + (addonsTotal * item.quantity);
+      return total + itemTotal + addonsTotal;
     }, 0);
   };
 
@@ -764,7 +763,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                                     <span className="text-sm font-bold text-gray-700">المجموع الكلي:</span>
                                     <span className="text-brand text-lg font-bold">
-                                      {(((item.price || 0) * item.quantity) + ((item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0) * item.quantity)).toFixed(2)} ₪
+                                      {(((item.price || 0) * item.quantity) + (item.addons?.reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0) || 0)).toFixed(2)} ₪
                                     </span>
                                   </div>
                                 )}
