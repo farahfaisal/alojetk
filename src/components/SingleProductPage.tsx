@@ -7,7 +7,6 @@ import ProductVariantsDisplay from './ProductVariantsDisplay';
 import { checkCartVendorConflict } from '../lib/storage';
 import FloatingCart from './FloatingCart';
 import ProductAddedPopup from './ProductAddedPopup';
-import { checkVendorWorkingStatus } from '../lib/store-hours';
 
 interface ProductVariant {
   id: number | string;
@@ -112,14 +111,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   const [mergedAddons, setMergedAddons] = useState<ProductAddon[]>([]);
 
   useEffect(() => {
-    // Check if vendor is available based on working hours and status
-    if (product.vendor) {
-      const workingStatus = checkVendorWorkingStatus({
-        working_hours: product.vendor.working_hours,
-        vacation_mode: product.vendor.vacation_mode,
-        status: product.vendor.status
-      });
-      setIsVendorAvailable(workingStatus.is_open);
+    // Check if vendor is available (status is active)
+    if (product.vendor && product.vendor.status) {
+      setIsVendorAvailable(product.vendor.status === 'active');
     }
   }, [product.vendor]);
 

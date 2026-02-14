@@ -360,14 +360,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       return;
     }
 
-    // Validate all cart items have vendor_name
-    const missingVendorName = cartItems.find(item => !item.vendor_name || !item.vendor_id);
-    if (missingVendorName) {
-      console.error('❌ Cart item missing vendor info:', missingVendorName);
-      setError('يوجد خطأ في بيانات السلة. يرجى إفراغ السلة وإعادة إضافة المنتجات');
-      return;
-    }
-
     if (!selectedPaymentMethods.includes('cash') && !selectedPaymentMethods.includes('card') && !useWallet) {
       setError('يرجى اختيار طريقة دفع واحدة على الأقل (نقدي أو بطاقة أو محفظة)');
       return;
@@ -388,30 +380,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         propSelectedCity: selectedCity,
         addressCity: currentAddress?.city
       });
-
-      // Get service_area_id from database
-      let serviceAreaId = null;
-      if (serviceAreaName) {
-        try {
-          const { data: areaData, error: areaError } = await supabase
-            .from('service_areas')
-            .select('id')
-            .eq('name', serviceAreaName)
-            .maybeSingle();
-
-          if (areaError) {
-            console.error('❌ Error fetching service area:', areaError);
-          } else if (areaData) {
-            serviceAreaId = areaData.id;
-            console.log('✅ Found service_area_id:', serviceAreaId, 'for area:', serviceAreaName);
-          } else {
-            console.warn('⚠️ No service area found with name:', serviceAreaName);
-          }
-        } catch (err) {
-          console.error('❌ Error looking up service area:', err);
-        }
-      }
-
       if (courierMode === 'delivery' && deliveryType === 'scheduled') {
         if (!scheduledDate || !scheduledTime) {
           setError('يرجى اختيار تاريخ ووقت التوصيل');
@@ -487,12 +455,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         const vendorId = vendorIds[i];
         const vendorItems = itemsByVendor[vendorId];
 
-        // Validate vendor_name exists
-        if (!vendorItems[0]?.vendor_name) {
-          console.error('❌ Missing vendor_name for vendor:', vendorId, 'items:', vendorItems);
-          throw new Error('المتجر غير موجود - يرجى إعادة إضافة المنتجات للسلة');
-        }
-
         const vendorSubtotal = vendorItems.reduce((total, item) => {
           const itemTotal = item.price * item.quantity;
           const addonsTotal = (item.addons || []).reduce((sum, addon) =>
@@ -544,7 +506,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           notes: orderNotes || null,
           address: currentAddress?.address || '',
           city: serviceAreaName || selectedCity || '',
-          service_area_id: serviceAreaId,
           customer_name: currentAddress?.name || '',
           customer_phone: user?.phone || currentAddress?.phone || '',
           vendor_name: vendorItems[0].vendor_name,
@@ -559,8 +520,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           items_data: vendorItems.map((item) => {
             console.log(`📝 Preparing item for order:`, {
               name: item.name,
-              vendor_id: item.vendor_id,
-              vendor_name: item.vendor_name,
               addons_count: item.addons?.length || 0,
               addons: item.addons
             });
@@ -570,13 +529,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               name: item.name,
               price: item.price,
               quantity: item.quantity,
-              vendor_id: item.vendor_id,
-              vendor_name: item.vendor_name,
               variant_id: item.variant_id,
               variant_name: item.variant_name,
               addons: item.addons || [],
-              is_custom: item.is_custom || false,
-              custom_details: item.custom_details || null
             };
           })
         };
@@ -587,11 +542,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           vendorOrderIndex: i + 1,
           totalVendors: vendorCount,
           serviceAreaName,
-          serviceAreaId,
           selectedCity,
           addressCity: currentAddress?.city,
           finalCity: orderData.city,
-          finalServiceAreaId: orderData.service_area_id,
           orderData_is_multi_vendor: orderData.is_multi_vendor,
           orderData_order_group_id: orderData.order_group_id
         });

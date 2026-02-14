@@ -34,31 +34,22 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, status')
+          .select('working_hours, vacation_mode, status')
           .eq('id', vendorId)
           .maybeSingle();
 
         if (vendorError) throw vendorError;
 
-        console.log('📊 Vendor data loaded:', {
-          vendorId,
-          working_hours: vendorData?.working_hours,
-          status: vendorData?.status
-        });
-
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
         const workingStatus = checkVendorWorkingStatus({
           working_hours: vendorData?.working_hours,
-          vacation_mode: false,
+          vacation_mode: vendorData?.vacation_mode,
           status: vendorData?.status
         });
 
-        console.log('✅ Store hours converted:', storeHours);
-        console.log('✅ Working status:', workingStatus);
-
         setStoreStatus({
           store_hours: storeHours,
-          vacation_mode: false,
+          vacation_mode: vendorData?.vacation_mode || false,
           closed_dates: [],
           is_open_now: workingStatus.is_open
         });
