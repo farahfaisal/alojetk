@@ -872,33 +872,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               )}
 
                               {/* Price */}
-                              <div className="mt-2 space-y-1">
+                              <div className="mt-2">
                                 {!item.is_custom ? (
-                                  <>
-                                    {/* Base Price */}
-                                    <div className="flex items-center justify-between text-xs">
-                                      <span className="text-gray-600">السعر الأساسي:</span>
-                                      <span className="font-semibold text-gray-800">
-                                        {itemPrice.toFixed(2)} ₪
-                                      </span>
-                                    </div>
-
-                                    {/* Quantity */}
-                                    <div className="flex items-center justify-between text-xs">
-                                      <span className="text-gray-600">الكمية:</span>
-                                      <span className="font-semibold text-gray-800">
-                                        {item.quantity}
-                                      </span>
-                                    </div>
-
-                                    {/* Product Subtotal */}
-                                    <div className="flex items-center justify-between text-xs pt-1 border-t border-gray-100">
-                                      <span className="text-gray-700 font-medium">مجموع المنتج:</span>
-                                      <span className="font-bold text-gray-900">
-                                        {itemTotal.toFixed(2)} ₪
-                                      </span>
-                                    </div>
-                                  </>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">السعر</span>
+                                    <span className="text-brand font-bold">
+                                      {itemTotal.toFixed(2)} ₪
+                                    </span>
+                                  </div>
                                 ) : (
                                   <span className="text-amber-600 font-bold text-sm">يحدد لاحقاً</span>
                                 )}
@@ -921,35 +902,28 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                 {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                                   <div className="mt-2 pt-2 border-t border-gray-200">
                                     <div className="mb-1">
-                                      <span className="text-xs font-bold text-blue-700">الإضافات:</span>
+                                      <span className="text-xs font-bold text-blue-700">الإضافات الاختيارية:</span>
                                     </div>
                                     <div className="space-y-1 bg-blue-50 p-2 rounded-lg">
                                       {item.addons.filter((a: any) => a.type !== 'regular').map((addon: any, addonIndex: number) => (
-                                        <div key={addonIndex} className="flex items-center justify-between text-xs">
-                                          <span className="text-blue-900 font-medium">
+                                        <div key={addonIndex} className="flex items-center justify-between">
+                                          <span className="text-xs text-blue-900 font-medium">
                                             • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
                                           </span>
-                                          <span className="text-blue-900 font-bold">
+                                          <span className="text-xs text-blue-900 font-bold">
                                             +{((addon.price || 0) * (addon.quantity || 1)).toFixed(2)} ₪
                                           </span>
                                         </div>
                                       ))}
-                                      {/* Addons Subtotal */}
-                                      <div className="flex items-center justify-between text-xs pt-1 mt-1 border-t border-blue-200">
-                                        <span className="text-blue-900 font-bold">مجموع الإضافات (×{item.quantity}):</span>
-                                        <span className="text-blue-900 font-bold">
-                                          +{addonsTotalWithQuantity.toFixed(2)} ₪
-                                        </span>
-                                      </div>
                                     </div>
                                   </div>
                                 )}
 
-                                {/* Item Total (Product + Addons) */}
-                                {!item.is_custom && (
-                                  <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-brand/30 bg-red-50 -mx-2 px-2 py-2 rounded-lg">
-                                    <span className="text-xs font-bold text-gray-900">المجموع الجزئي:</span>
-                                    <span className="text-brand text-sm font-bold">
+                                {/* Total with Addons */}
+                                {!item.is_custom && item.addons && item.addons.length > 0 && (
+                                  <div className="flex items-center justify-between pt-2 mt-2 border-t-2 border-brand/20">
+                                    <span className="text-sm font-bold text-gray-900">المجموع:</span>
+                                    <span className="text-brand text-base font-bold">
                                       {(itemTotal + addonsTotalWithQuantity).toFixed(2)} ₪
                                     </span>
                                   </div>
@@ -962,31 +936,30 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                     })}
                   </div>
 
-                  {/* Sub-Order Summary */}
-                  <div className="bg-gray-50 rounded-lg p-3 mt-3 space-y-1.5">
-                    <div className="flex justify-between text-sm items-center py-1.5 border-b border-gray-200">
-                      <span className="text-gray-700 font-medium">المجموع الجزئي</span>
-                      <span className="font-bold text-gray-900">{subOrder.subtotal.toFixed(2)} ₪</span>
+                  <div className="border-t mt-3 pt-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">المجموع الفرعي</span>
+                      <span className="font-medium">{subOrder.subtotal.toFixed(2)} ₪</span>
                     </div>
-                    <div className="flex justify-between text-sm items-center py-1.5 border-b border-gray-200">
-                      <span className="text-gray-700 font-medium">رسوم التوصيل</span>
-                      <span className="font-bold text-gray-900">+{subOrder.delivery_fee.toFixed(2)} ₪</span>
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="text-gray-600">رسوم التوصيل</span>
+                      <span className="font-medium">{subOrder.delivery_fee.toFixed(2)} ₪</span>
                     </div>
                     {subOrder.coupon_discount > 0 && (
-                      <div className="flex justify-between text-sm items-center py-1.5 border-b border-gray-200 text-green-600">
-                        <span className="font-medium">خصم الكوبون</span>
-                        <span className="font-bold">-{subOrder.coupon_discount.toFixed(2)} ₪</span>
+                      <div className="flex justify-between text-sm mt-1 text-green-600">
+                        <span>خصم الكوبون</span>
+                        <span className="font-medium">-{subOrder.coupon_discount.toFixed(2)} ₪</span>
                       </div>
                     )}
                     {subOrder.points_discount > 0 && (
-                      <div className="flex justify-between text-sm items-center py-1.5 border-b border-gray-200 text-blue-600">
-                        <span className="font-medium">خصم النقاط</span>
-                        <span className="font-bold">-{subOrder.points_discount.toFixed(2)} ₪</span>
+                      <div className="flex justify-between text-sm mt-1 text-blue-600">
+                        <span>خصم النقاط</span>
+                        <span className="font-medium">-{subOrder.points_discount.toFixed(2)} ₪</span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center pt-2 mt-2 border-t-2 border-brand/30 bg-red-50 -mx-3 px-3 py-2 rounded-b-lg">
+                    <div className="flex justify-between border-t pt-2 mt-2">
                       <span className="font-bold text-gray-900">المجموع</span>
-                      <span className="font-bold text-brand text-lg">{subOrder.total.toFixed(2)} ₪</span>
+                      <span className="font-bold text-brand">{subOrder.total.toFixed(2)} ₪</span>
                     </div>
                   </div>
                 </div>
@@ -995,41 +968,38 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
               {/* Total for all sub-orders */}
               <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
-                <div className="text-center mb-3">
-                  <h3 className="font-bold text-white text-lg">ملخص الطلب الإجمالي</h3>
-                </div>
-                <div className="space-y-2.5">
-                  <div className="flex justify-between items-center py-2 border-b border-white/20">
-                    <span className="font-medium">المجموع الجزئي (المنتجات)</span>
-                    <span className="font-bold text-lg">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-white/90">
+                    <span className="text-sm">المجموع الفرعي</span>
+                    <span className="font-medium">
                       {subOrders.reduce((sum, order) => sum + Number(order.subtotal), 0).toFixed(2)} ₪
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/20">
-                    <span className="font-medium">رسوم التوصيل ({subOrders.length} متاجر)</span>
-                    <span className="font-bold text-lg">
-                      +{subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
+                  <div className="flex justify-between items-center text-white/90">
+                    <span className="text-sm">رسوم التوصيل ({subOrders.length} متاجر)</span>
+                    <span className="font-medium">
+                      {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
                     </span>
                   </div>
                   {subOrders.some(order => order.coupon_discount > 0) && (
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="font-medium">خصم الكوبون</span>
-                      <span className="font-bold text-lg">
+                    <div className="flex justify-between items-center text-white/90">
+                      <span className="text-sm">خصم الكوبون</span>
+                      <span className="font-medium">
                         -{subOrders.reduce((sum, order) => sum + Number(order.coupon_discount || 0), 0).toFixed(2)} ₪
                       </span>
                     </div>
                   )}
                   {subOrders.some(order => order.points_discount > 0) && (
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="font-medium">خصم النقاط</span>
-                      <span className="font-bold text-lg">
+                    <div className="flex justify-between items-center text-white/90">
+                      <span className="text-sm">خصم النقاط</span>
+                      <span className="font-medium">
                         -{subOrders.reduce((sum, order) => sum + Number(order.points_discount || 0), 0).toFixed(2)} ₪
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center pt-3 mt-2 border-t-2 border-white/40">
-                    <span className="text-xl font-bold">المجموع الكلي</span>
-                    <span className="text-3xl font-bold">
+                  <div className="flex justify-between items-center pt-2 border-t border-white/30">
+                    <span className="text-lg font-bold">المجموع الإجمالي</span>
+                    <span className="text-2xl font-bold">
                       {subOrders.reduce((sum, order) => sum + Number(order.total), 0).toFixed(2)} ₪
                     </span>
                   </div>
@@ -1124,33 +1094,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                         )}
 
                         {/* Quantity and Price */}
-                        <div className="mt-2 space-y-1.5">
+                        <div className="mt-2 space-y-2">
                           {!item.is_custom ? (
-                            <>
-                              {/* Base Price */}
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">السعر الأساسي:</span>
-                                <span className="font-semibold text-gray-800">
-                                  {itemPrice.toFixed(2)} ₪
-                                </span>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
+                              <div className="text-brand text-lg font-bold">
+                                {itemTotal.toFixed(2)} ₪
                               </div>
-
-                              {/* Quantity */}
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">الكمية:</span>
-                                <span className="font-semibold text-gray-800">
-                                  {item.quantity}
-                                </span>
-                              </div>
-
-                              {/* Product Subtotal */}
-                              <div className="flex items-center justify-between text-sm pt-1 border-t border-gray-100">
-                                <span className="text-gray-700 font-medium">مجموع المنتج:</span>
-                                <span className="font-bold text-gray-900">
-                                  {itemTotal.toFixed(2)} ₪
-                                </span>
-                              </div>
-                            </>
+                            </div>
                           ) : (
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
@@ -1176,12 +1127,12 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                           {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                             <div className="mt-3 pt-3 border-t border-gray-200">
                               <div className="mb-2">
-                                <span className="text-sm font-bold text-blue-700">الإضافات:</span>
+                                <span className="text-sm font-bold text-blue-700">الإضافات الاختيارية:</span>
                               </div>
-                              <div className="space-y-1.5 bg-blue-50 p-2.5 rounded-lg">
+                              <div className="space-y-2 bg-blue-50 p-3 rounded-lg">
                                 {item.addons.filter((a: any) => a.type !== 'regular').map((addon: any, addonIndex: number) => (
-                                  <div key={addonIndex} className="flex items-center justify-between text-sm">
-                                    <span className="text-blue-900 font-medium">
+                                  <div key={addonIndex} className="flex items-center justify-between">
+                                    <span className="text-sm text-blue-900 font-medium">
                                       • {addon.name} <span className="text-blue-700">(×{addon.quantity})</span>
                                     </span>
                                     <span className="text-blue-900 font-bold">
@@ -1189,21 +1140,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                     </span>
                                   </div>
                                 ))}
-                                {/* Addons Subtotal */}
-                                <div className="flex items-center justify-between text-sm pt-1.5 mt-1.5 border-t border-blue-200">
-                                  <span className="text-blue-900 font-bold">مجموع الإضافات (×{item.quantity}):</span>
-                                  <span className="text-blue-900 font-bold">
-                                    +{addonsTotalWithQuantity.toFixed(2)} ₪
-                                  </span>
-                                </div>
                               </div>
                             </div>
                           )}
 
-                          {/* Item Total (Product + Addons) */}
-                          {!item.is_custom && (
-                            <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-brand/30 bg-red-50 -mx-4 px-4 py-2.5 rounded-lg">
-                              <span className="text-base font-bold text-gray-900">المجموع الجزئي:</span>
+                          {/* Total with Addons */}
+                          {!item.is_custom && item.addons && item.addons.length > 0 && (
+                            <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-brand/20">
+                              <span className="text-base font-bold text-gray-900">المجموع الكلي:</span>
                               <span className="text-brand text-xl font-bold">
                                 {(itemTotal + addonsTotalWithQuantity).toFixed(2)} ₪
                               </span>
@@ -1216,45 +1160,31 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 );
               })}
             </div>
-
-            {/* Order Summary */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 mt-4 space-y-2.5">
-              <div className="text-center mb-3">
-                <h3 className="font-bold text-gray-900 text-lg">ملخص الطلب</h3>
+            
+            <div className="border-t mt-4 pt-4 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600">المجموع الفرعي</span>
+                <span className="font-medium">{orderDetails.subtotal.toFixed(2)} شيكل</span>
               </div>
-
-              {/* Subtotal */}
-              <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                <span className="text-gray-700 font-medium">المجموع الجزئي (المنتجات)</span>
-                <span className="font-bold text-gray-900 text-lg">{orderDetails.subtotal.toFixed(2)} ₪</span>
+              <div className="flex justify-between">
+                <span className="text-gray-600">رسوم التوصيل</span>
+                <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
               </div>
-
-              {/* Delivery Fee */}
-              <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                <span className="text-gray-700 font-medium">رسوم التوصيل</span>
-                <span className="font-bold text-gray-900 text-lg">+{orderDetails.delivery_fee.toFixed(2)} ₪</span>
-              </div>
-
-              {/* Coupon Discount */}
               {orderDetails.coupon_discount > 0 && (
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 text-green-600">
-                  <span className="font-medium">خصم الكوبون</span>
-                  <span className="font-bold text-lg">-{orderDetails.coupon_discount.toFixed(2)} ₪</span>
+                <div className="flex justify-between text-green-600">
+                  <span>خصم الكوبون</span>
+                  <span className="font-medium">-{orderDetails.coupon_discount.toFixed(2)} شيكل</span>
                 </div>
               )}
-
-              {/* Points Discount */}
               {orderDetails.points_discount > 0 && (
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 text-blue-600">
-                  <span className="font-medium">خصم النقاط</span>
-                  <span className="font-bold text-lg">-{orderDetails.points_discount.toFixed(2)} ₪</span>
+                <div className="flex justify-between text-blue-600">
+                  <span>خصم النقاط</span>
+                  <span className="font-medium">-{orderDetails.points_discount.toFixed(2)} شيكل</span>
                 </div>
               )}
-
-              {/* Total */}
-              <div className="flex justify-between items-center pt-3 mt-2 border-t-2 border-brand/30 bg-gradient-to-r from-red-50 to-red-100 -mx-4 px-4 py-3 rounded-b-xl">
-                <span className="font-bold text-gray-900 text-lg">المجموع الكلي</span>
-                <span className="font-bold text-brand text-2xl">{orderDetails.total.toFixed(2)} ₪</span>
+              <div className="flex justify-between border-t pt-2">
+                <span className="font-bold text-gray-900">المجموع الكلي</span>
+                <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>
               </div>
             </div>
             </div>
