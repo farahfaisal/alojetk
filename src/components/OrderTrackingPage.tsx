@@ -874,12 +874,20 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               {/* Price */}
                               <div className="mt-2">
                                 {!item.is_custom ? (
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">السعر</span>
-                                    <span className="text-brand font-bold">
-                                      {itemTotal.toFixed(2)} ₪
-                                    </span>
-                                  </div>
+                                  <>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs text-gray-600">السعر الأساسي:</span>
+                                      <span className="text-xs font-semibold text-gray-800">
+                                        {itemPrice.toFixed(2)} ₪
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-1">
+                                      <span className="text-sm text-gray-600">المجموع (×{item.quantity})</span>
+                                      <span className="text-brand font-bold">
+                                        {itemTotal.toFixed(2)} ₪
+                                      </span>
+                                    </div>
+                                  </>
                                 ) : (
                                   <span className="text-amber-600 font-bold text-sm">يحدد لاحقاً</span>
                                 )}
@@ -1096,12 +1104,20 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                         {/* Quantity and Price */}
                         <div className="mt-2 space-y-2">
                           {!item.is_custom ? (
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
-                              <div className="text-brand text-lg font-bold">
-                                {itemTotal.toFixed(2)} ₪
+                            <>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">السعر الأساسي:</span>
+                                <span className="text-sm font-semibold text-gray-800">
+                                  {itemPrice.toFixed(2)} ₪
+                                </span>
                               </div>
-                            </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
+                                <div className="text-brand text-lg font-bold">
+                                  {itemTotal.toFixed(2)} ₪
+                                </div>
+                              </div>
+                            </>
                           ) : (
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>

@@ -921,6 +921,14 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
               <p className="text-gray-600 text-sm leading-relaxed">
                 {product.description || 'وصف المنتج'}
               </p>
+
+              {/* Base Price Display */}
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">السعر الأساسي:</span>
+                <span className="text-2xl font-bold text-[#B91C1C]">
+                  ₪{(product.discount_price && product.discount_price > 0 ? product.discount_price : product.price).toFixed(2)}
+                </span>
+              </div>
             </div>
 
             {/* Error messages */}
