@@ -64,20 +64,6 @@ Deno.serve(async (req: Request) => {
 
     const orderData: CreateOrderRequest = await req.json();
 
-    console.log('📦 Received order data:', {
-      vendor_id: orderData.vendor_id,
-      vendor_name: orderData.vendor_name,
-      items_count: orderData.items?.length,
-      first_item_vendor_name: orderData.items?.[0]?.vendor_name
-    });
-
-    // تحقق من وجود vendor_name في items
-    const itemsWithoutVendorName = orderData.items?.filter(item => !item.vendor_name);
-    if (itemsWithoutVendorName && itemsWithoutVendorName.length > 0) {
-      console.error('❌ Items without vendor_name:', itemsWithoutVendorName);
-      throw new Error('المتجر غير موجود');
-    }
-
     // إنشاء الطلب باستخدام service role (يتجاوز RLS)
     const { data: order, error: orderError } = await supabase
       .from('orders')
