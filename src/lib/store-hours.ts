@@ -10,7 +10,6 @@ export interface StoreHours {
 export interface VendorWorkingStatus {
   is_open: boolean;
   reason?: 'vacation' | 'closed_today' | 'outside_hours' | 'suspended';
-  is_24_hours?: boolean;
   today_hours?: {
     open: string;
     close: string;
@@ -62,27 +61,9 @@ export const getDefaultStoreHours = (): StoreHours[] => {
 };
 
 /**
- * Check if store operates 24/7
- */
-export const isStore24Hours = (storeHours: StoreHours[]): boolean => {
-  // Check if all days are enabled and set to 00:00 - 23:59
-  const all24Hours = storeHours.every(hours =>
-    hours.enabled &&
-    (hours.open === '00:00' || hours.open === '0:00') &&
-    (hours.close === '23:59' || hours.close === '24:00')
-  );
-  return all24Hours;
-};
-
-/**
  * Check if store is currently open based on time
  */
 export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
-  // Check if store is 24/7
-  if (isStore24Hours(storeHours)) {
-    return true;
-  }
-
   const now = new Date();
   const currentDay = now.getDay();
   const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -142,20 +123,6 @@ export const checkVendorWorkingStatus = (vendor: {
 
   // Get store hours
   const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-
-  // Check if store operates 24/7
-  const is24Hours = isStore24Hours(storeHours);
-  if (is24Hours) {
-    return {
-      is_open: true,
-      is_24_hours: true,
-      today_hours: {
-        open: '00:00',
-        close: '23:59'
-      }
-    };
-  }
-
   const todayHours = getTodayHours(storeHours);
 
   // Check if closed today
