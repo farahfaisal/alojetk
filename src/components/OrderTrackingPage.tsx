@@ -832,12 +832,11 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                   <div className="divide-y">
                     {subOrder.items_data?.map((item: any, index: number) => {
                       const productImage = item.image || item.image_url || (item.product_id ? productImages[item.product_id] : null);
-                      // Note: item.price in DB contains (base_price + addons), so we need to extract base price
+                      const itemPrice = item.price || 0;
+                      const itemTotal = itemPrice * item.quantity;
                       const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
                         return sum + ((addon.price || 0) * (addon.quantity || 1));
                       }, 0);
-                      const itemBasePrice = (item.price || 0) - addonsTotal; // Extract base price
-                      const itemTotal = itemBasePrice * item.quantity;
                       const addonsTotalWithQuantity = addonsTotal * item.quantity;
 
                       return (
@@ -880,7 +879,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                     <div className="flex items-center justify-between text-xs">
                                       <span className="text-gray-600">السعر الأساسي:</span>
                                       <span className="font-semibold text-gray-800">
-                                        {itemBasePrice.toFixed(2)} ₪
+                                        {itemPrice.toFixed(2)} ₪
                                       </span>
                                     </div>
 
@@ -1081,12 +1080,11 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                 });
 
                 // Calculate base price and addons total
-                // Note: item.price in DB contains (base_price + addons), so we need to extract base price
+                const itemPrice = item.price || 0;
+                const itemTotal = itemPrice * item.quantity;
                 const addonsTotal = (item.addons || []).reduce((sum: number, addon: any) => {
                   return sum + ((addon.price || 0) * (addon.quantity || 1));
                 }, 0);
-                const itemBasePrice = (item.price || 0) - addonsTotal; // Extract base price
-                const itemTotal = itemBasePrice * item.quantity;
                 const addonsTotalWithQuantity = addonsTotal * item.quantity;
 
                 return (
@@ -1133,7 +1131,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-600">السعر الأساسي:</span>
                                 <span className="font-semibold text-gray-800">
-                                  {itemBasePrice.toFixed(2)} ₪
+                                  {itemPrice.toFixed(2)} ₪
                                 </span>
                               </div>
 
