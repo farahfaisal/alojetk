@@ -202,7 +202,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     cartItems.reduce((total, item) => {
       const itemPrice = item.price || 0;
       const addonsTotal = (item.addons || []).reduce((s, a) => s + (a.price || 0) * a.quantity, 0);
-      return total + itemPrice * item.quantity + addonsTotal;
+      return total + itemPrice * item.quantity + (addonsTotal * item.quantity);
     }, 0);
 
   const calculateCouponDiscount = () => {
@@ -497,7 +497,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           const itemTotal = item.price * item.quantity;
           const addonsTotal = (item.addons || []).reduce((sum, addon) =>
             sum + (addon.price * addon.quantity), 0);
-          return total + itemTotal + addonsTotal;
+          return total + itemTotal + (addonsTotal * item.quantity);
         }, 0);
 
         // First vendor gets full delivery fee, additional vendors get additional fee
