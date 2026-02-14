@@ -7,6 +7,7 @@ import ProductVariantsDisplay from './ProductVariantsDisplay';
 import { checkCartVendorConflict } from '../lib/storage';
 import FloatingCart from './FloatingCart';
 import ProductAddedPopup from './ProductAddedPopup';
+import { checkVendorWorkingStatus } from '../lib/store-hours';
 
 interface ProductVariant {
   id: number | string;
@@ -111,9 +112,14 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   const [mergedAddons, setMergedAddons] = useState<ProductAddon[]>([]);
 
   useEffect(() => {
-    // Check if vendor is available (status is active)
-    if (product.vendor && product.vendor.status) {
-      setIsVendorAvailable(product.vendor.status === 'active');
+    // Check if vendor is available based on working hours and status
+    if (product.vendor) {
+      const workingStatus = checkVendorWorkingStatus({
+        working_hours: product.vendor.working_hours,
+        vacation_mode: product.vendor.vacation_mode,
+        status: product.vendor.status
+      });
+      setIsVendorAvailable(workingStatus.is_open);
     }
   }, [product.vendor]);
 
@@ -247,15 +253,32 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     }
   }, [variants, mergedAddons]);
 
+  const calculateTotalPrice = () => {
+    // Calculate base price
+    const basePrice = product.discount_price && product.discount_price > 0
+      ? Number(product.discount_price)
+      : Number(product.price);
+
+    // Calculate addons total
+    const addonsTotal = mergedAddons
+      .filter(addon => selectedAddons[addon.id])
+      .reduce((sum, addon) => {
+        const addonQty = addonQuantities[addon.id] || 1;
+        return sum + (addon.price * addonQty);
+      }, 0);
+
+    return basePrice + addonsTotal;
+  };
+
   const checkMultiVendor = () => {
     // Check if there are items from a different vendor in the cart
     const { hasConflict, existingVendorName } = checkCartVendorConflict(product.vendor.id);
-    
+
     if (hasConflict) {
       setExistingVendorName(existingVendorName || 'متجر آخر');
       return true;
     }
-    
+
     return false;
   };
 
@@ -912,9 +935,41 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   <Share2 className="w-5 h-5 text-white" />
                 </motion.button>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed mb-3">
                 {product.description || 'وصف المنتج'}
               </p>
+
+              {/* Price Display - Always show on initial screen */}
+              {product.price && (
+                <div className="flex items-center justify-center gap-3">
+                  {product.discount_price && product.discount_price > 0 && product.discount_price < product.price ? (
+                    <>
+                      <span className="text-3xl font-bold text-[#B91C1C]">
+                        {Number(product.discount_price).toFixed(2)} ₪
+                      </span>
+                      <span className="text-lg text-gray-400 line-through">
+                        {Number(product.price).toFixed(2)} ₪
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-3xl font-bold text-[#B91C1C]">
+                      {Number(product.price).toFixed(2)} ₪
+                    </span>
+                  )}
+                </div>
+              )}
+              {product.sale_price && product.sale_price > 0 && !product.discount_price && (
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-3xl font-bold text-[#B91C1C]">
+                    {Number(product.sale_price).toFixed(2)} ₪
+                  </span>
+                  {product.regular_price && product.regular_price > product.sale_price && (
+                    <span className="text-lg text-gray-400 line-through">
+                      {Number(product.regular_price).toFixed(2)} ₪
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Error messages */}
@@ -977,6 +1032,28 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                     </label>
                   ))}
                 </div>
+
+                {/* Price breakdown for variants */}
+                {selectedVariantId && (
+                  <div className="mt-4 bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-200">
+                    <div className="flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                      <span>السعر المختار:</span>
+                      <span>
+                        ₪{(() => {
+                          const variant = variants.find(v => v.id === selectedVariantId);
+                          if (!variant) return '0.00';
+
+                          let finalPrice = variant.price;
+                          if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+                            const discountPercentage = (product.price - product.discount_price) / product.price;
+                            finalPrice = variant.price * (1 - discountPercentage);
+                          }
+                          return Number(finalPrice).toFixed(2);
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1066,6 +1143,57 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       )}
                     </div>
                   ))}
+                </div>
+
+                {/* Price breakdown for required addons */}
+                <div className="bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-200">
+                  <div className="flex justify-between items-center text-gray-700">
+                    <span>السعر الأساسي:</span>
+                    <span className="font-semibold">
+                      ₪{(product.discount_price && product.discount_price > 0
+                        ? Number(product.discount_price)
+                        : Number(product.price)).toFixed(2)}
+                    </span>
+                  </div>
+
+                  {groupedAddons.required.filter(addon => selectedAddons[addon.id]).length > 0 && (
+                    <>
+                      <div className="border-t border-gray-300 pt-2">
+                        <div className="text-sm font-semibold text-gray-600 mb-2">المكونات المختارة:</div>
+                        {groupedAddons.required
+                          .filter(addon => selectedAddons[addon.id])
+                          .map(addon => {
+                            const addonQty = addonQuantities[addon.id] || 1;
+                            return (
+                              <div key={addon.id} className="flex justify-between items-center text-gray-600 text-sm mb-1">
+                                <span>
+                                  {addon.name} {addonQty > 1 && `× ${addonQty}`}
+                                </span>
+                                <span>₪{(addon.price * addonQty).toFixed(2)}</span>
+                              </div>
+                            );
+                          })}
+                      </div>
+
+                      <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                        <span>المجموع الجزئي:</span>
+                        <span>₪{(() => {
+                          const basePrice = product.discount_price && product.discount_price > 0
+                            ? Number(product.discount_price)
+                            : Number(product.price);
+
+                          const requiredAddonsTotal = groupedAddons.required
+                            .filter(addon => selectedAddons[addon.id])
+                            .reduce((sum, addon) => {
+                              const addonQty = addonQuantities[addon.id] || 1;
+                              return sum + (addon.price * addonQty);
+                            }, 0);
+
+                          return (basePrice + requiredAddonsTotal).toFixed(2);
+                        })()}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -1162,6 +1290,52 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Price Breakdown */}
+            {(selectionStep === 'optional' || (selectionStep === 'none' && mergedAddons.length === 0)) && (
+              <div className="mb-4 bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-200">
+                <div className="flex justify-between items-center text-gray-700">
+                  <span>السعر الأساسي:</span>
+                  <span className="font-semibold">
+                    ₪{(product.discount_price && product.discount_price > 0
+                      ? Number(product.discount_price)
+                      : Number(product.price)).toFixed(2)}
+                  </span>
+                </div>
+
+                {mergedAddons.filter(addon => selectedAddons[addon.id]).length > 0 && (
+                  <>
+                    <div className="border-t border-gray-300 pt-2">
+                      <div className="text-sm font-semibold text-gray-600 mb-2">الإضافات:</div>
+                      {mergedAddons
+                        .filter(addon => selectedAddons[addon.id])
+                        .map(addon => {
+                          const addonQty = addonQuantities[addon.id] || 1;
+                          return (
+                            <div key={addon.id} className="flex justify-between items-center text-gray-600 text-sm mb-1">
+                              <span>
+                                {addon.name} {addonQty > 1 && `× ${addonQty}`}
+                              </span>
+                              <span>₪{(addon.price * addonQty).toFixed(2)}</span>
+                            </div>
+                          );
+                        })}
+                    </div>
+
+                    <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                      <span>المجموع الجزئي:</span>
+                      <span>₪{calculateTotalPrice().toFixed(2)}</span>
+                    </div>
+                  </>
+                )}
+
+                {mergedAddons.filter(addon => selectedAddons[addon.id]).length === 0 && (
+                  <div className="text-center text-sm text-gray-500 pt-2">
+                    لا توجد إضافات محددة
+                  </div>
+                )}
               </div>
             )}
 

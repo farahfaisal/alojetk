@@ -231,13 +231,53 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
+  // Refresh vendor data from database to ensure up-to-date working hours
+  useEffect(() => {
+    const refreshVendorData = async () => {
+      if (vendor?.id) {
+        try {
+          const { data: freshVendor, error } = await supabase
+            .from('vendors')
+            .select('working_hours, vacation_mode, status')
+            .eq('id', vendor.id)
+            .single();
+
+          if (!error && freshVendor) {
+            // Update vendor data with fresh values
+            vendor.working_hours = freshVendor.working_hours;
+            vendor.vacation_mode = freshVendor.vacation_mode;
+            vendor.status = freshVendor.status;
+          }
+        } catch (error) {
+          console.error('Error refreshing vendor data:', error);
+        }
+      }
+    };
+
+    refreshVendorData();
+  }, [vendor?.id]);
+
   // Check vendor status including working hours
   useEffect(() => {
     if (vendor) {
+      console.log('🔍 StorePage - فحص حالة المتجر:', {
+        vendorId: vendor.id,
+        storeName: vendor.store_name,
+        working_hours: vendor.working_hours,
+        vacation_mode: vendor.vacation_mode,
+        status: vendor.status
+      });
+
       const workingStatus = checkVendorWorkingStatus({
         working_hours: vendor.working_hours,
         vacation_mode: vendor.vacation_mode,
         status: vendor.status
+      });
+
+      console.log('✅ StorePage - نتيجة الفحص:', {
+        is_open: workingStatus.is_open,
+        reason: workingStatus.reason,
+        today_hours: workingStatus.today_hours
       });
 
       setIsVendorAvailable(workingStatus.is_open);
@@ -898,21 +938,29 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     >
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
-                        <span className={`font-semibold ${isVendorAvailable ? 'text-lime-600' : 'text-red-600'}`}>
-                          {isVendorAvailable ? 'مفتوح' : 'مغلق'}
-                        </span>
+                        {isVendorAvailable ? (
+                          <span className="font-semibold text-lime-600">مفتوح</span>
+                        ) : (
+                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">
-                          {(() => {
-                            const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                            const todayHours = getTodayHours(storeHours);
-                            if (todayHours && todayHours.enabled) {
-                              return `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`;
-                            }
-                            return 'مغلق اليوم';
-                          })()}
-                        </span>
+                        {(() => {
+                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                          const todayHours = getTodayHours(storeHours);
+                          if (todayHours && todayHours.enabled) {
+                            return (
+                              <span className="text-sm text-gray-600">
+                                {`${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`}
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                              مغلق اليوم
+                            </span>
+                          );
+                        })()}
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
@@ -1268,7 +1316,10 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 ...selectedProduct,
                 vendor: {
                   ...selectedProduct.vendor,
-                  status: isVendorAvailable ? 'active' : 'inactive'
+                  ...vendor,
+                  working_hours: vendor.working_hours,
+                  vacation_mode: vendor.vacation_mode,
+                  status: vendor.status
                 }
               }}
               onClose={() => setSelectedProduct(null)}

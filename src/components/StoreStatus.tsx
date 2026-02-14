@@ -40,12 +40,22 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         if (vendorError) throw vendorError;
 
+        console.log('📊 Vendor data loaded:', {
+          vendorId,
+          working_hours: vendorData?.working_hours,
+          vacation_mode: vendorData?.vacation_mode,
+          status: vendorData?.status
+        });
+
         const storeHours = convertWorkingHoursToArray(vendorData?.working_hours);
         const workingStatus = checkVendorWorkingStatus({
           working_hours: vendorData?.working_hours,
           vacation_mode: vendorData?.vacation_mode,
           status: vendorData?.status
         });
+
+        console.log('✅ Store hours converted:', storeHours);
+        console.log('✅ Working status:', workingStatus);
 
         setStoreStatus({
           store_hours: storeHours,
@@ -148,7 +158,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           {!storeStatus.vacation_mode && todayHours && (
             <p className="text-sm text-gray-600">
               {!todayHours.enabled || !todayHours.open || !todayHours.close ? (
-                <span>المتجر مغلق اليوم</span>
+                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
               ) : (
                 `ساعات العمل اليوم: ${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`
               )}
@@ -175,7 +185,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
                 <span>{getDayName(hours.day)}</span>
                 <span>
                   {!hours.enabled || !hours.open || !hours.close ? (
-                    <span className="text-red-600">مغلق</span>
+                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                   ) : (
                     `${formatTime(hours.open)} - ${formatTime(hours.close)}`
                   )}

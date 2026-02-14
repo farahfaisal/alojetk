@@ -610,7 +610,7 @@ const Home: React.FC<HomeProps> = ({
                                   ? 'bg-green-500/90 text-white'
                                   : vendor.status === 'suspended'
                                     ? 'bg-red-500/90 text-white'
-                                    : 'bg-gray-500/90 text-white';
+                                    : 'bg-red-600 text-white';
                               })()
                             }`}>
                               {(() => {
@@ -647,7 +647,9 @@ const Home: React.FC<HomeProps> = ({
             banner: selectedVendor.banner_url,
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
-            status: { is_open: selectedVendor.status === 'active' },
+            status: selectedVendor.status,
+            working_hours: selectedVendor.working_hours,
+            vacation_mode: selectedVendor.vacation_mode,
             address: selectedVendor.address
           }}
           categoryId={null}
