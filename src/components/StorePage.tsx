@@ -266,7 +266,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
         setVendorStatusMessage(message);
       } else {
-        setVendorStatusMessage('');
+        // Check if it's a 24-hour store
+        if (workingStatus.is_24_hours) {
+          setVendorStatusMessage('مفتوح 24 ساعة');
+        } else {
+          setVendorStatusMessage('');
+        }
       }
     }
 
