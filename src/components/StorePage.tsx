@@ -1268,7 +1268,10 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 ...selectedProduct,
                 vendor: {
                   ...selectedProduct.vendor,
-                  status: isVendorAvailable ? 'active' : 'inactive'
+                  ...vendor,
+                  working_hours: vendor.working_hours,
+                  vacation_mode: vendor.vacation_mode,
+                  status: vendor.status
                 }
               }}
               onClose={() => setSelectedProduct(null)}
