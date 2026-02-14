@@ -237,21 +237,12 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
     }
   }, [product]);
 
-  // Auto-start with first step when variants or addons are loaded
+  // Don't auto-start - keep on initial screen showing price
+  // User must click "Add to Cart" button to start the selection process
   useEffect(() => {
-    if (variants.length > 0) {
-      setSelectionStep('variants');
-    } else if (mergedAddons && mergedAddons.length > 0) {
-      const requiredAddons = mergedAddons.filter(addon => addon.is_required);
-      const optionalAddons = mergedAddons.filter(addon => !addon.is_required);
-
-      if (requiredAddons.length > 0) {
-        setSelectionStep('required');
-      } else if (optionalAddons.length > 0) {
-        setSelectionStep('optional');
-      }
-    }
-  }, [variants, mergedAddons]);
+    // Keep selection step as 'none' initially
+    setSelectionStep('none');
+  }, []);
 
   const calculateTotalPrice = () => {
     // Calculate base price
