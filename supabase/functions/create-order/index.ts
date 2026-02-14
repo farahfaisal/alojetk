@@ -120,9 +120,7 @@ Deno.serve(async (req: Request) => {
     const customItems = [];
 
     for (const item of orderData.items) {
-      const addonsTotal = item.addons?.reduce((s, a) => s + a.price * a.quantity, 0) || 0;
-      const itemPriceWithAddons = item.price + addonsTotal;
-
+      // حفظ السعر الأساسي فقط - الإضافات تُحفظ في addons_data
       if (item.is_custom) {
         customItems.push({
           order_id: order.id,
@@ -130,8 +128,8 @@ Deno.serve(async (req: Request) => {
           custom_product_name: item.name || 'طلب خاص',
           description: item.custom_details || '',
           quantity: item.quantity || 1,
-          price: item.price,
-          total_price: itemPriceWithAddons * (item.quantity || 1),
+          price: item.price, // السعر الأساسي فقط
+          total_price: item.price * (item.quantity || 1), // السعر الأساسي × الكمية
           notes: item.custom_details || null,
         });
       } else {
@@ -141,13 +139,13 @@ Deno.serve(async (req: Request) => {
           order_id: order.id,
           product_id: item.product_id || null,
           quantity: item.quantity || 1,
-          price: itemPriceWithAddons,
+          price: item.price, // السعر الأساسي فقط - الإضافات في addons_data
           vendor_id: item.vendor_id,
           vendor_name: item.vendor_name,
           name: item.name || 'منتج',
           product_name: item.name || 'منتج',
           notes: null,
-          addons_data: item.addons || [],
+          addons_data: item.addons || [], // الإضافات تُحفظ هنا بشكل منفصل
           variant_id: isValidUUID ? item.variant_id : null,
           variant_name: item.variant_name || null,
         });
