@@ -589,9 +589,9 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             banner: selectedVendor.banner_url,
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
-            status: selectedVendor.status,
-            working_hours: selectedVendor.working_hours,
-            vacation_mode: selectedVendor.vacation_mode,
+            status: {
+              is_open: selectedVendor.status === 'active'
+            },
             address: selectedVendor.address
           }}
           categoryId={null}
