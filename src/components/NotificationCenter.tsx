@@ -118,7 +118,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/20 backdrop-blur-md"
+            className="absolute inset-0 bg-black/10 backdrop-blur-lg"
             onClick={onClose}
           />
 
