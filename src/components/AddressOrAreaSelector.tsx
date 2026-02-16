@@ -40,16 +40,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const loadSavedAddresses = async () => {
     try {
       const storedUser = localStorage.getItem('auth_user');
-      if (!storedUser) return;
+      if (!storedUser) {
+        setLoading(false);
+        return;
+      }
 
       const user = JSON.parse(storedUser);
 
       const { data, error } = await supabase
         .from('customer_addresses')
-        .select(`
-          *,
-          zones:zone_id(name)
-        `)
+        .select('*')
         .eq('customer_id', user.id)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false });
@@ -57,8 +57,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       if (error) throw error;
 
       const formattedAddresses = data?.map(addr => ({
-        ...addr,
-        zone_name: addr.zones?.name
+        id: addr.id,
+        customer_id: addr.customer_id,
+        address_label: addr.name,
+        address_line1: addr.address,
+        city: addr.city,
+        zone_id: addr.city,
+        zone_name: addr.city,
+        latitude: addr.latitude,
+        longitude: addr.longitude,
+        is_default: addr.is_default
       })) || [];
 
       setSavedAddresses(formattedAddresses);
