@@ -37,6 +37,7 @@ import CitySelector from './components/CitySelector';
 import SingleProductPage from './components/SingleProductPage';
 import StorePage from './components/StorePage';
 import InstallPrompt from './components/InstallPrompt';
+import AddressOrAreaSelector from './components/AddressOrAreaSelector';
 
 interface ServiceArea {
   id: string;
@@ -87,6 +88,7 @@ const AppContent: React.FC = () => {
   const [isCaptainTrackingOpen, setIsCaptainTrackingOpen] = useState(false);
   const [isParcelOrderOpen, setIsParcelOrderOpen] = useState(false);
   const [isParcelTrackingOpen, setIsParcelTrackingOpen] = useState(false);
+  const [showAddressOrAreaSelector, setShowAddressOrAreaSelector] = useState(false);
 
   // Function to detect iOS devices
   const isIOSDevice = () => {
@@ -115,7 +117,7 @@ const AppContent: React.FC = () => {
                         isPrivacyPolicyOpen || isContactPageOpen || isSignupOpen ||
                         isProductPageOpen || isVariantsModalOpen || isStorePageOpen ||
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
-                        isParcelOrderOpen || isParcelTrackingOpen;
+                        isParcelOrderOpen || isParcelTrackingOpen || showAddressOrAreaSelector;
 
   // Update cart items count
   useEffect(() => {
@@ -248,7 +250,7 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open login or city picker after splash screen
+  // Open login or address selector after splash screen
   useEffect(() => {
     // Check if user is authenticated after splash is done
     if (!showSplash) {
@@ -259,9 +261,9 @@ const AppContent: React.FC = () => {
           setIsLoginOpen(true);
         }, 500);
       } else {
-        // User logged in, show city picker
+        // User logged in, show address/area selector
         setTimeout(() => {
-          setIsCityDropdownOpen(true);
+          setShowAddressOrAreaSelector(true);
         }, 500);
       }
     }
@@ -522,6 +524,22 @@ const AppContent: React.FC = () => {
     setIsCityDropdownOpen(false);
   };
 
+  const handleAddressSelected = (address: any) => {
+    // Set the selected city/zone from the address
+    const city = address.zone_name || address.city;
+    setSelectedCity(city);
+    localStorage.setItem('selectedServiceArea', city);
+    localStorage.setItem('selectedCity', JSON.stringify(city));
+    setShowAddressOrAreaSelector(false);
+  };
+
+  const handleAreaSelected = (area: string) => {
+    setSelectedCity(area);
+    localStorage.setItem('selectedServiceArea', area);
+    localStorage.setItem('selectedCity', JSON.stringify(area));
+    setShowAddressOrAreaSelector(false);
+  };
+
   const closeAllComponents = () => {
     setIsLoginOpen(false);
     setIsSignupOpen(false);
@@ -537,6 +555,7 @@ const AppContent: React.FC = () => {
     setIsContactPageOpen(false);
     setIsCartOpen(false);
     setIsOrdersOpen(false);
+    setShowAddressOrAreaSelector(false);
   };
 
   const handleCloseLogin = () => {
@@ -549,13 +568,10 @@ const AppContent: React.FC = () => {
         // Dispatch a custom event to notify components about auth change
         window.dispatchEvent(new CustomEvent('auth-change', { detail: parsedUser }));
 
-        // Open city picker after successful login if no city is selected
-        const selectedCityStored = localStorage.getItem('selectedCity');
-        if (!selectedCityStored || selectedCityStored === 'null') {
-          setTimeout(() => {
-            setIsCityDropdownOpen(true);
-          }, 300);
-        }
+        // Open address/area selector after successful login
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 300);
       } catch (e) {
         console.error('Error parsing stored user:', e);
       }
@@ -746,8 +762,8 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Show main content only if user is authenticated or login is not open */}
-        {(isAuthenticated || !isLoginOpen) && (
+        {/* Show main content only if user is authenticated or login is not open, and address selector is not shown */}
+        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
           <div className="fixed top-0 left-0 right-0 bottom-0" style={{
             paddingTop: 0,
             paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
@@ -759,8 +775,8 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Buttons - Only show if authenticated or login is closed */}
-        {!isAnyModalOpen && (isAuthenticated || !isLoginOpen) && (
+        {/* Floating Buttons - Only show if authenticated or login is closed, and address selector is not shown */}
+        {!isAnyModalOpen && (isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
@@ -788,8 +804,8 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Cart Button - Only show if authenticated or login is closed */}
-        {(isAuthenticated || !isLoginOpen) && (
+        {/* Floating Cart Button - Only show if authenticated or login is closed, and address selector is not shown */}
+        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
           <FloatingCart
             onOpenCart={handleOpenCart}
             showOnlyInProductPage={false}
@@ -802,8 +818,8 @@ const AppContent: React.FC = () => {
           onOpenContact={handleOpenContactPage}
         />
 
-        {/* Bottom Nav - Only show if authenticated or login is closed */}
-        {(isAuthenticated || !isLoginOpen) && (
+        {/* Bottom Nav - Only show if authenticated or login is closed, and address selector is not shown */}
+        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
           <BottomNav
             onOpenCart={handleOpenCart}
             onOpenMenu={handleOpenMenu}
@@ -927,6 +943,17 @@ const AppContent: React.FC = () => {
           currentCity={selectedCity}
           required={true}
         />
+
+        {/* Address or Area Selector */}
+        <AnimatePresence>
+          {showAddressOrAreaSelector && (
+            <AddressOrAreaSelector
+              onClose={() => setShowAddressOrAreaSelector(false)}
+              onAddressSelected={handleAddressSelected}
+              onAreaSelected={handleAreaSelected}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Service Area Selection */}
         {showServiceAreaSelection && (
