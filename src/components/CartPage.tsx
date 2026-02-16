@@ -707,27 +707,35 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                               {/* Quantity and Price */}
                               <div className="mt-2 space-y-1">
                                 {!item.is_custom ? (
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-sm text-gray-600">الكمية:</span>
-                                      <button
-                                        onClick={() => updateCartItem(item.id, item.quantity - 1)}
-                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                      >
-                                        <Minus className="w-3 h-3" />
-                                      </button>
-                                      <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
-                                      <button
-                                        onClick={() => updateCartItem(item.id, item.quantity + 1)}
-                                        className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
-                                      >
-                                        <Plus className="w-3 h-3" />
-                                      </button>
+                                  <>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-sm text-gray-600">الكمية:</span>
+                                        <button
+                                          onClick={() => updateCartItem(item.id, item.quantity - 1)}
+                                          className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                        >
+                                          <Minus className="w-3 h-3" />
+                                        </button>
+                                        <span className="w-6 text-center font-bold text-sm">{item.quantity}</span>
+                                        <button
+                                          onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                                          className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center justify-center"
+                                        >
+                                          <Plus className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                      <div className="text-gray-600 text-sm font-medium">
+                                        سعر الوحدة: {(item.price || 0).toFixed(2)} ₪
+                                      </div>
                                     </div>
-                                    <div className="text-brand text-lg font-bold">
-                                      {((item.price || 0) * item.quantity).toFixed(2)} ₪
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-sm font-bold text-gray-700">المجموع:</span>
+                                      <div className="text-brand text-lg font-bold">
+                                        {((item.price || 0) * item.quantity).toFixed(2)} ₪
+                                      </div>
                                     </div>
-                                  </div>
+                                  </>
                                 ) : (
                                   <div className="flex items-center justify-between">
                                     <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
