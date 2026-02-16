@@ -292,20 +292,32 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'متابعة'}
               </button>
               
-              <div className="text-center">
-                <p className="text-gray-600">
-                  ليس لديك حساب بالفعل؟{' '}
-                  <button 
+              <div className="space-y-3">
+                <div className="text-center">
+                  <p className="text-gray-600">
+                    ليس لديك حساب بالفعل؟{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        window.dispatchEvent(new CustomEvent('open-signup-page'));
+                      }}
+                      className="text-accent hover:text-accent-light font-medium"
+                    >
+                      إنشاء حساب
+                    </button>
+                  </p>
+                </div>
+
+                <div className="text-center pt-2 border-t border-gray-200">
+                  <button
                     type="button"
-                    onClick={() => {
-                      onClose();
-                      window.dispatchEvent(new CustomEvent('open-signup-page'));
-                    }}
-                    className="text-accent hover:text-accent-light font-medium"
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-700 font-medium text-sm"
                   >
-                    إنشاء حساب
+                    تصفح كضيف
                   </button>
-                </p>
+                </div>
               </div>
             </form>
           )}

@@ -248,13 +248,22 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open city picker after splash screen every time
+  // Open login or city picker after splash screen
   useEffect(() => {
-    // Show city picker after splash is done
+    // Check if user is authenticated after splash is done
     if (!showSplash) {
-      setTimeout(() => {
-        setIsCityDropdownOpen(true);
-      }, 500);
+      const storedUser = localStorage.getItem('auth_user');
+      if (!storedUser) {
+        // User not logged in, show login page
+        setTimeout(() => {
+          setIsLoginOpen(true);
+        }, 500);
+      } else {
+        // User logged in, show city picker
+        setTimeout(() => {
+          setIsCityDropdownOpen(true);
+        }, 500);
+      }
     }
   }, [showSplash]);
 
@@ -540,9 +549,12 @@ const AppContent: React.FC = () => {
         // Dispatch a custom event to notify components about auth change
         window.dispatchEvent(new CustomEvent('auth-change', { detail: parsedUser }));
 
-        // Open account page after successful login
-        if (!isAccountOpen) {
-          setIsAccountOpen(true);
+        // Open city picker after successful login if no city is selected
+        const selectedCityStored = localStorage.getItem('selectedCity');
+        if (!selectedCityStored || selectedCityStored === 'null') {
+          setTimeout(() => {
+            setIsCityDropdownOpen(true);
+          }, 300);
         }
       } catch (e) {
         console.error('Error parsing stored user:', e);
@@ -704,7 +716,7 @@ const AppContent: React.FC = () => {
       </AnimatePresence>
 
       {!showSplash && (
-      <div className="fixed inset-0 bg-gray-50" dir="rtl">
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" dir="rtl">
         <div className="absolute inset-0 overflow-hidden">
 
         {/* Cart Notification */}
@@ -734,18 +746,21 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        <div className="fixed top-0 left-0 right-0 bottom-0" style={{
-          paddingTop: 0,
-          paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch'
-        }}>
-          {renderContent()}
-        </div>
+        {/* Show main content only if user is authenticated or login is not open */}
+        {(isAuthenticated || !isLoginOpen) && (
+          <div className="fixed top-0 left-0 right-0 bottom-0" style={{
+            paddingTop: 0,
+            paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            WebkitOverflowScrolling: 'touch'
+          }}>
+            {renderContent()}
+          </div>
+        )}
 
-        {/* Floating Buttons - Always visible on Home Page */}
-        {!isAnyModalOpen && (
+        {/* Floating Buttons - Only show if authenticated or login is closed */}
+        {!isAnyModalOpen && (isAuthenticated || !isLoginOpen) && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
@@ -773,11 +788,13 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Cart Button */}
-        <FloatingCart
-          onOpenCart={handleOpenCart}
-          showOnlyInProductPage={false}
-        />
+        {/* Floating Cart Button - Only show if authenticated or login is closed */}
+        {(isAuthenticated || !isLoginOpen) && (
+          <FloatingCart
+            onOpenCart={handleOpenCart}
+            showOnlyInProductPage={false}
+          />
+        )}
 
         <Sidebar
           isOpen={isSidebarOpen}
@@ -785,16 +802,19 @@ const AppContent: React.FC = () => {
           onOpenContact={handleOpenContactPage}
         />
 
-        <BottomNav
-          onOpenCart={handleOpenCart}
-          onOpenMenu={handleOpenMenu}
-          onOpenAccount={handleOpenAccount}
-          onOpenOrders={handleOpenOrders}
-          isHidden={shouldHideBottomNav()}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          cartItemsCount={cartItemsCount}
-        />
+        {/* Bottom Nav - Only show if authenticated or login is closed */}
+        {(isAuthenticated || !isLoginOpen) && (
+          <BottomNav
+            onOpenCart={handleOpenCart}
+            onOpenMenu={handleOpenMenu}
+            onOpenAccount={handleOpenAccount}
+            onOpenOrders={handleOpenOrders}
+            isHidden={shouldHideBottomNav()}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            cartItemsCount={cartItemsCount}
+          />
+        )}
 
         {isLoginOpen && (
           <div className="fixed inset-0 z-[999999]">
