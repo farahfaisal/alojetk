@@ -250,9 +250,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       ? Number(product.discount_price)
       : Number(product.price);
 
-    // Calculate addons total - exclude default addons as they are already included in the base price
+    // Calculate addons total - include all selected addons
     const addonsTotal = mergedAddons
-      .filter(addon => selectedAddons[addon.id] && !addon.is_default)
+      .filter(addon => selectedAddons[addon.id])
       .reduce((sum, addon) => {
         const addonQty = addonQuantities[addon.id] || 1;
         return sum + (addon.price * addonQty);
@@ -275,9 +275,8 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   const prepareCartItem = () => {
     // Get selected addons with their individual quantities
-    // Exclude default addons as they are already included in the base price
     const selectedAddonsList = mergedAddons
-      .filter(addon => selectedAddons[addon.id] && !addon.is_default)
+      .filter(addon => selectedAddons[addon.id])
       .map(addon => ({
         ...addon,
         quantity: addonQuantities[addon.id] || 1
@@ -1297,12 +1296,12 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   </span>
                 </div>
 
-                {mergedAddons.filter(addon => selectedAddons[addon.id] && !addon.is_default).length > 0 && (
+                {mergedAddons.filter(addon => selectedAddons[addon.id]).length > 0 && (
                   <>
                     <div className="border-t border-gray-300 pt-2">
                       <div className="text-sm font-semibold text-gray-600 mb-2">الإضافات:</div>
                       {mergedAddons
-                        .filter(addon => selectedAddons[addon.id] && !addon.is_default)
+                        .filter(addon => selectedAddons[addon.id])
                         .map(addon => {
                           const addonQty = addonQuantities[addon.id] || 1;
                           return (
@@ -1323,7 +1322,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   </>
                 )}
 
-                {mergedAddons.filter(addon => selectedAddons[addon.id] && !addon.is_default).length === 0 && (
+                {mergedAddons.filter(addon => selectedAddons[addon.id]).length === 0 && (
                   <div className="text-center text-sm text-gray-500 pt-2">
                     لا توجد إضافات محددة
                   </div>
