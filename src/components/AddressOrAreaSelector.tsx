@@ -108,7 +108,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999999] flex items-end justify-center"
+      className="fixed inset-0 bg-black/20 backdrop-blur-md z-[999999] flex items-end justify-center"
       onClick={onClose}
     >
       <motion.div
