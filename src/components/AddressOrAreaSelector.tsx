@@ -144,28 +144,29 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
           {/* Initial Choice View */}
           {selectedView === 'choose' && (
             <div className="space-y-4">
-              {/* Saved Addresses Option */}
-              {savedAddresses.length > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setSelectedView('addresses')}
-                  className="w-full p-6 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-2xl text-white shadow-lg hover:shadow-xl transition-all"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                      <MapPin className="w-7 h-7" />
-                    </div>
-                    <div className="flex-1 text-right">
-                      <h3 className="text-xl font-bold mb-1">عناوين محفوظة</h3>
-                      <p className="text-white/80 text-sm">
-                        لديك {savedAddresses.length} {savedAddresses.length === 1 ? 'عنوان محفوظ' : 'عناوين محفوظة'}
-                      </p>
-                    </div>
-                    <ChevronLeft className="w-6 h-6 rotate-180" />
+              {/* Saved Addresses Option - Always show */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedView('addresses')}
+                className="w-full p-6 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-2xl text-white shadow-lg hover:shadow-xl transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                    <MapPin className="w-7 h-7" />
                   </div>
-                </motion.button>
-              )}
+                  <div className="flex-1 text-right">
+                    <h3 className="text-xl font-bold mb-1">عناوين محفوظة</h3>
+                    <p className="text-white/80 text-sm">
+                      {savedAddresses.length > 0
+                        ? `لديك ${savedAddresses.length} ${savedAddresses.length === 1 ? 'عنوان محفوظ' : 'عناوين محفوظة'}`
+                        : 'اختر من عناوينك المحفوظة'
+                      }
+                    </p>
+                  </div>
+                  <ChevronLeft className="w-6 h-6 rotate-180" />
+                </div>
+              </motion.button>
 
               {/* New Area Option */}
               <motion.button
