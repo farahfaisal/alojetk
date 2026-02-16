@@ -66,7 +66,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   // Get user address from saved addresses
   useEffect(() => {
     const fetchUserAddress = async () => {
-      const addresses = getSavedAddresses();
+      const addresses = await getSavedAddresses();
       const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
 
       if (defaultAddress) {

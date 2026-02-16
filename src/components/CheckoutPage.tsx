@@ -159,7 +159,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     const loadUserDataAndAddresses = async () => {
       if (!currentAddress) {
-        const addresses = getSavedAddresses();
+        const addresses = await getSavedAddresses();
         const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
 
         if (defaultAddr) {

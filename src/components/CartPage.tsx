@@ -228,11 +228,14 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
   // Load default address
   useEffect(() => {
-    const addresses = getSavedAddresses();
-    const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
-    if (defaultAddress) {
-      setSelectedAddress(defaultAddress);
-    }
+    const loadDefaultAddress = async () => {
+      const addresses = await getSavedAddresses();
+      const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
+      if (defaultAddress) {
+        setSelectedAddress(defaultAddress);
+      }
+    };
+    loadDefaultAddress();
   }, []);
 
   // Calculate delivery fee based on distance and service area

@@ -24,7 +24,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
   const [error, setError] = useState<string | null>(null);
   const [currentSection, setCurrentSection] = useState<'main' | 'addresses' | 'payment' | 'profile' | 'points' | 'notifications' | 'referral' | 'wallet'>('main');
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [addresses, setAddresses] = useState<SavedAddress[]>(getSavedAddresses());
+  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -297,7 +297,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
   useEffect(() => {
     const fetchWalletBalance = async () => {
       if (!user?.customer_id) return;
-      
+
       try {
         setWalletLoading(true);
         const balance = await getCustomerWalletBalance(user.customer_id);
@@ -308,9 +308,25 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
         setWalletLoading(false);
       }
     };
-    
+
     fetchWalletBalance();
   }, [user]);
+
+  // Fetch addresses
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      if (!user?.customer_id) return;
+
+      try {
+        const savedAddresses = await getSavedAddresses();
+        setAddresses(savedAddresses);
+      } catch (err) {
+        console.error('Error fetching addresses:', err);
+      }
+    };
+
+    fetchAddresses();
+  }, [user, currentSection]);
 
   // Prevent body scrolling when account page is open
   useEffect(() => {
@@ -355,8 +371,9 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
     }
   };
 
-  const handleAddressFormSubmit = (address: SavedAddress) => {
-    setAddresses(getSavedAddresses());
+  const handleAddressFormSubmit = async (address: SavedAddress) => {
+    const savedAddresses = await getSavedAddresses();
+    setAddresses(savedAddresses);
     setShowAddressForm(false);
     setEditingAddress(null);
   };

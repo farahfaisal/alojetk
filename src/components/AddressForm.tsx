@@ -186,10 +186,15 @@ const AddressForm: React.FC<AddressFormProps> = ({
   }, [isLoaded, ready]);
 
   // Check if this is a new default address
-  const isFirstAddress = () => {
-    const addresses = getSavedAddresses();
-    return addresses.length === 0;
-  };
+  const [isFirstAddress, setIsFirstAddress] = useState(false);
+
+  useEffect(() => {
+    const checkFirstAddress = async () => {
+      const addresses = await getSavedAddresses();
+      setIsFirstAddress(addresses.length === 0);
+    };
+    checkFirstAddress();
+  }, []);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     console.log('🗺️ Map loaded successfully');
@@ -576,47 +581,50 @@ const AddressForm: React.FC<AddressFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     console.log('📝 Form submitted with data:', formData);
-    
+
     if (!validateForm()) {
       console.log('❌ Form validation failed:', errors);
       return;
     }
-    
+
     // If this is the first address, make it default
-    if (isFirstAddress() && !formData.isDefault) {
+    if (isFirstAddress && !formData.isDefault) {
       formData.isDefault = true;
     }
-    
+
     try {
+      setIsLoadingAddress(true);
       const addressData = {
         ...formData,
         coordinates: formData.coordinates
       };
-      
+
       let savedAddress: SavedAddress;
-      
+
       if (initialAddress && initialAddress.id && !initialAddress.id.startsWith('temp_')) {
         console.log('📝 Updating existing address:', initialAddress.id);
-        savedAddress = updateAddress({
+        savedAddress = await updateAddress({
           ...addressData,
           id: initialAddress.id
         });
       } else {
         console.log('📝 Creating new address');
-        savedAddress = saveAddress(addressData);
+        savedAddress = await saveAddress(addressData);
       }
-      
+
       console.log('✅ Address saved successfully:', savedAddress);
       onSave(savedAddress);
     } catch (error) {
       console.error('❌ Error saving address:', error);
-      setErrors({ 
-        submit: error instanceof Error ? error.message : 'حدث خطأ أثناء حفظ العنوان' 
+      setErrors({
+        submit: error instanceof Error ? error.message : 'حدث خطأ أثناء حفظ العنوان'
       });
+    } finally {
+      setIsLoadingAddress(false);
     }
   };
 

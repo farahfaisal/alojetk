@@ -17,26 +17,30 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load saved addresses
-    setLoading(true);
-    const savedAddresses = getSavedAddresses();
-    setAddresses(savedAddresses);
-    
-    // If there's a default address and no selected address, select the default
-    if (!selectedAddressId && savedAddresses.length > 0) {
-      const defaultAddress = savedAddresses.find(addr => addr.isDefault) || savedAddresses[0];
-      if (onSelectAddress) {
-        onSelectAddress(defaultAddress);
+    const loadAddresses = async () => {
+      setLoading(true);
+      const savedAddresses = await getSavedAddresses();
+      setAddresses(savedAddresses);
+
+      // If there's a default address and no selected address, select the default
+      if (!selectedAddressId && savedAddresses.length > 0) {
+        const defaultAddress = savedAddresses.find(addr => addr.isDefault) || savedAddresses[0];
+        if (onSelectAddress) {
+          onSelectAddress(defaultAddress);
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+    loadAddresses();
   }, [onSelectAddress, selectedAddressId]);
 
-  const handleSetDefault = (addressId: string) => {
-    if (setDefaultAddress(addressId)) {
+  const handleSetDefault = async (addressId: string) => {
+    const success = await setDefaultAddress(addressId);
+    if (success) {
       // Refresh addresses
-      setAddresses(getSavedAddresses());
-      
+      const savedAddresses = await getSavedAddresses();
+      setAddresses(savedAddresses);
+
       // Select this address
       const address = addresses.find(addr => addr.id === addressId);
       if (address) {
@@ -47,15 +51,16 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
     }
   };
 
-  const handleDeleteAddress = (addressId: string, event: React.MouseEvent) => {
+  const handleDeleteAddress = async (addressId: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    
+
     if (window.confirm('هل أنت متأكد من حذف هذا العنوان؟')) {
-      if (deleteAddress(addressId)) {
+      const success = await deleteAddress(addressId);
+      if (success) {
         // Refresh addresses
-        const updatedAddresses = getSavedAddresses();
+        const updatedAddresses = await getSavedAddresses();
         setAddresses(updatedAddresses);
-        
+
         // If we deleted the selected address, select the new default
         if (selectedAddressId === addressId && updatedAddresses.length > 0) {
           const newDefault = updatedAddresses.find(addr => addr.isDefault) || updatedAddresses[0];

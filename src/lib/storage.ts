@@ -30,6 +30,37 @@ export interface SavedAddress {
   };
 }
 
+// Database address interface
+interface DatabaseAddress {
+  id: string;
+  customer_id: string;
+  name: string;
+  address: string;
+  city: string;
+  phone: string;
+  is_default: boolean;
+  detailed_address?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+// Convert database address to SavedAddress format
+function convertDatabaseAddress(dbAddress: DatabaseAddress): SavedAddress {
+  return {
+    id: dbAddress.id,
+    name: dbAddress.name,
+    address: dbAddress.address,
+    city: dbAddress.city,
+    phone: dbAddress.phone,
+    isDefault: dbAddress.is_default,
+    detailedAddress: dbAddress.detailed_address,
+    coordinates: dbAddress.latitude && dbAddress.longitude ? {
+      lat: dbAddress.latitude,
+      lng: dbAddress.longitude
+    } : undefined
+  };
+}
+
 // Order interface
 export interface OrderSummary {
   id: string;
@@ -99,42 +130,69 @@ export async function updateUserProfile(data: { name?: string; email?: string; p
 }
 
 // Get all saved addresses for the current user
-export function getSavedAddresses(): SavedAddress[] {
+export async function getSavedAddresses(): Promise<SavedAddress[]> {
   try {
-    const addresses = localStorage.getItem('saved_addresses');
-    return addresses ? JSON.parse(addresses) : [];
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
+      console.log('No customer_id found, returning empty addresses');
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .select('*')
+      .eq('customer_id', userData.customer_id)
+      .order('is_default', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching addresses:', error);
+      return [];
+    }
+
+    return data.map(convertDatabaseAddress);
   } catch (error) {
     console.error('Error retrieving saved addresses:', error);
     return [];
   }
 }
 
+// Synchronous version for backward compatibility (returns empty array, triggers async fetch)
+export function getSavedAddressesSync(): SavedAddress[] {
+  console.warn('getSavedAddressesSync is deprecated, use getSavedAddresses() instead');
+  return [];
+}
+
 // Save a new address
-export function saveAddress(address: Omit<SavedAddress, 'id'>): SavedAddress {
+export async function saveAddress(address: Omit<SavedAddress, 'id'>): Promise<SavedAddress> {
   try {
-    const addresses = getSavedAddresses();
-    
-    // Generate a unique ID
-    const newAddress: SavedAddress = {
-      ...address,
-      id: `addr_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-    };
-    
-    // If this is the first address or marked as default, make it the default
-    if (addresses.length === 0 || newAddress.isDefault) {
-      // Set all other addresses to non-default
-      addresses.forEach(addr => {
-        addr.isDefault = false;
-      });
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
+      throw new Error('يجب تسجيل الدخول لحفظ العنوان');
     }
-    
-    // Add the new address
-    addresses.push(newAddress);
-    
-    // Save to localStorage
-    localStorage.setItem('saved_addresses', JSON.stringify(addresses));
-    
-    return newAddress;
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .insert({
+        customer_id: userData.customer_id,
+        name: address.name,
+        address: address.address,
+        city: address.city,
+        phone: address.phone,
+        is_default: address.isDefault,
+        detailed_address: address.detailedAddress,
+        latitude: address.coordinates?.lat,
+        longitude: address.coordinates?.lng
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error saving address:', error);
+      throw new Error('فشل حفظ العنوان');
+    }
+
+    return convertDatabaseAddress(data);
   } catch (error) {
     console.error('Error saving address:', error);
     throw new Error('فشل حفظ العنوان');
@@ -142,32 +200,43 @@ export function saveAddress(address: Omit<SavedAddress, 'id'>): SavedAddress {
 }
 
 // Update an existing address
-export function updateAddress(address: SavedAddress): SavedAddress {
+export async function updateAddress(address: SavedAddress): Promise<SavedAddress> {
   try {
     console.log("🟡 Starting updateAddress with ID:", address.id);
-    const addresses = getSavedAddresses();
-    const index = addresses.findIndex(addr => addr.id === address.id);
-    
-    if (index === -1) {
-      console.error("Address not found with ID:", address.id);
-      throw new Error('العنوان غير موجود. الرجاء المحاولة مرة أخرى أو إنشاء عنوان جديد.');
+
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
+      throw new Error('يجب تسجيل الدخول لتحديث العنوان');
     }
-    
-    // If setting this address as default, update other addresses
-    if (address.isDefault) {
-      addresses.forEach(addr => {
-        addr.isDefault = false;
-      });
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .update({
+        name: address.name,
+        address: address.address,
+        city: address.city,
+        phone: address.phone,
+        is_default: address.isDefault,
+        detailed_address: address.detailedAddress,
+        latitude: address.coordinates?.lat,
+        longitude: address.coordinates?.lng
+      })
+      .eq('id', address.id)
+      .eq('customer_id', userData.customer_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating address:', error);
+      throw new Error('فشل تحديث العنوان');
     }
-    
-    // Update the address
-    addresses[index] = address;
-    console.log("🟡 Address updated successfully at index:", index);
-    
-    // Save to localStorage
-    localStorage.setItem('saved_addresses', JSON.stringify(addresses));
-    
-    return address;
+
+    if (!data) {
+      throw new Error('العنوان غير موجود');
+    }
+
+    console.log("🟡 Address updated successfully");
+    return convertDatabaseAddress(data);
   } catch (error) {
     console.error('Error updating address:', error);
     throw new Error(`فشل تحديث العنوان: ${error instanceof Error ? error.message : 'خطأ غير معروف'} (ID: ${address.id})`);
@@ -175,24 +244,49 @@ export function updateAddress(address: SavedAddress): SavedAddress {
 }
 
 // Delete an address
-export function deleteAddress(addressId: string): boolean {
+export async function deleteAddress(addressId: string): Promise<boolean> {
   try {
-    const addresses = getSavedAddresses();
-    const filteredAddresses = addresses.filter(addr => addr.id !== addressId);
-    
-    if (filteredAddresses.length === addresses.length) {
-      return false; // No address was deleted
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
+      throw new Error('يجب تسجيل الدخول لحذف العنوان');
     }
-    
-    // If we deleted the default address and there are other addresses, make the first one default
-    const wasDefault = addresses.find(addr => addr.id === addressId)?.isDefault;
-    if (wasDefault && filteredAddresses.length > 0) {
-      filteredAddresses[0].isDefault = true;
+
+    // Check if this is the default address
+    const { data: addressToDelete } = await supabase
+      .from('customer_addresses')
+      .select('is_default')
+      .eq('id', addressId)
+      .eq('customer_id', userData.customer_id)
+      .maybeSingle();
+
+    const { error } = await supabase
+      .from('customer_addresses')
+      .delete()
+      .eq('id', addressId)
+      .eq('customer_id', userData.customer_id);
+
+    if (error) {
+      console.error('Error deleting address:', error);
+      return false;
     }
-    
-    // Save to localStorage
-    localStorage.setItem('saved_addresses', JSON.stringify(filteredAddresses));
-    
+
+    // If we deleted the default address, set the first remaining address as default
+    if (addressToDelete?.is_default) {
+      const { data: remainingAddresses } = await supabase
+        .from('customer_addresses')
+        .select('id')
+        .eq('customer_id', userData.customer_id)
+        .limit(1)
+        .maybeSingle();
+
+      if (remainingAddresses) {
+        await supabase
+          .from('customer_addresses')
+          .update({ is_default: true })
+          .eq('id', remainingAddresses.id);
+      }
+    }
+
     return true;
   } catch (error) {
     console.error('Error deleting address:', error);
@@ -201,10 +295,39 @@ export function deleteAddress(addressId: string): boolean {
 }
 
 // Get the default address
-export function getDefaultAddress(): SavedAddress | null {
+export async function getDefaultAddress(): Promise<SavedAddress | null> {
   try {
-    const addresses = getSavedAddresses();
-    return addresses.find(addr => addr.isDefault) || (addresses.length > 0 ? addresses[0] : null);
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .select('*')
+      .eq('customer_id', userData.customer_id)
+      .eq('is_default', true)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error getting default address:', error);
+      return null;
+    }
+
+    if (data) {
+      return convertDatabaseAddress(data);
+    }
+
+    // If no default address, return the first address
+    const { data: firstAddress } = await supabase
+      .from('customer_addresses')
+      .select('*')
+      .eq('customer_id', userData.customer_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    return firstAddress ? convertDatabaseAddress(firstAddress) : null;
   } catch (error) {
     console.error('Error getting default address:', error);
     return null;
@@ -212,26 +335,25 @@ export function getDefaultAddress(): SavedAddress | null {
 }
 
 // Set an address as default
-export function setDefaultAddress(addressId: string): boolean {
+export async function setDefaultAddress(addressId: string): Promise<boolean> {
   try {
-    const addresses = getSavedAddresses();
-    const index = addresses.findIndex(addr => addr.id === addressId);
-    
-    if (index === -1) {
+    const userData = getUserProfile();
+    if (!userData?.customer_id) {
       return false;
     }
-    
-    // Set all addresses to non-default
-    addresses.forEach(addr => {
-      addr.isDefault = false;
-    });
-    
-    // Set the selected address as default
-    addresses[index].isDefault = true;
-    
-    // Save to localStorage
-    localStorage.setItem('saved_addresses', JSON.stringify(addresses));
-    
+
+    // The trigger will automatically set other addresses to non-default
+    const { error } = await supabase
+      .from('customer_addresses')
+      .update({ is_default: true })
+      .eq('id', addressId)
+      .eq('customer_id', userData.customer_id);
+
+    if (error) {
+      console.error('Error setting default address:', error);
+      return false;
+    }
+
     return true;
   } catch (error) {
     console.error('Error setting default address:', error);
