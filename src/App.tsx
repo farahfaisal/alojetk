@@ -816,13 +816,13 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {isLoginOpen && (
-          <div className="fixed inset-0 z-[999999]">
+        <AnimatePresence>
+          {isLoginOpen && (
             <LoginPage
               onClose={handleCloseLogin}
             />
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {isSignupOpen && (
           <div className="fixed inset-0 z-[999999]">
