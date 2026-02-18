@@ -873,12 +873,32 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                               {/* Quantity and Price */}
                               <div className="mt-2 space-y-1">
                                 {!item.is_custom ? (
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-600">الكمية: {item.quantity}</span>
-                                    <span className="text-brand font-bold text-sm">
-                                      {itemTotal.toFixed(2)} ₪
-                                    </span>
-                                  </div>
+                                  <>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs text-gray-600">الكمية: {item.quantity}</span>
+                                      <div className="text-gray-600 text-xs">
+                                        سعر الوحدة: {(() => {
+                                          const basePrice = item.price || 0;
+                                          const regularAddonsPrice = (item.addons || [])
+                                            .filter((a: any) => a.type === 'regular')
+                                            .reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                          return (basePrice + regularAddonsPrice).toFixed(2);
+                                        })()} ₪
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-bold text-gray-700">المجموع:</span>
+                                      <div className="text-brand text-sm font-bold">
+                                        {(() => {
+                                          const basePrice = item.price || 0;
+                                          const regularAddonsPrice = (item.addons || [])
+                                            .filter((a: any) => a.type === 'regular')
+                                            .reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                          return ((basePrice + regularAddonsPrice) * item.quantity).toFixed(2);
+                                        })()} ₪
+                                      </div>
+                                    </div>
+                                  </>
                                 ) : (
                                   <div className="flex items-center justify-between">
                                     <span className="text-xs text-amber-700 font-medium">الكمية: 1</span>
@@ -904,7 +924,11 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                                     <span className="text-xs font-bold text-gray-700">المجموع الجزئي:</span>
                                     <span className="text-brand text-sm font-bold">
-                                      {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                      {(() => {
+                                        const basePrice = (item.price || 0) * item.quantity;
+                                        const allAddonsPrice = (item.addons || []).reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                        return (basePrice + allAddonsPrice).toFixed(2);
+                                      })()} ₪
                                     </span>
                                   </div>
                                 )}
@@ -917,14 +941,13 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                   </div>
 
                   <div className="border-t mt-3 pt-3">
+                    {/* المجموع الفرعي */}
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">المجموع الفرعي</span>
                       <span className="font-medium">{subOrder.subtotal.toFixed(2)} ₪</span>
                     </div>
-                    <div className="flex justify-between text-sm mt-1">
-                      <span className="text-gray-600">رسوم التوصيل</span>
-                      <span className="font-medium">{subOrder.delivery_fee.toFixed(2)} ₪</span>
-                    </div>
+
+                    {/* الخصومات */}
                     {subOrder.coupon_discount > 0 && (
                       <div className="flex justify-between text-sm mt-1 text-green-600">
                         <span>خصم الكوبون</span>
@@ -937,6 +960,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                         <span className="font-medium">-{subOrder.points_discount.toFixed(2)} ₪</span>
                       </div>
                     )}
+
+                    {/* التوصيل */}
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="text-gray-600">التوصيل</span>
+                      <span className="font-medium">{subOrder.delivery_fee.toFixed(2)} ₪</span>
+                    </div>
+
+                    {/* المجموع */}
                     <div className="flex justify-between border-t pt-2 mt-2">
                       <span className="font-bold text-gray-900">المجموع</span>
                       <span className="font-bold text-brand">{subOrder.total.toFixed(2)} ₪</span>
@@ -949,18 +980,15 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
               {/* Total for all sub-orders */}
               <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
                 <div className="space-y-2">
+                  {/* المجموع الفرعي */}
                   <div className="flex justify-between items-center text-white/90">
                     <span className="text-sm">المجموع الفرعي</span>
                     <span className="font-medium">
                       {subOrders.reduce((sum, order) => sum + Number(order.subtotal), 0).toFixed(2)} ₪
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-white/90">
-                    <span className="text-sm">رسوم التوصيل ({subOrders.length} متاجر)</span>
-                    <span className="font-medium">
-                      {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
-                    </span>
-                  </div>
+
+                  {/* الخصومات */}
                   {subOrders.some(order => order.coupon_discount > 0) && (
                     <div className="flex justify-between items-center text-white/90">
                       <span className="text-sm">خصم الكوبون</span>
@@ -977,6 +1005,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                       </span>
                     </div>
                   )}
+
+                  {/* التوصيل */}
+                  <div className="flex justify-between items-center text-white/90">
+                    <span className="text-sm">التوصيل ({subOrders.length} متاجر)</span>
+                    <span className="font-medium">
+                      {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
+                    </span>
+                  </div>
                   <div className="flex justify-between items-center pt-2 border-t border-white/30">
                     <span className="text-lg font-bold">المجموع الإجمالي</span>
                     <span className="text-2xl font-bold">
@@ -1075,12 +1111,32 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                         {/* Quantity and Price */}
                         <div className="mt-2 space-y-1">
                           {!item.is_custom ? (
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
-                              <div className="text-brand text-lg font-bold">
-                                {itemTotal.toFixed(2)} ₪
+                            <>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">الكمية: {item.quantity}</span>
+                                <div className="text-gray-600 text-sm">
+                                  سعر الوحدة: {(() => {
+                                    const basePrice = item.price || 0;
+                                    const regularAddonsPrice = (item.addons || [])
+                                      .filter((a: any) => a.type === 'regular')
+                                      .reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                    return (basePrice + regularAddonsPrice).toFixed(2);
+                                  })()} ₪
+                                </div>
                               </div>
-                            </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-bold text-gray-700">المجموع:</span>
+                                <div className="text-brand text-lg font-bold">
+                                  {(() => {
+                                    const basePrice = item.price || 0;
+                                    const regularAddonsPrice = (item.addons || [])
+                                      .filter((a: any) => a.type === 'regular')
+                                      .reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                    return ((basePrice + regularAddonsPrice) * item.quantity).toFixed(2);
+                                  })()} ₪
+                                </div>
+                              </div>
+                            </>
                           ) : (
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
@@ -1106,7 +1162,11 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                             <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                               <span className="text-sm font-bold text-gray-700">المجموع الجزئي:</span>
                               <span className="text-brand text-lg font-bold">
-                                {(itemTotal + addonsTotal).toFixed(2)} ₪
+                                {(() => {
+                                  const basePrice = (item.price || 0) * item.quantity;
+                                  const allAddonsPrice = (item.addons || []).reduce((sum: number, addon: any) => sum + ((addon.price || 0) * (addon.quantity || 1)), 0);
+                                  return (basePrice + allAddonsPrice).toFixed(2);
+                                })()} ₪
                               </span>
                             </div>
                           )}
@@ -1119,14 +1179,13 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
             </div>
             
             <div className="border-t mt-4 pt-4 space-y-2">
+              {/* المجموع الفرعي */}
               <div className="flex justify-between">
                 <span className="text-gray-600">المجموع الفرعي</span>
                 <span className="font-medium">{orderDetails.subtotal.toFixed(2)} شيكل</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">رسوم التوصيل</span>
-                <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
-              </div>
+
+              {/* الخصومات */}
               {orderDetails.coupon_discount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>خصم الكوبون</span>
@@ -1139,6 +1198,14 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                   <span className="font-medium">-{orderDetails.points_discount.toFixed(2)} شيكل</span>
                 </div>
               )}
+
+              {/* التوصيل */}
+              <div className="flex justify-between">
+                <span className="text-gray-600">التوصيل</span>
+                <span className="font-medium">{orderDetails.delivery_fee.toFixed(2)} شيكل</span>
+              </div>
+
+              {/* المجموع الكلي */}
               <div className="flex justify-between border-t pt-2">
                 <span className="font-bold text-gray-900">المجموع الكلي</span>
                 <span className="font-bold text-brand text-lg">{orderDetails.total.toFixed(2)} شيكل</span>
