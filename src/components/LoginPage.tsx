@@ -237,8 +237,8 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     // Close login page after a short delay
     setTimeout(() => {
       onClose();
-      // Navigate to account page
-      window.dispatchEvent(new CustomEvent('open-account-page'));
+      // Navigate to home page
+      navigate('/');
     }, 1500);
   };
 

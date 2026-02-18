@@ -568,10 +568,8 @@ const AppContent: React.FC = () => {
         // Dispatch a custom event to notify components about auth change
         window.dispatchEvent(new CustomEvent('auth-change', { detail: parsedUser }));
 
-        // Open address/area selector after successful login
-        setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
-        }, 300);
+        // Navigate to home page after successful login
+        navigate('/');
       } catch (e) {
         console.error('Error parsing stored user:', e);
       }
