@@ -309,17 +309,6 @@ const Home: React.FC<HomeProps> = ({
       paddingTop: '0px',
       paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 8px))'
     }}>
-      {/* Header Background with Gradient */}
-      <div
-        className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
-        style={{
-          height: 'calc(max(env(safe-area-inset-top), 0px) + 160px)',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 50%, rgba(255,255,255,0.6) 80%, rgba(255,255,255,0) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-        }}
-      />
-
       {/* Header - Icons Only */}
       <div
         className="fixed top-0 left-0 right-0 z-50"
