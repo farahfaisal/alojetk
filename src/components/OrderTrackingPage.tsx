@@ -886,21 +886,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   </div>
                                 )}
 
-                                {/* Addons - Components Type (regular type) */}
-                                {item.addons && item.addons.filter((a: any) => a.type === 'regular').length > 0 && (
-                                  <div className="pt-2 border-t border-gray-200">
-                                    <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {item.addons.filter((a: any) => a.type === 'regular').map((addon: any, addonIndex: number) => (
-                                        <span key={addonIndex} className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
-                                          {addon.name}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Addons - Optional Type (non-regular addons) */}
+                                {/* Addons - Optional Type (non-regular addons only) */}
                                 {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                                   <div className="space-y-1 pt-2 border-t border-gray-200">
                                     <p className="text-xs font-bold text-blue-700 mb-1.5">الإضافات الاختيارية:</p>
@@ -913,8 +899,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                   </div>
                                 )}
 
-                                {/* Total with Addons */}
-                                {!item.is_custom && item.addons && item.addons.length > 0 && (
+                                {/* Total with Optional Addons */}
+                                {!item.is_custom && item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                                   <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                                     <span className="text-xs font-bold text-gray-700">المجموع الجزئي:</span>
                                     <span className="text-brand text-sm font-bold">
@@ -1102,21 +1088,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                             </div>
                           )}
 
-                          {/* Addons - Components Type (regular type) */}
-                          {item.addons && item.addons.filter((a: any) => a.type === 'regular').length > 0 && (
-                            <div className="pt-2 border-t border-gray-200">
-                              <p className="text-xs font-bold text-emerald-700 mb-1.5">المكونات:</p>
-                              <div className="flex flex-wrap gap-1.5">
-                                {item.addons.filter((a: any) => a.type === 'regular').map((addon: any, addonIndex: number) => (
-                                  <span key={addonIndex} className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
-                                    {addon.name}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Addons - Optional Type (non-regular addons) */}
+                          {/* Addons - Optional Type (non-regular addons only) */}
                           {item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                             <div className="space-y-1 pt-2 border-t border-gray-200">
                               <p className="text-xs font-bold text-blue-700 mb-1.5">الإضافات الاختيارية:</p>
@@ -1129,8 +1101,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                             </div>
                           )}
 
-                          {/* Total with Addons */}
-                          {!item.is_custom && item.addons && item.addons.length > 0 && (
+                          {/* Total with Optional Addons */}
+                          {!item.is_custom && item.addons && item.addons.filter((a: any) => a.type !== 'regular').length > 0 && (
                             <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                               <span className="text-sm font-bold text-gray-700">المجموع الجزئي:</span>
                               <span className="text-brand text-lg font-bold">
