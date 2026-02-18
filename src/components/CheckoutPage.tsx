@@ -1090,26 +1090,13 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       }}>
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-3">
           <div className="space-y-2 text-sm">
+            {/* المجموع الفرعي */}
             <div className="flex justify-between items-center">
               <span className="text-gray-900 font-medium">₪{calculateSubtotal().toFixed(2)}</span>
               <span className="text-gray-600">المجموع الفرعي</span>
             </div>
-            {courierMode === 'delivery' && (
-              <div className="flex justify-between items-center">
-                <span className="text-gray-900 font-medium">₪{totalDeliveryFee.toFixed(2)}</span>
-                <span className="text-gray-600">
-                  توصيل
-                  {(() => {
-                    const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
-                    if (vendorCount > 1) {
-                      return ` (${vendorCount} متاجر)`;
-                    }
-                    return '';
-                  })()}
-                </span>
-              </div>
-            )}
 
+            {/* خصومات الكوبون والنقاط */}
             {appliedCoupon && calculateCouponDiscount() > 0 && (
               <div className="flex justify-between items-center text-green-600">
                 <span className="font-medium">-₪{calculateCouponDiscount().toFixed(2)}</span>
@@ -1124,6 +1111,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             )}
 
+            {/* التوصيل */}
+            {courierMode === 'delivery' && (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-900 font-medium">₪{totalDeliveryFee.toFixed(2)}</span>
+                <span className="text-gray-600">
+                  التوصيل
+                  {(() => {
+                    const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
+                    if (vendorCount > 1) {
+                      return ` (${vendorCount} متاجر)`;
+                    }
+                    return '';
+                  })()}
+                </span>
+              </div>
+            )}
+
+            {/* المجموع الكلي */}
             <div className="flex justify-between items-center pt-2 border-t border-gray-200">
               <span className="font-bold text-lg" style={{ color: BRAND }}>₪{calculateTotal().toFixed(2)}</span>
               <span className="text-gray-900 font-bold">المجموع الكلي</span>

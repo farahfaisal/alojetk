@@ -871,14 +871,28 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                 </div>
 
                 <div className="space-y-2">
+                  {/* المجموع الفرعي */}
                   <div className="flex justify-between">
-                    <span className="text-gray-600">السعر</span>
+                    <span className="text-gray-600">المجموع الفرعي</span>
                     <span className="font-medium">{calculateSubtotal().toFixed(2)} شيكل</span>
                   </div>
+
+                  {/* الخصم */}
+                  {appliedCoupon && calculateDiscount() > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span className="flex items-center gap-1">
+                        <Tag className="w-4 h-4" />
+                        الخصم
+                      </span>
+                      <span className="font-medium">-{calculateDiscount().toFixed(2)} شيكل</span>
+                    </div>
+                  )}
+
+                  {/* التوصيل */}
                   <div className="flex justify-between">
                     <span className="text-gray-600 flex items-center gap-1">
                       <Truck className="w-4 h-4" />
-                      رسوم التوصيل
+                      التوصيل
                       {(() => {
                         const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
                         if (vendorCount > 1) {
@@ -889,15 +903,8 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                     </span>
                     <span className="font-medium">{totalDeliveryFee.toFixed(2)} شيكل</span>
                   </div>
-                  {appliedCoupon && calculateDiscount() > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span className="flex items-center gap-1">
-                        <Tag className="w-4 h-4" />
-                        الخصم
-                      </span>
-                      <span className="font-medium">-{calculateDiscount().toFixed(2)} شيكل</span>
-                    </div>
-                  )}
+
+                  {/* المجموع الكلي */}
                   <div className="border-t pt-2 flex justify-between">
                     <span className="font-bold text-gray-900">المجموع الكلي</span>
                     <span className="font-bold text-brand text-lg">{calculateTotal().toFixed(2)} شيكل</span>
