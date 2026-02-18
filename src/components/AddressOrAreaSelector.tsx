@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Plus, ChevronLeft, Home, Building, Navigation } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import CitySelector from './CitySelector';
+import NewAddressPage from './NewAddressPage';
 
 interface SavedAddress {
   id: string;
@@ -30,8 +30,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
 }) => {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCitySelector, setShowCitySelector] = useState(false);
-  const [selectedView, setSelectedView] = useState<'choose' | 'addresses' | 'areas'>('choose');
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedView, setSelectedView] = useState<'choose' | 'addresses' | 'areas'>('addresses');
 
   useEffect(() => {
     loadSavedAddresses();
@@ -83,13 +83,29 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   };
 
   const handleSelectNewArea = () => {
-    setSelectedView('areas');
-    setShowCitySelector(true);
+    setShowAddressForm(true);
   };
 
-  const handleAreaSelect = (area: string) => {
-    onAreaSelected(area);
-    setShowCitySelector(false);
+  const handleAddressSaved = async (address: any) => {
+    // Reload addresses to show the new one
+    await loadSavedAddresses();
+    setShowAddressForm(false);
+
+    // Convert the saved address to our format and auto-select it
+    const formattedAddress: SavedAddress = {
+      id: address.id,
+      customer_id: address.customer_id,
+      address_label: address.name || address.address_label,
+      address_line1: address.address || address.address_line1,
+      city: address.city,
+      zone_id: address.city,
+      zone_name: address.city,
+      latitude: address.latitude,
+      longitude: address.longitude,
+      is_default: address.is_default
+    };
+
+    onAddressSelected(formattedAddress);
     onClose();
   };
 
@@ -131,73 +147,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         {/* Header */}
         <div className="px-6 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-4">
-            {selectedView !== 'choose' && (
-              <button
-                onClick={() => setSelectedView('choose')}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
-              </button>
-            )}
             <h2 className="text-2xl font-bold text-gray-900 flex-1">
-              {selectedView === 'choose' && 'اختر موقع التوصيل'}
-              {selectedView === 'addresses' && 'العناوين المحفوظة'}
-              {selectedView === 'areas' && 'اختر منطقة التوصيل'}
+              {selectedView === 'addresses' && 'اختر موقع التوصيل'}
+              {selectedView === 'areas' && 'إضافة عنوان جديد'}
             </h2>
           </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {/* Initial Choice View */}
-          {selectedView === 'choose' && (
-            <div className="space-y-4">
-              {/* Saved Addresses Option - Always show */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedView('addresses')}
-                className="w-full p-6 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-2xl text-white shadow-lg hover:shadow-xl transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                    <MapPin className="w-7 h-7" />
-                  </div>
-                  <div className="flex-1 text-right">
-                    <h3 className="text-xl font-bold mb-1">عناوين محفوظة</h3>
-                    <p className="text-white/80 text-sm">
-                      {savedAddresses.length > 0
-                        ? `لديك ${savedAddresses.length} ${savedAddresses.length === 1 ? 'عنوان محفوظ' : 'عناوين محفوظة'}`
-                        : 'اختر من عناوينك المحفوظة'
-                      }
-                    </p>
-                  </div>
-                  <ChevronLeft className="w-6 h-6 rotate-180" />
-                </div>
-              </motion.button>
-
-              {/* New Area Option */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSelectNewArea}
-                className="w-full p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-[#B91C1C] hover:bg-red-50 transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-[#B91C1C]/10 rounded-xl flex items-center justify-center">
-                    <Plus className="w-7 h-7 text-[#B91C1C]" />
-                  </div>
-                  <div className="flex-1 text-right">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">اختر منطقة جديدة</h3>
-                    <p className="text-gray-600 text-sm">اختر منطقة التوصيل من القائمة</p>
-                  </div>
-                  <ChevronLeft className="w-6 h-6 text-gray-400 rotate-180" />
-                </div>
-              </motion.button>
-            </div>
-          )}
-
-          {/* Saved Addresses List */}
+          {/* Addresses List - Show Directly */}
           {selectedView === 'addresses' && (
             <div className="space-y-3">
               {loading ? (
@@ -208,12 +167,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               ) : savedAddresses.length === 0 ? (
                 <div className="text-center py-12">
                   <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-6">لا توجد عناوين محفوظة</p>
+                  <p className="text-gray-600 text-lg mb-2">لا توجد عناوين محفوظة</p>
+                  <p className="text-gray-500 text-sm mb-6">أضف عنوان جديد لبدء الطلب</p>
                   <button
                     onClick={handleSelectNewArea}
-                    className="px-6 py-3 bg-[#B91C1C] text-white rounded-xl hover:bg-[#991B1B] transition-colors"
+                    className="px-8 py-3 bg-[#B91C1C] text-white rounded-xl hover:bg-[#991B1B] transition-colors font-semibold"
                   >
-                    اختر منطقة جديدة
+                    إضافة عنوان جديد
                   </button>
                 </div>
               ) : (
@@ -258,16 +218,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     </motion.button>
                   ))}
 
-                  {/* Add New Area Button */}
+                  {/* Add New Address Button */}
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSelectNewArea}
-                    className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#B91C1C] hover:bg-red-50 transition-all"
+                    className="w-full p-5 bg-[#B91C1C] text-white rounded-xl hover:bg-[#991B1B] shadow-lg hover:shadow-xl transition-all"
                   >
-                    <div className="flex items-center justify-center gap-2 text-gray-600 hover:text-[#B91C1C]">
-                      <Plus className="w-5 h-5" />
-                      <span className="font-semibold">اختر منطقة جديدة</span>
+                    <div className="flex items-center justify-center gap-3">
+                      <Plus className="w-6 h-6" />
+                      <span className="font-bold text-lg">إضافة عنوان جديد</span>
                     </div>
                   </motion.button>
                 </>
@@ -277,13 +237,11 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         </div>
       </motion.div>
 
-      {/* City Selector Modal */}
-      {showCitySelector && (
-        <CitySelector
-          isOpen={showCitySelector}
-          onSelectCity={handleAreaSelect}
-          currentCity={null}
-          required={true}
+      {/* New Address Form */}
+      {showAddressForm && (
+        <NewAddressPage
+          onClose={() => setShowAddressForm(false)}
+          onSave={handleAddressSaved}
         />
       )}
     </motion.div>
