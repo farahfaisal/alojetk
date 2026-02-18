@@ -728,7 +728,18 @@ const AppContent: React.FC = () => {
   return (
     <>
       <AnimatePresence mode="wait">
-        {showSplash && <SplashScreen key="splash" />}
+        {showSplash && (
+          <SplashScreen
+            key="splash"
+            onComplete={() => {
+              setShowSplash(false);
+              // Show login bottom sheet if not authenticated
+              if (!isAuthenticated) {
+                setTimeout(() => setIsLoginOpen(true), 300);
+              }
+            }}
+          />
+        )}
       </AnimatePresence>
 
       {!showSplash && (

@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import { Phone, ShoppingBag } from 'lucide-react';
 import { initializeFirebase } from '../lib/firebase';
 
-const SplashScreen: React.FC = () => {
+interface SplashScreenProps {
+  onComplete?: () => void;
+}
+
+const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -11,7 +15,16 @@ const SplashScreen: React.FC = () => {
   React.useEffect(() => {
     console.log('🚀 Early Firebase initialization from splash screen...');
     initializeFirebase();
-  }, []);
+
+    // Auto complete after 2 seconds
+    const timer = setTimeout(() => {
+      if (onComplete) {
+        onComplete();
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [onComplete]);
 
   return (
     <motion.div
