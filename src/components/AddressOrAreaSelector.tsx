@@ -131,7 +131,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/10 backdrop-blur-lg z-[999999] flex items-end justify-center"
-      onClick={onClose}
+      onClick={showAddressForm ? undefined : onClose}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -142,7 +142,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         onClick={(e) => e.stopPropagation()}
         style={{
           maxHeight: '85vh',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)'
+          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
+          display: showAddressForm ? 'none' : 'flex'
         }}
       >
         {/* Handle bar */}
