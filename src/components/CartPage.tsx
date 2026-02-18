@@ -725,24 +725,31 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                         </button>
                                       </div>
                                       <div className="text-gray-600 text-sm font-medium">
-                                        سعر الوحدة: {(() => {
-                                          const basePrice = item.price || 0;
-                                          const regularAddonsPrice = (item.addons || [])
-                                            .filter(addon => addon.type === 'regular')
-                                            .reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0);
-                                          return (basePrice + regularAddonsPrice).toFixed(2);
-                                        })()} ₪
+                                        سعر الوحدة الأصلي: {(item.price || 0).toFixed(2)} ₪
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
+
+                                    {/* All Addons (both regular and optional) */}
+                                    {item.addons && item.addons.length > 0 && (
+                                      <div className="space-y-1 pt-1 border-t border-gray-200">
+                                        <p className="text-xs font-bold text-blue-700 mb-1">العروض المتاحة:</p>
+                                        {item.addons.map((addon) => (
+                                          <div key={addon.id} className="flex items-center justify-between text-xs">
+                                            <span className="text-blue-700">• {addon.name} (×{addon.quantity})</span>
+                                            <span className="text-blue-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Total */}
+                                    <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
                                       <span className="text-sm font-bold text-gray-700">المجموع:</span>
                                       <div className="text-brand text-lg font-bold">
                                         {(() => {
-                                          const basePrice = item.price || 0;
-                                          const regularAddonsPrice = (item.addons || [])
-                                            .filter(addon => addon.type === 'regular')
-                                            .reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0);
-                                          return ((basePrice + regularAddonsPrice) * item.quantity).toFixed(2);
+                                          const basePrice = (item.price || 0) * item.quantity;
+                                          const allAddonsPrice = (item.addons || []).reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0);
+                                          return (basePrice + allAddonsPrice).toFixed(2);
                                         })()} ₪
                                       </div>
                                     </div>
@@ -751,33 +758,6 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                                   <div className="flex items-center justify-between">
                                     <span className="text-sm text-amber-700 font-medium">الكمية: 1</span>
                                     <span className="text-amber-600 text-lg font-bold">يحدد لاحقاً</span>
-                                  </div>
-                                )}
-
-                                {/* Addons - Optional Type (non-regular addons only) */}
-                                {item.addons && item.addons.filter(addon => addon.type !== 'regular').length > 0 && (
-                                  <div className="space-y-1 pt-2 border-t border-gray-200">
-                                    <p className="text-xs font-bold text-blue-700 mb-1.5">الإضافات الاختيارية:</p>
-                                    {item.addons.filter(addon => addon.type !== 'regular').map((addon) => (
-                                      <div key={addon.id} className="flex items-center justify-between text-xs">
-                                        <span className="text-blue-700">• {addon.name} (×{addon.quantity})</span>
-                                        <span className="text-blue-800 font-semibold">+{(addon.price * addon.quantity).toFixed(2)} ₪</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-
-                                {/* Total with Optional Addons */}
-                                {!item.is_custom && item.addons && item.addons.filter(addon => addon.type !== 'regular').length > 0 && (
-                                  <div className="flex items-center justify-between pt-2 border-t-2 border-gray-300">
-                                    <span className="text-sm font-bold text-gray-700">المجموع الجزئي:</span>
-                                    <span className="text-brand text-lg font-bold">
-                                      {(() => {
-                                        const basePrice = (item.price || 0) * item.quantity;
-                                        const allAddonsPrice = (item.addons || []).reduce((sum, addon) => sum + ((addon.price || 0) * addon.quantity), 0);
-                                        return (basePrice + allAddonsPrice).toFixed(2);
-                                      })()} ₪
-                                    </span>
                                   </div>
                                 )}
                               </div>
