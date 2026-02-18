@@ -741,7 +741,7 @@ const AppContent: React.FC = () => {
       </AnimatePresence>
 
       {!showSplash && (
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" dir="rtl">
+      <div className="fixed inset-0 bg-white" dir="rtl">
         <div className="absolute inset-0 overflow-hidden">
 
         {/* Cart Notification */}
