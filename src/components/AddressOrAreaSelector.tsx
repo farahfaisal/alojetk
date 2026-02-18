@@ -87,23 +87,29 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   };
 
   const handleAddressSaved = async (address: any) => {
+    console.log('✅ Address saved, reloading addresses list');
+
     // Reload addresses to show the new one
     await loadSavedAddresses();
+
+    // Close the address form
     setShowAddressForm(false);
 
     // Convert the saved address to our format and auto-select it
     const formattedAddress: SavedAddress = {
       id: address.id,
-      customer_id: address.customer_id,
+      customer_id: address.customer_id || address.customerId,
       address_label: address.name || address.address_label,
       address_line1: address.address || address.address_line1,
       city: address.city,
       zone_id: address.city,
       zone_name: address.city,
-      latitude: address.latitude,
-      longitude: address.longitude,
-      is_default: address.is_default
+      latitude: address.coordinates?.lat || address.latitude,
+      longitude: address.coordinates?.lng || address.longitude,
+      is_default: address.isDefault || address.is_default
     };
+
+    console.log('🔵 Auto-selecting new address:', formattedAddress);
 
     onAddressSelected(formattedAddress);
     onClose();
