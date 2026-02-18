@@ -309,6 +309,17 @@ const Home: React.FC<HomeProps> = ({
       paddingTop: '0px',
       paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 8px))'
     }}>
+      {/* Header Background with Gradient */}
+      <div
+        className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
+        style={{
+          height: 'calc(max(env(safe-area-inset-top), 0px) + 140px)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0) 100%)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+        }}
+      />
+
       {/* Header - Icons Only */}
       <div
         className="fixed top-0 left-0 right-0 z-50"
@@ -351,7 +362,9 @@ const Home: React.FC<HomeProps> = ({
       </div>
 
       {/* Hero Banner Section */}
-      <div>
+      <div className="relative" style={{
+        paddingTop: 'calc(max(env(safe-area-inset-top), 0px) + 68px)',
+      }}>
         <FeaturedSlider position="home" type="restaurant" />
       </div>
 
