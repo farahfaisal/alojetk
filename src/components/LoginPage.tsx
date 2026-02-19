@@ -191,23 +191,23 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         setSuccess('تم التحقق بنجاح');
         
         if (data.existing_user) {
-          // User exists, store user data and close
+          // User exists, store user data and redirect to home
           if (data.user) {
             localStorage.setItem('auth_user', JSON.stringify(data.user));
-            
+
             // Dispatch auth change event
             window.dispatchEvent(new Event('auth-change'));
-            
-            // Close login page after a short delay
+
+            // Close login page and navigate to home
             setTimeout(() => {
               onClose();
-              // Navigate to account page
-              window.dispatchEvent(new CustomEvent('open-account-page'));
+              navigate('/');
             }, 1500);
           } else {
-            // Just close the page
+            // Just close and go to home
             setTimeout(() => {
               onClose();
+              navigate('/');
             }, 1500);
           }
         } else {

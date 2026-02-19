@@ -232,11 +232,10 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
   };
 
   const handleRegistrationComplete = (userData: any) => {
-    // Close login page after a short delay
+    // Close signup page and navigate to home
     setTimeout(() => {
       onClose();
-      // Navigate to account page
-      window.dispatchEvent(new CustomEvent('open-account-page'));
+      window.location.href = '/';
     }, 1500);
   };
 
