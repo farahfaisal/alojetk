@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check } from 'lucide-react';
+import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NewAddressPage from './NewAddressPage';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
@@ -37,6 +37,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     loadSavedAddresses();
@@ -125,6 +126,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     setSelectedMainArea(null);
     setSubAreas([]);
   };
+
+  // Filter service areas based on search query
+  const filteredServiceAreas = serviceAreas.filter(area =>
+    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter sub areas based on search query
+  const filteredSubAreas = subAreas.filter(area =>
+    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAddressSaved = async (address: any) => {
     console.log('✅ Address saved, reloading addresses list');
@@ -233,39 +244,77 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {/* Main Service Areas */}
           {selectedView === 'main-areas' && (
-            <div className="space-y-2">
-              {serviceAreas.map((area) => (
-                <motion.button
-                  key={area.id}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleMainAreaClick(area)}
-                  className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-900">{area.name}</span>
-                    <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
-                  </div>
-                </motion.button>
-              ))}
+            <div className="space-y-3">
+              {/* Search Box */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ابحث عن منطقة..."
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              </div>
+
+              {filteredServiceAreas.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                  <p>لا توجد نتائج للبحث</p>
+                </div>
+              ) : (
+                filteredServiceAreas.map((area) => (
+                  <motion.button
+                    key={area.id}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleMainAreaClick(area)}
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-900">{area.name}</span>
+                      <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                    </div>
+                  </motion.button>
+                ))
+              )}
             </div>
           )}
 
           {/* Sub Service Areas */}
           {selectedView === 'sub-areas' && (
-            <div className="space-y-2">
-              {subAreas.map((area) => (
-                <motion.button
-                  key={area.id}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleSubAreaClick(area)}
-                  className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-900">{area.name}</span>
-                    <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
-                  </div>
-                </motion.button>
-              ))}
+            <div className="space-y-3">
+              {/* Search Box */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ابحث عن منطقة..."
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              </div>
+
+              {filteredSubAreas.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                  <p>لا توجد نتائج للبحث</p>
+                </div>
+              ) : (
+                filteredSubAreas.map((area) => (
+                  <motion.button
+                    key={area.id}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSubAreaClick(area)}
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-900">{area.name}</span>
+                      <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                    </div>
+                  </motion.button>
+                ))
+              )}
             </div>
           )}
 
