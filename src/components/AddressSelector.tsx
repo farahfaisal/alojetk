@@ -86,18 +86,21 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="text-sm text-gray-700 font-medium mb-2">اختر عنوان التوصيل:</div>
+    <div className="space-y-3 p-6 rounded-2xl bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <div className="text-base text-gray-800 font-bold mb-3 flex items-center gap-2">
+        <MapPin className="w-5 h-5 text-brand" />
+        اختر موقع التوصيل
+      </div>
 
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {addresses.length > 0 ? (
           addresses.map((address) => (
             <div
               key={address.id}
-              className={`p-4 rounded-lg cursor-pointer transition-all ${
+              className={`p-4 rounded-xl cursor-pointer transition-all ${
                 selectedAddressId === address.id
-                  ? 'bg-brand/10 border-2 border-brand shadow-md'
-                  : 'bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 hover:border-gray-300'
+                  ? 'bg-white border-2 border-brand shadow-lg'
+                  : 'bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-gray-300 hover:shadow-md'
               }`}
               onClick={() => handleSelectAddress(address)}
             >
@@ -147,8 +150,8 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
             </div>
           ))
         ) : (
-          <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <div className="text-center py-8 text-gray-500 bg-white rounded-xl border-2 border-dashed border-gray-300">
+            <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
             <p className="font-medium mb-2">لا توجد عناوين محفوظة</p>
             <p className="text-sm mb-4">أضف عنوان التوصيل الأول</p>
           </div>
@@ -157,7 +160,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
 
       <button
         onClick={onAddNewAddress}
-        className="w-full py-3 bg-brand text-white rounded-lg hover:bg-brand-dark transition-colors flex items-center justify-center gap-2 font-medium shadow-md"
+        className="w-full py-3.5 bg-brand text-white rounded-xl hover:bg-brand-dark transition-all flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl hover:scale-[1.02]"
       >
         <Plus className="w-5 h-5" />
         إضافة عنوان جديد
