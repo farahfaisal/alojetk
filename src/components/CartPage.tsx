@@ -417,6 +417,25 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
     }, 0);
   };
 
+  const calculateItemsOnly = () => {
+    return cartItems.reduce((total, item) => {
+      const itemPrice = item.price || 0;
+      const itemTotal = itemPrice * item.quantity;
+      return total + itemTotal;
+    }, 0);
+  };
+
+  const calculateAddonsOnly = () => {
+    return cartItems.reduce((total, item) => {
+      const addonsTotal = (item.addons || []).reduce((sum, addon) => {
+        const addonPrice = addon.price || 0;
+        const addonQuantity = addon.quantity || 1;
+        return sum + (addonPrice * addonQuantity);
+      }, 0);
+      return total + addonsTotal;
+    }, 0);
+  };
+
   const calculateDiscount = () => {
     if (!appliedCoupon) return 0;
 
@@ -853,10 +872,24 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
                 </div>
 
                 <div className="space-y-2">
-                  {/* المجموع الفرعي */}
+                  {/* سعر المنتجات */}
                   <div className="flex justify-between">
-                    <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{calculateSubtotal().toFixed(2)} شيكل</span>
+                    <span className="text-gray-600">سعر المنتجات</span>
+                    <span className="font-medium">{calculateItemsOnly().toFixed(2)} شيكل</span>
+                  </div>
+
+                  {/* الإضافات */}
+                  {calculateAddonsOnly() > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">الإضافات والمكونات</span>
+                      <span className="font-medium text-blue-600">+{calculateAddonsOnly().toFixed(2)} شيكل</span>
+                    </div>
+                  )}
+
+                  {/* المجموع الفرعي */}
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="text-gray-700 font-semibold">المجموع الفرعي</span>
+                    <span className="font-semibold">{calculateSubtotal().toFixed(2)} شيكل</span>
                   </div>
 
                   {/* الخصم */}
