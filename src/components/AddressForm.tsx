@@ -24,7 +24,7 @@ const defaultMapCenter = { lat: 32.4594, lng: 35.2956 }; // Jenin coordinates
 
 const mapContainerStyle = {
   width: '100%',
-  height: '300px',
+  height: '400px',
   borderRadius: '12px',
   overflow: 'hidden'
 };
@@ -928,21 +928,21 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 )}
 
                 {/* Current Location Button */}
-                <button 
+                <button
                   type="button"
                   onClick={handleUseCurrentLocation}
                   disabled={gettingLocation}
-                  className="w-full py-3 bg-brand text-white rounded-lg hover:bg-brand-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#024959] rounded-xl hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 font-bold text-lg border-2 border-[#024959]/20"
                 >
                   {gettingLocation ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      جاري تحديد موقعك...
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span>جاري تحديد موقعك...</span>
                     </>
                   ) : (
                     <>
-                      <Navigation className="w-5 h-5" />
-                      استخدم موقعي الحالي
+                      <Navigation className="w-6 h-6" />
+                      <span>استخدم موقعي الحالي</span>
                     </>
                   )}
                 </button>
@@ -961,27 +961,34 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
             {/* Map Section */}
             <div className="bg-white rounded-xl p-4 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-brand" />
                 حدد موقعك على الخريطة
               </h3>
-              
+
+              {/* Helper Text */}
+              <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800 text-center font-medium">
+                  اسحب الدبوس الأصفر لتحديد موقعك بدقة
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {/* Map Container */}
                 <div className="relative">
                   {!isLoaded ? (
-                    <div className="w-full h-[300px] bg-gray-100 rounded-xl flex items-center justify-center">
+                    <div className="w-full h-[400px] bg-gray-100 rounded-xl flex items-center justify-center">
                       <div className="text-center">
                         <Loader2 className="w-10 h-10 text-brand animate-spin mb-4 mx-auto" />
                         <p className="text-gray-600">جاري تحميل الخريطة...</p>
                       </div>
                     </div>
                   ) : (
-                    <div className="relative w-full h-[300px] rounded-xl overflow-hidden border border-gray-200 shadow-sm map-container-embedded">
+                    <div className="relative w-full h-[400px] rounded-xl overflow-hidden border-2 border-gray-300 shadow-lg map-container-embedded">
                       <GoogleMap
                         mapContainerStyle={mapContainerStyle}
                         center={markerPosition}
-                        zoom={15}
+                        zoom={16}
                         onLoad={onLoad}
                         onUnmount={onUnmount}
                         onClick={handleMapClick}
@@ -1020,22 +1027,30 @@ const AddressForm: React.FC<AddressFormProps> = ({
                           </div>
                         )}
 
-                        {/* User Location Marker */}
+                        {/* User Location Marker - Draggable Pin */}
                         {mapLoaded && markerPosition && (
                           <Marker
                             position={markerPosition}
                             draggable={true}
                             onDragEnd={handleMarkerDragEnd}
                             title="موقعك - اسحب لتحديد موقع دقيق"
+                            animation={window.google.maps.Animation.DROP}
                             icon={{
                               url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                                  <circle cx="20" cy="20" r="15" fill="#FFD700" stroke="#024959" stroke-width="3"/>
-                                  <circle cx="20" cy="20" r="6" fill="#024959"/>
+                                <svg width="60" height="80" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+                                  <!-- Shadow -->
+                                  <ellipse cx="30" cy="72" rx="15" ry="4" fill="rgba(0,0,0,0.2)"/>
+                                  <!-- Pin Body -->
+                                  <path d="M30 10 C20 10 12 18 12 28 C12 40 30 60 30 60 S48 40 48 28 C48 18 40 10 30 10 Z"
+                                        fill="#FFD700" stroke="#024959" stroke-width="3"/>
+                                  <!-- Pin Center Dot -->
+                                  <circle cx="30" cy="28" r="8" fill="#024959"/>
+                                  <!-- Pulse Ring -->
+                                  <circle cx="30" cy="28" r="12" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.5"/>
                                 </svg>
                               `),
-                              scaledSize: new window.google.maps.Size(40, 40),
-                              anchor: new window.google.maps.Point(20, 20)
+                              scaledSize: new window.google.maps.Size(60, 80),
+                              anchor: new window.google.maps.Point(30, 60)
                             }}
                           />
                         )}
@@ -1058,11 +1073,26 @@ const AddressForm: React.FC<AddressFormProps> = ({
                           />
                         )}
                       </GoogleMap>
-                      
+
+                      {/* Floating GPS Button on Map */}
+                      <button
+                        type="button"
+                        onClick={handleUseCurrentLocation}
+                        disabled={gettingLocation}
+                        className="absolute bottom-4 right-4 w-14 h-14 bg-[#FFD700] rounded-full shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center border-3 border-[#024959] z-10"
+                        title="موقعي الحالي"
+                      >
+                        {gettingLocation ? (
+                          <Loader2 className="w-6 h-6 text-[#024959] animate-spin" />
+                        ) : (
+                          <Navigation className="w-6 h-6 text-[#024959]" />
+                        )}
+                      </button>
+
                       {/* Map Instructions Overlay */}
-                      <div className="absolute top-2 left-2 right-2 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-sm border border-gray-200">
-                        <p className="text-sm text-gray-700 text-center">
-                          انقر على الخريطة أو اسحب العلامة لتحديد موقعك الدقيق
+                      <div className="absolute top-2 left-2 right-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded-lg p-3 shadow-md border-2 border-[#024959]/20">
+                        <p className="text-sm text-[#024959] text-center font-bold">
+                          اسحب الدبوس الأصفر أو انقر على الخريطة
                         </p>
                       </div>
                     </div>
