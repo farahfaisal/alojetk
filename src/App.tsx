@@ -119,6 +119,16 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen || showAddressOrAreaSelector;
 
+  // Auto-open login page for demo (remove this in production)
+  useEffect(() => {
+    if (!showSplash && !isAuthenticated) {
+      const timer = setTimeout(() => {
+        setIsLoginOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash, isAuthenticated]);
+
   // Update cart items count
   useEffect(() => {
     const updateCartCount = () => {
