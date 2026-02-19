@@ -17,6 +17,7 @@ interface AddressFormProps {
     lat: number;
     lng: number;
   };
+  preselectedCity?: string;
 }
 
 const defaultMapCenter = { lat: 32.4594, lng: 35.2956 }; // Jenin coordinates
@@ -33,12 +34,17 @@ const AddressForm: React.FC<AddressFormProps> = ({
   onCancel,
   initialAddress,
   isModal = false,
-  vendorLocation = defaultMapCenter
+  vendorLocation = defaultMapCenter,
+  preselectedCity
 }) => {
   const { user } = useAuth();
 
   // Get selected service area from localStorage
   const getDefaultCity = () => {
+    if (preselectedCity) {
+      return preselectedCity;
+    }
+
     if (initialAddress?.city) {
       return initialAddress.city;
     }
@@ -766,14 +772,21 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     منطقة التوصيل *
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowServiceAreaPicker(true)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
-                  >
-                    <span className="text-gray-900 font-medium">{formData.city}</span>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </button>
+                  {preselectedCity ? (
+                    <div className="w-full px-4 py-3 border-2 border-[#B91C1C] bg-red-50 rounded-lg flex items-center justify-between">
+                      <span className="text-gray-900 font-medium">{formData.city}</span>
+                      <Check className="w-5 h-5 text-[#B91C1C]" />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowServiceAreaPicker(true)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
+                    >
+                      <span className="text-gray-900 font-medium">{formData.city}</span>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </button>
+                  )}
                 </div>
 
                 {/* Service Area Picker Modal */}

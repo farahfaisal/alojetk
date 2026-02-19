@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Plus, ChevronLeft, Home, Building, Navigation } from 'lucide-react';
+import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NewAddressPage from './NewAddressPage';
+import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 
 interface SavedAddress {
   id: string;
@@ -31,11 +32,25 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [selectedView, setSelectedView] = useState<'choose' | 'addresses' | 'areas'>('addresses');
+  const [selectedView, setSelectedView] = useState<'addresses' | 'main-areas' | 'sub-areas'>('addresses');
+  const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
+  const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
+  const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>('');
 
   useEffect(() => {
     loadSavedAddresses();
+    loadServiceAreas();
   }, []);
+
+  const loadServiceAreas = async () => {
+    try {
+      const areas = await getMainServiceAreas();
+      setServiceAreas(areas);
+    } catch (error) {
+      console.error('Error loading service areas:', error);
+    }
+  };
 
   const loadSavedAddresses = async () => {
     try {
@@ -83,7 +98,32 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   };
 
   const handleSelectNewArea = () => {
+    setSelectedView('main-areas');
+  };
+
+  const handleMainAreaClick = async (area: ServiceArea) => {
+    setSelectedMainArea(area);
+    const subs = await getSubServiceAreas(area.id);
+    setSubAreas(subs);
+    setSelectedView('sub-areas');
+  };
+
+  const handleSubAreaClick = (area: ServiceArea) => {
+    setSelectedCity(area.name);
     setShowAddressForm(true);
+  };
+
+  const handleBackToAddresses = () => {
+    setSelectedView('addresses');
+    setSelectedMainArea(null);
+    setSubAreas([]);
+    setSelectedCity('');
+  };
+
+  const handleBackToMainAreas = () => {
+    setSelectedView('main-areas');
+    setSelectedMainArea(null);
+    setSubAreas([]);
   };
 
   const handleAddressSaved = async (address: any) => {
@@ -158,10 +198,21 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         {/* Header */}
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">
-              {selectedView === 'addresses' && 'اختر موقع التوصيل'}
-              {selectedView === 'areas' && 'إضافة عنوان جديد'}
-            </h2>
+            <div className="flex items-center gap-2">
+              {(selectedView === 'main-areas' || selectedView === 'sub-areas') && (
+                <button
+                  onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+              <h2 className="text-xl font-bold text-gray-900">
+                {selectedView === 'addresses' && 'اختر موقع التوصيل'}
+                {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
+                {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
+              </h2>
+            </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
@@ -169,11 +220,53 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               إلغاء
             </button>
           </div>
-          <p className="text-sm text-gray-500 mt-1">حدد العنوان للمتابعة</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
+            {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية أولاً'}
+            {selectedView === 'sub-areas' && 'اختر المنطقة الفرعية'}
+          </p>
         </div>
 
         {/* Content - scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
+          {/* Main Service Areas */}
+          {selectedView === 'main-areas' && (
+            <div className="space-y-2">
+              {serviceAreas.map((area) => (
+                <motion.button
+                  key={area.id}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleMainAreaClick(area)}
+                  className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{area.name}</span>
+                    <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          )}
+
+          {/* Sub Service Areas */}
+          {selectedView === 'sub-areas' && (
+            <div className="space-y-2">
+              {subAreas.map((area) => (
+                <motion.button
+                  key={area.id}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSubAreaClick(area)}
+                  className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{area.name}</span>
+                    <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          )}
+
           {/* Addresses List - Show Directly */}
           {selectedView === 'addresses' && (
             <div className="space-y-3">
@@ -258,8 +351,15 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       {/* New Address Form */}
       {showAddressForm && (
         <NewAddressPage
-          onClose={() => setShowAddressForm(false)}
+          onClose={() => {
+            setShowAddressForm(false);
+            setSelectedView('addresses');
+            setSelectedMainArea(null);
+            setSubAreas([]);
+            setSelectedCity('');
+          }}
           onSave={handleAddressSaved}
+          preselectedCity={selectedCity}
         />
       )}
     </motion.div>

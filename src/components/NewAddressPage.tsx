@@ -7,12 +7,14 @@ interface NewAddressPageProps {
   onClose: () => void;
   onSave: (address: SavedAddress) => void;
   initialAddress?: SavedAddress;
+  preselectedCity?: string;
 }
 
-const NewAddressPage: React.FC<NewAddressPageProps> = ({ 
-  onClose, 
+const NewAddressPage: React.FC<NewAddressPageProps> = ({
+  onClose,
   onSave,
-  initialAddress
+  initialAddress,
+  preselectedCity
 }) => {
   const handleSave = (address: SavedAddress) => {
     onSave(address);
@@ -31,6 +33,7 @@ const NewAddressPage: React.FC<NewAddressPageProps> = ({
             onCancel={onClose}
             initialAddress={initialAddress}
             isModal={true}
+            preselectedCity={preselectedCity}
           />
         </div>
       </div>
