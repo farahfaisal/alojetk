@@ -255,7 +255,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col"
+        className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         style={{
           maxHeight: '85vh',
@@ -263,12 +263,12 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2 bg-transparent">
+        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
           <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
 
         {/* Header */}
-        <div className="px-6 pb-4 border-b border-gray-100">
+        <div className="px-6 pb-4 border-b border-gray-100 bg-white">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">تسجيل الدخول</h2>
             <button
