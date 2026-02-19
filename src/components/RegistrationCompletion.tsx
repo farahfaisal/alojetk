@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, MapPin, Home, X, Loader2, Check } from 'lucide-react';
+import { User, Mail, MapPin, Home, X, Loader2, Check, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import NewAddressPage from './NewAddressPage';
+import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 
 interface RegistrationCompletionProps {
   phone: string;
@@ -29,6 +30,61 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [referralError, setReferralError] = useState<string | null>(null);
   const [pointsAwarded, setPointsAwarded] = useState<number | null>(null);
   const [customerId, setCustomerId] = useState<string | null>(null);
+  const [showServiceAreaPicker, setShowServiceAreaPicker] = useState(false);
+  const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
+  const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
+  const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
+
+  // Get default city from localStorage
+  const getDefaultCity = () => {
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    const storedCity = localStorage.getItem('selectedCity');
+
+    if (selectedServiceArea) return selectedServiceArea;
+    if (storedCity) {
+      try {
+        const parsed = JSON.parse(storedCity);
+        return typeof parsed === 'string' ? parsed : 'يطا';
+      } catch {
+        return storedCity;
+      }
+    }
+    return 'يطا';
+  };
+
+  const [selectedCity, setSelectedCity] = useState<string>(getDefaultCity());
+
+  // Fetch service areas
+  useEffect(() => {
+    const fetchServiceAreas = async () => {
+      const areas = await getMainServiceAreas();
+      setServiceAreas(areas.filter(area => area.status === 'active'));
+    };
+    fetchServiceAreas();
+  }, []);
+
+  const handleMainAreaClick = async (area: ServiceArea) => {
+    try {
+      const subs = await getSubServiceAreas(area.id);
+
+      if (subs.length > 0) {
+        setSelectedMainArea(area);
+        setSubAreas(subs);
+      } else {
+        setSelectedCity(area.name);
+        setShowServiceAreaPicker(false);
+      }
+    } catch (err) {
+      console.error('Error fetching sub areas:', err);
+      setSelectedCity(area.name);
+      setShowServiceAreaPicker(false);
+    }
+  };
+
+  const handleBackToMain = () => {
+    setSelectedMainArea(null);
+    setSubAreas([]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +237,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
           }, 500);
         }}
         onSave={handleAddressSaved}
+        preselectedCity={selectedCity}
       />
     );
   }
@@ -285,6 +342,93 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  منطقة التوصيل *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowServiceAreaPicker(true)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
+                >
+                  <span className="text-gray-900 font-medium">{selectedCity}</span>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </button>
+                <p className="text-xs text-gray-500 mt-1">اختر المنطقة التي سيتم التوصيل إليها</p>
+              </div>
+
+              {/* Service Area Picker Modal */}
+              {showServiceAreaPicker && (
+                <div className="fixed inset-0 bg-black/50 z-[999999] flex items-end sm:items-center justify-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col"
+                  >
+                    <div className="p-4 border-b border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة التوصيل'}
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setShowServiceAreaPicker(false);
+                            setSelectedMainArea(null);
+                            setSubAreas([]);
+                          }}
+                          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4">
+                      {selectedMainArea && (
+                        <button
+                          onClick={handleBackToMain}
+                          className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-2 text-gray-700 transition-colors"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                          <span className="font-medium text-sm">رجوع للمناطق الرئيسية</span>
+                        </button>
+                      )}
+
+                      <div className="space-y-2">
+                        {(selectedMainArea ? subAreas : serviceAreas).map((area) => (
+                          <button
+                            key={area.id}
+                            onClick={() => {
+                              if (selectedMainArea) {
+                                setSelectedCity(area.name);
+                                setShowServiceAreaPicker(false);
+                                setSelectedMainArea(null);
+                                setSubAreas([]);
+                              } else {
+                                handleMainAreaClick(area);
+                              }
+                            }}
+                            className={`w-full p-4 rounded-lg border-2 transition-all text-right ${
+                              selectedCity === area.name
+                                ? 'bg-brand/10 border-brand'
+                                : 'bg-white border-gray-200 hover:border-brand/50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-gray-900">{area.name}</span>
+                              {selectedCity === area.name && (
+                                <Check className="w-5 h-5 text-brand" />
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
               
               <button 
                 type="submit" 
