@@ -115,115 +115,42 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-brand via-brand to-brand-dark flex flex-col z-50">
-      {/* Decorative Background */}
-      <div className="absolute inset-0">
-        {/* Animated circles */}
-        <motion.div
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.3, 1],
-            opacity: [0.1, 0.3, 0.1]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"
-        />
-        <motion.div
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-32 left-16 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl"
-        />
-        <motion.div
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-            scale: [1, 1.2, 1],
-            opacity: [0.05, 0.15, 0.05]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute top-1/2 left-8 w-28 h-28 bg-white/10 rounded-full blur-lg"
-        />
-      </div>
-
-      {/* Header */}
+    <div className="fixed inset-0 flex items-end justify-center z-50">
+      {/* Header with Logo and Title */}
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 text-center pt-16 pb-8"
-      >
-        {/* Logo */}
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-          className="relative mx-auto mb-6"
-        >
-          <div className="w-24 h-24 mx-auto bg-white rounded-full shadow-2xl flex items-center justify-center relative overflow-hidden">
-            <img
-              src="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/categories/test.png"
-              alt="الو جيتك"
-              className="w-20 h-20 object-cover rounded-full"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg";
-              }}
-            />
-            <div className="absolute inset-0 border-3 border-yellow-400 rounded-full"></div>
-          </div>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-3xl font-bold text-white mb-2"
-          style={{ fontFamily: 'TT Hoves Pro, Georgia, serif' }}
-        >
-          {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة الخدمة'}
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="text-white/90 text-lg"
-        >
-          {selectedMainArea ? 'اختر المنطقة الفرعية للتوصيل' : 'حدد المنطقة التي تريد الطلب منها'}
-        </motion.p>
-      </motion.div>
-
-      {/* Service Areas Grid */}
-      <div
-        className="flex-1 overflow-y-auto px-4 scrollbar-thin scrollbar-thumb-brand scrollbar-track-gray-100"
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col"
         style={{
-          paddingBottom: 'calc(96px + max(env(safe-area-inset-bottom), 0px))',
-          overscrollBehavior: 'contain'
+          maxHeight: '85vh',
+          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)'
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="max-w-md mx-auto"
-        >
+        {/* Handle bar */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+        </div>
+
+        {/* Header */}
+        <div className="px-6 pb-4 border-b border-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 text-center">
+            {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر موقع التوصيل'}
+          </h2>
+        </div>
+
+      {/* Service Areas Grid - scrollable content */}
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="max-w-md mx-auto">
           {selectedMainArea && (
-            <motion.button
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={handleBackToMain}
-              className="mb-4 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-3 flex items-center gap-2 text-white hover:bg-white/30 transition-all"
+              className="mb-4 bg-gray-100 rounded-xl p-3 flex items-center gap-2 text-gray-700 hover:bg-gray-200 transition-all w-full"
             >
               <ChevronRight className="w-5 h-5" />
               <span className="font-medium">رجوع للمناطق الرئيسية</span>
-            </motion.button>
+            </button>
           )}
 
           {error ? (
@@ -233,16 +160,8 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
           ) : (
             <div className="grid grid-cols-1 gap-3">
               {(selectedMainArea ? subAreas : serviceAreas).map((area, index) => (
-                <motion.button
+                <button
                   key={area.id}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.2 + (index * 0.1), duration: 0.6 }}
-                  whileHover={{
-                    scale: 1.02,
-                    boxShadow: "0 10px 30px rgba(255, 255, 255, 0.2)"
-                  }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     if (area.status === 'active') {
                       if (selectedMainArea) {
@@ -253,11 +172,11 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
                     }
                   }}
                   disabled={area.status !== 'active' || selectedArea === area.name}
-                  className={`relative bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg transition-all ${
-                    area.status === 'active' 
-                      ? 'hover:bg-white cursor-pointer' 
-                      : 'opacity-60 cursor-not-allowed'
-                  } ${selectedArea === area.name ? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`}
+                  className={`relative bg-white rounded-2xl p-4 shadow-md border-2 transition-all ${
+                    area.status === 'active'
+                      ? 'hover:shadow-lg cursor-pointer border-gray-100 hover:border-brand/30'
+                      : 'opacity-60 cursor-not-allowed border-gray-100'
+                  } ${selectedArea === area.name ? 'ring-4 ring-green-400 bg-green-50 border-green-200' : ''}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -327,138 +246,15 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
                     />
                   )}
 
-                  {/* Hover Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-brand/5 rounded-2xl opacity-0 pointer-events-none"
-                    whileHover={{ opacity: area.status === 'active' ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                </motion.button>
+                </button>
               ))}
             </div>
           )}
-
-          {/* Info Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-            className="mt-8 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-yellow-400/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Star className="w-6 h-6 text-yellow-300" />
-              </div>
-              <div>
-                <h3 className="font-bold text-white mb-2">مرحباً بك في الو جيتك!</h3>
-                <p className="text-white/80 text-sm leading-relaxed">
-                  نقدم خدمة توصيل سريعة وموثوقة في جميع أنحاء فلسطين. 
-                  اختر منطقتك لنبدأ رحلة التسوق معاً.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Bottom Section with Privacy Policy */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.8, duration: 0.8 }}
-        className="relative z-10 bg-white/10 backdrop-blur-sm border-t border-white/20"
-        style={{
-          paddingBottom: 'calc(1rem + max(env(safe-area-inset-bottom), 8px))'
-        }}
-      >
-        <div className="max-w-md mx-auto px-4 py-6">
-          {/* Privacy Policy Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onOpenPrivacyPolicy}
-            className="w-full bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-4 flex items-center justify-center gap-3 hover:bg-white/30 transition-all"
-          >
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-right">
-              <h4 className="font-bold text-white">سياسة الخصوصية</h4>
-              <p className="text-white/80 text-sm">اطلع على كيفية حماية بياناتك</p>
-            </div>
-            <ArrowRight className="w-5 h-5 text-white/70" />
-          </motion.button>
-
-          {/* Footer Text */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.2, duration: 0.8 }}
-            className="text-center mt-4"
-          >
-            <p className="text-white/60 text-xs">
-              باستخدام التطبيق، أنت توافق على شروط الخدمة وسياسة الخصوصية
-            </p>
-          </motion.div>
         </div>
+      </div>
       </motion.div>
-
-      {/* Loading Animation for Selected Area */}
-      <AnimatePresence>
-        {selectedArea && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center z-20"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-2xl p-8 text-center shadow-2xl"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-16 h-16 border-4 border-brand/30 border-t-brand rounded-full mx-auto mb-4"
-              />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                جاري التحضير...
-              </h3>
-              <p className="text-gray-600">
-                نقوم بإعداد خدماتنا في {selectedArea}
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Sparkle Effects */}
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ 
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
-            rotate: [0, 180, 360]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: 2 + (i * 0.4),
-            ease: "easeInOut"
-          }}
-          className="absolute text-yellow-300 text-lg pointer-events-none"
-          style={{
-            left: `${15 + (i * 10)}%`,
-            top: `${20 + (i % 3) * 25}%`
-          }}
-        >
-          ✨
-        </motion.div>
-      ))}
     </div>
+
   );
 };
 
