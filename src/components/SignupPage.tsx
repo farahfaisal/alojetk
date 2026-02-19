@@ -189,23 +189,23 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
         setSuccess('تم التحقق بنجاح');
         
         if (data.existing_user) {
-          // User exists, store user data and close
+          // User exists, save session and redirect to home
           if (data.user) {
             localStorage.setItem('auth_user', JSON.stringify(data.user));
-            
+
             // Dispatch auth change event
             window.dispatchEvent(new Event('auth-change'));
-            
-            // Close login page after a short delay
+
+            // Close and redirect to home
             setTimeout(() => {
               onClose();
-              // Navigate to account page
-              window.dispatchEvent(new CustomEvent('open-account-page'));
+              window.location.href = '/';
             }, 1500);
           } else {
-            // Just close the page
+            // Just close and go to home
             setTimeout(() => {
               onClose();
+              window.location.href = '/';
             }, 1500);
           }
         } else {

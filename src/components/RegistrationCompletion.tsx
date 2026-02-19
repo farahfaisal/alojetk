@@ -127,35 +127,23 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
         console.log('Storing user data in localStorage:', customerData[0]);
         const userData = {
           id: customerData[0].id,
-          name: name.trim(), // Use the trimmed name from the form
+          name: name.trim(),
           phone: phone,
           email: email || customerData[0].email,
           customer_id: customerData[0].id
         };
 
+        // Save session in localStorage
         localStorage.setItem('auth_user', JSON.stringify(userData));
 
-        // Dispatch auth change event after profile completion
+        // Dispatch auth change event
         window.dispatchEvent(new Event('auth-change'));
-        
-        // Dispatch event to open account page
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('open-account-page'));
-        }, 300);
-        
-        // Add a second dispatch with a small delay to ensure it's processed
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('open-account-page'));
-        }, 500);
 
-        // فتح صفحة الحساب بعد إكمال التسجيل
-        // Remove duplicate event dispatches
-
-        // استدعاء دالة الإكمال مع بيانات المستخدم بعد تأخير قصير
+        // Navigate to home page after registration
         setTimeout(() => {
           console.log('Calling onComplete with user data');
           onComplete(userData);
-        }, 500);
+        }, 1500);
       }
     } catch (err: any) {
       console.error('Complete Profile Error:', err);
@@ -198,12 +186,11 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
               
               <button
                 onClick={() => {
-                  window.dispatchEvent(new CustomEvent('open-account-page'));
                   onClose();
                 }}
                 className="bg-brand text-white px-6 py-3 rounded-lg hover:bg-brand-light transition-colors mt-4"
               >
-                الذهاب إلى حسابي
+                ابدأ التصفح
               </button>
               
               {referralSuccess && (
