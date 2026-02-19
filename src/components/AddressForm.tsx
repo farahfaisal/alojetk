@@ -672,13 +672,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-gray-50 z-50 flex flex-col overflow-hidden modal-page-ios"
-      onClick={(e) => e.stopPropagation()}
-      onTouchStart={(e) => e.stopPropagation()}
-      onTouchMove={(e) => e.stopPropagation()}
-      onTouchEnd={(e) => e.stopPropagation()}
-    >
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col overflow-hidden modal-page-ios">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10" style={{
         paddingTop: 'max(env(safe-area-inset-top), 0px)'
@@ -937,23 +931,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
                       </div>
                     </div>
                   ) : (
-                    <div
-                      className="relative w-full h-[300px] rounded-xl overflow-hidden border border-gray-200 shadow-sm map-container-embedded"
-                      onClick={(e) => e.stopPropagation()}
-                      onTouchStart={(e) => e.stopPropagation()}
-                      onTouchMove={(e) => e.stopPropagation()}
-                      onTouchEnd={(e) => e.stopPropagation()}
-                    >
+                    <div className="relative w-full h-[300px] rounded-xl overflow-hidden border border-gray-200 shadow-sm map-container-embedded">
                       <GoogleMap
                         mapContainerStyle={mapContainerStyle}
                         center={markerPosition}
                         zoom={15}
                         onLoad={onLoad}
                         onUnmount={onUnmount}
-                        onClick={(e) => {
-                          e.stop();
-                          handleMapClick(e);
-                        }}
+                        onClick={handleMapClick}
                         options={{
                           fullscreenControl: false,
                           streetViewControl: false,
