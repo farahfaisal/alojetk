@@ -248,8 +248,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[999999] flex items-end justify-center"
-      onClick={onClose}
-      style={{ background: 'transparent' }}
+      style={{ background: 'transparent', pointerEvents: 'none' }}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -261,12 +260,13 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         style={{
           maxHeight: '85vh',
           paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
-          background: 'transparent'
+          background: 'transparent',
+          pointerEvents: 'auto'
         }}
       >
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" onClick={onClose}></div>
         </div>
 
         {/* Header and Content Container */}
