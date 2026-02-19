@@ -313,10 +313,10 @@ const Home: React.FC<HomeProps> = ({
       <div
         className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
         style={{
-          height: 'calc(max(env(safe-area-inset-top), 0px) + 160px)',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.92) 50%, rgba(255,255,255,0.6) 80%, rgba(255,255,255,0) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          height: 'calc(max(env(safe-area-inset-top), 0px) + 140px)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0) 100%)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
         }}
       />
 
