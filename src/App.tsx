@@ -119,7 +119,15 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen || showAddressOrAreaSelector;
 
-  // Auto-open removed - user will open login manually when needed
+  // Auto-open login page if not authenticated
+  useEffect(() => {
+    if (!showSplash && !isAuthenticated) {
+      const timer = setTimeout(() => {
+        setIsLoginOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash, isAuthenticated]);
 
   // Update cart items count
   useEffect(() => {
@@ -260,6 +268,11 @@ const AppContent: React.FC = () => {
         // User logged in, show address/area selector
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
+        }, 500);
+      } else {
+        // User not logged in, show login page
+        setTimeout(() => {
+          setIsLoginOpen(true);
         }, 500);
       }
     }
