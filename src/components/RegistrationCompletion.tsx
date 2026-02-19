@@ -97,6 +97,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       return;
     }
 
+    // تحقق من وجود منطقة التوصيل
+    if (!selectedCity) {
+      setError('يرجى اختيار منطقة التوصيل');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -193,6 +199,10 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
       // Save session in localStorage
       localStorage.setItem('auth_user', JSON.stringify(userData));
+
+      // Save selected city to localStorage
+      localStorage.setItem('selectedServiceArea', selectedCity);
+      localStorage.setItem('selectedCity', JSON.stringify(selectedCity));
 
       // Dispatch auth change event
       window.dispatchEvent(new Event('auth-change'));
@@ -315,14 +325,18 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  منطقة التوصيل *
+                  منطقة التوصيل <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowServiceAreaPicker(true)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
+                    !selectedCity ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 >
-                  <span className="text-gray-900 font-medium">{selectedCity}</span>
+                  <span className={`font-medium ${selectedCity ? 'text-gray-900' : 'text-gray-400'}`}>
+                    {selectedCity || 'اختر منطقة التوصيل'}
+                  </span>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </button>
                 <p className="text-xs text-gray-500 mt-1">اختر المنطقة التي سيتم التوصيل إليها</p>
