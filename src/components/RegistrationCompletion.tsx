@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, MapPin, Home, X, Loader2, Check, ChevronRight, Search } from 'lucide-react';
+import { User, Mail, MapPin, X, Loader2, Check, ChevronRight, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import NewAddressPage from './NewAddressPage';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 
 interface RegistrationCompletionProps {
@@ -20,7 +19,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   referralCode
 }) => {
   const { user } = useAuth();
-  const [step, setStep] = useState<'info' | 'address'>('info');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +27,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [referralSuccess, setReferralSuccess] = useState<string | null>(null);
   const [referralError, setReferralError] = useState<string | null>(null);
   const [pointsAwarded, setPointsAwarded] = useState<number | null>(null);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [showServiceAreaPicker, setShowServiceAreaPicker] = useState(false);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
@@ -123,7 +120,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       }
 
       const newCustomerId = customerData[0].id;
-      setCustomerId(newCustomerId);
 
       // If referral code is provided, process the referral
       if (referralCode && newCustomerId) {
@@ -201,9 +197,10 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       // Dispatch auth change event
       window.dispatchEvent(new Event('auth-change'));
 
-      // Move to address step instead of closing
+      // Redirect to home immediately after successful registration
       setTimeout(() => {
-        setStep('address');
+        onComplete(userData);
+        window.location.href = '/';
       }, 1500);
     } catch (err: any) {
       console.error('Complete Profile Error:', err);
@@ -214,34 +211,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
     }
   };
 
-  const handleAddressSaved = (addressData: any) => {
-    console.log('Address saved:', addressData);
-    // Complete registration and redirect to home
-    const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
-    onComplete(userData);
-    // Redirect to home page
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 500);
-  };
-
-  // Show address form if we're on address step
-  if (step === 'address' && customerId) {
-    return (
-      <NewAddressPage
-        onClose={() => {
-          // User completed registration, redirect to home
-          const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
-          onComplete(userData);
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 500);
-        }}
-        onSave={handleAddressSaved}
-        preselectedCity={selectedCity}
-      />
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
@@ -275,8 +244,8 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   <Loader2 className="w-8 h-8 text-green-500" />
                 </motion.div>
               </div>
-              <h3 className="text-xl font-bold">جاري التحضير...</h3>
-              <p className="text-center">سننتقل الآن لإضافة عنوانك</p>
+              <h3 className="text-xl font-bold">تم التسجيل بنجاح!</h3>
+              <p className="text-center">جاري تسجيل الدخول...</p>
 
               {referralSuccess && (
                 <div className="bg-brand/10 p-4 rounded-lg text-accent mt-4 w-full">
