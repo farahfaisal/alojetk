@@ -248,7 +248,8 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[999999] flex items-end justify-center"
-      style={{ background: 'transparent', pointerEvents: 'none' }}
+      style={{ background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(4px)', pointerEvents: 'auto' }}
+      onClick={onClose}
     >
       <motion.div
         initial={{ y: '100%' }}
