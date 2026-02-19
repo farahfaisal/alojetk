@@ -115,30 +115,39 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 flex items-end justify-center z-50">
-      {/* Header with Logo and Title */}
+    <div className="fixed inset-0 z-50">
+      {/* Semi-transparent backdrop - allows home page to be visible */}
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col"
-        style={{
-          maxHeight: '85vh',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)'
-        }}
-      >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-        </div>
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      />
 
-        {/* Header */}
-        <div className="px-6 pb-4 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 text-center">
-            {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر موقع التوصيل'}
-          </h2>
-        </div>
+      {/* Bottom sheet for area selection */}
+      <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
+        <motion.div
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+          className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col pointer-events-auto"
+          style={{
+            maxHeight: '85vh',
+            paddingBottom: 'max(env(safe-area-inset-bottom), 20px)'
+          }}
+        >
+          {/* Handle bar */}
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+          </div>
+
+          {/* Header */}
+          <div className="px-6 pb-4 border-b border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 text-center">
+              {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر موقع التوصيل'}
+            </h2>
+          </div>
 
       {/* Service Areas Grid - scrollable content */}
       <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -252,9 +261,9 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
           )}
         </div>
       </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
-
   );
 };
 
