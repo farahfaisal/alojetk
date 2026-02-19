@@ -568,10 +568,10 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseLogin = () => {
-    // NEVER allow closing login without authentication
+    // Only allow closing if user is logged in
     const storedUser = localStorage.getItem('auth_user');
     if (!storedUser) {
-      return; // Prevent closing
+      return; // Don't close if not logged in
     }
 
     setIsLoginOpen(false);
@@ -591,10 +591,10 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseSignup = () => {
-    // NEVER allow closing signup without authentication
+    // Only allow closing if user is logged in
     const storedUser = localStorage.getItem('auth_user');
     if (!storedUser) {
-      return; // Prevent closing
+      return; // Don't close if not logged in
     }
 
     setIsSignupOpen(false);
@@ -728,21 +728,6 @@ const AppContent: React.FC = () => {
   };
 
   const renderContent = () => {
-    // Don't render content if user is not authenticated
-    if (!isAuthenticated) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center p-8">
-            <div className="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-10 h-10 text-brand" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">يجب تسجيل الدخول</h2>
-            <p className="text-gray-600">الرجاء تسجيل الدخول لتصفح التطبيق</p>
-          </div>
-        </div>
-      );
-    }
-
     if (viewMode === 'supermarket') {
       return <Supermarket selectedCity={selectedCity} />;
     }
@@ -813,8 +798,8 @@ const AppContent: React.FC = () => {
           {renderContent()}
         </div>
 
-        {/* Floating Buttons - Only show if authenticated */}
-        {isAuthenticated && !isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && (
+        {/* Floating Buttons */}
+        {!isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
@@ -842,36 +827,29 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Cart Button - Only show if authenticated */}
-        {isAuthenticated && (
-          <FloatingCart
-            onOpenCart={handleOpenCart}
-            showOnlyInProductPage={false}
-          />
-        )}
+        {/* Floating Cart Button */}
+        <FloatingCart
+          onOpenCart={handleOpenCart}
+          showOnlyInProductPage={false}
+        />
 
-        {/* Sidebar - Only show if authenticated */}
-        {isAuthenticated && (
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            onOpenContact={handleOpenContactPage}
-          />
-        )}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onOpenContact={handleOpenContactPage}
+        />
 
-        {/* Bottom Nav - Only show if authenticated */}
-        {isAuthenticated && (
-          <BottomNav
-            onOpenCart={handleOpenCart}
-            onOpenMenu={handleOpenMenu}
-            onOpenAccount={handleOpenAccount}
-            onOpenOrders={handleOpenOrders}
-            isHidden={shouldHideBottomNav()}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            cartItemsCount={cartItemsCount}
-          />
-        )}
+        {/* Bottom Nav */}
+        <BottomNav
+          onOpenCart={handleOpenCart}
+          onOpenMenu={handleOpenMenu}
+          onOpenAccount={handleOpenAccount}
+          onOpenOrders={handleOpenOrders}
+          isHidden={shouldHideBottomNav()}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          cartItemsCount={cartItemsCount}
+        />
 
         <AnimatePresence>
           {isLoginOpen && (
@@ -890,65 +868,56 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Account Page - Only show if authenticated */}
-        {isAuthenticated && isAccountOpen && (
+        {isAccountOpen && (
             <AccountPage
               onClose={handleCloseAccount}
             />
         )}
 
-        {/* Privacy Policy - Can be accessed without login */}
         {isPrivacyPolicyOpen && (
             <PrivacyPolicy
               onClose={() => setIsPrivacyPolicyOpen(false)}
             />
         )}
 
-        {/* Contact Page - Can be accessed without login */}
         {isContactPageOpen && (
             <ContactPage
               onClose={() => setIsContactPageOpen(false)}
             />
         )}
 
-        {/* Cart - Only show if authenticated */}
-        {isAuthenticated && isCartOpen && (
+        {isCartOpen && (
           <CartPage
             onClose={() => setIsCartOpen(false)}
             selectedCity={selectedCity}
           />
         )}
 
-        {/* Orders - Only show if authenticated */}
-        {isAuthenticated && isOrdersOpen && (
+        {isOrdersOpen && (
           <OrdersPage
             onClose={() => setIsOrdersOpen(false)}
           />
         )}
 
-        {/* Captain Request - Only show if authenticated */}
-        {isAuthenticated && isCaptainRequestOpen && (
+        {isCaptainRequestOpen && (
           <CaptainRequestPage
             onClose={() => setIsCaptainRequestOpen(false)}
           />
         )}
 
-        {/* Captain Tracking - Only show if authenticated */}
-        {isAuthenticated && isCaptainTrackingOpen && (
+        {isCaptainTrackingOpen && (
           <CaptainRequestsTracking
             onClose={() => setIsCaptainTrackingOpen(false)}
           />
         )}
 
-        {/* Parcel Order - Only show if authenticated */}
-        {isAuthenticated && isParcelOrderOpen && (
+        {isParcelOrderOpen && (
           <ParcelOrderPage
             onClose={() => setIsParcelOrderOpen(false)}
           />
         )}
 
-        {/* Parcel Tracking - Only show if authenticated */}
-        {isAuthenticated && isParcelTrackingOpen && (
+        {isParcelTrackingOpen && (
           <ParcelOrdersTracking
             onClose={() => setIsParcelTrackingOpen(false)}
           />
@@ -961,48 +930,42 @@ const AppContent: React.FC = () => {
           onLogin={handleLoginPromptLogin}
         />
 
-        {/* Notification Center - Only show if authenticated */}
-        {isAuthenticated && (
-          <NotificationCenter
-            isOpen={isNotificationCenterOpen}
-            onClose={() => setIsNotificationCenterOpen(false)}
-          />
-        )}
+        {/* Notification Center */}
+        <NotificationCenter
+          isOpen={isNotificationCenterOpen}
+          onClose={() => setIsNotificationCenterOpen(false)}
+        />
 
-        {/* Permissions Prompt - Only show if authenticated */}
-        {isAuthenticated && showPermissionsPrompt && (
+        {/* Permissions Prompt */}
+        {showPermissionsPrompt && (
           <PermissionsPrompt onClose={handlePermissionsPromptClose} />
         )}
 
-        {/* Search Modal - Only show if authenticated */}
-        {isAuthenticated && (
-          <SearchModal
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            onVendorSelect={(vendorId) => {
-              setIsSearchOpen(false);
-              setSelectedVendorId(String(vendorId));
-            }}
-            onProductSelect={(productId) => {
-              setIsSearchOpen(false);
-              setSelectedProductId(String(productId));
-            }}
-          />
-        )}
+        {/* Search Modal */}
+        <SearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          onVendorSelect={(vendorId) => {
+            setIsSearchOpen(false);
+            setSelectedVendorId(String(vendorId));
+          }}
+          onProductSelect={(productId) => {
+            setIsSearchOpen(false);
+            setSelectedProductId(String(productId));
+          }}
+        />
 
-        {/* City Selector - Only show if authenticated */}
-        {isAuthenticated && (
-          <CitySelector
-            isOpen={isCityDropdownOpen}
-            onSelectCity={handleCitySelect}
-            currentCity={selectedCity}
-            required={true}
-          />
-        )}
+        {/* City Selector */}
+        <CitySelector
+          isOpen={isCityDropdownOpen}
+          onSelectCity={handleCitySelect}
+          currentCity={selectedCity}
+          required={true}
+        />
 
         {/* Address or Area Selector */}
         <AnimatePresence>
-          {showAddressOrAreaSelector && isAuthenticated && (
+          {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
                 // Only allow closing if a service area is already selected
@@ -1024,8 +987,8 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {/* Single Product Page - Only show if authenticated */}
-        {isAuthenticated && selectedProduct && (
+        {/* Single Product Page */}
+        {selectedProduct && (
           <SingleProductPage
             product={selectedProduct}
             onClose={() => {
@@ -1036,8 +999,8 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {/* Store Page - Only show if authenticated */}
-        {isAuthenticated && selectedVendor && (
+        {/* Store Page */}
+        {selectedVendor && (
           <StorePage
             vendor={{
               id: selectedVendor.id,
