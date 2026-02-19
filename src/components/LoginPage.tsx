@@ -247,29 +247,32 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/10 backdrop-blur-lg z-[999999] flex items-end justify-center"
+      className="fixed inset-0 z-[999999] flex items-end justify-center"
       onClick={onClose}
+      style={{ background: 'transparent' }}
     >
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-lg flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         style={{
           maxHeight: '85vh',
           paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
-          background: 'linear-gradient(to bottom, transparent 0%, transparent 40px, white 40px, white 100%)'
+          background: 'transparent'
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2">
+        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
           <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
 
+        {/* Header and Content Container */}
+        <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
         {/* Header */}
-        <div className="px-6 pb-4 border-b border-gray-100">
+        <div className="px-6 pb-4 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">تسجيل الدخول</h2>
             <button
@@ -428,6 +431,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             />
           )}
           </div>
+        </div>
         </div>
       </motion.div>
     </motion.div>
