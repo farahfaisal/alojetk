@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, AlertCircle, Loader2, Info, X, WifiOff, UserPlus, Check } from 'lucide-react';
+import { Phone, AlertCircle, Loader2, Info, X, WifiOff, UserPlus, Check, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
