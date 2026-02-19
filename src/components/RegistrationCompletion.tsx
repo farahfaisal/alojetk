@@ -3,6 +3,7 @@ import { User, Mail, MapPin, Home, X, Loader2, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import NewAddressPage from './NewAddressPage';
 
 interface RegistrationCompletionProps {
   phone: string;
@@ -11,23 +12,23 @@ interface RegistrationCompletionProps {
   referralCode?: string;
 }
 
-const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({ 
-  phone, 
+const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
+  phone,
   onClose,
   onComplete,
   referralCode
 }) => {
   const { user } = useAuth();
+  const [step, setStep] = useState<'info' | 'address'>('info');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [city, setCity] = useState('جنين');
-  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [referralSuccess, setReferralSuccess] = useState<string | null>(null);
   const [referralError, setReferralError] = useState<string | null>(null);
   const [pointsAwarded, setPointsAwarded] = useState<number | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,23 +49,28 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       // Create or update the customer with the provided details
       const { data: customerData, error: customerError } = await supabase
         .from('customers')
-        .upsert({ 
+        .upsert({
           phone,
           name,
-          email: email || null,
-          address: address || null,
-          city: city || null
+          email: email || null
         }, {
           onConflict: 'phone',
           returning: 'representation'
-        });
-      
+        })
+        .select();
+
       if (customerError) throw customerError;
 
+      if (!customerData || customerData.length === 0) {
+        throw new Error('فشل في إنشاء الحساب');
+      }
+
+      const newCustomerId = customerData[0].id;
+      setCustomerId(newCustomerId);
+
       // If referral code is provided, process the referral
-      if (referralCode && customerData && customerData.length > 0) {
+      if (referralCode && newCustomerId) {
         try {
-          const customerId = customerData[0].id;
 
           const { data: referrerData, error: referrerError } = await supabase
             .from('customers')
@@ -75,7 +81,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
           if (referrerError || !referrerData) {
             console.error('Error finding referrer:', referrerError);
             setReferralError('رمز الإحالة غير صالح');
-          } else if (referrerData.id === customerId) {
+          } else if (referrerData.id === newCustomerId) {
             setReferralError('لا يمكنك استخدام رمز الإحالة الخاص بك');
           } else {
             const { data: settings } = await supabase
@@ -91,7 +97,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
               .from('referrals')
               .insert({
                 referrer_id: referrerData.id,
-                referred_id: customerId,
+                referred_id: newCustomerId,
                 used_referral_code: referralCode,
                 status: 'pending',
                 referrer_reward_points: referrerPoints,
@@ -109,7 +115,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
               await supabase
                 .from('customers')
                 .update({ referred_by: referrerData.id })
-                .eq('id', customerId);
+                .eq('id', newCustomerId);
 
               setReferralSuccess(`تم تطبيق رمز الإحالة بنجاح! ستحصل على ${referredPoints} نقطة عند أول طلب`);
               setPointsAwarded(referredPoints);
@@ -123,28 +129,25 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       
       setSuccess(true);
       // Store user data in localStorage
-      if (customerData && customerData.length > 0) {
-        console.log('Storing user data in localStorage:', customerData[0]);
-        const userData = {
-          id: customerData[0].id,
-          name: name.trim(),
-          phone: phone,
-          email: email || customerData[0].email,
-          customer_id: customerData[0].id
-        };
+      console.log('Storing user data in localStorage:', customerData[0]);
+      const userData = {
+        id: customerData[0].id,
+        name: name.trim(),
+        phone: phone,
+        email: email || customerData[0].email,
+        customer_id: customerData[0].id
+      };
 
-        // Save session in localStorage
-        localStorage.setItem('auth_user', JSON.stringify(userData));
+      // Save session in localStorage
+      localStorage.setItem('auth_user', JSON.stringify(userData));
 
-        // Dispatch auth change event
-        window.dispatchEvent(new Event('auth-change'));
+      // Dispatch auth change event
+      window.dispatchEvent(new Event('auth-change'));
 
-        // Navigate to home page after registration
-        setTimeout(() => {
-          console.log('Calling onComplete with user data');
-          onComplete(userData);
-        }, 1500);
-      }
+      // Move to address step instead of closing
+      setTimeout(() => {
+        setStep('address');
+      }, 1500);
     } catch (err: any) {
       console.error('Complete Profile Error:', err);
       setError('فشل إكمال الملف الشخصي');
@@ -153,6 +156,27 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       setLoading(false);
     }
   };
+
+  const handleAddressSaved = (addressData: any) => {
+    console.log('Address saved:', addressData);
+    // Complete registration and close
+    const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
+    onComplete(userData);
+  };
+
+  // Show address form if we're on address step
+  if (step === 'address' && customerId) {
+    return (
+      <NewAddressPage
+        onClose={() => {
+          // User completed registration, allow closing
+          const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
+          onComplete(userData);
+        }}
+        onSave={handleAddressSaved}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
@@ -173,26 +197,22 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-md mx-auto p-4">
           {success ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-green-50 text-green-600 p-6 rounded-lg flex flex-col items-center gap-4 mt-8"
             >
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <Check className="w-8 h-8 text-green-500" />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="w-8 h-8 text-green-500" />
+                </motion.div>
               </div>
-              <h3 className="text-xl font-bold">تم إنشاء الحساب بنجاح!</h3>
-              <p className="text-center">مرحباً بك </p>
-              
-              <button
-                onClick={() => {
-                  onClose();
-                }}
-                className="bg-brand text-white px-6 py-3 rounded-lg hover:bg-brand-light transition-colors mt-4"
-              >
-                ابدأ التصفح
-              </button>
-              
+              <h3 className="text-xl font-bold">جاري التحضير...</h3>
+              <p className="text-center">سننتقل الآن لإضافة عنوانك</p>
+
               {referralSuccess && (
                 <div className="bg-brand/10 p-4 rounded-lg text-accent mt-4 w-full">
                   <p className="font-medium">{referralSuccess}</p>
@@ -201,7 +221,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   )}
                 </div>
               )}
-              
+
               {referralError && (
                 <div className="bg-red-50 p-4 rounded-lg text-red-800 mt-4 w-full">
                   <p>{referralError}</p>
@@ -247,55 +267,15 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   البريد الإلكتروني (اختياري)
                 </label>
                 <div className="relative">
-                  <input 
+                  <input
                     type="email"
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="example@email.com"
                     className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
                     dir="ltr"
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  المدينة (اختياري)
-                </label>
-                <div className="relative">
-                  <select
-                    value={city} 
-                    onChange={(e) => setCity(e.target.value)} 
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand appearance-none"
-                  >
-                    <option value="">اختر المدينة</option>
-                    <option value="جنين">جنين</option>
-                    <option value="رام الله">رام الله</option>
-                    <option value="نابلس">نابلس</option>
-                    <option value="الخليل">الخليل</option>
-                    <option value="بيت لحم">بيت لحم</option>
-                    <option value="طولكرم">طولكرم</option>
-                    <option value="قلقيلية">قلقيلية</option>
-                    <option value="أريحا">أريحا</option>
-                  </select>
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  العنوان (اختياري)
-                </label>
-                <div className="relative">
-                  <input 
-                    type="text"
-                    value={address} 
-                    onChange={(e) => setAddress(e.target.value)} 
-                    placeholder="العنوان" 
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                  />
-                  <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 </div>
               </div>
               
