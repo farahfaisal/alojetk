@@ -38,6 +38,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [allSubAreas, setAllSubAreas] = useState<ServiceArea[]>([]);
 
   useEffect(() => {
     loadSavedAddresses();
@@ -48,6 +49,14 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     try {
       const areas = await getMainServiceAreas();
       setServiceAreas(areas);
+
+      // Load all sub areas for search
+      const allSubs: ServiceArea[] = [];
+      for (const area of areas) {
+        const subs = await getSubServiceAreas(area.id);
+        allSubs.push(...subs);
+      }
+      setAllSubAreas(allSubs);
     } catch (error) {
       console.error('Error loading service areas:', error);
     }
@@ -127,14 +136,21 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     setSubAreas([]);
   };
 
-  // Filter service areas based on search query
+  // Filter service areas and sub areas based on search query
+  const searchLower = searchQuery.toLowerCase();
+
+  // For main areas view: show both main areas and matching sub areas
   const filteredServiceAreas = serviceAreas.filter(area =>
-    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+    area.name.toLowerCase().includes(searchLower)
   );
 
-  // Filter sub areas based on search query
+  const matchingSubAreasFromAll = searchQuery
+    ? allSubAreas.filter(area => area.name.toLowerCase().includes(searchLower))
+    : [];
+
+  // Filter sub areas based on search query (for sub-areas view)
   const filteredSubAreas = subAreas.filter(area =>
-    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+    area.name.toLowerCase().includes(searchLower)
   );
 
   const handleAddressSaved = async (address: any) => {
@@ -257,25 +273,55 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               </div>
 
-              {filteredServiceAreas.length === 0 ? (
+              {filteredServiceAreas.length === 0 && matchingSubAreasFromAll.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                   <p>لا توجد نتائج للبحث</p>
                 </div>
               ) : (
-                filteredServiceAreas.map((area) => (
-                  <motion.button
-                    key={area.id}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleMainAreaClick(area)}
-                    className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">{area.name}</span>
-                      <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
-                    </div>
-                  </motion.button>
-                ))
+                <>
+                  {/* Main Areas */}
+                  {filteredServiceAreas.length > 0 && (
+                    <>
+                      {searchQuery && (
+                        <h3 className="text-sm font-semibold text-gray-600 px-2 mt-2">المناطق الرئيسية</h3>
+                      )}
+                      {filteredServiceAreas.map((area) => (
+                        <motion.button
+                          key={area.id}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleMainAreaClick(area)}
+                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-900">{area.name}</span>
+                            <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                          </div>
+                        </motion.button>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Sub Areas matching search */}
+                  {matchingSubAreasFromAll.length > 0 && (
+                    <>
+                      <h3 className="text-sm font-semibold text-gray-600 px-2 mt-4">المناطق الفرعية</h3>
+                      {matchingSubAreasFromAll.map((area) => (
+                        <motion.button
+                          key={area.id}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleSubAreaClick(area)}
+                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-900">{area.name}</span>
+                            <Check className="w-5 h-5 text-[#B91C1C]" />
+                          </div>
+                        </motion.button>
+                      ))}
+                    </>
+                  )}
+                </>
               )}
             </div>
           )}
