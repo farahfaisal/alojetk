@@ -410,7 +410,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center z-20"
+            className="absolute inset-0 bg-black/10 backdrop-blur-lg flex items-center justify-center z-20"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

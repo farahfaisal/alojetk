@@ -255,13 +255,17 @@ const AppContent: React.FC = () => {
     // Check if user is authenticated after splash is done
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
-      if (storedUser) {
+      if (!storedUser) {
+        // User not logged in, show login page
+        setTimeout(() => {
+          setIsLoginOpen(true);
+        }, 500);
+      } else {
         // User logged in, show address/area selector
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
         }, 500);
       }
-      // If not logged in, just show home page without opening login
     }
   }, [showSplash]);
 
@@ -737,7 +741,7 @@ const AppContent: React.FC = () => {
       </AnimatePresence>
 
       {!showSplash && (
-      <div className="fixed inset-0" dir="rtl">
+      <div className="fixed inset-0 bg-white" dir="rtl">
         <div className="absolute inset-0 overflow-hidden">
 
         {/* Cart Notification */}
