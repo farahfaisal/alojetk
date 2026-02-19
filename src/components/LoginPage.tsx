@@ -189,32 +189,32 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       
       if (data.success) {
         setSuccess('تم التحقق بنجاح');
-
-        // Store user data for both existing and new users
-        if (data.user) {
-          localStorage.setItem('auth_user', JSON.stringify(data.user));
-
-          // Dispatch auth change event
-          window.dispatchEvent(new Event('auth-change'));
-        }
-
-        // Show referral messages if applicable
-        if (data.referral_message) {
-          if (data.referral_processed) {
-            setSuccess(`تم التحقق بنجاح! ${data.referral_message} 🎉`);
-          } else {
-            setSuccess(`تم التحقق بنجاح. ${data.referral_message}`);
-          }
-        }
-
-        // Close login page after a short delay for all users
-        setTimeout(() => {
-          onClose();
-          // Navigate to account page if user exists (existing or new)
+        
+        if (data.existing_user) {
+          // User exists, store user data and close
           if (data.user) {
-            window.dispatchEvent(new CustomEvent('open-account-page'));
+            localStorage.setItem('auth_user', JSON.stringify(data.user));
+            
+            // Dispatch auth change event
+            window.dispatchEvent(new Event('auth-change'));
+            
+            // Close login page after a short delay
+            setTimeout(() => {
+              onClose();
+              // Navigate to account page
+              window.dispatchEvent(new CustomEvent('open-account-page'));
+            }, 1500);
+          } else {
+            // Just close the page
+            setTimeout(() => {
+              onClose();
+            }, 1500);
           }
-        }, 1500);
+        } else {
+          // New user, proceed to complete registration
+          setVerifiedPhone(phone);
+          setStep('complete');
+        }
       } else {
         setError(data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
       }
