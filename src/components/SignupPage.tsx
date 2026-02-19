@@ -186,32 +186,27 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
       console.log('Verification data received:', data);
       
       if (data.success) {
-        setSuccess('تم التحقق بنجاح');
-        
+        setSuccess('تم التحقق بنجاح! جاري تسجيل الدخول...');
+
         if (data.existing_user) {
           // User exists, save session and redirect to home
           if (data.user) {
             localStorage.setItem('auth_user', JSON.stringify(data.user));
-
             // Dispatch auth change event
             window.dispatchEvent(new Event('auth-change'));
-
-            // Close and redirect to home
-            setTimeout(() => {
-              onClose();
-              window.location.href = '/';
-            }, 1500);
-          } else {
-            // Just close and go to home
-            setTimeout(() => {
-              onClose();
-              window.location.href = '/';
-            }, 1500);
           }
+
+          // Close and redirect to home immediately
+          setTimeout(() => {
+            onClose();
+            window.location.href = '/';
+          }, 800);
         } else {
           // New user, proceed to complete registration
           setVerifiedPhone(phone);
-          setStep('complete');
+          setTimeout(() => {
+            setStep('complete');
+          }, 500);
         }
       } else {
         setError(data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
@@ -232,11 +227,10 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
   };
 
   const handleRegistrationComplete = (userData: any) => {
-    // Close signup page and navigate to home
-    setTimeout(() => {
-      onClose();
-      window.location.href = '/';
-    }, 1500);
+    // Close signup page and navigate to home immediately
+    console.log('Registration complete for user:', userData);
+    onClose();
+    window.location.href = '/';
   };
 
   // Check if user can close (only if already logged in)

@@ -188,32 +188,27 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       console.log('Verification data received:', data);
       
       if (data.success) {
-        setSuccess('تم التحقق بنجاح');
-        
+        setSuccess('تم التحقق بنجاح! جاري تسجيل الدخول...');
+
         if (data.existing_user) {
           // User exists, store user data and redirect to home
           if (data.user) {
             localStorage.setItem('auth_user', JSON.stringify(data.user));
-
             // Dispatch auth change event
             window.dispatchEvent(new Event('auth-change'));
-
-            // Close login page and navigate to home
-            setTimeout(() => {
-              onClose();
-              navigate('/');
-            }, 1500);
-          } else {
-            // Just close and go to home
-            setTimeout(() => {
-              onClose();
-              navigate('/');
-            }, 1500);
           }
+
+          // Close login page and navigate to home immediately
+          setTimeout(() => {
+            onClose();
+            navigate('/');
+          }, 800);
         } else {
           // New user, proceed to complete registration
           setVerifiedPhone(phone);
-          setStep('complete');
+          setTimeout(() => {
+            setStep('complete');
+          }, 500);
         }
       } else {
         setError(data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
@@ -234,12 +229,10 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const handleRegistrationComplete = (userData: any) => {
-    // Close login page after a short delay
-    setTimeout(() => {
-      onClose();
-      // Navigate to home page
-      navigate('/');
-    }, 1500);
+    // Close login page and navigate to home immediately
+    console.log('Registration complete for user:', userData);
+    onClose();
+    navigate('/');
   };
 
   // Check if user can close (only if already logged in)

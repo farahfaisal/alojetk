@@ -159,9 +159,13 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
   const handleAddressSaved = (addressData: any) => {
     console.log('Address saved:', addressData);
-    // Complete registration and close
+    // Complete registration and redirect to home
     const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
     onComplete(userData);
+    // Redirect to home page
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 500);
   };
 
   // Show address form if we're on address step
@@ -169,9 +173,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
     return (
       <NewAddressPage
         onClose={() => {
-          // User completed registration, allow closing
+          // User completed registration, redirect to home
           const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
           onComplete(userData);
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
         }}
         onSave={handleAddressSaved}
       />
