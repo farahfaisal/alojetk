@@ -228,7 +228,7 @@ const AppContent: React.FC = () => {
   // Listen for city selector open event
   useEffect(() => {
     const handleOpenCitySelector = () => {
-      setIsCityDropdownOpen(true);
+      setShowAddressOrAreaSelector(true);
     };
 
     window.addEventListener('openCitySelector', handleOpenCitySelector);
