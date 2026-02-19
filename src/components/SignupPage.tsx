@@ -239,19 +239,25 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
     }, 1500);
   };
 
+  // Check if user can close (only if already logged in)
+  const canClose = !!localStorage.getItem('auth_user');
+
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col" style={{
       paddingTop: 'max(env(safe-area-inset-top), 0px)'
     }}>
       <div className="bg-white shadow-sm">
         <div className="max-w-md mx-auto p-4 flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span className="font-medium">رجوع</span>
-          </button>
+          {canClose && (
+            <button
+              onClick={onClose}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="font-medium">رجوع</span>
+            </button>
+          )}
+          {!canClose && <div className="w-[80px]"></div>}
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <UserPlus className="w-6 h-6 text-brand" />
             إنشاء حساب جديد

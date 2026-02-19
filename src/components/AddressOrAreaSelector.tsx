@@ -213,12 +213,14 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                 {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
               </h2>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
-            >
-              إلغاء
-            </button>
+            {localStorage.getItem('selectedServiceArea') && (
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
+              >
+                إلغاء
+              </button>
+            )}
           </div>
           <p className="text-sm text-gray-500 mt-1">
             {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}

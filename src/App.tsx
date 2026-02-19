@@ -568,9 +568,14 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseLogin = () => {
+    // Only allow closing if user is logged in
+    const storedUser = localStorage.getItem('auth_user');
+    if (!storedUser) {
+      return; // Don't close if not logged in
+    }
+
     setIsLoginOpen(false);
     // Refresh user data after login
-    const storedUser = localStorage.getItem('auth_user');
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
@@ -586,6 +591,12 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseSignup = () => {
+    // Only allow closing if user is logged in
+    const storedUser = localStorage.getItem('auth_user');
+    if (!storedUser) {
+      return; // Don't close if not logged in
+    }
+
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
   };
@@ -956,7 +967,12 @@ const AppContent: React.FC = () => {
         <AnimatePresence>
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
-              onClose={() => setShowAddressOrAreaSelector(false)}
+              onClose={() => {
+                // Only allow closing if a service area is already selected
+                if (localStorage.getItem('selectedServiceArea')) {
+                  setShowAddressOrAreaSelector(false);
+                }
+              }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
             />

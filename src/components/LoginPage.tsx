@@ -242,6 +242,9 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     }, 1500);
   };
 
+  // Check if user can close (only if already logged in)
+  const canClose = !!localStorage.getItem('auth_user');
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -249,6 +252,12 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-end justify-center"
       style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
+      onClick={(e) => {
+        // Prevent closing by clicking outside if not logged in
+        if (e.target === e.currentTarget && canClose) {
+          onClose();
+        }
+      }}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -265,9 +274,11 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
-        </div>
+        {canClose && (
+          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
+            <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
+          </div>
+        )}
 
         {/* Header and Content Container */}
         <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
@@ -275,12 +286,6 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">مرحباً بك</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
-            >
-              تصفح كضيف
-            </button>
           </div>
           <p className="text-sm text-gray-500 mt-1">سجل دخولك للمتابعة</p>
         </div>
