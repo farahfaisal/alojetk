@@ -263,7 +263,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2">
+        <div className="flex justify-center pt-3 pb-2 bg-transparent">
           <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
 
