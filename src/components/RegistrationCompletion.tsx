@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, MapPin, Home, X, Loader2, Check, ChevronRight } from 'lucide-react';
+import { User, Mail, MapPin, Home, X, Loader2, Check, ChevronRight, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -34,6 +34,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Get default city from localStorage
   const getDefaultCity = () => {
@@ -368,7 +369,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                     className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col"
                   >
                     <div className="p-4 border-b border-gray-200">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-3">
                         <h3 className="text-lg font-bold text-gray-900">
                           {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة التوصيل'}
                         </h3>
@@ -377,11 +378,24 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                             setShowServiceAreaPicker(false);
                             setSelectedMainArea(null);
                             setSubAreas([]);
+                            setSearchQuery('');
                           }}
                           className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                         >
                           <X className="w-5 h-5" />
                         </button>
+                      </div>
+
+                      {/* Search Input */}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="ابحث عن منطقة..."
+                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                       </div>
                     </div>
 
@@ -397,33 +411,51 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                       )}
 
                       <div className="space-y-2">
-                        {(selectedMainArea ? subAreas : serviceAreas).map((area) => (
-                          <button
-                            key={area.id}
-                            onClick={() => {
-                              if (selectedMainArea) {
-                                setSelectedCity(area.name);
-                                setShowServiceAreaPicker(false);
-                                setSelectedMainArea(null);
-                                setSubAreas([]);
-                              } else {
-                                handleMainAreaClick(area);
-                              }
-                            }}
-                            className={`w-full p-4 rounded-lg border-2 transition-all text-right ${
-                              selectedCity === area.name
-                                ? 'bg-brand/10 border-brand'
-                                : 'bg-white border-gray-200 hover:border-brand/50'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-gray-900">{area.name}</span>
-                              {selectedCity === area.name && (
-                                <Check className="w-5 h-5 text-brand" />
-                              )}
-                            </div>
-                          </button>
-                        ))}
+                        {(selectedMainArea ? subAreas : serviceAreas)
+                          .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .map((area) => (
+                            <button
+                              key={area.id}
+                              onClick={() => {
+                                if (selectedMainArea) {
+                                  setSelectedCity(area.name);
+                                  setShowServiceAreaPicker(false);
+                                  setSelectedMainArea(null);
+                                  setSubAreas([]);
+                                  setSearchQuery('');
+                                } else {
+                                  handleMainAreaClick(area);
+                                }
+                              }}
+                              className={`w-full p-4 rounded-lg border-2 transition-all text-right ${
+                                selectedCity === area.name
+                                  ? 'bg-brand/10 border-brand'
+                                  : 'bg-white border-gray-200 hover:border-brand/50'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-gray-900">{area.name}</span>
+                                {selectedCity === area.name && (
+                                  <Check className="w-5 h-5 text-brand" />
+                                )}
+                              </div>
+                            </button>
+                          ))}
+
+                        {/* No Results Message */}
+                        {searchQuery && (selectedMainArea ? subAreas : serviceAreas)
+                          .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                          <div className="text-center py-8">
+                            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <p className="text-gray-500">لا توجد مناطق تطابق البحث</p>
+                            <button
+                              onClick={() => setSearchQuery('')}
+                              className="mt-3 text-brand hover:text-brand-light text-sm font-medium"
+                            >
+                              مسح البحث
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
