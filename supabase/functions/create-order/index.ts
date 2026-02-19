@@ -64,6 +64,36 @@ Deno.serve(async (req: Request) => {
 
     const orderData: CreateOrderRequest = await req.json();
 
+    console.log('📦 Creating order for customer:', orderData.customer_id, 'vendor:', orderData.vendor_id);
+
+    // التحقق من وجود طلب مماثل تم إنشاؤه مؤخراً (خلال آخر 10 ثواني)
+    // لتجنب التكرار في حالة الضغط المزدوج
+    if (orderData.customer_id) {
+      const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
+      const { data: recentOrders } = await supabase
+        .from('orders')
+        .select('id, created_at, total')
+        .eq('customer_id', orderData.customer_id)
+        .eq('vendor_id', orderData.vendor_id)
+        .eq('total', orderData.total)
+        .gte('created_at', tenSecondsAgo)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (recentOrders && recentOrders.length > 0) {
+        console.warn('⚠️ Duplicate order detected within 10 seconds, returning existing order');
+        return new Response(
+          JSON.stringify({ success: true, order: recentOrders[0] }),
+          {
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+    }
+
     // إنشاء الطلب باستخدام service role (يتجاوز RLS)
     const { data: order, error: orderError } = await supabase
       .from('orders')

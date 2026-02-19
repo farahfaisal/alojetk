@@ -77,6 +77,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   const [success, setSuccess] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [totalDeliveryFee, setTotalDeliveryFee] = useState(deliveryFee);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Log initial props
   useEffect(() => {
@@ -354,6 +355,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
   };
 
   const handlePlaceOrder = async () => {
+    // منع التكرار - إذا كان هناك طلب قيد المعالجة، نتجاهل الضغط الجديد
+    if (isProcessing || loading) {
+      console.warn('⚠️ Order already being processed, ignoring duplicate click');
+      return;
+    }
+
     const customerId = (user as any)?.customer_id || user?.id;
     if (!customerId) {
       setError('يجب تسجيل الدخول لإتمام الطلب');
@@ -365,8 +372,12 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       return;
     }
 
+    // تعيين حالة المعالجة لمنع الضغط المتكرر
+    setIsProcessing(true);
     setLoading(true);
     setError(null);
+
+    console.log('🚀 Starting order creation process...');
 
     try {
       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
@@ -671,10 +682,15 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
       // Close checkout after showing success message
       setTimeout(() => onClose(), 2500);
     } catch (err: any) {
-      console.error(err);
+      console.error('❌ Order creation failed:', err);
       setError(err?.message || 'حدث خطأ أثناء إنشاء الطلب');
+      setIsProcessing(false); // إعادة تعيين حالة المعالجة عند حدوث خطأ
     } finally {
       setLoading(false);
+      // إعادة تعيين حالة المعالجة بعد الانتهاء
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 1000);
     }
   };
 
@@ -1137,7 +1153,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           <button
             onClick={handlePlaceOrder}
-            disabled={loading}
+            disabled={loading || isProcessing}
             className="w-full py-4 rounded-xl font-bold text-lg text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ backgroundColor: BRAND }}
           >
