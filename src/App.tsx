@@ -255,17 +255,13 @@ const AppContent: React.FC = () => {
     // Check if user is authenticated after splash is done
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
-      if (!storedUser) {
-        // User not logged in, show login page
-        setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-      } else {
+      if (storedUser) {
         // User logged in, show address/area selector
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
         }, 500);
       }
+      // If not logged in, just show home page without opening login
     }
   }, [showSplash]);
 
