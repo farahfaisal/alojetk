@@ -348,20 +348,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   منطقة التوصيل *
                 </label>
-
-                {/* Search Box */}
-                <div className="relative mb-3">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setShowServiceAreaPicker(true)}
-                    placeholder="ابحث عن منطقة..."
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
-
                 <button
                   type="button"
                   onClick={() => setShowServiceAreaPicker(true)}

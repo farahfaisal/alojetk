@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, MapPin, Loader2, CheckCircle2, AlertCircle, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 
@@ -21,6 +21,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingSubAreas, setLoadingSubAreas] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -72,6 +73,16 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
     setSelectedMainArea(null);
     setSubAreas([]);
   };
+
+  // Filter main areas based on search query
+  const filteredMainAreas = mainAreas.filter(area =>
+    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter sub areas based on search query
+  const filteredSubAreas = subAreas.filter(area =>
+    area.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -145,36 +156,69 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
               </div>
             ) : subAreas.length > 0 ? (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600 mb-4 px-2">اختر المنطقة التابعة:</p>
-                {subAreas.map((subArea) => (
-                  <motion.button
-                    key={subArea.id}
-                    onClick={() => handleSubAreaClick(subArea)}
-                    className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-red-50 transition-all flex items-center justify-between group"
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-brand to-red-600 rounded-full flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-white" />
+                <p className="text-sm text-gray-600 mb-2 px-2">اختر المنطقة التابعة:</p>
+
+                {/* Search Box */}
+                <div className="relative mb-4 px-2">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ابحث عن منطقة..."
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                  />
+                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                </div>
+
+                {filteredSubAreas.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p>لا توجد نتائج للبحث</p>
+                  </div>
+                ) : (
+                  filteredSubAreas.map((subArea) => (
+                    <motion.button
+                      key={subArea.id}
+                      onClick={() => handleSubAreaClick(subArea)}
+                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-red-50 transition-all flex items-center justify-between group"
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-brand to-red-600 rounded-full flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-bold text-gray-800 group-hover:text-brand">
+                          {subArea.name}
+                        </span>
                       </div>
-                      <span className="font-bold text-gray-800 group-hover:text-brand">
-                        {subArea.name}
-                      </span>
-                    </div>
-                    <CheckCircle2 className="w-6 h-6 text-gray-300 group-hover:text-brand transition-colors" />
-                  </motion.button>
-                ))}
+                      <CheckCircle2 className="w-6 h-6 text-gray-300 group-hover:text-brand transition-colors" />
+                    </motion.button>
+                  ))
+                )}
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600 mb-4 px-2">اختر المنطقة الرئيسية:</p>
-                {mainAreas.length === 0 ? (
+                <p className="text-sm text-gray-600 mb-2 px-2">اختر المنطقة الرئيسية:</p>
+
+                {/* Search Box */}
+                <div className="relative mb-4 px-2">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ابحث عن منطقة..."
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                  />
+                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                </div>
+
+                {filteredMainAreas.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>لا توجد مناطق خدمة متاحة حالياً</p>
+                    <p>{mainAreas.length === 0 ? 'لا توجد مناطق خدمة متاحة حالياً' : 'لا توجد نتائج للبحث'}</p>
                   </div>
                 ) : (
-                  mainAreas.map((area) => (
+                  filteredMainAreas.map((area) => (
                     <motion.button
                       key={area.id}
                       onClick={() => handleMainAreaClick(area)}
