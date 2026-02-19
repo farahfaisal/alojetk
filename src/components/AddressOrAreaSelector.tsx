@@ -130,38 +130,49 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/10 backdrop-blur-lg z-[999999] flex items-end justify-center"
-      onClick={showAddressForm ? undefined : onClose}
+      className="fixed inset-0 z-[60] flex items-end justify-center"
+      style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
     >
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="bg-white rounded-t-3xl w-full max-w-lg shadow-2xl flex flex-col"
+        className="w-full max-w-lg flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxHeight: '85vh',
+          maxHeight: '75vh',
           paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
+          background: 'transparent',
+          pointerEvents: 'auto',
           display: showAddressForm ? 'none' : 'flex'
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
+          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
         </div>
 
+        {/* Header and Content Container */}
+        <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
         {/* Header */}
-        <div className="px-6 pb-4 border-b border-gray-100">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold text-gray-900 flex-1">
+        <div className="px-6 pb-3 pt-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">
               {selectedView === 'addresses' && 'اختر موقع التوصيل'}
               {selectedView === 'areas' && 'إضافة عنوان جديد'}
             </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
+            >
+              إلغاء
+            </button>
           </div>
+          <p className="text-sm text-gray-500 mt-1">حدد العنوان للمتابعة</p>
         </div>
 
-        {/* Content */}
+        {/* Content - scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {/* Addresses List - Show Directly */}
           {selectedView === 'addresses' && (
@@ -172,13 +183,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   <p className="text-gray-600 mt-4">جاري التحميل...</p>
                 </div>
               ) : savedAddresses.length === 0 ? (
-                <div className="text-center py-12">
-                  <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 text-lg mb-2">لا توجد عناوين محفوظة</p>
+                <div className="text-center py-8">
+                  <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-600 mb-1">لا توجد عناوين محفوظة</p>
                   <p className="text-gray-500 text-sm mb-6">أضف عنوان جديد لبدء الطلب</p>
                   <button
                     onClick={handleSelectNewArea}
-                    className="px-8 py-3 bg-[#B91C1C] text-white rounded-xl hover:bg-[#991B1B] transition-colors font-semibold"
+                    className="px-6 py-3 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white rounded-xl hover:shadow-lg transition-all font-semibold"
                   >
                     إضافة عنوان جديد
                   </button>
@@ -188,17 +199,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   {savedAddresses.map((address) => (
                     <motion.button
                       key={address.id}
-                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleAddressClick(address)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-right ${
+                      className={`w-full p-3.5 rounded-xl border-2 transition-all text-right ${
                         address.is_default
                           ? 'border-[#B91C1C] bg-red-50'
-                          : 'border-gray-200 bg-white hover:border-[#B91C1C] hover:bg-red-50'
+                          : 'border-gray-200 bg-white hover:border-[#B91C1C]'
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           address.is_default ? 'bg-[#B91C1C]' : 'bg-gray-100'
                         }`}>
                           <div className={address.is_default ? 'text-white' : 'text-gray-600'}>
@@ -206,21 +216,21 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-bold text-gray-900">{address.address_label}</h4>
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h4 className="font-semibold text-gray-900 text-sm">{address.address_label}</h4>
                             {address.is_default && (
                               <span className="text-xs bg-[#B91C1C] text-white px-2 py-0.5 rounded-full">
                                 افتراضي
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">{address.address_line1}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <p className="text-xs text-gray-600 mb-1">{address.address_line1}</p>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
                             <Navigation className="w-3 h-3" />
                             <span>{address.zone_name || address.city}</span>
                           </div>
                         </div>
-                        <ChevronLeft className="w-5 h-5 text-gray-400 flex-shrink-0 rotate-180 mt-3" />
+                        <ChevronLeft className="w-4 h-4 text-gray-400 flex-shrink-0 rotate-180 mt-2" />
                       </div>
                     </motion.button>
                   ))}
@@ -230,17 +240,18 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSelectNewArea}
-                    className="w-full p-5 bg-[#B91C1C] text-white rounded-xl hover:bg-[#991B1B] shadow-lg hover:shadow-xl transition-all"
+                    className="w-full p-4 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white rounded-xl hover:shadow-lg transition-all"
                   >
-                    <div className="flex items-center justify-center gap-3">
-                      <Plus className="w-6 h-6" />
-                      <span className="font-bold text-lg">إضافة عنوان جديد</span>
+                    <div className="flex items-center justify-center gap-2">
+                      <Plus className="w-5 h-5" />
+                      <span className="font-semibold">إضافة عنوان جديد</span>
                     </div>
                   </motion.button>
                 </>
               )}
             </div>
           )}
+        </div>
         </div>
       </motion.div>
 
