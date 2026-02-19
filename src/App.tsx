@@ -117,7 +117,7 @@ const AppContent: React.FC = () => {
                         isPrivacyPolicyOpen || isContactPageOpen || isSignupOpen ||
                         isProductPageOpen || isVariantsModalOpen || isStorePageOpen ||
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
-                        isParcelOrderOpen || isParcelTrackingOpen || showAddressOrAreaSelector;
+                        isParcelOrderOpen || isParcelTrackingOpen;
 
   // Auto-open login page if not authenticated
   useEffect(() => {
@@ -776,21 +776,19 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Show main content always, even when login is open */}
-        {!showAddressOrAreaSelector && (
-          <div className="fixed top-0 left-0 right-0 bottom-0" style={{
-            paddingTop: 0,
-            paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            WebkitOverflowScrolling: 'touch'
-          }}>
-            {renderContent()}
-          </div>
-        )}
+        {/* Show main content always, even when address selector is open */}
+        <div className="fixed top-0 left-0 right-0 bottom-0" style={{
+          paddingTop: 0,
+          paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch'
+        }}>
+          {renderContent()}
+        </div>
 
-        {/* Floating Buttons - Always show except when address selector is shown */}
-        {!showAddressOrAreaSelector && !isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && (
+        {/* Floating Buttons */}
+        {!isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
@@ -818,13 +816,11 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Cart Button - Always show except when address selector is shown */}
-        {!showAddressOrAreaSelector && (
-          <FloatingCart
-            onOpenCart={handleOpenCart}
-            showOnlyInProductPage={false}
-          />
-        )}
+        {/* Floating Cart Button */}
+        <FloatingCart
+          onOpenCart={handleOpenCart}
+          showOnlyInProductPage={false}
+        />
 
         <Sidebar
           isOpen={isSidebarOpen}
@@ -832,19 +828,17 @@ const AppContent: React.FC = () => {
           onOpenContact={handleOpenContactPage}
         />
 
-        {/* Bottom Nav - Always show except when address selector is shown */}
-        {!showAddressOrAreaSelector && (
-          <BottomNav
-            onOpenCart={handleOpenCart}
-            onOpenMenu={handleOpenMenu}
-            onOpenAccount={handleOpenAccount}
-            onOpenOrders={handleOpenOrders}
-            isHidden={shouldHideBottomNav()}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            cartItemsCount={cartItemsCount}
-          />
-        )}
+        {/* Bottom Nav */}
+        <BottomNav
+          onOpenCart={handleOpenCart}
+          onOpenMenu={handleOpenMenu}
+          onOpenAccount={handleOpenAccount}
+          onOpenOrders={handleOpenOrders}
+          isHidden={shouldHideBottomNav()}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          cartItemsCount={cartItemsCount}
+        />
 
         <AnimatePresence>
           {isLoginOpen && (
