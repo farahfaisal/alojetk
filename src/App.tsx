@@ -119,15 +119,7 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen || showAddressOrAreaSelector;
 
-  // Auto-open login page for demo (remove this in production)
-  useEffect(() => {
-    if (!showSplash && !isAuthenticated) {
-      const timer = setTimeout(() => {
-        setIsLoginOpen(true);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [showSplash, isAuthenticated]);
+  // Auto-open removed - user will open login manually when needed
 
   // Update cart items count
   useEffect(() => {
@@ -260,17 +252,11 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open login or address selector after splash screen
+  // Open address selector after splash screen (only if logged in)
   useEffect(() => {
-    // Check if user is authenticated after splash is done
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
-      if (!storedUser) {
-        // User not logged in, show login page
-        setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-      } else {
+      if (storedUser) {
         // User logged in, show address/area selector
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
@@ -741,10 +727,6 @@ const AppContent: React.FC = () => {
             key="splash"
             onComplete={() => {
               setShowSplash(false);
-              // Show login bottom sheet if not authenticated
-              if (!isAuthenticated) {
-                setTimeout(() => setIsLoginOpen(true), 300);
-              }
             }}
           />
         )}
