@@ -776,8 +776,8 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Show main content only if user is authenticated or login is not open, and address selector is not shown */}
-        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
+        {/* Show main content always, even when login is open */}
+        {!showAddressOrAreaSelector && (
           <div className="fixed top-0 left-0 right-0 bottom-0" style={{
             paddingTop: 0,
             paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))',
@@ -789,8 +789,8 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Buttons - Only show if authenticated or login is closed, and address selector is not shown */}
-        {!isAnyModalOpen && (isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
+        {/* Floating Buttons - Always show except when address selector is shown */}
+        {!showAddressOrAreaSelector && !isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
@@ -818,8 +818,8 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Floating Cart Button - Only show if authenticated or login is closed, and address selector is not shown */}
-        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
+        {/* Floating Cart Button - Always show except when address selector is shown */}
+        {!showAddressOrAreaSelector && (
           <FloatingCart
             onOpenCart={handleOpenCart}
             showOnlyInProductPage={false}
@@ -832,8 +832,8 @@ const AppContent: React.FC = () => {
           onOpenContact={handleOpenContactPage}
         />
 
-        {/* Bottom Nav - Only show if authenticated or login is closed, and address selector is not shown */}
-        {(isAuthenticated || !isLoginOpen) && !showAddressOrAreaSelector && (
+        {/* Bottom Nav - Always show except when address selector is shown */}
+        {!showAddressOrAreaSelector && (
           <BottomNav
             onOpenCart={handleOpenCart}
             onOpenMenu={handleOpenMenu}

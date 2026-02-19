@@ -247,9 +247,8 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[999999] flex items-end justify-center"
-      style={{ background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(4px)', pointerEvents: 'auto' }}
-      onClick={onClose}
+      className="fixed inset-0 z-[60] flex items-end justify-center"
+      style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -259,7 +258,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         className="w-full max-w-lg flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxHeight: '85vh',
+          maxHeight: '70vh',
           paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
           background: 'transparent',
           pointerEvents: 'auto'
@@ -267,22 +266,23 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       >
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" onClick={onClose}></div>
+          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
         </div>
 
         {/* Header and Content Container */}
         <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
         {/* Header */}
-        <div className="px-6 pb-4 pt-4 border-b border-gray-100">
+        <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">تسجيل الدخول</h2>
+            <h2 className="text-xl font-bold text-gray-900">مرحباً بك</h2>
             <button
               onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              تصفح كضيف
             </button>
           </div>
+          <p className="text-sm text-gray-500 mt-1">سجل دخولك للمتابعة</p>
         </div>
 
         {/* Content - scrollable */}
@@ -339,46 +339,25 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold text-lg"
+                className="w-full bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white py-3.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'متابعة'}
               </button>
-              
-              <div className="space-y-4 pt-2">
-                <div className="text-center">
-                  <p className="text-gray-600 text-sm">
-                    ليس لديك حساب بالفعل؟{' '}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onClose();
-                        window.dispatchEvent(new CustomEvent('open-signup-page'));
-                      }}
-                      className="text-[#B91C1C] hover:text-[#991B1B] font-semibold"
-                    >
-                      إنشاء حساب
-                    </button>
-                  </p>
-                </div>
 
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-3 text-gray-500">أو</span>
-                  </div>
-                </div>
-
-                <div className="text-center">
+              <div className="text-center pt-3">
+                <p className="text-gray-600 text-sm">
+                  ليس لديك حساب؟{' '}
                   <button
                     type="button"
-                    onClick={onClose}
-                    className="text-gray-600 hover:text-gray-800 font-medium text-sm px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new CustomEvent('open-signup-page'));
+                    }}
+                    className="text-[#B91C1C] hover:text-[#991B1B] font-semibold"
                   >
-                    تصفح كضيف
+                    إنشاء حساب
                   </button>
-                </div>
+                </p>
               </div>
             </form>
           )}
