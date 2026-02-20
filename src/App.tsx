@@ -444,12 +444,9 @@ const AppContent: React.FC = () => {
       const storedUser = localStorage.getItem('auth_user');
       if (!storedUser) {
         setIsAccountOpen(false);
-      } else {
-        // If user has just logged in and account page isn't open, open it
-        if (!isAccountOpen) {
-          setIsAccountOpen(true);
-        }
       }
+      // Don't automatically open account page after login
+      // User stays on home page instead
     };
 
     window.addEventListener('auth-change', handleAuthChange);
