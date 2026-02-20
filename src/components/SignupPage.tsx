@@ -150,7 +150,8 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
       }
     } catch (error: any) {
       console.error('Error in sending OTP:', error);
-      setError(typeof error.message === 'string' ? error.message : 'فشل في إرسال رمز التحقق. يرجى التحقق من الاتصال والمحاولة مرة أخرى.');
+      const errorMessage = error?.message || 'فشل في إرسال رمز التحقق';
+      setError(`${errorMessage}. يرجى التحقق من الاتصال والمحاولة مرة أخرى.`);
     } finally {
       setLoading(false);
     }
@@ -211,9 +212,10 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
       } else {
         setError(data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error verifying OTP:', err);
-      setError(err?.message || 'فشل في التحقق من الرمز. يرجى المحاولة مرة أخرى.');
+      const errorMessage = err?.message || 'فشل في التحقق من الرمز';
+      setError(`${errorMessage}. يرجى المحاولة مرة أخرى.`);
     } finally {
       setLoading(false);
     }

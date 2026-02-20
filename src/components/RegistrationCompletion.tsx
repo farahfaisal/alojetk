@@ -214,8 +214,19 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       }, 1500);
     } catch (err: any) {
       console.error('Complete Profile Error:', err);
-      setError('فشل إكمال الملف الشخصي');
-      console.error('Error details:', err.message || 'Unknown error');
+      console.error('Error details:', err);
+
+      let errorMessage = 'فشل إكمال التسجيل';
+
+      if (err?.message) {
+        errorMessage = err.message;
+      } else if (err?.error_description) {
+        errorMessage = err.error_description;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+
+      setError(`${errorMessage}. يرجى المحاولة مرة أخرى.`);
     } finally {
       setLoading(false);
     }
