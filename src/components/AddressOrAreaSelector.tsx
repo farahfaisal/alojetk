@@ -391,7 +391,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                       key={address.id}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleAddressClick(address)}
-                      className={`w-full p-3.5 rounded-xl border-2 transition-all text-right ${
+                      className={`w-full p-4 rounded-xl border-2 transition-all text-right ${
                         address.is_default
                           ? 'border-[#B91C1C] bg-red-50'
                           : 'border-gray-200 bg-white hover:border-[#B91C1C]'
@@ -406,18 +406,18 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-semibold text-gray-900 text-sm">{address.address_label}</h4>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold text-gray-900 text-base">{address.address_label}</h4>
                             {address.is_default && (
                               <span className="text-xs bg-[#B91C1C] text-white px-2 py-0.5 rounded-full">
                                 افتراضي
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600 mb-1">{address.address_line1}</p>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Navigation className="w-3 h-3" />
-                            <span>{address.zone_name || address.city}</span>
+                          <p className="text-sm text-gray-700 mb-1.5 leading-relaxed">{address.address_line1}</p>
+                          <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 rounded-lg px-2 py-1 w-fit">
+                            <Navigation className="w-3.5 h-3.5 text-[#B91C1C]" />
+                            <span className="font-medium">{address.zone_name || address.city}</span>
                           </div>
                         </div>
                         <ChevronLeft className="w-4 h-4 text-gray-400 flex-shrink-0 rotate-180 mt-2" />
