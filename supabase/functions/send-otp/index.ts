@@ -44,23 +44,17 @@ Deno.serve(async (req: Request) => {
 
     console.log("Sending OTP to phone:", standardizedPhone);
 
-    const isTestPhone = standardizedPhone === "0595284308";
-
     const hasHtdCredentials = htdApiId && htdSenderId;
-    // Force test mode until HTD approves Sender ID (currently returns H008|Sender Not Approved)
-    const isTestMode = true;
-    const otp = isTestMode ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
+    const isTestMode = !hasHtdCredentials;
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     if (!isTestMode) {
-      console.log("🔧 HTD SMS Configuration Check for real number:");
+      console.log("🔧 HTD SMS Configuration Check:");
       console.log("- HTD_API_ID exists:", !!htdApiId);
       console.log("- HTD_SENDER_ID exists:", !!htdSenderId);
     } else {
-      console.log("🧪 Running in TEST MODE:", {
-        isTestPhone,
-        hasHtdCredentials
-      });
+      console.log("🧪 Running in TEST MODE - HTD credentials not configured");
     }
 
     const otpResponse = await fetch(`${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}`, {
@@ -127,22 +121,19 @@ Deno.serve(async (req: Request) => {
     });
 
     if (isTestMode) {
-      console.log("✅ Test mode - OTP stored successfully");
-      const testMessage = isTestPhone
-        ? "حساب تجريبي - استخدم الرمز 123456"
-        : "وضع الاختبار مفعل (HTD غير متاح) - استخدم الرمز 123456";
+      console.log("✅ Test mode - OTP stored successfully (HTD not configured)");
 
       return new Response(JSON.stringify({
-        success: true,
+        success: false,
         sms_sent: false,
-        message: "رمز التحقق جاهز - استخدم الرمز: 123456",
+        message: "HTD SMS credentials not configured",
         debug: {
           isTestMode: true,
-          otp: otp,
-          message: testMessage
+          error: "Missing HTD_API_ID or HTD_SENDER_ID"
         }
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
       });
     }
 
