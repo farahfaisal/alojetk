@@ -11,7 +11,7 @@ const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 // HTD SMS API Configuration
 const htdApiId = Deno.env.get("HTD_API_ID")!;
-const htdSenderId = Deno.env.get("HTD_SENDER_ID") || "Benedek";
+const htdSenderId = Deno.env.get("HTD_SENDER_ID") || "SMS";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
