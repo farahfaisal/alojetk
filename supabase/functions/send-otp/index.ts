@@ -1,5 +1,4 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import twilio from "npm:twilio@4.11.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,24 +9,9 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID")!;
-const authToken = Deno.env.get("TWILIO_AUTH_TOKEN")!;
-let twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
-let twilioMessageServiceSid = Deno.env.get("TWILIO_MESSAGE_SERVICE_SID");
-
-if (twilioMessageServiceSid && twilioMessageServiceSid.startsWith('+')) {
-  console.log("⚠️ MESSAGE_SERVICE_SID contains a phone number, moving to PHONE_NUMBER");
-  twilioPhoneNumber = twilioMessageServiceSid;
-  twilioMessageServiceSid = undefined;
-}
-
-let twilioClient;
-try {
-  twilioClient = twilio(accountSid, authToken);
-  console.log("✅ Twilio client created successfully");
-} catch (clientError) {
-  console.error("❌ Failed to create Twilio client:", clientError);
-}
+// HTD SMS API Configuration
+const htdApiId = Deno.env.get("HTD_API_ID")!;
+const htdSenderId = Deno.env.get("HTD_SENDER_ID") || "Benedek";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -62,30 +46,19 @@ Deno.serve(async (req: Request) => {
 
     const isTestPhone = standardizedPhone === "0595284308";
 
-    const hasTwilioCredentials = accountSid && authToken && (twilioPhoneNumber || twilioMessageServiceSid);
-    const hasValidAccountSid = accountSid && accountSid.startsWith('AC');
-    const hasValidPhoneNumber = twilioPhoneNumber && twilioPhoneNumber.startsWith('+');
-    const hasValidMessageServiceSid = twilioMessageServiceSid && twilioMessageServiceSid.startsWith('MG');
-    const hasTwilioValidCredentials = hasTwilioCredentials && hasValidAccountSid && (hasValidPhoneNumber || hasValidMessageServiceSid);
-
-    const isTestMode = isTestPhone || !hasTwilioValidCredentials;
+    const hasHtdCredentials = htdApiId && htdSenderId;
+    const isTestMode = isTestPhone || !hasHtdCredentials;
     const otp = isTestMode ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     if (!isTestMode) {
-      console.log("🔧 Twilio Configuration Check for real number:");
-      console.log("- ACCOUNT_SID exists:", !!accountSid);
-      console.log("- AUTH_TOKEN exists:", !!authToken);
-      console.log("- PHONE_NUMBER exists:", !!twilioPhoneNumber);
-      console.log("- MESSAGE_SERVICE_SID exists:", !!twilioMessageServiceSid);
+      console.log("🔧 HTD SMS Configuration Check for real number:");
+      console.log("- HTD_API_ID exists:", !!htdApiId);
+      console.log("- HTD_SENDER_ID exists:", !!htdSenderId);
     } else {
       console.log("🧪 Running in TEST MODE:", {
         isTestPhone,
-        hasTwilioCredentials,
-        hasValidAccountSid,
-        hasValidPhoneNumber,
-        hasValidMessageServiceSid,
-        hasTwilioValidCredentials
+        hasHtdCredentials
       });
     }
 
@@ -156,7 +129,7 @@ Deno.serve(async (req: Request) => {
       console.log("✅ Test mode - OTP stored successfully");
       const testMessage = isTestPhone
         ? "حساب تجريبي - استخدم الرمز 123456"
-        : "وضع الاختبار مفعل (Twilio غير متاح) - استخدم الرمز 123456";
+        : "وضع الاختبار مفعل (HTD غير متاح) - استخدم الرمز 123456";
 
       return new Response(JSON.stringify({
         success: true,
@@ -172,57 +145,76 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Format phone for HTD (international format: 970599999999)
     const formattedPhone = standardizedPhone.startsWith("0")
-      ? "+970" + standardizedPhone.slice(1)
+      ? "970" + standardizedPhone.slice(1)
       : standardizedPhone;
 
     console.log("📱 SMS Send Attempt Details:");
     console.log("- Target phone:", formattedPhone);
-    console.log("- From number/Service:", twilioPhoneNumber || twilioMessageServiceSid);
+    console.log("- Sender ID:", htdSenderId);
 
     try {
-      console.log("🚀 Attempting to send SMS via Twilio...");
-      
-      const messageConfig: any = {
-        body: `رمز التحقق الخاص بك هو: ${otp}`,
-        to: formattedPhone,
-      };
-      
-      if (twilioMessageServiceSid) {
-        messageConfig.messagingServiceSid = twilioMessageServiceSid;
-        console.log("📤 Using Message Service SID:", twilioMessageServiceSid);
-      } else if (twilioPhoneNumber) {
-        messageConfig.from = twilioPhoneNumber;
-        console.log("📤 Using Phone Number:", twilioPhoneNumber);
+      console.log("🚀 Attempting to send SMS via HTD...");
+
+      const messageText = `رمز التحقق الخاص بك هو: ${otp}`;
+
+      // Build HTD API URL with parameters
+      const htdUrl = new URL("https://sms.HTD.ps/API/SendSMS.aspx");
+      htdUrl.searchParams.append("id", htdApiId);
+      htdUrl.searchParams.append("sender", htdSenderId);
+      htdUrl.searchParams.append("to", formattedPhone);
+      htdUrl.searchParams.append("msg", encodeURIComponent(messageText));
+      htdUrl.searchParams.append("mode", "0");
+
+      console.log("📤 HTD API URL:", htdUrl.toString());
+
+      const response = await fetch(htdUrl.toString(), {
+        method: 'GET'
+      });
+
+      const responseText = await response.text();
+      console.log("📥 HTD Response:", responseText);
+
+      // Check if SMS was sent successfully
+      if (responseText.includes("Message Sent Successfully")) {
+        console.log("✅ SMS sent successfully via HTD!");
+
+        return new Response(JSON.stringify({
+          success: true,
+          sms_sent: true,
+          message: "تم إرسال رمز التحقق بنجاح",
+          debug: {
+            isTestMode: false,
+            htdResponse: responseText,
+            phone: formattedPhone
+          }
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       } else {
-        throw new Error("لا يوجد رقم مرسل أو Message Service SID");
+        // SMS failed
+        console.error("❌ HTD SMS Error:", responseText);
+
+        return new Response(JSON.stringify({
+          success: false,
+          sms_sent: false,
+          message: "فشل إرسال رسالة SMS",
+          debug: {
+            isTestMode: false,
+            otp: otp,
+            htdResponse: responseText,
+            phone: formattedPhone
+          }
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        });
       }
 
-      console.log("📤 Final message config:", JSON.stringify(messageConfig, null, 2));
-      
-      const message = await twilioClient.messages.create(messageConfig);
+    } catch (htdError: any) {
+      console.error("❌ HTD API Error:", htdError);
 
-      console.log("✅ SMS sent successfully!");
-      console.log("- Message SID:", message.sid);
-      console.log("- Status:", message.status);
-      
-      return new Response(JSON.stringify({
-        success: true,
-        sms_sent: true,
-        message: "تم إرسال رمز التحقق بنجاح",
-        debug: {
-          isTestMode: false,
-          messageSid: message.sid,
-          messageStatus: message.status,
-          phone: formattedPhone
-        }
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-      
-    } catch (twilioError: any) {
-      console.error("❌ Twilio API Error:", twilioError);
-      
       return new Response(JSON.stringify({
         success: false,
         sms_sent: false,
@@ -230,8 +222,7 @@ Deno.serve(async (req: Request) => {
         debug: {
           isTestMode: false,
           otp: otp,
-          smsError: twilioError.message,
-          twilioError: twilioError.code,
+          smsError: htdError.message,
           phone: formattedPhone
         }
       }), {
