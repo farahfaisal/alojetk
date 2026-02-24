@@ -159,12 +159,12 @@ Deno.serve(async (req: Request) => {
 
       const messageText = `رمز التحقق الخاص بك هو: ${otp}`;
 
-      // Build HTD API URL with parameters
-      const htdUrl = new URL("https://sms.HTD.ps/API/SendSMS.aspx");
+      // Build HTD API URL with parameters (matches: http://sms.htd.ps/API/SendSMS.aspx?id=xxx&sender=xxx&to=970xxx&msg=xxx)
+      const htdUrl = new URL("http://sms.htd.ps/API/SendSMS.aspx");
       htdUrl.searchParams.append("id", htdApiId);
       htdUrl.searchParams.append("sender", htdSenderId);
       htdUrl.searchParams.append("to", formattedPhone);
-      htdUrl.searchParams.append("msg", encodeURIComponent(messageText));
+      htdUrl.searchParams.append("msg", messageText);
       htdUrl.searchParams.append("mode", "0");
 
       console.log("📤 HTD API URL:", htdUrl.toString());
