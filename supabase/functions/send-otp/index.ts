@@ -178,6 +178,7 @@ Deno.serve(async (req: Request) => {
           message: "تم إرسال رمز التحقق بنجاح",
           debug: {
             isTestMode: false,
+            otp: otp,
             htdResponse: responseText,
             phone: formattedPhone
           }
