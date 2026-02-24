@@ -596,8 +596,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
                         <span>•</span>
                         <span>
                           {order.sub_orders
-                            ? `${order.sub_orders.reduce((acc, o) => acc + (o.items_data?.length || 0), 0)} منتج`
-                            : `${order.items_data?.length || 0} منتج`
+                            ? `${order.sub_orders.reduce((acc, o) => acc + (o.items_data?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0), 0)} منتج`
+                            : `${order.items_data?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0} منتج`
                           }
                         </span>
                         <span>•</span>
