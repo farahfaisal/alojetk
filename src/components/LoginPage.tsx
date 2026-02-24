@@ -38,6 +38,8 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // منع انتشار الحدث
+
     setError(null);
     setSuccess(null);
     if (!isOnline) return setError('لا يوجد اتصال بالإنترنت.');
@@ -171,9 +173,17 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // منع انتشار الحدث
+
     setError(null);
     setSuccess(null);
     if (!otp.match(/^\d{6}$/)) return setError('رمز التحقق يجب أن يتكون من 6 أرقام');
+
+    // Prevent multiple submissions
+    if (loading) {
+      console.log('⚠️ Verification already in progress, ignoring duplicate call');
+      return;
+    }
 
     setLoading(true);
     try {

@@ -13,6 +13,19 @@ const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const htdApiId = Deno.env.get("HTD_API_ID")!;
 const htdSenderId = Deno.env.get("HTD_SENDER_ID") || "SMS";
 
+// In-memory request tracking to prevent duplicates (simple deduplication)
+const recentRequests = new Map<string, number>();
+
+// Clean up old entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of recentRequests.entries()) {
+    if (now - timestamp > 5 * 60 * 1000) {
+      recentRequests.delete(key);
+    }
+  }
+}, 5 * 60 * 1000);
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -30,6 +43,25 @@ Deno.serve(async (req: Request) => {
     }
 
     const { phone } = await req.json();
+
+    // Check if we already processing this exact request
+    const requestKey = `${phone}-${Date.now() - (Date.now() % 5000)}`; // 5-second window
+    if (recentRequests.has(phone)) {
+      const lastRequest = recentRequests.get(phone)!;
+      const timeSince = Date.now() - lastRequest;
+      if (timeSince < 3000) { // 3 seconds
+        console.log(`⚠️ Duplicate request detected for ${phone}, blocked (${timeSince}ms ago)`);
+        return new Response(JSON.stringify({
+          success: false,
+          message: "يرجى الانتظار قليلاً قبل إعادة المحاولة",
+          duplicate: true
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429
+        });
+      }
+    }
+    recentRequests.set(phone, Date.now());
 
     if (!phone) {
       return new Response(JSON.stringify({ success: false, message: "رقم الهاتف مطلوب" }), {
