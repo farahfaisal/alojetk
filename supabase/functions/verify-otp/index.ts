@@ -1,23 +1,20 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-// CORS headers
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-// Initialize Supabase client
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-);
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -49,27 +46,22 @@ serve(async (req) => {
     console.log("Verifying OTP for phone:", standardizedPhone, "OTP:", otp);
 
     // التحقق من OTP من جدول stored_otps
-    const { data: otpData, error: verifyError } = await supabase
-      .from('stored_otps')
-      .select('*')
-      .eq('phone', standardizedPhone)
-      .eq('otp_code', otp)
-      .gte('expires_at', new Date().toISOString())
-      .eq('is_used', false)
-      .maybeSingle();
+    const otpResponse = await fetch(
+      `${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}&otp_code=eq.${otp}&is_used=eq.false&expires_at=gte.${new Date().toISOString()}`,
+      {
+        method: 'GET',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-    console.log('OTP verification result:', { otpData, verifyError });
+    const otpRecords = await otpResponse.json();
+    const otpData = otpRecords?.[0];
 
-    if (verifyError) {
-      console.log("OTP verification failed - database error:", verifyError);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "فشل في الاستعلام داخل التحقق"
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      );
-    }
+    console.log('OTP verification result:', { otpData });
 
     if (!otpData) {
       console.log("OTP verification failed - no matching record");
@@ -83,19 +75,34 @@ serve(async (req) => {
     }
 
     // تحديث OTP كمستخدم بعد التحقق الناجح
-    await supabase
-      .from('stored_otps')
-      .update({ is_used: true })
-      .eq('phone', standardizedPhone);
+    await fetch(`${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ is_used: true })
+    });
 
     // Check if customer exists
-    const { data: customerData, error: customerError } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("phone", standardizedPhone)
-      .single();
+    const customerResponse = await fetch(
+      `${supabaseUrl}/rest/v1/customers?phone=eq.${standardizedPhone}`,
+      {
+        method: 'GET',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-    console.log('Customer lookup result:', { customerData, customerError });
+    const customers = await customerResponse.json();
+    const customerData = customers?.[0];
+
+    console.log('Customer lookup result:', { customerData });
 
     let customer;
     let existingUser = false;
@@ -110,102 +117,129 @@ serve(async (req) => {
       console.log("Existing customer found:", customer.id);
     } else {
       // Create new customer
-      const { data: newCustomer, error: createError } = await supabase
-        .from("customers")
-        .insert([
-          {
-            name: "مستخدم جديد", 
-            phone: standardizedPhone
-          }
-        ])
-        .select()
-        .single();
+      const createResponse = await fetch(`${supabaseUrl}/rest/v1/customers`, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          name: "مستخدم جديد",
+          phone: standardizedPhone
+        })
+      });
 
-      console.log('New customer creation result:', { newCustomer, createError });
-
-      if (createError) {
+      if (!createResponse.ok) {
+        const createError = await createResponse.json();
         console.error("Error creating new customer:", createError);
         return new Response(
           JSON.stringify({
-            success: false, 
-            message: "فشل في إنشاء حساب جديد" 
+            success: false,
+            message: "فشل في إنشاء حساب جديد"
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
         );
       }
 
-      customer = newCustomer;
+      const newCustomers = await createResponse.json();
+      customer = newCustomers[0];
       console.log("New customer created:", customer.id);
 
       // Process referral code if provided
       if (referralCode) {
         try {
           console.log("Processing referral code:", referralCode, "for customer:", customer.id);
-          
+
           // First check if referral code exists and is valid
-          const { data: codeData, error: codeError } = await supabase
-            .from('referral_codes')
-            .select('*')
-            .eq('code', referralCode)
-            .eq('status', 'active')
-            .single();
-            
-          if (codeError || !codeData) {
-            console.error('Referral code not found or invalid:', codeError);
+          const codeResponse = await fetch(
+            `${supabaseUrl}/rest/v1/referral_codes?code=eq.${referralCode}&status=eq.active`,
+            {
+              method: 'GET',
+              headers: {
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          const codes = await codeResponse.json();
+          const codeData = codes?.[0];
+
+          if (!codeData) {
+            console.error('Referral code not found or invalid');
             referralProcessed = false;
             referralMessage = 'رمز الإحالة غير صالح أو منتهي الصلاحية';
           } else {
             // Create referral record
-            const { data: referralRecord, error: referralError } = await supabase
-              .from('referrals')
-              .insert({
+            const referralResponse = await fetch(`${supabaseUrl}/rest/v1/referrals`, {
+              method: 'POST',
+              headers: {
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({
                 referrer_id: codeData.customer_id || codeData.user_id,
                 referred_id: customer.id,
                 code_id: codeData.id,
                 status: 'completed'
               })
-              .select()
-              .single();
-              
-            if (referralError) {
-              console.error('Error creating referral record:', referralError);
+            });
+
+            if (!referralResponse.ok) {
+              console.error('Error creating referral record');
               referralProcessed = false;
               referralMessage = 'فشل في معالجة رمز الإحالة';
             } else {
+              const referralRecords = await referralResponse.json();
+              const referralRecord = referralRecords[0];
+
               // Add points to both users
               try {
                 // Add points to referred user (new user)
-                const { error: pointsError1 } = await supabase
-                  .from('points_transactions')
-                  .insert({
-                    account_id: customer.id, // This might need to be points_account_id
+                await fetch(`${supabaseUrl}/rest/v1/points_transactions`, {
+                  method: 'POST',
+                  headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    account_id: customer.id,
                     amount: codeData.points_reward,
                     type: 'earn',
                     description: 'نقاط مكافأة الإحالة',
                     reference_id: referralRecord.id
-                  });
-                  
+                  })
+                });
+
                 // Add points to referrer
-                const { error: pointsError2 } = await supabase
-                  .from('points_transactions')
-                  .insert({
+                await fetch(`${supabaseUrl}/rest/v1/points_transactions`, {
+                  method: 'POST',
+                  headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
                     account_id: codeData.customer_id || codeData.user_id,
                     amount: codeData.points_referrer,
                     type: 'earn',
                     description: 'نقاط إحالة مستخدم جديد',
                     reference_id: referralRecord.id
-                  });
-                  
-                if (pointsError1 || pointsError2) {
-                  console.warn('Error adding points:', { pointsError1, pointsError2 });
-                }
-                
+                  })
+                });
+
                 referralProcessed = true;
                 referralMessage = 'تم تطبيق رمز الإحالة بنجاح';
                 pointsAwarded = codeData.points_reward;
               } catch (pointsErr) {
                 console.error('Error processing points:', pointsErr);
-                referralProcessed = true; // Still mark as processed
+                referralProcessed = true;
                 referralMessage = 'تم تطبيق رمز الإحالة ولكن فشل في إضافة النقاط';
               }
             }
