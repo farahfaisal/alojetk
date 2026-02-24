@@ -33,6 +33,7 @@ interface OrderDetails {
   customer_phone: string;
   vendor_name: string;
   vendor_id?: string;
+  driver_id?: string;
   driver_name?: string;
   created_at: string;
   estimated_total_time?: number;
@@ -1191,7 +1192,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         orderId={orderId}
         type={ratingType}
         name={ratingType === 'store' ? orderDetails.vendor_name : orderDetails.driver_name || 'السائق'}
-        entityId={ratingType === 'store' ? orderDetails.vendor_id : undefined}
+        entityId={ratingType === 'store' ? orderDetails.vendor_id : orderDetails.driver_id}
       />
     </div>
   );
