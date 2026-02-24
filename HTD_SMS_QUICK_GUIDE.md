@@ -1,80 +1,59 @@
-# دليل سريع: تفعيل HTD SMS API
+# 🚀 دليل سريع لإصلاح خطأ HTD SMS
 
-## ✅ تم التحديث
-
-تم تغيير نظام إرسال OTP من Twilio إلى HTD SMS API بنجاح!
-
-## 🔧 خطوات التفعيل
-
-### 1. احصل على API ID من HTD
-
-1. سجل دخول إلى حسابك في HTD SMS: https://sms.HTD.ps
-2. اذهب إلى **My Account**
-3. انسخ **API ID** الخاص بك
-
-### 2. أضف المتغيرات إلى Supabase
-
-في Supabase Dashboard:
-
-1. اذهب إلى **Project Settings** > **Edge Functions**
-2. أضف المتغيرات التالية:
+## ❌ المشكلة الحالية
 
 ```
-HTD_API_ID = [ضع API ID هنا]
-HTD_SENDER_ID = Benedek
+H005|Invalid SENDER Parameter
 ```
 
-### 3. تأكد من Sender ID
+هذا يعني أن **Sender ID** غير معتمد من HTD.
 
-- تأكد من أن `Benedek` معتمد كـ Sender ID في حسابك
-- إذا كنت تريد استخدام اسم آخر، غير قيمة `HTD_SENDER_ID`
+---
 
-## 📱 تنسيق الأرقام
+## ✅ الحل السريع
 
-النظام يحول الأرقام تلقائياً:
-- `0599123456` → `970599123456`
+### الخطوة 1: تحديد Sender ID المعتمد
 
-## 🧪 وضع الاختبار
+تواصل مع HTD وأسألهم عن **Sender IDs** المعتمدة لحسابك. عادةً ما تكون:
 
-النظام يستخدم OTP ثابت (`123456`) في الحالات:
-- رقم الهاتف: `0595284308`
-- عدم وجود `HTD_API_ID`
+- `SMS` (الأكثر شيوعاً)
+- `Alert`
+- `Info`
+- `Notice`
+- أو اسم خاص تم اعتماده مسبقاً
 
-## 🎯 ماذا تغير؟
+**كيف تتحقق؟**
+1. سجّل دخول إلى [HTD Dashboard](http://sms.htd.ps)
+2. انتقل إلى **Settings** أو **Sender IDs**
+3. أو اتصل بالدعم الفني: support@htd.ps
 
-**قبل:**
-- استخدام Twilio لإرسال SMS
-- يحتاج Account SID, Auth Token, Phone Number
+---
 
-**بعد:**
-- استخدام HTD SMS API
-- يحتاج فقط API ID و Sender ID
-- أسهل وأرخص للأرقام الفلسطينية
+### الخطوة 2: تحديث المتغيرات
 
-## ✅ الاختبار
+#### في Supabase Dashboard:
 
-بعد إضافة المتغيرات:
+1. افتح مشروعك في Supabase
+2. اذهب إلى: **Project Settings** → **Edge Functions**
+3. أضف/حدّث المتغيرات:
 
-1. جرب تسجيل دخول برقم جديد
-2. يجب أن تصل رسالة SMS من `Benedek`
-3. الرمز صالح لمدة 15 دقيقة
+```
+HTD_API_ID = 6a149c3f0fb541ede8c0dd87327d915d
+HTD_SENDER_ID = SMS
+```
 
-## 🔍 التحقق من المشاكل
+(استبدل `SMS` بالاسم المعتمد لديك)
 
-إذا لم تصل الرسالة:
+---
 
-1. **تحقق من Logs:**
-   - Supabase Dashboard > Edge Functions > send-otp > Logs
+### الخطوة 3: اختبار
 
-2. **أخطاء شائعة:**
-   - `Authentication Failed` → تحقق من HTD_API_ID
-   - `Insufficient Credit` → رصيد غير كافٍ
-   - `Sender Not Allowed` → Sender ID غير معتمد
-   - `Invalid Recipient` → تنسيق رقم خاطئ
+افتح `test-htd-api.html` وجرب sender IDs مختلفة حتى تجد الصحيح.
 
-## 📞 الدعم
+---
 
-للمساعدة، تحقق من:
-- ملف `HTD_SMS_SETUP.md` للتفاصيل الكاملة
-- Logs في Supabase Dashboard
-- حسابك في HTD SMS Dashboard
+## 📞 الدعم الفني
+
+**HTD SMS:**
+- الموقع: http://sms.htd.ps
+- البريد: support@htd.ps
