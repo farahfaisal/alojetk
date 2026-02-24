@@ -139,16 +139,13 @@ Deno.serve(async (req: Request) => {
       // حساب إجمالي سعر الإضافات
       const addonsTotal = item.addons?.reduce((s, a) => s + (a.price * a.quantity), 0) || 0;
 
-      // سعر المنتج الأساسي + الإضافات = سعر المنتج النهائي لكل وحدة
-      const itemPriceWithAddons = item.price + addonsTotal;
-
       console.log('📝 Processing item:', {
         name: item.name,
         basePrice: item.price,
         addonsTotal: addonsTotal,
-        finalUnitPrice: itemPriceWithAddons,
         quantity: item.quantity,
-        totalForItem: itemPriceWithAddons * (item.quantity || 1)
+        itemTotal: item.price * (item.quantity || 1),
+        totalWithAddons: item.price * (item.quantity || 1) + addonsTotal
       });
 
       if (item.is_custom) {
@@ -159,7 +156,7 @@ Deno.serve(async (req: Request) => {
           description: item.custom_details || '',
           quantity: item.quantity || 1,
           price: item.price,
-          total_price: itemPriceWithAddons * (item.quantity || 1),
+          total_price: item.price * (item.quantity || 1) + addonsTotal,
           notes: item.custom_details || null,
         });
       } else {
@@ -169,9 +166,9 @@ Deno.serve(async (req: Request) => {
           order_id: order.id,
           product_id: item.product_id || null,
           quantity: item.quantity || 1,
-          // price يحتوي على سعر الوحدة الواحدة مع الإضافات
-          // total سيتم حسابه تلقائياً = quantity * price
-          price: itemPriceWithAddons,
+          // price يحتوي على سعر المنتج الأصلي فقط (بدون الإضافات)
+          // الإضافات محفوظة في addons_data
+          price: item.price,
           vendor_id: item.vendor_id,
           vendor_name: item.vendor_name,
           name: item.name || 'منتج',
