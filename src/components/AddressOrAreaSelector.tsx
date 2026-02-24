@@ -229,30 +229,20 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
         {/* Header */}
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
-                <button
-                  onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
-              <h2 className="text-xl font-bold text-gray-900">
-                {selectedView === 'addresses' && 'اختر موقع التوصيل'}
-                {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
-                {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
-              </h2>
-            </div>
-            {hasSelectedArea && (
+          <div className="flex items-center gap-2">
+            {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
               <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
+                onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
               >
-                إلغاء
+                <ChevronRight className="w-5 h-5" />
               </button>
             )}
+            <h2 className="text-xl font-bold text-gray-900">
+              {selectedView === 'addresses' && 'اختر موقع التوصيل'}
+              {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
+              {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
+            </h2>
           </div>
           <p className="text-sm text-gray-500 mt-1">
             {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
