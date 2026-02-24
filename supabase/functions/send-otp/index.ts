@@ -71,6 +71,29 @@ Deno.serve(async (req: Request) => {
 
     console.log("Existing OTP record:", existingOtp);
 
+    // Anti-spam: Prevent sending OTP if a valid one was sent in the last 60 seconds
+    if (existingOtp && !existingOtp.is_used) {
+      const existingExpiry = new Date(existingOtp.expires_at);
+      const timeSinceCreation = new Date().getTime() - (existingExpiry.getTime() - 5 * 60 * 1000);
+
+      if (timeSinceCreation < 60000) {
+        console.log("⚠️ Anti-spam: OTP was sent recently, returning existing OTP");
+        return new Response(JSON.stringify({
+          success: true,
+          sms_sent: false,
+          message: "تم إرسال رمز التحقق مسبقاً. يرجى الانتظار دقيقة قبل إعادة الإرسال",
+          debug: {
+            isTestMode: false,
+            otp: existingOtp.otp_code,
+            antiSpam: true,
+            secondsRemaining: Math.ceil((60000 - timeSinceCreation) / 1000)
+          }
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     let dbResult;
     if (existingOtp) {
       dbResult = await fetch(`${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}`, {

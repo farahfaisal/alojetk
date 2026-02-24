@@ -43,6 +43,12 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (!isOnline) return setError('لا يوجد اتصال بالإنترنت.');
     if (!phone.match(/^0\d{9}$/)) return setError('يرجى إدخال رقم هاتف يبدأ بـ 0 ويتكون من 10 أرقام');
 
+    // Prevent multiple submissions
+    if (loading) {
+      console.log('⚠️ Request already in progress, ignoring duplicate call');
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('🚀 Starting OTP request for phone:', phone);
