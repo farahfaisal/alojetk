@@ -47,7 +47,8 @@ Deno.serve(async (req: Request) => {
     const isTestPhone = standardizedPhone === "0595284308";
 
     const hasHtdCredentials = htdApiId && htdSenderId;
-    const isTestMode = isTestPhone || !hasHtdCredentials;
+    // Force test mode until HTD approves Sender ID (currently returns H008|Sender Not Approved)
+    const isTestMode = true;
     const otp = isTestMode ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
