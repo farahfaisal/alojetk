@@ -169,9 +169,11 @@ export default function ReferralPage() {
 
           <button
             onClick={shareReferral}
-            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition-colors"
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:from-green-700 hover:to-green-800 transition-all shadow-md hover:shadow-lg"
           >
-            <Share2 className="w-5 h-5" />
+            <div className="flex items-center justify-center w-6 h-6 bg-white/20 rounded-lg">
+              <Share2 className="w-4 h-4" />
+            </div>
             مشاركة رابط الإحالة
           </button>
         </motion.div>
