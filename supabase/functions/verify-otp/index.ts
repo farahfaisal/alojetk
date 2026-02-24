@@ -45,9 +45,9 @@ Deno.serve(async (req: Request) => {
 
     console.log("Verifying OTP for phone:", standardizedPhone, "OTP:", otp);
 
-    // التحقق من OTP من جدول stored_otps
+    // التحقق من OTP من جدول stored_otps (without expires_at filter, we'll check it manually)
     const otpResponse = await fetch(
-      `${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}&otp_code=eq.${otp}&is_used=eq.false&expires_at=gte.${new Date().toISOString()}`,
+      `${supabaseUrl}/rest/v1/stored_otps?phone=eq.${standardizedPhone}&otp_code=eq.${otp}&is_used=eq.false`,
       {
         method: 'GET',
         headers: {
@@ -61,14 +61,33 @@ Deno.serve(async (req: Request) => {
     const otpRecords = await otpResponse.json();
     const otpData = otpRecords?.[0];
 
-    console.log('OTP verification result:', { otpData });
+    console.log('OTP verification result:', {
+      otpData,
+      currentTime: new Date().toISOString(),
+      expiresAt: otpData?.expires_at
+    });
 
     if (!otpData) {
       console.log("OTP verification failed - no matching record");
       return new Response(
         JSON.stringify({
           success: false,
-          message: "رمز التحقق غير صحيح أو منتهي الصلاحية"
+          message: "رمز التحقق غير صحيح"
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Check expiration manually
+    const expiresAt = new Date(otpData.expires_at);
+    const now = new Date();
+
+    if (now > expiresAt) {
+      console.log("OTP expired:", { now: now.toISOString(), expiresAt: expiresAt.toISOString() });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "رمز التحقق منتهي الصلاحية"
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );

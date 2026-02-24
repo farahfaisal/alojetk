@@ -177,35 +177,54 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     setLoading(true);
     try {
-      console.log('Verifying OTP for phone:', phone, 'OTP:', otp);
-      
+      console.log('🔐 Starting OTP verification...');
+      console.log('📱 Phone:', phone);
+      console.log('🔑 OTP:', otp);
+
       const response = await supabase.functions.invoke('verify-otp', {
         body: { phone, otp }
       });
-      
-      console.log('Verification response:', response);
-      
+
+      console.log('📥 Full verification response:', {
+        error: response.error,
+        data: response.data,
+        status: response.status
+      });
+
       if (response.error) {
-        console.error('Function invocation error:', response.error);
-        throw new Error('فشل في استدعاء دالة التحقق');
+        console.error('❌ Function invocation error:', response.error);
+        throw new Error(response.error.message || 'فشل في استدعاء دالة التحقق');
+      }
+
+      const { data } = response;
+      console.log('✅ Verification data received:', data);
+
+      if (!data) {
+        console.error('❌ No data received from verify-otp');
+        throw new Error('لم يتم استلام بيانات من الخادم');
       }
       
-      const { data } = response;
-      console.log('Verification data received:', data);
-      
       if (data.success) {
+        console.log('✅ Verification successful!');
+        console.log('👤 User data:', data.user);
+        console.log('🔄 Existing user:', data.existing_user);
+
         setSuccess('تم التحقق بنجاح! جاري تسجيل الدخول...');
 
         if (data.existing_user) {
+          console.log('👤 Existing user - logging in...');
           // User exists, store user data and redirect to home
           if (data.user) {
             localStorage.setItem('auth_user', JSON.stringify(data.user));
+            console.log('💾 User data saved to localStorage');
             // Dispatch auth change event
             window.dispatchEvent(new Event('auth-change'));
+            console.log('📢 Auth change event dispatched');
           }
 
           // Close login page and navigate to home immediately
           setTimeout(() => {
+            console.log('🚪 Closing login page...');
             onClose();
             navigate('/');
           }, 800);
@@ -217,10 +236,16 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           }, 500);
         }
       } else {
+        console.error('❌ Verification failed:', data?.message);
         setError(data?.message || 'رمز التحقق غير صحيح أو منتهي الصلاحية');
       }
-    } catch (err) {
-      console.error('Error verifying OTP:', err);
+    } catch (err: any) {
+      console.error('💥 Error verifying OTP:', err);
+      console.error('Error details:', {
+        message: err?.message,
+        stack: err?.stack,
+        name: err?.name
+      });
       setError(err?.message || 'فشل في التحقق من الرمز. يرجى المحاولة مرة أخرى.');
     } finally {
       setLoading(false);
