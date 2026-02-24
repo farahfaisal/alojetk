@@ -192,6 +192,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     }
   };
 
+  const hasSelectedArea = !!localStorage.getItem('selectedServiceArea');
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -199,6 +201,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-end justify-center"
       style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
+      onClick={hasSelectedArea ? onClose : undefined}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -216,9 +219,11 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         }}
       >
         {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
-        </div>
+        {hasSelectedArea && (
+          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
+            <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
+          </div>
+        )}
 
         {/* Header and Content Container */}
         <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
@@ -226,7 +231,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {(selectedView === 'main-areas' || selectedView === 'sub-areas') && (
+              {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
                 <button
                   onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -240,7 +245,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                 {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
               </h2>
             </div>
-            {localStorage.getItem('selectedServiceArea') && (
+            {hasSelectedArea && (
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium"
