@@ -57,7 +57,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             ease: "easeInOut"
           }}
         >
-          <div className="relative w-48 h-48 rounded-3xl bg-white shadow-2xl flex items-center justify-center overflow-hidden">
+          <div className="relative w-48 h-48 rounded-3xl bg-white shadow-2xl flex items-center justify-center p-4">
             {imageError ? (
               <div className="relative">
                 <motion.div
@@ -85,9 +85,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               </div>
             ) : (
               <img
-                src="/icons/app-icon.jpg"
+                src="https://fliwyntfvfedslbwkvks.supabase.co/storage/v1/object/public/advertisements/aloo.png"
                 alt="الو جيتك"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
                 loading="eager"
