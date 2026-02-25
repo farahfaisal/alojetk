@@ -5,6 +5,7 @@ import { BrowserRouter, useNavigate, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import LoginPage from './components/LoginPage';
 import SplashScreen from './components/SplashScreen';
+import OnboardingScreens from './components/OnboardingScreens';
 import AddToCartPopup from './components/AddToCartPopup';
 import { useAuth } from './contexts/AuthContext';
 import BottomNav from './components/BottomNav';
@@ -49,6 +50,7 @@ const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -119,15 +121,28 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen;
 
-  // Auto-open login page if not authenticated
+  // Check if user has seen onboarding
   useEffect(() => {
     if (!showSplash && !isAuthenticated) {
-      const timer = setTimeout(() => {
-        setIsLoginOpen(true);
-      }, 500);
-      return () => clearTimeout(timer);
+      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+      if (!hasSeenOnboarding) {
+        setShowOnboarding(true);
+      } else {
+        const timer = setTimeout(() => {
+          setIsLoginOpen(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
     }
   }, [showSplash, isAuthenticated]);
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    setTimeout(() => {
+      setIsLoginOpen(true);
+    }, 300);
+  };
 
   // Update cart items count
   useEffect(() => {
@@ -753,7 +768,11 @@ const AppContent: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {!showSplash && (
+      {showOnboarding && !showSplash && (
+        <OnboardingScreens onComplete={handleOnboardingComplete} />
+      )}
+
+      {!showSplash && !showOnboarding && (
       <div className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" dir="rtl">
         <div className="absolute inset-0 overflow-hidden">
 
