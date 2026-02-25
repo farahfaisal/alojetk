@@ -67,11 +67,11 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           {/* Logo Container */}
           <div className="relative mb-8">
-            <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl flex items-center justify-center p-4">
+            <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden">
               <img
-                src="https://fliwyntfvfedslbwkvks.supabase.co/storage/v1/object/public/advertisements/aloo.png"
+                src="/icons/app-icon.jpg"
                 alt="الو جيتك"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
