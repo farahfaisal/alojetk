@@ -65,10 +65,14 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-red-50 via-white to-orange-50 z-50 flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          {/* Logo/Icon */}
+          {/* Logo Container */}
           <div className="relative mb-8">
-            <div className="w-32 h-32 bg-gradient-to-br from-red-700 to-red-800 rounded-3xl shadow-2xl flex items-center justify-center">
-              <Sparkles className="w-16 h-16 text-white" strokeWidth={2} />
+            <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl flex items-center justify-center p-4">
+              <img
+                src="https://fliwyntfvfedslbwkvks.supabase.co/storage/v1/object/public/advertisements/aloo.png"
+                alt="الو جيتك"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
             <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-orange-400 rounded-full animate-pulse"></div>
@@ -76,10 +80,10 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
 
           {/* Welcome Text */}
           <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
-            مرحباً بك في الوجيتك
+            مرحباً بك في الو جيتك
           </h1>
           <p className="text-gray-600 text-lg text-center max-w-sm mb-12 leading-relaxed">
-            أفضل المطاعم من الوجيتك - توصيلاً سريعاً لآلاف المأكولات من جميع المتاجر المحلية
+            أفضل المطاعم من الو جيتك - توصيلاً سريعاً لآلاف المأكولات من جميع المتاجر المحلية
           </p>
 
           {/* Action Buttons */}
