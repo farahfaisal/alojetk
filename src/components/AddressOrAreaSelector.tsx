@@ -238,13 +238,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                 <ChevronRight className="w-5 h-5" />
               </button>
             )}
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-xl font-bold text-black">
               {selectedView === 'addresses' && 'اختر موقع التوصيل'}
               {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
               {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
             </h2>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-700 mt-1 font-medium">
             {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
             {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية أولاً'}
             {selectedView === 'sub-areas' && 'اختر المنطقة الفرعية'}
@@ -269,9 +269,9 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               </div>
 
               {filteredServiceAreas.length === 0 && matchingSubAreasFromAll.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8">
                   <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>لا توجد نتائج للبحث</p>
+                  <p className="text-black font-semibold">لا توجد نتائج للبحث</p>
                 </div>
               ) : (
                 <>
@@ -289,8 +289,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-900">{area.name}</span>
-                            <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                            <span className="font-semibold text-black">{area.name}</span>
+                            <ChevronLeft className="w-5 h-5 text-gray-500 rotate-180" />
                           </div>
                         </motion.button>
                       ))}
@@ -309,7 +309,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-900">{area.name}</span>
+                            <span className="font-semibold text-black">{area.name}</span>
                             <Check className="w-5 h-5 text-[#B91C1C]" />
                           </div>
                         </motion.button>
@@ -337,9 +337,9 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               </div>
 
               {filteredSubAreas.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8">
                   <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>لا توجد نتائج للبحث</p>
+                  <p className="text-black font-semibold">لا توجد نتائج للبحث</p>
                 </div>
               ) : (
                 filteredSubAreas.map((area) => (
@@ -350,8 +350,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">{area.name}</span>
-                      <ChevronLeft className="w-5 h-5 text-gray-400 rotate-180" />
+                      <span className="font-semibold text-black">{area.name}</span>
+                      <ChevronLeft className="w-5 h-5 text-gray-500 rotate-180" />
                     </div>
                   </motion.button>
                 ))
@@ -365,13 +365,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               {loading ? (
                 <div className="text-center py-8">
                   <div className="w-12 h-12 border-4 border-[#B91C1C] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                  <p className="text-gray-600 mt-4">جاري التحميل...</p>
+                  <p className="text-black font-semibold mt-4">جاري التحميل...</p>
                 </div>
               ) : savedAddresses.length === 0 ? (
                 <div className="text-center py-8">
                   <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-600 mb-1">لا توجد عناوين محفوظة</p>
-                  <p className="text-gray-500 text-sm mb-6">أضف عنوان جديد لبدء الطلب</p>
+                  <p className="text-black font-semibold mb-1">لا توجد عناوين محفوظة</p>
+                  <p className="text-gray-700 text-sm mb-6 font-medium">أضف عنوان جديد لبدء الطلب</p>
                   <button
                     onClick={handleSelectNewArea}
                     className="px-6 py-3 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white rounded-xl hover:shadow-lg transition-all font-semibold"
@@ -402,17 +402,17 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-gray-900 text-base">{address.address_label}</h4>
+                            <h4 className="font-bold text-black text-base">{address.address_label}</h4>
                             {address.is_default && (
-                              <span className="text-xs bg-[#B91C1C] text-white px-2 py-0.5 rounded-full">
+                              <span className="text-xs bg-[#B91C1C] text-white px-2 py-0.5 rounded-full font-semibold">
                                 افتراضي
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-gray-700 mb-1.5 leading-relaxed">{address.address_line1}</p>
-                          <div className="flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 rounded-lg px-2 py-1 w-fit">
+                          <p className="text-sm text-gray-800 mb-1.5 leading-relaxed font-medium">{address.address_line1}</p>
+                          <div className="flex items-center gap-1.5 text-sm text-gray-800 bg-gray-50 rounded-lg px-2 py-1 w-fit">
                             <Navigation className="w-3.5 h-3.5 text-[#B91C1C]" />
-                            <span className="font-medium">{address.zone_name || address.city}</span>
+                            <span className="font-semibold">{address.zone_name || address.city}</span>
                           </div>
                         </div>
                         <ChevronLeft className="w-4 h-4 text-gray-400 flex-shrink-0 rotate-180 mt-2" />
