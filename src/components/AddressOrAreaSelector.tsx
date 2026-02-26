@@ -102,7 +102,30 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     }
   };
 
-  const handleAddressClick = (address: SavedAddress) => {
+  const handleAddressClick = async (address: SavedAddress) => {
+    // Always set the selected address as default
+    if (!address.is_default) {
+      try {
+        const storedUser = localStorage.getItem('auth_user');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+
+          // Update the address to be default in database
+          await supabase
+            .from('customer_addresses')
+            .update({ is_default: true })
+            .eq('id', address.id)
+            .eq('customer_id', user.id);
+
+          // The trigger will automatically set all other addresses to false
+          // Update local state
+          address.is_default = true;
+        }
+      } catch (error) {
+        console.error('Error setting default address:', error);
+      }
+    }
+
     onAddressSelected(address);
     onClose();
   };
