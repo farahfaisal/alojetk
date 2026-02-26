@@ -736,7 +736,8 @@ const AppContent: React.FC = () => {
   };
 
   const shouldHideBottomNav = () => {
-    return isAnyModalOpen;
+    // Only hide bottom nav when product page or store page is open
+    return isProductPageOpen || isStorePageOpen;
   };
 
   const renderContent = () => {
