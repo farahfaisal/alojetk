@@ -924,3 +924,27 @@ body {
     padding-bottom: max(env(safe-area-inset-bottom), 20px) !important;
   }
 }
+
+/* Thin red scrollbar for address selector */
+.address-selector-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #B91C1C #f3f4f6;
+}
+
+.address-selector-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.address-selector-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 2px;
+}
+
+.address-selector-scroll::-webkit-scrollbar-thumb {
+  background: #B91C1C;
+  border-radius: 2px;
+}
+
+.address-selector-scroll::-webkit-scrollbar-thumb:hover {
+  background: #991B1B;
+}

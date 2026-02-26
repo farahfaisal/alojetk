@@ -252,7 +252,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         </div>
 
         {/* Content - scrollable */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 address-selector-scroll">
           {/* Main Service Areas */}
           {selectedView === 'main-areas' && (
             <div className="space-y-3">
