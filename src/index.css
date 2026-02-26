@@ -927,24 +927,30 @@ body {
 
 /* Thin red scrollbar for address selector */
 .address-selector-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #B91C1C #f3f4f6;
+  scrollbar-width: thin !important;
+  scrollbar-color: #B91C1C #f3f4f6 !important;
+  -ms-overflow-style: auto !important;
 }
 
 .address-selector-scroll::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
+  display: block !important;
+  -webkit-appearance: none !important;
 }
 
 .address-selector-scroll::-webkit-scrollbar-track {
-  background: #f3f4f6;
-  border-radius: 2px;
+  background: #f3f4f6 !important;
+  border-radius: 2px !important;
+  display: block !important;
 }
 
 .address-selector-scroll::-webkit-scrollbar-thumb {
-  background: #B91C1C;
-  border-radius: 2px;
+  background: #B91C1C !important;
+  border-radius: 2px !important;
+  display: block !important;
+  -webkit-appearance: none !important;
 }
 
 .address-selector-scroll::-webkit-scrollbar-thumb:hover {
-  background: #991B1B;
+  background: #991B1B !important;
 }
