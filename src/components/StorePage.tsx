@@ -966,20 +966,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </button>
                   </div>
 
-
-                  {/* زر المشاركة الدائري الأحمر على اليمين */}
-                  <button
-                    onClick={() => window.navigator.share?.({
-                      title: vendor.store_name,
-                      text: 'اطلب الآن',
-                      url: window.location.href
-                    })}
-                    className="absolute -right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#B50F2B] text-white shadow-lg flex items-center justify-center"
-                    aria-label="مشاركة"
-                  >
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8a3 3 0 10-2.83-4H15a3 3 0 102.83 4zM6 14a3 3 0 100 6 3 3 0 000-6zm12 0a3 3 0 100 6 3 3 0 000-6zM8.59 13.05l6.83-3.42.9 1.8-6.83 3.42-.9-1.8zM8.59 16.95l.9-1.8 6.83 3.42-.9 1.8-6.83-3.42z"/></svg>
-                  </button>
-
                 </div>
               </div>
             </div>
