@@ -212,10 +212,9 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-40 bg-gray-50"
+        className="fixed inset-0 z-[9999] bg-gray-50"
         style={{
-          paddingTop: 'max(env(safe-area-inset-top), 0px)',
-          paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
+          paddingTop: 'max(env(safe-area-inset-top), 0px)'
         }}
       >
         <div className="h-full flex flex-col">

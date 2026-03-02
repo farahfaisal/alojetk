@@ -162,9 +162,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-gray-50 z-40 flex items-center justify-center" style={{
-        paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
-      }}>
+      <div className="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-brand animate-spin mx-auto mb-4" />
           <p className="text-gray-600">جاري تحميل بيانات المحفظة...</p>
@@ -174,9 +172,8 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-40 flex flex-col overflow-hidden" style={{
-      paddingTop: 'max(env(safe-area-inset-top), 0px)',
-      paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col overflow-hidden" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)'
     }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
