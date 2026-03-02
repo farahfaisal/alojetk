@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, Edit3, Share2 } from 'lucide-react';
+import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, CreditCard as Edit3, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
