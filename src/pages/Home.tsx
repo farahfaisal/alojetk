@@ -307,7 +307,7 @@ const Home: React.FC<HomeProps> = ({
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden relative" style={{
       paddingTop: '0px',
-      paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 8px))'
+      paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 0px))'
     }}>
       {/* Header - Icons Only */}
       <div

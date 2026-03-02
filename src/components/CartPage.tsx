@@ -709,7 +709,7 @@ const CartPage: React.FC<CartPageProps> = ({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto" style={{
-        paddingBottom: 'calc(180px + max(env(safe-area-inset-bottom), 8px))'
+        paddingBottom: 'calc(300px + max(env(safe-area-inset-bottom), 0px))'
       }}>
         <div className="max-w-md mx-auto p-4">
           {cartItems.length === 0 ? (

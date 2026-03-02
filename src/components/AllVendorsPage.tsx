@@ -340,7 +340,7 @@ const AllVendorsPage: React.FC<AllVendorsPageProps> = ({
 
         {/* Vendors List */}
         <div className="w-full p-4" style={{
-          paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 8px))'
+          paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 0px))'
         }}>
           {viewType === 'list' ? (
             renderVendorList()

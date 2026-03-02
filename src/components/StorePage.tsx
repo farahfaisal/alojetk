@@ -771,7 +771,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         }}
       >
         <div className="min-h-full pb-32 scrollbar-hide modal-page-ios scrollable-content" style={{
-          paddingBottom: 'calc(8rem + max(env(safe-area-inset-bottom), 34px))',
+          paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 0px))',
           minHeight: 'calc(100vh - env(safe-area-inset-top))',
           WebkitOverflowScrolling: 'touch',
           overflowY: 'auto',

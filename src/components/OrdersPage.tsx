@@ -502,7 +502,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-20" style={{
-        paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 0px))'
+        paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 0px))'
       }}>
         <div className="max-w-md mx-auto p-4">
           {loading ? (
