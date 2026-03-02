@@ -878,7 +878,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
                                     <div className="flex items-center justify-between">
                                       <span className="text-xs text-gray-600">الكمية: {item.quantity}</span>
                                       <div className="text-gray-600 text-xs">
-                                        سعر الوحدة الأصلي: {(item.price || 0).toFixed(2)} ₪
+                                        سعر المنتج: {(item.price || 0).toFixed(2)} ₪
                                       </div>
                                     </div>
 

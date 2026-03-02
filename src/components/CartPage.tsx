@@ -818,7 +818,7 @@ const CartPage: React.FC<CartPageProps> = ({
                                         </button>
                                       </div>
                                       <div className="text-gray-600 text-sm font-medium">
-                                        سعر الوحدة الأصلي: {(item.price || 0).toFixed(2)} ₪
+                                        سعر المنتج: {(item.price || 0).toFixed(2)} ₪
                                       </div>
                                     </div>
 
