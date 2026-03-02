@@ -75,6 +75,16 @@ const CartPage: React.FC<CartPageProps> = ({
     console.log('📊 CartPage - totalDeliveryFee changed to:', totalDeliveryFee);
   }, [totalDeliveryFee]);
 
+  // Track deliveryFee changes
+  useEffect(() => {
+    console.log('💵 CartPage - deliveryFee changed to:', deliveryFee);
+  }, [deliveryFee]);
+
+  // Track serviceAreaVersion changes
+  useEffect(() => {
+    console.log('🔢 CartPage - serviceAreaVersion changed to:', serviceAreaVersion);
+  }, [serviceAreaVersion]);
+
   // Listen for service area changes
   useEffect(() => {
     const handleServiceAreaChange = (e: Event) => {
