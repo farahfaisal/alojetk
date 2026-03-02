@@ -825,7 +825,7 @@ const CartPage: React.FC<CartPageProps> = ({
                                     {/* All Addons (both regular and optional) */}
                                     {item.addons && item.addons.length > 0 && (
                                       <div className="space-y-1 pt-1 border-t border-gray-200">
-                                        <p className="text-xs font-bold text-blue-700 mb-1">العروض المتاحة:</p>
+                                        <p className="text-xs font-bold text-blue-700 mb-1">الإضافات:</p>
                                         {item.addons.map((addon) => (
                                           <div key={addon.id} className="flex items-center justify-between text-xs">
                                             <span className="text-blue-700">• {addon.name} (×{addon.quantity})</span>
