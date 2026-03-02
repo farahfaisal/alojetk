@@ -204,8 +204,11 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       localStorage.setItem('selectedServiceArea', selectedCity);
       localStorage.setItem('selectedCity', JSON.stringify(selectedCity));
 
-      // Dispatch auth change event
+      // Dispatch auth change and service area change events
       window.dispatchEvent(new Event('auth-change'));
+      window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+        detail: { areaName: selectedCity }
+      }));
 
       // Redirect to home immediately after successful registration
       setTimeout(() => {

@@ -68,11 +68,36 @@ const CartPage: React.FC<CartPageProps> = ({
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const [couponError, setCouponError] = useState('');
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [serviceAreaVersion, setServiceAreaVersion] = useState(0);
 
   // Track totalDeliveryFee changes
   useEffect(() => {
     console.log('📊 CartPage - totalDeliveryFee changed to:', totalDeliveryFee);
   }, [totalDeliveryFee]);
+
+  // Listen for service area changes
+  useEffect(() => {
+    const handleServiceAreaChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      console.log('🔄 منطقة الخدمة تغيرت:', customEvent.detail?.areaName);
+      setServiceAreaVersion(prev => prev + 1);
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'selectedServiceArea' || e.key === 'selectedCity') {
+        console.log('🔄 منطقة الخدمة تغيرت من storage:', e.newValue);
+        setServiceAreaVersion(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener('serviceAreaChanged', handleServiceAreaChange);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('serviceAreaChanged', handleServiceAreaChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   // Calculate estimated delivery time is now handled in the main delivery calculation
   // This useEffect is removed to avoid using default/estimated times
@@ -271,27 +296,41 @@ const CartPage: React.FC<CartPageProps> = ({
         const selectedCity = localStorage.getItem('selectedCity');
         const areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
 
+        console.log('🌍 حساب سعر التوصيل للمنطقة:', areaName);
+
         if (areaName) {
-          const { data: serviceArea } = await supabase
+          const { data: serviceArea, error: areaError } = await supabase
             .from('service_areas')
             .select('id, delivery_price')
             .eq('name', areaName)
             .maybeSingle();
 
+          console.log('📍 بيانات منطقة الخدمة:', { serviceArea, areaError });
+
           if (serviceArea) {
-            const { data: vendorServiceArea } = await supabase
+            const { data: vendorServiceArea, error: vendorAreaError } = await supabase
               .from('vendor_service_areas')
               .select('custom_delivery_price')
               .eq('vendor_id', vendorInfo.id)
               .eq('service_area_id', serviceArea.id)
               .maybeSingle();
 
+            console.log('🏪 سعر التوصيل المخصص للبائع:', { vendorServiceArea, vendorAreaError });
+
             if (vendorServiceArea?.custom_delivery_price) {
               fee = vendorServiceArea.custom_delivery_price;
+              console.log('✅ استخدام سعر البائع المخصص:', fee);
             } else if (serviceArea.delivery_price) {
               fee = serviceArea.delivery_price;
+              console.log('✅ استخدام سعر المنطقة:', fee);
+            } else {
+              console.log('⚠️ لا يوجد سعر مخصص، استخدام السعر الافتراضي:', fee);
             }
+          } else {
+            console.log('⚠️ لم يتم العثور على منطقة الخدمة');
           }
+        } else {
+          console.log('⚠️ لم يتم اختيار منطقة خدمة');
         }
 
         // حساب الوقت الحقيقي فقط إذا توفرت الإحداثيات الدقيقة
@@ -318,7 +357,7 @@ const CartPage: React.FC<CartPageProps> = ({
             fee = Math.max(fee, vendorInfo.delivery_fee_per_km);
           }
         } else {
-          console.warn('⚠️ لا يمكن حساب وقت التوصيل بدقة:', {
+          console.log('⚠️ لا يمكن حساب وقت التوصيل بدقة:', {
             hasAddressCoordinates: !!selectedAddress?.coordinates,
             hasVendorLatitude: !!vendorInfo.latitude,
             hasVendorLongitude: !!vendorInfo.longitude
@@ -336,6 +375,7 @@ const CartPage: React.FC<CartPageProps> = ({
           setEstimatedTime(`${prepTime}-${totalMaxTime}`);
         }
 
+        console.log('💰 سعر التوصيل النهائي:', fee);
         setDeliveryFee(fee);
       } catch (error) {
         console.error('Error calculating delivery:', error);
@@ -350,7 +390,7 @@ const CartPage: React.FC<CartPageProps> = ({
     };
 
     calculateDelivery();
-  }, [selectedAddress, vendorInfo]);
+  }, [selectedAddress, vendorInfo, selectedCity, serviceAreaVersion]);
 
   const updateCartItem = (itemId: string, quantity: number) => {
     if (quantity <= 0) {

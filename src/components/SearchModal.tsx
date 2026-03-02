@@ -330,7 +330,11 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
     if (zoneName) {
       localStorage.setItem('selectedCity', JSON.stringify(zoneName));
+      localStorage.setItem('selectedServiceArea', zoneName);
       window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+        detail: { areaName: zoneName }
+      }));
 
       // Update displayed zone to main area
       const mainArea = await getMainArea(zoneName);

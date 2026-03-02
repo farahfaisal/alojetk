@@ -542,6 +542,9 @@ const AppContent: React.FC = () => {
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
+    window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+      detail: { areaName: city }
+    }));
     setIsCityDropdownOpen(false);
   };
 
@@ -551,6 +554,9 @@ const AppContent: React.FC = () => {
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
+    window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+      detail: { areaName: city }
+    }));
     setShowAddressOrAreaSelector(false);
   };
 
@@ -558,6 +564,9 @@ const AppContent: React.FC = () => {
     setSelectedCity(area);
     localStorage.setItem('selectedServiceArea', area);
     localStorage.setItem('selectedCity', JSON.stringify(area));
+    window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+      detail: { areaName: area }
+    }));
     setShowAddressOrAreaSelector(false);
   };
 
@@ -722,6 +731,9 @@ const AppContent: React.FC = () => {
     setSelectedCity(area);
     localStorage.setItem('selectedServiceArea', area);
     localStorage.setItem('selectedCity', JSON.stringify(area));
+    window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+      detail: { areaName: area }
+    }));
     setShowServiceAreaSelection(false);
 
     // Show permissions prompt after area selection

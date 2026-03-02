@@ -66,10 +66,15 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
 
   const handleAreaSelect = (areaName: string) => {
     setSelectedArea(areaName);
-    
+
     // Save selected area to localStorage
     localStorage.setItem('selectedServiceArea', areaName);
-    
+
+    // Trigger custom event for service area change
+    window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+      detail: { areaName }
+    }));
+
     // Animate selection and then proceed
     setTimeout(() => {
       onSelectArea(areaName);
