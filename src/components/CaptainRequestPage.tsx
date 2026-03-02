@@ -202,9 +202,10 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed inset-0 z-[9999] bg-white"
+        className="fixed inset-0 z-40 bg-white"
         style={{
-          paddingTop: 'max(env(safe-area-inset-top), 0px)'
+          paddingTop: 'max(env(safe-area-inset-top), 0px)',
+          paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
         }}
       >
         <div className="h-full flex flex-col">

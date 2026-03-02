@@ -653,7 +653,9 @@ const CartPage: React.FC<CartPageProps> = ({
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-gray-50 z-40 flex items-center justify-center" style={{
+        paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+      }}>
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-t-transparent border-brand rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">جاري تحميل السلة...</p>
@@ -679,8 +681,9 @@ const CartPage: React.FC<CartPageProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col" style={{
-      paddingTop: 'max(env(safe-area-inset-top), 0px)'
+    <div className="fixed inset-0 bg-gray-50 z-40 flex flex-col" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)',
+      paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
     }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">

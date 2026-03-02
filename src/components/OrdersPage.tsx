@@ -363,8 +363,9 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col" style={{
-      paddingTop: 'max(env(safe-area-inset-top), 0px)'
+    <div className="fixed inset-0 bg-gray-50 z-40 flex flex-col" style={{
+      paddingTop: 'max(env(safe-area-inset-top), 0px)',
+      paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
     }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
@@ -488,9 +489,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto" style={{
-        paddingBottom: 'max(env(safe-area-inset-bottom), 24px)'
-      }}>
+      <div className="flex-1 overflow-y-auto">
         <div className="max-w-md mx-auto p-4">
           {loading ? (
             <div className="space-y-4">

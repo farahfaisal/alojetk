@@ -8,6 +8,8 @@ interface BottomNavProps {
   viewMode: 'restaurants' | 'supermarket' | 'all';
   onViewModeChange: (mode: 'restaurants' | 'supermarket' | 'all') => void;
   cartItemsCount?: number;
+  isHidden?: boolean;
+  onOpenMenu?: () => void;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
@@ -16,10 +18,15 @@ const BottomNav: React.FC<BottomNavProps> = ({
   onOpenOrders,
   viewMode,
   onViewModeChange,
-  cartItemsCount = 0
+  cartItemsCount = 0,
+  isHidden = false
 }) => {
   // Show parcel and orders only in restaurants view
   const showParcelAndOrders = viewMode === 'restaurants';
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <nav
