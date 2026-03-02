@@ -365,7 +365,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-gray-50 z-40 flex flex-col" style={{
       paddingTop: 'max(env(safe-area-inset-top), 0px)',
-      paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+      paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
     }}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">

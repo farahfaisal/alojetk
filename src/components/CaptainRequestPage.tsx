@@ -205,7 +205,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
         className="fixed inset-0 z-40 bg-white"
         style={{
           paddingTop: 'max(env(safe-area-inset-top), 0px)',
-          paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+          paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
         }}
       >
         <div className="h-full flex flex-col">

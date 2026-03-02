@@ -178,7 +178,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
         className="fixed inset-0 z-40 bg-gray-50 overflow-hidden"
         style={{
           paddingTop: 'max(env(safe-area-inset-top), 0px)',
-          paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+          paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
         }}
       >
         <div className="h-full flex flex-col">

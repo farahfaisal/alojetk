@@ -963,7 +963,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
   if (showAddressForm) {
     return (
       <div className="fixed inset-0 bg-gray-50 z-40" style={{
-        paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+        paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
       }}>
         <div className="bg-white shadow-sm sticky top-0 z-10">
           <div className="p-4 flex items-center">
@@ -997,7 +997,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-50 z-40 flex flex-col overflow-hidden modal-page-ios" style={{
-      paddingBottom: 'calc(68px + max(env(safe-area-inset-bottom), 8px))'
+      paddingBottom: 'calc(62px + env(safe-area-inset-bottom))'
     }}>
       {currentSection === 'main' ? (
         <>
