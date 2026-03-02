@@ -989,7 +989,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
 
                   {/* التوصيل */}
                   <div className="flex justify-between items-center text-white/90">
-                    <span className="text-sm">التوصيل ({subOrders.length} متاجر)</span>
+                    <span className="text-base">التوصيل <span className="font-semibold">({subOrders.length} متاجر)</span></span>
                     <span className="font-medium">
                       {subOrders.reduce((sum, order) => sum + Number(order.delivery_fee), 0).toFixed(2)} ₪
                     </span>

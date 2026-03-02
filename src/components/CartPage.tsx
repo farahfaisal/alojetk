@@ -985,7 +985,7 @@ const CartPage: React.FC<CartPageProps> = ({
                       {(() => {
                         const vendorCount = new Set(cartItems.map(item => item.vendor_id)).size;
                         if (vendorCount > 1) {
-                          return ` (${vendorCount} متاجر)`;
+                          return <span className="text-sm font-semibold text-gray-700"> ({vendorCount} متاجر)</span>;
                         }
                         return '';
                       })()}
