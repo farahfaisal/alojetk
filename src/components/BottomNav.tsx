@@ -39,111 +39,95 @@ const BottomNav: React.FC<BottomNavProps> = ({
     >
       <div className="w-full">
         <div className="flex items-center justify-around px-2">
-          {/* زر المطاعم */}
-          <button
-            onClick={() => onViewModeChange('restaurants')}
-            className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'restaurants' ? 'text-brand' : 'text-gray-500 hover:text-brand'
-            }`}
-          >
-            <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                viewMode === 'restaurants'
-                  ? 'bg-brand text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
-              }`}
+          {/* زر الطلبات - يظهر فقط في صفحة المطاعم */}
+          {showParcelAndOrders && (
+            <button
+              onClick={onOpenOrders}
+              className="flex flex-col items-center gap-1.5 py-1 transition-all duration-200"
             >
-              <Home className="w-6 h-6" />
-            </div>
-            <span
-              className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'restaurants' ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
-              }`}
-            >
-              مطاعم
-            </span>
-          </button>
+              <div className={`w-6 h-6 flex items-center justify-center transition-colors duration-200 ${
+                false ? 'text-brand' : 'text-gray-400'
+              }`}>
+                <Package className="w-6 h-6 stroke-[1.5]" />
+              </div>
+              <span className={`text-[11px] font-medium transition-colors duration-200 ${
+                false ? 'text-brand' : 'text-gray-500'
+              }`}>
+                طلباتي
+              </span>
+            </button>
+          )}
 
-          {/* زر السوبر ماركت */}
+          {/* زر حسابي */}
           <button
-            onClick={() => onViewModeChange('supermarket')}
-            className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'supermarket' ? 'text-brand' : 'text-gray-500 hover:text-brand'
-            }`}
+            onClick={onOpenAccount}
+            className="flex flex-col items-center gap-1.5 py-1 transition-all duration-200"
           >
-            <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                viewMode === 'supermarket'
-                  ? 'bg-brand text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
-              }`}
-            >
-              <Store className="w-6 h-6" />
+            <div className="w-6 h-6 flex items-center justify-center text-gray-400 transition-colors duration-200">
+              <User className="w-6 h-6 stroke-[1.5]" />
             </div>
-            <span
-              className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'supermarket' ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
-              }`}
-            >
-              ماركت
+            <span className="text-[11px] font-medium text-gray-500 transition-colors duration-200">
+              حسابي
             </span>
           </button>
 
           {/* زر السلة */}
           <button
             onClick={onOpenCart}
-            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group relative"
+            className="flex flex-col items-center gap-1.5 py-1 transition-all duration-200 relative"
           >
-            <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 relative ${
-                cartItemsCount > 0
-                  ? 'bg-brand text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
-              }`}
-            >
-              <ShoppingCart className="w-6 h-6" />
+            <div className="w-6 h-6 flex items-center justify-center text-gray-400 transition-colors duration-200 relative">
+              <ShoppingCart className="w-6 h-6 stroke-[1.5]" />
               {cartItemsCount > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-[9px] font-bold shadow-md">
-                  {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-600 text-white rounded-full flex items-center justify-center text-[9px] font-bold">
+                  {cartItemsCount > 9 ? '9+' : cartItemsCount}
                 </div>
               )}
             </div>
-            <span
-              className={`text-[10px] font-bold transition-colors duration-300 ${
-                cartItemsCount > 0 ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
-              }`}
-            >
+            <span className="text-[11px] font-medium text-gray-500 transition-colors duration-200">
               السلة
             </span>
           </button>
 
-          {/* زر حسابي */}
+          {/* زر السوبر ماركت */}
           <button
-            onClick={onOpenAccount}
-            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group"
+            onClick={() => onViewModeChange('supermarket')}
+            className="flex flex-col items-center gap-1.5 py-1 transition-all duration-200"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand/10 group-hover:text-brand">
-              <User className="w-6 h-6" />
+            <div className={`w-6 h-6 flex items-center justify-center transition-colors duration-200 ${
+              viewMode === 'supermarket' ? 'text-brand' : 'text-gray-400'
+            }`}>
+              <Store className="w-6 h-6 stroke-[1.5]" />
             </div>
-            <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
-              حسابي
+            <span className={`text-[11px] font-medium transition-colors duration-200 ${
+              viewMode === 'supermarket' ? 'text-brand' : 'text-gray-500'
+            }`}>
+              ماركت
             </span>
           </button>
 
-          {/* زر الطلبات - يظهر فقط في صفحة المطاعم */}
-          {showParcelAndOrders && (
-            <button
-              onClick={onOpenOrders}
-              className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group"
+          {/* زر المطاعم */}
+          <button
+            onClick={() => onViewModeChange('restaurants')}
+            className="flex flex-col items-center gap-1.5 py-1 transition-all duration-200 relative"
+          >
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                viewMode === 'restaurants'
+                  ? 'bg-brand text-white shadow-lg'
+                  : 'text-gray-400'
+              }`}
             >
-              <div className="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand/10 group-hover:text-brand">
-                <Package className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
-                طلباتي
-              </span>
-            </button>
-          )}
+              <Home className={`stroke-[1.5] ${viewMode === 'restaurants' ? 'w-5 h-5' : 'w-6 h-6'}`} />
+            </div>
+            <span
+              className={`text-[11px] font-medium transition-colors duration-200 ${
+                viewMode === 'restaurants' ? 'text-brand' : 'text-gray-500'
+              }`}
+            >
+              مطاعم
+            </span>
+          </button>
         </div>
       </div>
     </nav>
