@@ -605,9 +605,25 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
     try {
       setIsLoadingAddress(true);
+
+      // Get service area ID from the selected city name
+      let serviceAreaId: string | undefined;
+      if (formData.city) {
+        const { data: serviceArea } = await supabase
+          .from('service_areas')
+          .select('id')
+          .eq('name', formData.city)
+          .maybeSingle();
+
+        serviceAreaId = serviceArea?.id;
+        console.log('🌍 Service area ID for', formData.city, ':', serviceAreaId);
+      }
+
       const addressData = {
         ...formData,
-        coordinates: formData.coordinates
+        coordinates: formData.coordinates,
+        serviceAreaId,
+        serviceAreaName: formData.city
       };
 
       let savedAddress: SavedAddress;

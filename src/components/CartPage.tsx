@@ -302,11 +302,16 @@ const CartPage: React.FC<CartPageProps> = ({
         let deliveryTime = null; // سيكون null إذا لم تتوفر بيانات دقيقة
         const prepTime = vendorInfo.estimated_delivery_time || 30;
 
-        const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-        const selectedCity = localStorage.getItem('selectedCity');
-        const areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
+        // Use service area from selected address first, then fall back to localStorage
+        let areaName = selectedAddress?.serviceAreaName;
 
-        console.log('🌍 حساب سعر التوصيل للمنطقة:', areaName);
+        if (!areaName) {
+          const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+          const selectedCity = localStorage.getItem('selectedCity');
+          areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
+        }
+
+        console.log('🌍 حساب سعر التوصيل للمنطقة:', areaName, '(من العنوان:', selectedAddress?.serviceAreaName, ')');
 
         if (areaName) {
           const { data: serviceArea, error: areaError } = await supabase

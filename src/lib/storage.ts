@@ -28,6 +28,8 @@ export interface SavedAddress {
     lat: number;
     lng: number;
   };
+  serviceAreaId?: string;
+  serviceAreaName?: string;
 }
 
 // Database address interface
@@ -42,6 +44,11 @@ interface DatabaseAddress {
   detailed_address?: string;
   latitude?: number;
   longitude?: number;
+  service_area_id?: string;
+  service_areas?: {
+    id: string;
+    name: string;
+  };
 }
 
 // Convert database address to SavedAddress format
@@ -57,7 +64,9 @@ function convertDatabaseAddress(dbAddress: DatabaseAddress): SavedAddress {
     coordinates: dbAddress.latitude && dbAddress.longitude ? {
       lat: dbAddress.latitude,
       lng: dbAddress.longitude
-    } : undefined
+    } : undefined,
+    serviceAreaId: dbAddress.service_area_id,
+    serviceAreaName: dbAddress.service_areas?.name
   };
 }
 
@@ -140,7 +149,13 @@ export async function getSavedAddresses(): Promise<SavedAddress[]> {
 
     const { data, error } = await supabase
       .from('customer_addresses')
-      .select('*')
+      .select(`
+        *,
+        service_areas (
+          id,
+          name
+        )
+      `)
       .eq('customer_id', userData.customer_id)
       .order('is_default', { ascending: false })
       .order('created_at', { ascending: false });
@@ -182,9 +197,16 @@ export async function saveAddress(address: Omit<SavedAddress, 'id'>): Promise<Sa
         is_default: address.isDefault,
         detailed_address: address.detailedAddress,
         latitude: address.coordinates?.lat,
-        longitude: address.coordinates?.lng
+        longitude: address.coordinates?.lng,
+        service_area_id: address.serviceAreaId || null
       })
-      .select()
+      .select(`
+        *,
+        service_areas (
+          id,
+          name
+        )
+      `)
       .single();
 
     if (error) {
@@ -219,11 +241,18 @@ export async function updateAddress(address: SavedAddress): Promise<SavedAddress
         is_default: address.isDefault,
         detailed_address: address.detailedAddress,
         latitude: address.coordinates?.lat,
-        longitude: address.coordinates?.lng
+        longitude: address.coordinates?.lng,
+        service_area_id: address.serviceAreaId || null
       })
       .eq('id', address.id)
       .eq('customer_id', userData.customer_id)
-      .select()
+      .select(`
+        *,
+        service_areas (
+          id,
+          name
+        )
+      `)
       .single();
 
     if (error) {
