@@ -12,12 +12,25 @@ import { getUserPointsAccount, getUserPointsTransactions } from '../lib/points';
 import WalletPage from './WalletPage';
 import { getCustomerWalletBalance } from '../lib/wallet';
 import PointsSettingsAdmin from './PointsSettingsAdmin';
+import BottomNav from './BottomNav';
 
 interface AccountPageProps {
   onClose: () => void;
+  onOpenCart?: () => void;
+  onOpenOrders?: () => void;
+  onViewModeChange?: (mode: 'restaurants' | 'supermarket' | 'all') => void;
+  viewMode?: 'restaurants' | 'supermarket' | 'all';
+  cartItemsCount?: number;
 }
 
-const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
+const AccountPage: React.FC<AccountPageProps> = ({
+  onClose,
+  onOpenCart,
+  onOpenOrders,
+  onViewModeChange,
+  viewMode = 'restaurants',
+  cartItemsCount = 0
+}) => {
   const { user, logout, deleteUserAccount } = useAuth();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -1016,8 +1029,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto modal-scroll">
-            <div className="max-w-md mx-auto pb-32" style={{
-              paddingBottom: 'calc(8rem + max(env(safe-area-inset-bottom), 34px))',
+            <div className="max-w-md mx-auto" style={{
+              paddingBottom: 'calc(120px + max(env(safe-area-inset-bottom), 0px))',
               WebkitOverflowScrolling: 'touch'
             }}>
               {error && (
@@ -1359,6 +1372,16 @@ const AccountPage: React.FC<AccountPageProps> = ({ onClose }) => {
       <NotificationCenter
         isOpen={showNotificationCenter}
         onClose={() => setShowNotificationCenter(false)}
+      />
+
+      {/* Bottom Navigation */}
+      <BottomNav
+        onOpenCart={onOpenCart || (() => {})}
+        onOpenAccount={onClose}
+        onOpenOrders={onOpenOrders || (() => {})}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange || (() => {})}
+        cartItemsCount={cartItemsCount}
       />
     </div>
   );

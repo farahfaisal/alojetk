@@ -900,6 +900,11 @@ const AppContent: React.FC = () => {
         {isAccountOpen && (
             <AccountPage
               onClose={handleCloseAccount}
+              onOpenCart={handleOpenCart}
+              onOpenOrders={handleOpenOrders}
+              onViewModeChange={setViewMode}
+              viewMode={viewMode}
+              cartItemsCount={cartItemsCount}
             />
         )}
 
