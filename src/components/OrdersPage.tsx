@@ -4,9 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import OrderTrackingPage from './OrderTrackingPage';
+import BottomNav from './BottomNav';
 
 interface OrdersPageProps {
   onClose: () => void;
+  onOpenCart?: () => void;
+  onOpenAccount?: () => void;
+  onViewModeChange?: (mode: 'restaurants' | 'supermarket' | 'all') => void;
+  viewMode?: 'restaurants' | 'supermarket' | 'all';
+  cartItemsCount?: number;
 }
 
 interface Order {
@@ -49,7 +55,14 @@ interface ParcelOrder {
   updated_at: string;
 }
 
-const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
+const OrdersPage: React.FC<OrdersPageProps> = ({
+  onClose,
+  onOpenCart,
+  onOpenAccount,
+  onViewModeChange,
+  viewMode = 'restaurants',
+  cartItemsCount = 0
+}) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'restaurant' | 'parcel'>('restaurant');
   const [orders, setOrders] = useState<Order[]>([]);
@@ -488,8 +501,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto" style={{
-        paddingBottom: 'max(env(safe-area-inset-bottom), 24px)'
+      <div className="flex-1 overflow-y-auto pb-20" style={{
+        paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 0px))'
       }}>
         <div className="max-w-md mx-auto p-4">
           {loading ? (
@@ -676,6 +689,16 @@ const OrdersPage: React.FC<OrdersPageProps> = ({ onClose }) => {
           )}
         </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNav
+        onOpenCart={onOpenCart || (() => {})}
+        onOpenAccount={onOpenAccount || (() => {})}
+        onOpenOrders={onClose}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange || (() => {})}
+        cartItemsCount={cartItemsCount}
+      />
     </div>
   );
 };

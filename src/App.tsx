@@ -928,6 +928,11 @@ const AppContent: React.FC = () => {
         {isOrdersOpen && (
           <OrdersPage
             onClose={() => setIsOrdersOpen(false)}
+            onOpenCart={handleOpenCart}
+            onOpenAccount={handleOpenAccount}
+            onViewModeChange={setViewMode}
+            viewMode={viewMode}
+            cartItemsCount={cartItemsCount}
           />
         )}
 
