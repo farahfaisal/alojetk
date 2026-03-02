@@ -1347,8 +1347,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           )}
         </AnimatePresence>
 
-        {/* Floating Custom Order Button */}
-        <motion.button
+        {/* Floating Custom Order Button - Hidden */}
+        {/* <motion.button
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
@@ -1361,7 +1361,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
         >
           <Edit3 className="w-6 h-6" />
           <span className="font-bold text-sm">طلب خاص</span>
-        </motion.button>
+        </motion.button> */}
 
         {/* Custom Order Modal */}
         <AnimatePresence>
