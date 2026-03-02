@@ -1038,64 +1038,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
           </button>
 
-          <div>
-            <div className="flex items-center justify-start gap-2 mb-3">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" style={{ color: BRAND }}>
-                <path d="M21 6h-2c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H3V8h2v2h2V8h10v2h2V8h2v12z" fill="currentColor"/>
-              </svg>
-              <span className="text-base font-bold text-gray-900">هل لديك كوبون خصم؟</span>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 border border-gray-200 space-y-3">
-              <div className="flex items-center gap-3 flex-row-reverse">
-                <input
-                  type="text"
-                  placeholder="ادخل رقم الكوبون"
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  disabled={appliedCoupon !== null}
-                  className="flex-1 text-right text-gray-900 bg-gray-50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 disabled:opacity-50 border border-gray-200"
-                  style={{ focusRing: BRAND }}
-                  dir="rtl"
-                />
-                {!appliedCoupon ? (
-                  <button
-                    onClick={handleApplyCoupon}
-                    disabled={couponLoading || !coupon.trim()}
-                    className="px-6 py-3 rounded-lg text-white text-sm font-bold disabled:opacity-50 transition-colors whitespace-nowrap"
-                    style={{ backgroundColor: BRAND }}
-                  >
-                    {couponLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      'تطبيق'
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleRemoveCoupon}
-                    className="px-6 py-3 rounded-lg bg-red-100 text-red-600 text-sm font-bold whitespace-nowrap"
-                  >
-                    إزالة
-                  </button>
-                )}
-              </div>
-
-              {couponError && (
-                <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg flex-row-reverse">
-                  <span className="text-right flex-1">{couponError}</span>
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                </div>
-              )}
-
-              {appliedCoupon && (
-                <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 p-3 rounded-lg flex-row-reverse">
-                  <span className="font-medium text-right flex-1">تم تطبيق الكوبون - خصم ₪{calculateCouponDiscount().toFixed(2)}</span>
-                  <Check className="w-4 h-4 flex-shrink-0" />
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="h-32"></div>
         </div>
