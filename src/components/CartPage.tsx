@@ -9,6 +9,7 @@ import AddressSelector from './AddressSelector';
 import AddressForm from './AddressForm';
 import { SavedAddress, getSavedAddresses } from '../lib/storage';
 import CheckoutPage from './CheckoutPage';
+import BottomNav from './BottomNav';
 
 interface CartItem {
   id: string;
@@ -36,9 +37,18 @@ interface CartItem {
 interface CartPageProps {
   onClose: () => void;
   selectedCity?: string;
+  onOpenAccount?: () => void;
+  onOpenOrders?: () => void;
+  onNavigateHome?: () => void;
 }
 
-const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
+const CartPage: React.FC<CartPageProps> = ({
+  onClose,
+  selectedCity,
+  onOpenAccount,
+  onOpenOrders,
+  onNavigateHome
+}) => {
   const { user, isAuthenticated } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -644,7 +654,7 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto" style={{
-        paddingBottom: 'calc(100px + max(env(safe-area-inset-bottom), 8px))'
+        paddingBottom: 'calc(180px + max(env(safe-area-inset-bottom), 8px))'
       }}>
         <div className="max-w-md mx-auto p-4">
           {cartItems.length === 0 ? (
@@ -1036,6 +1046,31 @@ const CartPage: React.FC<CartPageProps> = ({ onClose, selectedCity }) => {
           isModal={true}
         />
       )}
+
+      {/* Bottom Navigation */}
+      <BottomNav
+        onOpenCart={() => {}}
+        onOpenAccount={() => {
+          if (onOpenAccount) {
+            onClose();
+            onOpenAccount();
+          }
+        }}
+        onOpenOrders={() => {
+          if (onOpenOrders) {
+            onClose();
+            onOpenOrders();
+          }
+        }}
+        viewMode="restaurants"
+        onViewModeChange={(mode) => {
+          if (onNavigateHome) {
+            onClose();
+            onNavigateHome();
+          }
+        }}
+        cartItemsCount={cartItems.length}
+      />
     </div>
   );
 };

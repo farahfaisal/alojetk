@@ -907,6 +907,9 @@ const AppContent: React.FC = () => {
           <CartPage
             onClose={() => setIsCartOpen(false)}
             selectedCity={selectedCity}
+            onOpenAccount={handleOpenAccount}
+            onOpenOrders={handleOpenOrders}
+            onNavigateHome={() => setIsCartOpen(false)}
           />
         )}
 
