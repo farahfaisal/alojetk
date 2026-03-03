@@ -164,7 +164,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
               ) : !todayHours.close ? (
                 <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
               ) : (
-                <span>ساعات العمل اليوم: <span dir="ltr">{formatTime(todayHours.open)} - {formatTime(todayHours.close)}</span></span>
+                <span>ساعات العمل اليوم: {formatTime(todayHours.open)} - {formatTime(todayHours.close)}</span>
               )}
             </p>
           )}
@@ -187,7 +187,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
                 }`}
               >
                 <span>{getDayName(hours.day)}</span>
-                <span dir="ltr">
+                <span>
                   {!hours.enabled || !hours.open ? (
                     <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                   ) : hours.open === '00:00' && (!hours.close || hours.close === '23:59') ? (
