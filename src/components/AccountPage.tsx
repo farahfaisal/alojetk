@@ -1380,7 +1380,12 @@ const AccountPage: React.FC<AccountPageProps> = ({
         onOpenAccount={onClose}
         onOpenOrders={onOpenOrders || (() => {})}
         viewMode={viewMode}
-        onViewModeChange={onViewModeChange || (() => {})}
+        onViewModeChange={(mode) => {
+          if (onViewModeChange) {
+            onViewModeChange(mode);
+          }
+          onClose();
+        }}
         cartItemsCount={cartItemsCount}
       />
     </div>

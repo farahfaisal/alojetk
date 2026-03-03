@@ -696,7 +696,12 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
         onOpenAccount={onOpenAccount || (() => {})}
         onOpenOrders={onClose}
         viewMode={viewMode}
-        onViewModeChange={onViewModeChange || (() => {})}
+        onViewModeChange={(mode) => {
+          if (onViewModeChange) {
+            onViewModeChange(mode);
+          }
+          onClose();
+        }}
         cartItemsCount={cartItemsCount}
       />
     </div>
