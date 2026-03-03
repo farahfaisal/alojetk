@@ -34,12 +34,14 @@ export const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
 
   try {
     return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => {
-      const isEnabled = hours?.enabled !== false;
+      const isEnabled = hours?.enabled === true;
+      const hasValidHours = hours?.open && hours?.close && hours.open !== '00:00' && hours.close !== '00:00';
+
       return {
         day: dayMapping[dayName.toLowerCase()],
-        open: hours?.open || (isEnabled ? '09:00' : ''),
-        close: hours?.close || (isEnabled ? '21:00' : ''),
-        enabled: isEnabled
+        open: hasValidHours ? hours.open : '',
+        close: hasValidHours ? hours.close : '',
+        enabled: isEnabled && hasValidHours
       };
     }).sort((a, b) => a.day - b.day);
   } catch (error) {
@@ -205,6 +207,9 @@ export const getStatusBadgeClasses = (status: VendorWorkingStatus): string => {
  * Format time string
  */
 export const formatTime = (time: string): string => {
+  if (!time || time.trim() === '') {
+    return '--:--';
+  }
   try {
     const [hours, minutes] = time.split(':');
     return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
