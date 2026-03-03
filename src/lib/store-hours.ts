@@ -223,15 +223,25 @@ export const getStatusBadgeClasses = (status: VendorWorkingStatus): string => {
 };
 
 /**
- * Format time string
+ * Format time string to 12-hour format with Arabic AM/PM
  */
-export const formatTime = (time: string): string => {
+export const formatTime = (time: string, use12Hour: boolean = true): string => {
   if (!time || time.trim() === '') {
     return '--:--';
   }
   try {
-    const [hours, minutes] = time.split(':');
-    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    const [hoursStr, minutes] = time.split(':');
+    const hours = parseInt(hoursStr, 10);
+
+    if (!use12Hour) {
+      return `${hoursStr.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    }
+
+    // Convert to 12-hour format
+    const period = hours >= 12 ? 'مساءً' : 'صباحاً';
+    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+
+    return `${displayHours.toString().padStart(2, '0')}:${minutes} ${period}`;
   } catch {
     return time;
   }
