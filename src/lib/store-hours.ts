@@ -37,8 +37,8 @@ export const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
       const isEnabled = hours?.enabled !== false;
       return {
         day: dayMapping[dayName.toLowerCase()],
-        open: isEnabled ? (hours?.open || '09:00') : (hours?.open || ''),
-        close: isEnabled ? (hours?.close || '21:00') : (hours?.close || ''),
+        open: hours?.open || (isEnabled ? '09:00' : ''),
+        close: hours?.close || (isEnabled ? '21:00' : ''),
         enabled: isEnabled
       };
     }).sort((a, b) => a.day - b.day);
