@@ -20,6 +20,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
     vacation_mode: boolean;
     closed_dates: string[];
     is_open_now: boolean;
+    timezone?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +35,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
         const { data: vendorData, error: vendorError } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode, status')
+          .select('working_hours, vacation_mode, status, timezone')
           .eq('id', vendorId)
           .maybeSingle();
 
@@ -51,7 +52,8 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
         const workingStatus = checkVendorWorkingStatus({
           working_hours: vendorData?.working_hours,
           vacation_mode: vendorData?.vacation_mode,
-          status: vendorData?.status
+          status: vendorData?.status,
+          timezone: vendorData?.timezone
         });
 
         console.log('✅ Store hours converted:', storeHours);
@@ -61,7 +63,8 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           store_hours: storeHours,
           vacation_mode: vendorData?.vacation_mode || false,
           closed_dates: [],
-          is_open_now: workingStatus.is_open
+          is_open_now: workingStatus.is_open,
+          timezone: vendorData?.timezone || 'Asia/Jerusalem'
         });
 
         setLoading(false);
@@ -140,7 +143,10 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
   }
 
 
-  const currentDay = new Date().getDay();
+  const timezone = storeStatus.timezone || 'Asia/Jerusalem';
+  const now = new Date();
+  const jerusalemTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  const currentDay = jerusalemTime.getDay();
   const todayHours = storeStatus.store_hours.find(hours => hours.day === currentDay);
 
   return (
