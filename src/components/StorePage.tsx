@@ -947,7 +947,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       <div className="flex items-center gap-2">
                         {(() => {
                           const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                          const todayHours = getTodayHours(storeHours);
+                          const todayHours = getTodayHours(storeHours, vendor.timezone);
                           if (todayHours && todayHours.enabled && todayHours.open) {
                             if (todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59')) {
                               return (

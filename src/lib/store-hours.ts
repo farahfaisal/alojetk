@@ -75,10 +75,12 @@ export const getDefaultStoreHours = (): StoreHours[] => {
 /**
  * Check if store is currently open based on time
  */
-export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
+export const checkIfStoreIsOpen = (storeHours: StoreHours[], timezone: string = 'Asia/Jerusalem'): boolean => {
+  // Get current time in vendor's timezone
   const now = new Date();
-  const currentDay = now.getDay();
-  const currentTime = now.getHours() * 60 + now.getMinutes();
+  const jerusalemTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  const currentDay = jerusalemTime.getDay();
+  const currentTime = jerusalemTime.getHours() * 60 + jerusalemTime.getMinutes();
 
   const todayHours = storeHours.find(h => h.day === currentDay);
 
@@ -116,8 +118,9 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     }
 
     console.log('🕒 فحص ساعات العمل:', {
+      timezone,
       currentDay,
-      currentTime: `${now.getHours()}:${now.getMinutes()}`,
+      currentTime: `${jerusalemTime.getHours()}:${jerusalemTime.getMinutes()}`,
       openTime: `${openHour}:${openMin}`,
       closeTime: `${closeHour}:${closeMin}`,
       isOpen
@@ -133,9 +136,10 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
 /**
  * Get today's hours
  */
-export const getTodayHours = (storeHours: StoreHours[]): StoreHours | null => {
+export const getTodayHours = (storeHours: StoreHours[], timezone: string = 'Asia/Jerusalem'): StoreHours | null => {
   const now = new Date();
-  const currentDay = now.getDay();
+  const jerusalemTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  const currentDay = jerusalemTime.getDay();
   return storeHours.find(h => h.day === currentDay) || null;
 };
 
@@ -146,6 +150,7 @@ export const checkVendorWorkingStatus = (vendor: {
   working_hours?: any;
   vacation_mode?: boolean;
   status?: string;
+  timezone?: string;
 }): VendorWorkingStatus => {
   // Check if vendor is suspended or inactive
   if (vendor.status === 'suspended' || vendor.status === 'inactive') {
@@ -163,9 +168,12 @@ export const checkVendorWorkingStatus = (vendor: {
     };
   }
 
+  // Get vendor timezone or default to Asia/Jerusalem
+  const timezone = vendor.timezone || 'Asia/Jerusalem';
+
   // Get store hours
   const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-  const todayHours = getTodayHours(storeHours);
+  const todayHours = getTodayHours(storeHours, timezone);
 
   // Check if closed today
   if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
@@ -177,7 +185,7 @@ export const checkVendorWorkingStatus = (vendor: {
   }
 
   // Check if within working hours
-  const isOpen = checkIfStoreIsOpen(storeHours);
+  const isOpen = checkIfStoreIsOpen(storeHours, timezone);
 
   return {
     is_open: isOpen,
