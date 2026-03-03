@@ -42,7 +42,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
               <div>
                 <h3 className="font-semibold text-lg text-gray-900">مقدمة</h3>
                 <p className="text-gray-600 mt-1">
-                  نحن في تطبيق "بين إديك" نقدر خصوصيتك ونلتزم بحمايتها. تشرح سياسة الخصوصية هذه كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك الشخصية عند استخدام تطبيقنا.
+                  نحن في تطبيق "ألو جيتك" نقدر خصوصيتك ونلتزم بحمايتها. تشرح سياسة الخصوصية هذه كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك الشخصية عند استخدام تطبيقنا.
                 </p>
               </div>
             </div>
@@ -187,7 +187,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
                   </li>
                 </ul>
                 <p className="text-gray-600 mt-4">
-                  للاستفسارات المتعلقة بالخصوصية، يرجى التواصل معنا على: privacy@ben-edek.shop
+                  للاستفسارات المتعلقة بالخصوصية، يرجى التواصل معنا على: privacy@alojitak.com
                 </p>
               </div>
             </div>
@@ -211,7 +211,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onClose }) => {
             <ul className="mt-2 space-y-2">
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-700">البريد الإلكتروني: privacy@ben-edek.shop</span>
+                <span className="text-gray-700">البريد الإلكتروني: privacy@alojitak.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
