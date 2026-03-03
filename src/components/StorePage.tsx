@@ -931,7 +931,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                   {/* حالة المتجر وأوقات العمل */}
                   <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 px-4 py-3">
-                    <div className="w-full flex items-center justify-between">
+                    <div className="w-full flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
                         {isVendorAvailable ? (
@@ -972,6 +972,43 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           );
                         })()}
                       </div>
+                    </div>
+
+                    {/* قائمة أوقات العمل */}
+                    <div className="border-t border-gray-100 pt-3 space-y-2">
+                      {(() => {
+                        const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                        const timezone = vendor.timezone || 'Asia/Jerusalem';
+                        const now = new Date();
+                        const localTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                        const currentDay = localTime.getDay();
+                        const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+                        return storeHours.map((hours) => {
+                          const isToday = hours.day === currentDay;
+                          const dayName = dayNames[hours.day];
+
+                          return (
+                            <div
+                              key={hours.day}
+                              className={`flex justify-between items-center text-sm ${
+                                isToday ? 'text-red-800 font-semibold' : 'text-gray-600'
+                              }`}
+                            >
+                              <span>{dayName}</span>
+                              <span>
+                                {!hours.enabled || !hours.open || !hours.close ? (
+                                  <span className="text-red-600 font-medium">مغلق</span>
+                                ) : hours.open === '00:00' && hours.close === '23:59' ? (
+                                  <span className="text-green-600 font-medium">24 ساعة</span>
+                                ) : (
+                                  `${formatTime(hours.open)} - ${formatTime(hours.close)}`
+                                )}
+                              </span>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
 
