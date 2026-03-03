@@ -5,9 +5,11 @@ interface BottomNavProps {
   onOpenCart: () => void;
   onOpenAccount: () => void;
   onOpenOrders: () => void;
+  onOpenMenu: () => void;
   viewMode: 'restaurants' | 'supermarket' | 'all';
   onViewModeChange: (mode: 'restaurants' | 'supermarket' | 'all') => void;
   cartItemsCount?: number;
+  isHidden?: boolean;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
@@ -16,8 +18,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
   onOpenOrders,
   viewMode,
   onViewModeChange,
-  cartItemsCount = 0
+  cartItemsCount = 0,
+  isHidden = false
 }) => {
+  if (isHidden) return null;
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 w-full shadow-lg"
