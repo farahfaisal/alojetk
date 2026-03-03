@@ -14,36 +14,29 @@ const customFetch = async (...args: Parameters<typeof fetch>): Promise<Response>
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
-    
+
     const [url, options = {}] = args;
     const fetchOptions = {
       ...options,
       signal: controller.signal
     };
-    
+
     const response = await fetch(url, fetchOptions);
     clearTimeout(timeoutId);
-    
+
     console.log('Making request to:', url);
-    // Check if response is ok
     console.log('Response status:', response.status);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
-    }
-    
+
+    // Don't throw error for Edge Functions - they handle their own error responses
+    // Only throw for actual network/connection errors
     return response;
   } catch (err: any) {
     console.error('Supabase fetch error:', err);
-    
+
     if (err.name === 'AbortError') {
       throw new Error('انتهت مهلة الاتصال بالخادم');
     } else if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
       throw new Error('فشل الاتصال بالخادم. يرجى التحقق من:\n1. اتصال الإنترنت\n2. إعدادات CORS في Supabase\n3. صحة رابط Supabase');
-    } else if (err.message?.includes('HTTP')) {
-      throw new Error(`خطأ في الخادم: ${err.message}`);
     } else {
       throw err;
     }
