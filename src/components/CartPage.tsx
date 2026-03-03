@@ -569,6 +569,8 @@ const CartPage: React.FC<CartPageProps> = ({
     setCouponError('');
 
     try {
+      console.log('🎫 محاولة تطبيق الكوبون:', couponCode.trim());
+
       const { data: coupon, error } = await supabase
         .from('coupons')
         .select('*')
@@ -576,9 +578,15 @@ const CartPage: React.FC<CartPageProps> = ({
         .eq('status', 'active')
         .maybeSingle();
 
-      if (error) throw error;
+      console.log('🎫 نتيجة البحث عن الكوبون:', { coupon, error });
+
+      if (error) {
+        console.error('🎫 خطأ في البحث عن الكوبون:', error);
+        throw error;
+      }
 
       if (!coupon) {
+        console.log('🎫 الكوبون غير موجود أو غير نشط');
         setCouponError('الكوبون غير صالح أو منتهي الصلاحية');
         return;
       }
@@ -588,29 +596,47 @@ const CartPage: React.FC<CartPageProps> = ({
       const startDate = new Date(coupon.start_date);
       const endDate = new Date(coupon.end_date);
 
+      console.log('🎫 فحص التواريخ:', {
+        now: now.toISOString(),
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        isAfterStart: now >= startDate,
+        isBeforeEnd: now <= endDate
+      });
+
       if (now < startDate || now > endDate) {
+        console.log('🎫 الكوبون منتهي الصلاحية أو لم يبدأ بعد');
         setCouponError('الكوبون غير صالح أو منتهي الصلاحية');
         return;
       }
 
       // Check if coupon has reached usage limit
       if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+        console.log('🎫 تم استخدام الكوبون بالكامل:', { used_count: coupon.used_count, usage_limit: coupon.usage_limit });
         setCouponError('لقد تم استخدام هذا الكوبون بالكامل');
         return;
       }
 
       // Check minimum order amount
       const subtotal = calculateSubtotal();
+      console.log('🎫 فحص الحد الأدنى للطلب:', {
+        subtotal,
+        min_order_amount: coupon.min_order_amount,
+        isValid: !coupon.min_order_amount || subtotal >= coupon.min_order_amount
+      });
+
       if (coupon.min_order_amount && subtotal < coupon.min_order_amount) {
+        console.log('🎫 لم يتم الوصول إلى الحد الأدنى للطلب');
         setCouponError(`الحد الأدنى للطلب ${coupon.min_order_amount.toFixed(2)} شيكل`);
         return;
       }
 
+      console.log('✅ تم تطبيق الكوبون بنجاح!');
       setAppliedCoupon(coupon);
       setCouponCode('');
       setCouponError('');
     } catch (error) {
-      console.error('Error applying coupon:', error);
+      console.error('❌ خطأ في تطبيق الكوبون:', error);
       setCouponError('حدث خطأ في تطبيق الكوبون');
     } finally {
       setApplyingCoupon(false);
