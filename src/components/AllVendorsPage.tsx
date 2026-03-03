@@ -366,6 +366,8 @@ const AllVendorsPage: React.FC<AllVendorsPageProps> = ({
             logo: selectedVendor.logo_url,
             rating: selectedVendor.rating,
             status: selectedVendor.status,
+            working_hours: selectedVendor.working_hours,
+            vacation_mode: selectedVendor.vacation_mode,
             address: selectedVendor.address
           }}
           categoryId={null}
