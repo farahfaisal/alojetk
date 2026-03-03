@@ -157,7 +157,11 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           </h3>
           {!storeStatus.vacation_mode && todayHours && (
             <p className="text-sm text-gray-600">
-              {!todayHours.enabled || !todayHours.open || !todayHours.close ? (
+              {!todayHours.enabled || !todayHours.open ? (
+                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
+              ) : todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59') ? (
+                <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">مفتوح 24 ساعة</span>
+              ) : !todayHours.close ? (
                 <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
               ) : (
                 `ساعات العمل اليوم: ${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`
@@ -184,7 +188,11 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
               >
                 <span>{getDayName(hours.day)}</span>
                 <span>
-                  {!hours.enabled || !hours.open || !hours.close ? (
+                  {!hours.enabled || !hours.open ? (
+                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                  ) : hours.open === '00:00' && (!hours.close || hours.close === '23:59') ? (
+                    <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">24 ساعة</span>
+                  ) : !hours.close ? (
                     <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                   ) : (
                     `${formatTime(hours.open)} - ${formatTime(hours.close)}`

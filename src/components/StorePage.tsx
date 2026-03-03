@@ -948,7 +948,21 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         {(() => {
                           const storeHours = convertWorkingHoursToArray(vendor.working_hours);
                           const todayHours = getTodayHours(storeHours);
-                          if (todayHours && todayHours.enabled) {
+                          if (todayHours && todayHours.enabled && todayHours.open) {
+                            if (todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59')) {
+                              return (
+                                <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                  24 ساعة
+                                </span>
+                              );
+                            }
+                            if (!todayHours.close) {
+                              return (
+                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                  مغلق اليوم
+                                </span>
+                              );
+                            }
                             return (
                               <span className="text-sm text-gray-600">
                                 {`${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`}

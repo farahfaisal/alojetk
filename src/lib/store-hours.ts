@@ -75,8 +75,19 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
 
   const todayHours = storeHours.find(h => h.day === currentDay);
 
-  if (!todayHours || !todayHours.enabled || !todayHours.open || !todayHours.close) {
+  if (!todayHours || !todayHours.enabled || !todayHours.open) {
     console.log('❌ المتجر مغلق اليوم:', { day: currentDay, todayHours });
+    return false;
+  }
+
+  // Special case: 24/7 operation (open is 00:00 and close is missing or 23:59)
+  if (todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59')) {
+    console.log('✅ المتجر مفتوح 24 ساعة');
+    return true;
+  }
+
+  if (!todayHours.close) {
+    console.log('❌ وقت الإغلاق مفقود');
     return false;
   }
 
@@ -87,7 +98,15 @@ export const checkIfStoreIsOpen = (storeHours: StoreHours[]): boolean => {
     const openTime = openHour * 60 + openMin;
     const closeTime = closeHour * 60 + closeMin;
 
-    const isOpen = currentTime >= openTime && currentTime < closeTime;
+    // Handle case where closing time is after midnight (e.g., 08:00 - 02:00)
+    let isOpen;
+    if (closeTime < openTime) {
+      // Store closes after midnight
+      isOpen = currentTime >= openTime || currentTime < closeTime;
+    } else {
+      // Normal hours within same day
+      isOpen = currentTime >= openTime && currentTime < closeTime;
+    }
 
     console.log('🕒 فحص ساعات العمل:', {
       currentDay,
