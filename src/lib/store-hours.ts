@@ -34,14 +34,21 @@ export const convertWorkingHoursToArray = (workingHours: any): StoreHours[] => {
 
   try {
     return Object.entries(workingHours).map(([dayName, hours]: [string, any]) => {
-      const isEnabled = hours?.enabled === true;
-      const hasValidHours = hours?.open && hours?.close && hours.open !== '00:00' && hours.close !== '00:00';
+      // Check if the day is explicitly disabled
+      const isExplicitlyDisabled = hours?.enabled === false;
+
+      // Check if hours are valid
+      const hasValidHours = hours?.open && hours?.close;
+
+      // Special case: 24/7 operation
+      const is24Hours = hours?.open === '00:00' && hours?.close === '00:00';
 
       return {
         day: dayMapping[dayName.toLowerCase()],
         open: hasValidHours ? hours.open : '',
         close: hasValidHours ? hours.close : '',
-        enabled: isEnabled && hasValidHours
+        // Day is enabled only if it has valid hours AND is not explicitly disabled
+        enabled: !isExplicitlyDisabled && hasValidHours
       };
     }).sort((a, b) => a.day - b.day);
   } catch (error) {
