@@ -25,7 +25,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
-  const [showHoursModal, setShowHoursModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [newVendorData, setNewVendorData] = useState<any>(null);
   const [isVendorAvailable, setIsVendorAvailable] = useState(true);
@@ -932,10 +931,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                   {/* حالة المتجر وأوقات العمل */}
                   <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 px-4 py-3">
-                    <button
-                      onClick={() => setShowHoursModal(true)}
-                      className="w-full flex items-center justify-between"
-                    >
+                    <div className="w-full flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
                         {isVendorAvailable ? (
@@ -975,9 +971,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                             </span>
                           );
                         })()}
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
-                    </button>
+                    </div>
                   </div>
 
                 </div>
@@ -1328,38 +1323,6 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
           )}
         </AnimatePresence>
 
-        {/* Hours Modal */}
-        <AnimatePresence>
-          {showHoursModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-xl shadow-xl w-full max-w-md"
-              >
-                <div className="p-4 border-b flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900">ساعات العمل</h2>
-                  <button
-                    onClick={() => setShowHoursModal(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-                  >
-                    <X className="w-5 h-5 text-gray-500" />
-                  </button>
-                </div>
-
-                <div className="p-4">
-                  <StoreStatus vendorId={vendor.id} />
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Floating Custom Order Button - Hidden */}
         {/* <motion.button
