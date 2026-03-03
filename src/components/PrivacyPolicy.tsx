@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Shield, Lock, Eye, FileText, Server, Check } from 'lucide-react';
+import { X, Shield, Lock, Eye, FileText, Server, Check, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface PrivacyPolicyProps {
