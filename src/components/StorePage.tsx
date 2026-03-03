@@ -45,6 +45,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showCustomOrderModal, setShowCustomOrderModal] = useState(false);
   const [userAddress, setUserAddress] = useState<{address: string, city: string, latitude?: number, longitude?: number} | null>(null);
+  const [showWorkingHours, setShowWorkingHours] = useState(false);
 
   // Don't auto-filter by category - show all products initially
   // useEffect(() => {
@@ -930,8 +931,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   </div>
 
                   {/* حالة المتجر وأوقات العمل */}
-                  <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 px-4 py-3">
-                    <div className="w-full flex items-center justify-between mb-3">
+                  <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => setShowWorkingHours(!showWorkingHours)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
                       <div className="flex items-center gap-2">
                         <Clock className="w-5 h-5 text-red-800" />
                         {isVendorAvailable ? (
@@ -971,45 +975,58 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                             </span>
                           );
                         })()}
+                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showWorkingHours ? 'rotate-180' : ''}`} />
                       </div>
-                    </div>
+                    </button>
 
                     {/* قائمة أوقات العمل */}
-                    <div className="border-t border-gray-100 pt-3 space-y-2">
-                      {(() => {
-                        const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                        const timezone = vendor.timezone || 'Asia/Jerusalem';
-                        const now = new Date();
-                        const localTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
-                        const currentDay = localTime.getDay();
-                        const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                    <AnimatePresence>
+                      {showWorkingHours && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="border-t border-gray-100 px-4 pb-3"
+                        >
+                          <div className="pt-3 space-y-2">
+                            {(() => {
+                              const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                              const timezone = vendor.timezone || 'Asia/Jerusalem';
+                              const now = new Date();
+                              const localTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                              const currentDay = localTime.getDay();
+                              const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
-                        return storeHours.map((hours) => {
-                          const isToday = hours.day === currentDay;
-                          const dayName = dayNames[hours.day];
+                              return storeHours.map((hours) => {
+                                const isToday = hours.day === currentDay;
+                                const dayName = dayNames[hours.day];
 
-                          return (
-                            <div
-                              key={hours.day}
-                              className={`flex justify-between items-center text-sm ${
-                                isToday ? 'text-red-800 font-semibold' : 'text-gray-600'
-                              }`}
-                            >
-                              <span>{dayName}</span>
-                              <span>
-                                {!hours.enabled || !hours.open || !hours.close ? (
-                                  <span className="text-red-600 font-medium">مغلق</span>
-                                ) : hours.open === '00:00' && hours.close === '23:59' ? (
-                                  <span className="text-green-600 font-medium">24 ساعة</span>
-                                ) : (
-                                  `${formatTime(hours.open)} - ${formatTime(hours.close)}`
-                                )}
-                              </span>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
+                                return (
+                                  <div
+                                    key={hours.day}
+                                    className={`flex justify-between items-center text-sm ${
+                                      isToday ? 'text-red-800 font-semibold' : 'text-gray-600'
+                                    }`}
+                                  >
+                                    <span>{dayName}</span>
+                                    <span>
+                                      {!hours.enabled || !hours.open || !hours.close ? (
+                                        <span className="text-red-600 font-medium">مغلق</span>
+                                      ) : hours.open === '00:00' && hours.close === '23:59' ? (
+                                        <span className="text-green-600 font-medium">24 ساعة</span>
+                                      ) : (
+                                        `${formatTime(hours.open)} - ${formatTime(hours.close)}`
+                                      )}
+                                    </span>
+                                  </div>
+                                );
+                              });
+                            })()}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                 </div>
