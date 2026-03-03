@@ -102,8 +102,7 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
             delivery_zones,
             service_areas,
             main_service_area_id,
-            working_hours,
-            vacation_mode
+            working_hours
           `)
           .eq('status', 'active');
 
