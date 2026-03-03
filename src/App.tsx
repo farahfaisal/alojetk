@@ -828,7 +828,7 @@ const AppContent: React.FC = () => {
         </div>
 
         {/* Floating Buttons - Show only in home page (restaurants view) */}
-        {!isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && !selectedVendorId && !selectedProductId && viewMode === 'restaurants' && (
+        {!isAccountOpen && !isSidebarOpen && !isPrivacyPolicyOpen && !isContactPageOpen && !isSignupOpen && !isCartOpen && !isOrdersOpen && !isStorePageOpen && !selectedVendorId && !selectedProductId && viewMode === 'restaurants' && (
           <div className="fixed left-4 z-[60] flex flex-col gap-3" style={{
             bottom: 'calc(6rem + max(env(safe-area-inset-bottom), 8px))'
           }}>
