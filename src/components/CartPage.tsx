@@ -295,7 +295,18 @@ const CartPage: React.FC<CartPageProps> = ({
   // Calculate delivery fee based on distance and service area
   useEffect(() => {
     const calculateDelivery = async () => {
-      if (!vendorInfo) return;
+      console.log('🔄 بدء حساب سعر التوصيل...');
+      console.log('📍 بيانات العنوان المختار:', {
+        address: selectedAddress?.address,
+        serviceAreaName: selectedAddress?.serviceAreaName,
+        serviceAreaId: selectedAddress?.serviceAreaId,
+        coordinates: selectedAddress?.coordinates
+      });
+
+      if (!vendorInfo) {
+        console.log('⚠️ لا توجد بيانات للبائع');
+        return;
+      }
 
       try {
         let fee = 7;
@@ -309,6 +320,7 @@ const CartPage: React.FC<CartPageProps> = ({
           const selectedServiceArea = localStorage.getItem('selectedServiceArea');
           const selectedCity = localStorage.getItem('selectedCity');
           areaName = selectedServiceArea || (selectedCity ? JSON.parse(selectedCity) : null);
+          console.log('⚠️ لم يتم العثور على منطقة الخدمة في العنوان، استخدام localStorage:', areaName);
         }
 
         console.log('🌍 حساب سعر التوصيل للمنطقة:', areaName, '(من العنوان:', selectedAddress?.serviceAreaName, ')');
@@ -622,13 +634,29 @@ const CartPage: React.FC<CartPageProps> = ({
     return grouped;
   };
 
-  const handleAddressSelect = (address: SavedAddress) => {
-    setSelectedAddress(address);
+  const handleAddressSelect = async (address: SavedAddress) => {
+    console.log('🏠 العنوان المختار:', address);
+    console.log('🏠 منطقة الخدمة:', address.serviceAreaName);
+
+    // إعادة تحميل العنوان من قاعدة البيانات للتأكد من وجود serviceAreaName
+    const addresses = await getSavedAddresses();
+    const updatedAddress = addresses.find(a => a.id === address.id) || address;
+
+    console.log('🏠 العنوان المحدث:', updatedAddress);
+    setSelectedAddress(updatedAddress);
     setShowAddressSelector(false);
   };
 
-  const handleAddressSave = (address: SavedAddress) => {
-    setSelectedAddress(address);
+  const handleAddressSave = async (address: SavedAddress) => {
+    console.log('💾 حفظ العنوان:', address);
+    console.log('💾 منطقة الخدمة:', address.serviceAreaName);
+
+    // إعادة تحميل العنوان من قاعدة البيانات للتأكد من وجود serviceAreaName
+    const addresses = await getSavedAddresses();
+    const updatedAddress = addresses.find(a => a.id === address.id) || address;
+
+    console.log('💾 العنوان المحدث:', updatedAddress);
+    setSelectedAddress(updatedAddress);
     setShowAddressForm(false);
   };
 
