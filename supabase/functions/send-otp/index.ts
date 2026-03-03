@@ -78,7 +78,10 @@ Deno.serve(async (req: Request) => {
 
     const hasHtdCredentials = htdApiId && htdSenderId;
     const isTestMode = !hasHtdCredentials;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Use fixed OTP for test number, random for others
+    const isTestNumber = standardizedPhone === "0595284308";
+    const otp = isTestNumber ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
     if (!isTestMode) {
