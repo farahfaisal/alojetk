@@ -63,23 +63,41 @@ export async function getCustomerWalletTransactions(
       return [];
     }
 
+    console.log('💳 جلب معاملات المحفظة للعميل:', customerId);
+
+    // أولاً، احصل على محفظة العميل
+    const { data: wallet, error: walletError } = await supabase
+      .from('customer_wallets')
+      .select('id')
+      .eq('customer_id', customerId)
+      .maybeSingle();
+
+    if (walletError) {
+      console.error('Error fetching customer wallet:', walletError);
+      throw walletError;
+    }
+
+    if (!wallet) {
+      console.log('⚠️ لا توجد محفظة للعميل');
+      return [];
+    }
+
+    console.log('💳 معرف المحفظة:', wallet.id);
+
+    // ثم احصل على المعاملات
     const { data, error } = await supabase
       .from('customer_wallet_transactions')
-      .select(`
-        *,
-        wallet:wallet_id (
-          customer_id
-        )
-      `)
-      .eq('wallet.customer_id', customerId)
+      .select('*')
+      .eq('wallet_id', wallet.id)
       .order('created_at', { ascending: false })
       .limit(limit);
-    
+
     if (error) {
       console.error('Error fetching wallet transactions:', error);
       throw error;
     }
-    
+
+    console.log('💳 عدد المعاملات:', data?.length || 0);
     return data || [];
   } catch (error) {
     console.error('Error fetching wallet transactions:', error);
