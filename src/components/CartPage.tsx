@@ -1179,6 +1179,9 @@ const CartPage: React.FC<CartPageProps> = ({
           }
         }}
         cartItemsCount={cartItems.length}
+        isAccountOpen={false}
+        isOrdersOpen={false}
+        isCartOpen={true}
       />
     </div>
   );

@@ -878,6 +878,9 @@ const AppContent: React.FC = () => {
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           cartItemsCount={cartItemsCount}
+          isAccountOpen={isAccountOpen}
+          isOrdersOpen={isOrdersOpen}
+          isCartOpen={isCartOpen}
         />
 
         <AnimatePresence>

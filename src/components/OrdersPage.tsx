@@ -703,6 +703,9 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
           onClose();
         }}
         cartItemsCount={cartItemsCount}
+        isAccountOpen={false}
+        isOrdersOpen={true}
+        isCartOpen={false}
       />
     </div>
   );

@@ -10,6 +10,9 @@ interface BottomNavProps {
   onViewModeChange: (mode: 'restaurants' | 'supermarket' | 'all') => void;
   cartItemsCount?: number;
   isHidden?: boolean;
+  isAccountOpen?: boolean;
+  isOrdersOpen?: boolean;
+  isCartOpen?: boolean;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({
@@ -19,7 +22,10 @@ const BottomNav: React.FC<BottomNavProps> = ({
   viewMode,
   onViewModeChange,
   cartItemsCount = 0,
-  isHidden = false
+  isHidden = false,
+  isAccountOpen = false,
+  isOrdersOpen = false,
+  isCartOpen = false
 }) => {
   if (isHidden) return null;
 
@@ -87,11 +93,13 @@ const BottomNav: React.FC<BottomNavProps> = ({
           {/* زر السلة */}
           <button
             onClick={onOpenCart}
-            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group relative"
+            className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group relative ${
+              isCartOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
+            }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 relative ${
-                cartItemsCount > 0
+                isCartOpen || cartItemsCount > 0
                   ? 'bg-brand text-white shadow-md'
                   : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
               }`}
@@ -105,7 +113,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                cartItemsCount > 0 ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
+                isCartOpen || cartItemsCount > 0 ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
               }`}
             >
               السلة
@@ -115,12 +123,24 @@ const BottomNav: React.FC<BottomNavProps> = ({
           {/* زر حسابي */}
           <button
             onClick={onOpenAccount}
-            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group"
+            className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
+              isAccountOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
+            }`}
           >
-            <div className="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand/10 group-hover:text-brand">
+            <div
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                isAccountOpen
+                  ? 'bg-brand text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
+              }`}
+            >
               <User className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
+            <span
+              className={`text-[10px] font-bold transition-colors duration-300 ${
+                isAccountOpen ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
+              }`}
+            >
               حسابي
             </span>
           </button>
@@ -128,12 +148,24 @@ const BottomNav: React.FC<BottomNavProps> = ({
           {/* زر الطلبات */}
           <button
             onClick={onOpenOrders}
-            className="flex flex-col items-center gap-1 py-1 text-gray-500 hover:text-brand transition-all duration-300 group"
+            className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
+              isOrdersOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
+            }`}
           >
-            <div className="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-brand/10 group-hover:text-brand">
+            <div
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                isOrdersOpen
+                  ? 'bg-brand text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
+              }`}
+            >
               <Package className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-bold text-gray-500 group-hover:text-brand transition-colors duration-300">
+            <span
+              className={`text-[10px] font-bold transition-colors duration-300 ${
+                isOrdersOpen ? 'text-brand' : 'text-gray-500 group-hover:text-brand'
+              }`}
+            >
               طلباتي
             </span>
           </button>
