@@ -801,24 +801,21 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-start justify-center p-0"
+      className="fixed inset-0 bg-white z-[9999]"
       data-product-page="true"
-      onClick={onClose}
     >
       <motion.div
-        initial={{ y: '-100%' }}
+        initial={{ y: '100%' }}
         animate={{ y: 0 }}
-        exit={{ y: '-100%' }}
+        exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="bg-transparent w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+        className="bg-white w-full h-full overflow-y-auto scrollbar-hide"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          paddingTop: 'max(env(safe-area-inset-top), 20px)',
-          paddingBottom: '20px'
-        }}
       >
-        {/* Close / Back Button */}
-        <div className="flex justify-start p-4">
+        {/* Close / Back Button - Fixed Position */}
+        <div className="fixed top-4 right-4 z-[10000]" style={{
+          top: 'max(env(safe-area-inset-top), 16px)'
+        }}>
           {selectionStep !== 'none' ? (
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -843,7 +840,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   setSelectionStep('none');
                 }
               }}
-              className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl"
+              className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl"
             >
               <ChevronLeft className="w-6 h-6 text-gray-800" />
             </motion.button>
@@ -852,16 +849,16 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl"
+              className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl"
             >
               <X className="w-6 h-6 text-gray-800" />
             </motion.button>
           )}
         </div>
 
-        {/* Product Image - Rounded Card */}
-        <div className="mx-4 mb-4">
-          <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl">
+        {/* Product Image - Full Width */}
+        <div>
+          <div className="relative w-full aspect-video overflow-hidden">
             <img
               src={product.image_url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800"}
               alt={product.name}
@@ -879,9 +876,9 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
           </div>
         </div>
 
-        {/* Red Card with Product Info */}
-        <div className="mx-4 bg-[#B91C1C] rounded-3xl shadow-2xl overflow-hidden">
-          <div className="bg-white m-1 rounded-[22px] p-6">
+        {/* Product Info */}
+        <div className="bg-white">
+          <div className="bg-white p-6">
             {/* Quantity Selector at Top - Show in all steps */}
             <div className="flex items-center justify-center mb-4">
               <div className="flex flex-col items-center gap-2">
@@ -1465,8 +1462,6 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
           </div>
         </div>
 
-        {/* Bottom spacing */}
-        <div className="h-6"></div>
       </motion.div>
 
       {/* Floating Cart Button */}
