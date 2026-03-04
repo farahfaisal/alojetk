@@ -39,7 +39,7 @@ const containerStyle = {
   touchAction: 'manipulation'
 };
 
-// Default center is Jenin, Palestine
+// Default center is Jenin, Palestine (fallback only)
 const defaultMapCenter = { lat: 32.4594, lng: 35.2956 }; // Jenin coordinates
 
 const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
@@ -52,8 +52,9 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
   height = '400px'
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [center, setCenter] = useState(defaultCenter || vendorLocation);
-  const [markerPosition, setMarkerPosition] = useState(center);
+  const [center, setCenter] = useState(defaultCenter || defaultMapCenter);
+  const [markerPosition, setMarkerPosition] = useState(defaultCenter || defaultMapCenter);
+  const [initialLocationSet, setInitialLocationSet] = useState(false);
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
@@ -115,16 +116,19 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
     }
   }, [isLoaded, ready]);
 
+  // Auto-detect user location on mount
   useEffect(() => {
-    // Only get address when Google Maps API is fully loaded
-    if (isLoaded && ready) {
+    if (isLoaded && ready && !initialLocationSet) {
       if (defaultCenter) {
+        // If there's a default center, use it
         setCenter(defaultCenter);
         setMarkerPosition(defaultCenter);
         getAddressFromLatLng(defaultCenter.lat, defaultCenter.lng);
+        setInitialLocationSet(true);
       } else {
-        // Try to get user's current location first
+        // Always try to get user's current location first
         if (navigator.geolocation) {
+          console.log('🌍 Requesting user location...');
           navigator.geolocation.getCurrentPosition(
             (position) => {
               const userLocation = {
@@ -135,36 +139,46 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
               setCenter(userLocation);
               setMarkerPosition(userLocation);
               getAddressFromLatLng(userLocation.lat, userLocation.lng);
+              setInitialLocationSet(true);
+
+              // Pan map to user location
+              if (map) {
+                map.panTo(userLocation);
+                map.setZoom(16);
+              }
             },
             (error) => {
-              console.warn('Could not get user location:', error);
-              // Fallback to vendor location if geolocation fails
-              setCenter(vendorLocation);
-              setMarkerPosition(vendorLocation);
-              getAddressFromLatLng(vendorLocation.lat, vendorLocation.lng);
+              console.warn('⚠️ Could not get user location:', error.message);
+              // Fallback to default location if geolocation fails
+              setCenter(defaultMapCenter);
+              setMarkerPosition(defaultMapCenter);
+              getAddressFromLatLng(defaultMapCenter.lat, defaultMapCenter.lng);
+              setInitialLocationSet(true);
             },
             {
               enableHighAccuracy: true,
               timeout: 10000,
-              maximumAge: 300000 // 5 minutes cache
+              maximumAge: 0 // Don't use cached location, get fresh one
             }
           );
         } else {
           // Fallback if geolocation not supported
-          setCenter(vendorLocation);
-          setMarkerPosition(vendorLocation);
-          getAddressFromLatLng(vendorLocation.lat, vendorLocation.lng);
+          console.warn('⚠️ Geolocation not supported');
+          setCenter(defaultMapCenter);
+          setMarkerPosition(defaultMapCenter);
+          getAddressFromLatLng(defaultMapCenter.lat, defaultMapCenter.lng);
+          setInitialLocationSet(true);
         }
       }
     }
-  }, [defaultCenter, vendorLocation, isLoaded, ready]);
+  }, [isLoaded, ready, initialLocationSet, defaultCenter, map]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     console.log('🗺️ Map component loaded successfully');
     setMap(map);
     setMapLoaded(true);
     setMapError(null);
-    
+
     // iOS specific fixes
     if (isIOS) {
       console.log('📱 Applying iOS-specific map settings');
@@ -181,7 +195,7 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
         streetViewControl: false,
         mapTypeControl: false
       });
-      
+
       // Force a resize after a short delay to ensure proper rendering on iOS
       setTimeout(() => {
         if (map && window.google && window.google.maps) {
@@ -190,7 +204,41 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
         }
       }, 500);
     }
-  }, []);
+
+    // Try to get user location when map loads if not already set
+    if (!initialLocationSet && !defaultCenter) {
+      if (navigator.geolocation) {
+        console.log('🌍 Auto-detecting user location after map load...');
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            console.log('✅ Got user location after map load:', userLocation);
+            setCenter(userLocation);
+            setMarkerPosition(userLocation);
+            map.panTo(userLocation);
+            map.setZoom(16);
+
+            if (ready) {
+              getAddressFromLatLng(userLocation.lat, userLocation.lng);
+            }
+            setInitialLocationSet(true);
+          },
+          (error) => {
+            console.warn('⚠️ Could not auto-detect location:', error.message);
+            setInitialLocationSet(true);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 8000,
+            maximumAge: 0
+          }
+        );
+      }
+    }
+  }, [isIOS, initialLocationSet, defaultCenter, ready]);
 
   const onUnmount = useCallback(() => {
     setMap(null);
