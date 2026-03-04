@@ -363,7 +363,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const handleUseCurrentLocation = async () => {
     console.log('📍 Requesting current location...');
     setGettingLocation(true);
-    setLocationError(null);
 
     try {
       // Check if running on native platform (iOS/Android)
@@ -473,19 +472,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
     } catch (error: any) {
       console.error('❌ Error getting location:', error);
       setGettingLocation(false);
-
-      let errorMessage = 'فشل في الحصول على موقعك الحالي';
-
-      if (error.message?.includes('denied')) {
-        errorMessage = 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات الجهاز.';
-      } else if (error.message?.includes('unavailable')) {
-        errorMessage = 'موقعك غير متاح حالياً. يرجى التأكد من تفعيل خدمات الموقع.';
-      } else if (error.message?.includes('timeout')) {
-        errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
-      }
-
-      setLocationError(errorMessage);
-      setTimeout(() => setLocationError(null), 5000);
     }
   };
 
