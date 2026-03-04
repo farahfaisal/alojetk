@@ -95,13 +95,21 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isInIframe, setIsInIframe] = useState(false);
 
-  // Detect iOS
+  // Detect iOS and iframe
   useEffect(() => {
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(iOS);
     console.log('🔍 Device detection - iOS:', iOS);
+
+    // Check if running in iframe
+    const inIframe = window.self !== window.top;
+    setIsInIframe(inIframe && !Capacitor.isNativePlatform());
+    if (inIframe && !Capacitor.isNativePlatform()) {
+      console.warn('⚠️ Application is running inside an iframe');
+    }
   }, []);
 
   // Fetch service areas
@@ -367,6 +375,16 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setLocationError(null);
 
     try {
+      // Check if running inside an iframe
+      const isInIframe = window.self !== window.top;
+      if (isInIframe && !Capacitor.isNativePlatform()) {
+        console.warn('⚠️ Running inside iframe - geolocation may be blocked');
+        setLocationError('لا يمكن تحديد الموقع داخل النافذة المضمنة. يرجى فتح التطبيق في نافذة مستقلة.');
+        setGettingLocation(false);
+        setTimeout(() => setLocationError(null), 6000);
+        return;
+      }
+
       // Check if running on native platform (iOS/Android)
       const isNative = Capacitor.isNativePlatform();
 
@@ -897,11 +915,26 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   </div>
                 )}
 
+                {/* iframe Warning */}
+                {isInIframe && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-amber-900 text-sm font-semibold mb-1">تنبيه مهم</p>
+                        <p className="text-amber-800 text-xs">
+                          قد لا يعمل تحديد الموقع بشكل صحيح داخل النافذة المضمنة. للحصول على أفضل تجربة، يرجى فتح التطبيق في نافذة مستقلة.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Current Location Button */}
                 <button
                   type="button"
                   onClick={handleUseCurrentLocation}
-                  disabled={gettingLocation}
+                  disabled={gettingLocation || isInIframe}
                   className="w-full py-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#024959] rounded-xl hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-3 font-bold text-lg border-2 border-[#024959]/20"
                 >
                   {gettingLocation ? (
