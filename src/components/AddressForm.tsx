@@ -89,7 +89,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
   const [showServiceAreaPicker, setShowServiceAreaPicker] = useState(false);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
@@ -377,9 +376,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         console.log('Permission status:', permissionStatus.location);
 
         if (permissionStatus.location === 'denied') {
-          setLocationError('تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات الجهاز.');
           setGettingLocation(false);
-          setTimeout(() => setLocationError(null), 5000);
           return;
         }
 
@@ -389,9 +386,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
           console.log('Permission request result:', request.location);
 
           if (request.location !== 'granted') {
-            setLocationError('يجب السماح بالوصول للموقع لاستخدام هذه الميزة');
             setGettingLocation(false);
-            setTimeout(() => setLocationError(null), 5000);
             return;
           }
         }
@@ -432,7 +427,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
         console.log('🌐 Running in web browser');
 
         if (!navigator.geolocation) {
-          setLocationError('متصفحك لا يدعم تحديد الموقع');
           setGettingLocation(false);
           return;
         }
@@ -472,18 +466,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
           (error) => {
             setGettingLocation(false);
             console.error('❌ Geolocation error:', error);
-
-            let errorMessage = 'فشل في الحصول على موقعك الحالي';
-            if (error.code === 1) {
-              errorMessage = 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات المتصفح.';
-            } else if (error.code === 2) {
-              errorMessage = 'موقعك غير متاح حالياً. يرجى المحاولة مرة أخرى.';
-            } else if (error.code === 3) {
-              errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
-            }
-
-            setLocationError(errorMessage);
-            setTimeout(() => setLocationError(null), 5000);
           },
           options
         );
@@ -917,15 +899,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   )}
                 </button>
 
-                {/* Location Error */}
-                {locationError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-700 flex-shrink-0" />
-                      <p className="text-red-800 text-sm">{locationError}</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
