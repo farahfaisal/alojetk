@@ -7,6 +7,8 @@ import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocom
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 interface AddressFormProps {
   onSave: (address: SavedAddress) => void;
@@ -359,160 +361,57 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
   };
 
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationError('متصفحك لا يدعم تحديد الموقع');
-      return;
-    }
-    
+  const handleUseCurrentLocation = async () => {
     console.log('📍 Requesting current location...');
     setGettingLocation(true);
     setLocationError(null);
-    
-    // Check if we're on iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    
-    const options = {
-      enableHighAccuracy: true,
-      timeout: isIOSDevice ? 20000 : 15000, // Longer timeout for iOS
-      maximumAge: isIOSDevice ? 0 : 60000 // Fresh location for iOS
-    };
-    
-    // For iOS, show a user-friendly prompt
-    if (isIOSDevice) {
-      // Create a permission prompt overlay
-      const promptOverlay = document.createElement('div');
-      promptOverlay.style.position = 'fixed';
-      promptOverlay.style.top = '0';
-      promptOverlay.style.left = '0';
-      promptOverlay.style.right = '0';
-      promptOverlay.style.bottom = '0';
-      promptOverlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
-      promptOverlay.style.zIndex = '99999';
-      promptOverlay.style.display = 'flex';
-      promptOverlay.style.alignItems = 'center';
-      promptOverlay.style.justifyContent = 'center';
-      promptOverlay.style.padding = '20px';
-      
-      const promptCard = document.createElement('div');
-      promptCard.style.backgroundColor = 'white';
-      promptCard.style.borderRadius = '12px';
-      promptCard.style.padding = '24px';
-      promptCard.style.maxWidth = '320px';
-      promptCard.style.textAlign = 'center';
-      promptCard.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-      
-      promptCard.innerHTML = `
-        <div style="margin-bottom: 16px;">
-          <div style="width: 60px; height: 60px; background: #FFD700; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#024959" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-          </div>
-          <h3 style="color: #024959; font-size: 18px; font-weight: bold; margin-bottom: 8px;">تحديد موقعك</h3>
-          <p style="color: #666; font-size: 14px; line-height: 1.4;">نحتاج إلى موقعك لتحديد عنوان التوصيل بدقة</p>
-        </div>
-        <button id="allow-location" style="
-          width: 100%; 
-          background: #FFD700; 
-          color: #024959; 
-          border: none; 
-          padding: 12px; 
-          border-radius: 8px; 
-          font-size: 16px; 
-          font-weight: bold; 
-          cursor: pointer;
-          margin-bottom: 8px;
-        ">السماح بالوصول للموقع</button>
-        <button id="cancel-location" style="
-          width: 100%; 
-          background: transparent; 
-          color: #666; 
-          border: 1px solid #ddd; 
-          padding: 12px; 
-          border-radius: 8px; 
-          font-size: 14px; 
-          cursor: pointer;
-        ">إلغاء</button>
-      `;
-      
-      promptOverlay.appendChild(promptCard);
-      document.body.appendChild(promptOverlay);
-      
-      const allowButton = promptCard.querySelector('#allow-location');
-      const cancelButton = promptCard.querySelector('#cancel-location');
-      
-      allowButton?.addEventListener('click', () => {
-        document.body.removeChild(promptOverlay);
-        
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const pos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            
-            console.log('✅ iOS location obtained:', pos);
-            setMarkerPosition(pos);
-            
-            if (isLoaded && ready) {
-              const address = await getAddressFromLatLng(pos.lat, pos.lng);
-              setFormData(prev => ({
-                ...prev,
-                address,
-                coordinates: pos
-              }));
-            }
-            
-            if (map) {
-              map.panTo(pos);
-              map.setZoom(16);
-            }
-            
+
+    try {
+      // Check if running on native platform (iOS/Android)
+      const isNative = Capacitor.isNativePlatform();
+
+      if (isNative) {
+        // Request permissions first on native platforms
+        console.log('📱 Running on native platform, checking permissions...');
+        const permissionStatus = await Geolocation.checkPermissions();
+        console.log('Permission status:', permissionStatus.location);
+
+        if (permissionStatus.location === 'denied') {
+          setLocationError('تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات الجهاز.');
+          setGettingLocation(false);
+          setTimeout(() => setLocationError(null), 5000);
+          return;
+        }
+
+        if (permissionStatus.location !== 'granted') {
+          console.log('Requesting location permission...');
+          const request = await Geolocation.requestPermissions();
+          console.log('Permission request result:', request.location);
+
+          if (request.location !== 'granted') {
+            setLocationError('يجب السماح بالوصول للموقع لاستخدام هذه الميزة');
             setGettingLocation(false);
-          },
-          (error) => {
-            setGettingLocation(false);
-            console.error('❌ iOS Geolocation error:', error);
-            
-            let errorMessage = 'فشل في الحصول على موقعك الحالي';
-            if (error.code === 1) {
-              errorMessage = 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات Safari.';
-            } else if (error.code === 2) {
-              errorMessage = 'موقعك غير متاح حالياً. يرجى التأكد من تفعيل خدمات الموقع.';
-            } else if (error.code === 3) {
-              errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
-            }
-            
-            setLocationError(errorMessage);
             setTimeout(() => setLocationError(null), 5000);
-          },
-          options
-        );
-      });
-      
-      cancelButton?.addEventListener('click', () => {
-        document.body.removeChild(promptOverlay);
-        setGettingLocation(false);
-        setLocationError('تم إلغاء طلب الموقع');
-        setTimeout(() => setLocationError(null), 3000);
-      });
-      
-      return;
-    }
-    
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
+            return;
+          }
+        }
+
+        // Get current position using Capacitor
+        console.log('Getting current position...');
+        const position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        });
+
         const pos = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
-        
-        console.log('✅ Current location obtained:', pos);
+
+        console.log('✅ Native location obtained:', pos);
         setMarkerPosition(pos);
-        
+
         if (isLoaded && ready) {
           const address = await getAddressFromLatLng(pos.lat, pos.lng);
           setFormData(prev => ({
@@ -521,36 +420,91 @@ const AddressForm: React.FC<AddressFormProps> = ({
             coordinates: pos
           }));
         }
-        
+
         if (map) {
           map.panTo(pos);
           map.setZoom(16);
         }
-        
+
         setGettingLocation(false);
-      },
-      (error) => {
-        setGettingLocation(false);
-        console.error('❌ Geolocation error:', error);
-        
-        let errorMessage = 'فشل في الحصول على موقعك الحالي';
-        if (error.code === 1) {
-          errorMessage = isIOSDevice 
-            ? 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات Safari.'
-            : 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات المتصفح.';
-        } else if (error.code === 2) {
-          errorMessage = isIOSDevice
-            ? 'موقعك غير متاح حالياً. يرجى التأكد من تفعيل خدمات الموقع في إعدادات iOS.'
-            : 'موقعك غير متاح حالياً. يرجى المحاولة مرة أخرى.';
-        } else if (error.code === 3) {
-          errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
+      } else {
+        // Running in web browser - use navigator.geolocation
+        console.log('🌐 Running in web browser');
+
+        if (!navigator.geolocation) {
+          setLocationError('متصفحك لا يدعم تحديد الموقع');
+          setGettingLocation(false);
+          return;
         }
-        
-        setLocationError(errorMessage);
-        setTimeout(() => setLocationError(null), 5000);
-      },
-      options
-    );
+
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            console.log('✅ Web location obtained:', pos);
+            setMarkerPosition(pos);
+
+            if (isLoaded && ready) {
+              const address = await getAddressFromLatLng(pos.lat, pos.lng);
+              setFormData(prev => ({
+                ...prev,
+                address,
+                coordinates: pos
+              }));
+            }
+
+            if (map) {
+              map.panTo(pos);
+              map.setZoom(16);
+            }
+
+            setGettingLocation(false);
+          },
+          (error) => {
+            setGettingLocation(false);
+            console.error('❌ Geolocation error:', error);
+
+            let errorMessage = 'فشل في الحصول على موقعك الحالي';
+            if (error.code === 1) {
+              errorMessage = 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات المتصفح.';
+            } else if (error.code === 2) {
+              errorMessage = 'موقعك غير متاح حالياً. يرجى المحاولة مرة أخرى.';
+            } else if (error.code === 3) {
+              errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
+            }
+
+            setLocationError(errorMessage);
+            setTimeout(() => setLocationError(null), 5000);
+          },
+          options
+        );
+      }
+    } catch (error: any) {
+      console.error('❌ Error getting location:', error);
+      setGettingLocation(false);
+
+      let errorMessage = 'فشل في الحصول على موقعك الحالي';
+
+      if (error.message?.includes('denied')) {
+        errorMessage = 'تم رفض الوصول للموقع. يرجى السماح بالوصول للموقع في إعدادات الجهاز.';
+      } else if (error.message?.includes('unavailable')) {
+        errorMessage = 'موقعك غير متاح حالياً. يرجى التأكد من تفعيل خدمات الموقع.';
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'انتهت مهلة تحديد الموقع. يرجى المحاولة مرة أخرى.';
+      }
+
+      setLocationError(errorMessage);
+      setTimeout(() => setLocationError(null), 5000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
