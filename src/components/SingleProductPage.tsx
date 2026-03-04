@@ -810,11 +810,11 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         animate={{ y: 0 }}
         exit={{ y: '-100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="bg-transparent w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+        className="bg-transparent w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide"
         onClick={(e) => e.stopPropagation()}
         style={{
           paddingTop: 'max(env(safe-area-inset-top), 20px)',
-          paddingBottom: '20px'
+          paddingBottom: 'max(env(safe-area-inset-bottom), 100px)'
         }}
       >
         {/* Close / Back Button */}
@@ -1465,8 +1465,8 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
           </div>
         </div>
 
-        {/* Bottom spacing */}
-        <div className="h-6"></div>
+        {/* Bottom spacing - Extra space to ensure content is fully visible */}
+        <div className="h-32"></div>
       </motion.div>
 
       {/* Floating Cart Button */}
