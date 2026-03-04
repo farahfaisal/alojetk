@@ -42,7 +42,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
         <div className="flex items-center justify-around px-2">
           {/* زر المطاعم */}
           <button
-            onClick={() => onViewModeChange('restaurants')}
+            onClick={() => {
+              if (viewMode !== 'restaurants') {
+                onViewModeChange('restaurants');
+              }
+            }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
               viewMode === 'restaurants' ? 'text-brand' : 'text-gray-500 hover:text-brand'
             }`}
@@ -67,7 +71,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
           {/* زر السوبر ماركت */}
           <button
-            onClick={() => onViewModeChange('supermarket')}
+            onClick={() => {
+              if (viewMode !== 'supermarket') {
+                onViewModeChange('supermarket');
+              }
+            }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
               viewMode === 'supermarket' ? 'text-brand' : 'text-gray-500 hover:text-brand'
             }`}
@@ -92,7 +100,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
           {/* زر السلة */}
           <button
-            onClick={onOpenCart}
+            onClick={() => {
+              if (!isCartOpen) {
+                onOpenCart();
+              }
+            }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group relative ${
               isCartOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
             }`}
@@ -122,7 +134,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
           {/* زر حسابي */}
           <button
-            onClick={onOpenAccount}
+            onClick={() => {
+              if (!isAccountOpen) {
+                onOpenAccount();
+              }
+            }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
               isAccountOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
             }`}
@@ -147,7 +163,11 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
           {/* زر الطلبات */}
           <button
-            onClick={onOpenOrders}
+            onClick={() => {
+              if (!isOrdersOpen) {
+                onOpenOrders();
+              }
+            }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
               isOrdersOpen ? 'text-brand' : 'text-gray-500 hover:text-brand'
             }`}
