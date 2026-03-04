@@ -599,6 +599,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
   const handleAddToCart = (productId: number, quantity: number, addons?: any[]) => {
     try {
+      // Check if service area is selected
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      if (!selectedServiceArea) {
+        // Open address selector
+        window.dispatchEvent(new Event('openCitySelector'));
+        return;
+      }
+
       const product = products.find(p => p.id === productId);
       if (!product) return;
 

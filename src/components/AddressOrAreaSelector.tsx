@@ -241,10 +241,19 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
           display: showAddressForm ? 'none' : 'flex'
         }}
       >
-        {/* Handle bar */}
+        {/* Handle bar - Only show if area already selected */}
         {hasSelectedArea && (
           <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
             <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
+          </div>
+        )}
+
+        {/* Required notice when no area selected */}
+        {!hasSelectedArea && (
+          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
+            <div className="bg-red-500/90 text-white px-4 py-2 rounded-full text-sm font-semibold">
+              يجب تحديد عنوان التوصيل للمتابعة
+            </div>
           </div>
         )}
 

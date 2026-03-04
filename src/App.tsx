@@ -279,11 +279,16 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+
       if (storedUser) {
-        // User logged in, show address/area selector
-        setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
-        }, 500);
+        // User logged in, check if they have selected a service area
+        if (!selectedServiceArea) {
+          // No service area selected, force address/area selector
+          setTimeout(() => {
+            setShowAddressOrAreaSelector(true);
+          }, 500);
+        }
       } else {
         // User not logged in, show login page
         setTimeout(() => {
@@ -638,6 +643,12 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCart = () => {
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
+      return;
+    }
     closeAllComponents();
     setIsCartOpen(true);
   };
@@ -646,6 +657,12 @@ const AppContent: React.FC = () => {
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
+      return;
+    }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -687,6 +704,12 @@ const AppContent: React.FC = () => {
       setIsLoginOpen(true);
       return;
     }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
+      return;
+    }
     closeAllComponents();
     setIsCaptainRequestOpen(true);
   };
@@ -705,6 +728,12 @@ const AppContent: React.FC = () => {
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
+      return;
+    }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -753,6 +782,21 @@ const AppContent: React.FC = () => {
   };
 
   const renderContent = () => {
+    // Check if user has selected a service area
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+
+    // If no service area selected, show blank screen or force address selector
+    if (!selectedServiceArea) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center p-6">
+            <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">يرجى تحديد عنوان التوصيل أولاً</p>
+          </div>
+        </div>
+      );
+    }
+
     if (viewMode === 'supermarket') {
       return <Supermarket selectedCity={selectedCity} />;
     }
@@ -1014,7 +1058,8 @@ const AppContent: React.FC = () => {
             <AddressOrAreaSelector
               onClose={() => {
                 // Only allow closing if a service area is already selected
-                if (localStorage.getItem('selectedServiceArea')) {
+                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                if (selectedServiceArea) {
                   setShowAddressOrAreaSelector(false);
                 }
               }}

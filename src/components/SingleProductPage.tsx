@@ -384,13 +384,21 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    
+
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      // Open address selector
+      window.dispatchEvent(new Event('openCitySelector'));
+      return;
+    }
+
     // Check if vendor is available
     if (!isVendorAvailable) {
       setAddToCartError('المتجر غير متاح حالياً، لا يمكن إضافة المنتج للسلة');
       return;
     }
-    
+
     try {
       // Check for multi-vendor conflict
       if (checkMultiVendor()) {
