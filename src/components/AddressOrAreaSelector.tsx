@@ -227,6 +227,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const hasSelectedArea = !!localStorage.getItem('selectedServiceArea');
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -481,7 +482,9 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
         </div>
       </motion.div>
 
-      {/* New Address Form */}
+    </motion.div>
+
+      {/* New Address Form - Outside motion.div to have proper z-index */}
       {showAddressForm && (
         <NewAddressPage
           onClose={() => {
@@ -495,7 +498,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
           preselectedCity={selectedCity}
         />
       )}
-    </motion.div>
+    </>
   );
 };
 
