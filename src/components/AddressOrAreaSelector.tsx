@@ -294,7 +294,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ابحث عن منطقة..."
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7f1d1d]"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               </div>
@@ -317,7 +317,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           key={area.id}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleMainAreaClick(area)}
-                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#7f1d1d] transition-all text-right"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-black">{area.name}</span>
@@ -337,11 +337,11 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           key={area.id}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleSubAreaClick(area)}
-                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#B91C1C] transition-all text-right"
+                          className="w-full p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-[#7f1d1d] transition-all text-right"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-black">{area.name}</span>
-                            <Check className="w-5 h-5 text-[#B91C1C]" />
+                            <Check className="w-5 h-5 text-[#7f1d1d]" />
                           </div>
                         </motion.button>
                       ))}
@@ -362,7 +362,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ابحث عن منطقة..."
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7f1d1d]"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               </div>
@@ -395,7 +395,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
             <div className="space-y-3">
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="w-12 h-12 border-4 border-[#B91C1C] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <div className="w-12 h-12 border-4 border-[#7f1d1d] border-t-transparent rounded-full animate-spin mx-auto"></div>
                   <p className="text-black font-semibold mt-4">جاري التحميل...</p>
                 </div>
               ) : savedAddresses.length === 0 ? (
@@ -405,7 +405,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   <p className="text-gray-700 text-sm mb-6 font-medium">أضف عنوان جديد لبدء الطلب</p>
                   <button
                     onClick={handleSelectNewArea}
-                    className="px-6 py-3 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+                    className="px-6 py-3 bg-gradient-to-r from-[#7f1d1d] to-[#991b1b] text-white rounded-xl hover:shadow-lg transition-all font-semibold"
                   >
                     إضافة عنوان جديد
                   </button>
@@ -419,13 +419,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                       onClick={() => handleAddressClick(address)}
                       className={`w-full p-4 rounded-xl border-2 transition-all text-right ${
                         address.is_default
-                          ? 'border-[#B91C1C] bg-red-50'
-                          : 'border-gray-200 bg-white hover:border-[#B91C1C]'
+                          ? 'border-[#7f1d1d] bg-red-50'
+                          : 'border-gray-200 bg-white hover:border-[#7f1d1d]'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          address.is_default ? 'bg-[#B91C1C]' : 'bg-gray-100'
+                          address.is_default ? 'bg-[#7f1d1d]' : 'bg-gray-100'
                         }`}>
                           <div className={address.is_default ? 'text-white' : 'text-gray-600'}>
                             {getAddressIcon(address.address_label)}
@@ -435,14 +435,14 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-bold text-black text-base">{address.address_label}</h4>
                             {address.is_default && (
-                              <span className="text-xs bg-[#B91C1C] text-white px-2 py-0.5 rounded-full font-semibold">
+                              <span className="text-xs bg-[#7f1d1d] text-white px-2 py-0.5 rounded-full font-semibold">
                                 افتراضي
                               </span>
                             )}
                           </div>
                           <p className="text-sm text-gray-800 mb-1.5 leading-relaxed font-medium">{address.address_line1}</p>
                           <div className="flex items-center gap-1.5 text-sm text-gray-800 bg-gray-50 rounded-lg px-2 py-1 w-fit">
-                            <Navigation className="w-3.5 h-3.5 text-[#B91C1C]" />
+                            <Navigation className="w-3.5 h-3.5 text-[#7f1d1d]" />
                             <span className="font-semibold">{address.zone_name || address.city}</span>
                           </div>
                         </div>
@@ -456,7 +456,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSelectNewArea}
-                    className="w-full p-4 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white rounded-xl hover:shadow-lg transition-all"
+                    className="w-full p-4 bg-gradient-to-r from-[#7f1d1d] to-[#991b1b] text-white rounded-xl hover:shadow-lg transition-all"
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Plus className="w-5 h-5" />
