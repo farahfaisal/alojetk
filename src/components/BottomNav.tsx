@@ -48,21 +48,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
               }
             }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'restaurants' ? 'text-[#7f1d1d]' : 'text-gray-500 hover:text-[#7f1d1d]'
+              viewMode === 'restaurants' ? 'text-[#dc2626]' : 'text-gray-500 hover:text-[#dc2626]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 viewMode === 'restaurants'
-                  ? 'bg-[#7f1d1d] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#7f1d1d]/10 group-hover:text-[#7f1d1d]'
+                  ? 'bg-[#dc2626] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#dc2626]/10 group-hover:text-[#dc2626]'
               }`}
             >
               <Home className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'restaurants' ? 'text-[#7f1d1d]' : 'text-gray-500 group-hover:text-[#7f1d1d]'
+                viewMode === 'restaurants' ? 'text-[#dc2626]' : 'text-gray-500 group-hover:text-[#dc2626]'
               }`}
             >
               مطاعم
@@ -77,21 +77,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
               }
             }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'supermarket' ? 'text-[#7f1d1d]' : 'text-gray-500 hover:text-[#7f1d1d]'
+              viewMode === 'supermarket' ? 'text-[#dc2626]' : 'text-gray-500 hover:text-[#dc2626]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 viewMode === 'supermarket'
-                  ? 'bg-[#7f1d1d] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#7f1d1d]/10 group-hover:text-[#7f1d1d]'
+                  ? 'bg-[#dc2626] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#dc2626]/10 group-hover:text-[#dc2626]'
               }`}
             >
               <Store className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'supermarket' ? 'text-[#7f1d1d]' : 'text-gray-500 group-hover:text-[#7f1d1d]'
+                viewMode === 'supermarket' ? 'text-[#dc2626]' : 'text-gray-500 group-hover:text-[#dc2626]'
               }`}
             >
               ماركت
@@ -106,14 +106,14 @@ const BottomNav: React.FC<BottomNavProps> = ({
               }
             }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group relative ${
-              isCartOpen ? 'text-[#7f1d1d]' : 'text-gray-500 hover:text-[#7f1d1d]'
+              isCartOpen ? 'text-[#dc2626]' : 'text-gray-500 hover:text-[#dc2626]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 relative ${
                 isCartOpen || cartItemsCount > 0
-                  ? 'bg-[#7f1d1d] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#7f1d1d]/10 group-hover:text-[#7f1d1d]'
+                  ? 'bg-[#dc2626] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#dc2626]/10 group-hover:text-[#dc2626]'
               }`}
             >
               <ShoppingCart className="w-6 h-6" />
@@ -125,7 +125,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isCartOpen || cartItemsCount > 0 ? 'text-[#7f1d1d]' : 'text-gray-500 group-hover:text-[#7f1d1d]'
+                isCartOpen || cartItemsCount > 0 ? 'text-[#dc2626]' : 'text-gray-500 group-hover:text-[#dc2626]'
               }`}
             >
               السلة
@@ -140,21 +140,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
               }
             }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              isAccountOpen ? 'text-[#7f1d1d]' : 'text-gray-500 hover:text-[#7f1d1d]'
+              isAccountOpen ? 'text-[#dc2626]' : 'text-gray-500 hover:text-[#dc2626]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 isAccountOpen
-                  ? 'bg-[#7f1d1d] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#7f1d1d]/10 group-hover:text-[#7f1d1d]'
+                  ? 'bg-[#dc2626] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#dc2626]/10 group-hover:text-[#dc2626]'
               }`}
             >
               <User className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isAccountOpen ? 'text-[#7f1d1d]' : 'text-gray-500 group-hover:text-[#7f1d1d]'
+                isAccountOpen ? 'text-[#dc2626]' : 'text-gray-500 group-hover:text-[#dc2626]'
               }`}
             >
               حسابي
@@ -169,21 +169,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
               }
             }}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              isOrdersOpen ? 'text-[#7f1d1d]' : 'text-gray-500 hover:text-[#7f1d1d]'
+              isOrdersOpen ? 'text-[#dc2626]' : 'text-gray-500 hover:text-[#dc2626]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 isOrdersOpen
-                  ? 'bg-[#7f1d1d] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#7f1d1d]/10 group-hover:text-[#7f1d1d]'
+                  ? 'bg-[#dc2626] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#dc2626]/10 group-hover:text-[#dc2626]'
               }`}
             >
               <Package className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isOrdersOpen ? 'text-[#7f1d1d]' : 'text-gray-500 group-hover:text-[#7f1d1d]'
+                isOrdersOpen ? 'text-[#dc2626]' : 'text-gray-500 group-hover:text-[#dc2626]'
               }`}
             >
               طلباتي
