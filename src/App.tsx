@@ -280,17 +280,16 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
 
       if (storedUser) {
-        // User logged in, always show address selector
-        // Clear any previously saved service area to force selection every time
-        localStorage.removeItem('selectedServiceArea');
-        localStorage.removeItem('selectedCity');
-        localStorage.removeItem('selectedAddressId');
-
-        setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
-        }, 500);
+        // User logged in, check if they have selected a service area
+        if (!selectedServiceArea) {
+          // No service area selected, force address/area selector
+          setTimeout(() => {
+            setShowAddressOrAreaSelector(true);
+          }, 500);
+        }
       } else {
         // User not logged in, show login page
         setTimeout(() => {
@@ -561,18 +560,10 @@ const AppContent: React.FC = () => {
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
-
-    // Also save the address ID for future reference
-    if (address.id) {
-      localStorage.setItem('selectedAddressId', address.id);
-    }
-
     window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
       detail: { areaName: city }
     }));
     setShowAddressOrAreaSelector(false);
-
-    console.log('✅ Address selected and saved:', city);
   };
 
   const handleAreaSelected = (area: string) => {
@@ -1075,8 +1066,11 @@ const AppContent: React.FC = () => {
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                // Allow closing anytime
-                setShowAddressOrAreaSelector(false);
+                // Only allow closing if a service area is already selected
+                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                if (selectedServiceArea) {
+                  setShowAddressOrAreaSelector(false);
+                }
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
