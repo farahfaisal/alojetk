@@ -71,7 +71,13 @@ const AppContent: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
-    return stored ? JSON.parse(stored) : 'يطا';
+    const storedArea = localStorage.getItem('selectedServiceArea');
+    if (stored) {
+      return JSON.parse(stored);
+    } else if (storedArea) {
+      return storedArea;
+    }
+    return null; // Don't set default city, force user to select
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
@@ -279,11 +285,15 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      console.log('🔍 Checking selected service area:', selectedServiceArea);
       // Always show address selector if no area is selected
       if (!selectedServiceArea) {
+        console.log('⚠️ No service area selected, showing selector');
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
         }, 500);
+      } else {
+        console.log('✅ Service area already selected:', selectedServiceArea);
       }
     }
   }, [showSplash, showOnboarding]);
@@ -546,9 +556,11 @@ const AppContent: React.FC = () => {
   const handleAddressSelected = (address: any) => {
     // Set the selected city/zone from the address
     const city = address.zone_name || address.city;
+    console.log('💾 Saving selected address area:', city);
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
+    console.log('✅ Saved to localStorage:', localStorage.getItem('selectedServiceArea'));
     window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
       detail: { areaName: city }
     }));
@@ -556,9 +568,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleAreaSelected = (area: string) => {
+    console.log('💾 Saving selected area:', area);
     setSelectedCity(area);
     localStorage.setItem('selectedServiceArea', area);
     localStorage.setItem('selectedCity', JSON.stringify(area));
+    console.log('✅ Saved to localStorage:', localStorage.getItem('selectedServiceArea'));
     window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
       detail: { areaName: area }
     }));
