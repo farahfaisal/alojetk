@@ -68,7 +68,7 @@ const AppContent: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
-    return stored ? JSON.parse(stored) : 'يطا';
+    return stored ? JSON.parse(stored) : null;
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);

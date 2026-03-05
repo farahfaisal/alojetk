@@ -42,12 +42,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
     if (storedCity) {
       try {
         const parsed = JSON.parse(storedCity);
-        return typeof parsed === 'string' ? parsed : 'يطا';
+        return typeof parsed === 'string' ? parsed : '';
       } catch {
         return storedCity;
       }
     }
-    return 'يطا';
+    return '';
   };
 
   const [selectedCity, setSelectedCity] = useState<string>(getDefaultCity());
