@@ -158,49 +158,30 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
 
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 text-center pt-16 pb-8"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 px-4 pt-8 pb-6"
       >
-        {/* Logo */}
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-          className="relative mx-auto mb-6"
-        >
-          <div className="w-24 h-24 mx-auto bg-white rounded-full shadow-2xl flex items-center justify-center relative overflow-hidden">
-            <img
-              src="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/categories/test.png"
-              alt="الو جيتك"
-              className="w-20 h-20 object-cover rounded-full"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg";
-              }}
-            />
-            <div className="absolute inset-0 border-3 border-yellow-400 rounded-full"></div>
-          </div>
-        </motion.div>
+        <div className="max-w-md mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-2xl font-bold text-white mb-2 text-right"
+          >
+            {selectedMainArea ? `${selectedMainArea.name}` : 'اختر منطقة التوصيل'}
+          </motion.h1>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-3xl font-bold text-white mb-2"
-          style={{ fontFamily: 'TT Hoves Pro, Georgia, serif' }}
-        >
-          {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة الخدمة'}
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="text-white/90 text-lg"
-        >
-          {selectedMainArea ? 'اختر المنطقة الفرعية للتوصيل' : 'حدد المنطقة التي تريد الطلب منها'}
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="text-white/80 text-base text-right"
+          >
+            {selectedMainArea ? 'اختر المنطقة الفرعية' : 'حدد المنطقة للبدء'}
+          </motion.p>
+        </div>
       </motion.div>
 
       {/* Service Areas Grid */}
