@@ -1075,11 +1075,8 @@ const AppContent: React.FC = () => {
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                // Only allow closing if a service area is already selected
-                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-                if (selectedServiceArea) {
-                  setShowAddressOrAreaSelector(false);
-                }
+                // Allow closing anytime
+                setShowAddressOrAreaSelector(false);
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}

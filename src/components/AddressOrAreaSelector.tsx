@@ -233,8 +233,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-end justify-center"
-      style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
-      onClick={hasSelectedArea ? onClose : undefined}
+      style={{ background: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(1px)', pointerEvents: 'auto' }}
+      onClick={onClose}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -251,28 +251,17 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
           display: showAddressForm ? 'none' : 'flex'
         }}
       >
-        {/* Handle bar - Only show if area already selected */}
-        {hasSelectedArea && (
-          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-            <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
-          </div>
-        )}
-
-        {/* Required notice when no area selected */}
-        {!hasSelectedArea && (
-          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-            <div className="bg-red-500/90 text-white px-4 py-2 rounded-full text-sm font-semibold">
-              يجب تحديد عنوان التوصيل للمتابعة
-            </div>
-          </div>
-        )}
+        {/* Handle bar - Always show */}
+        <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
+          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
+        </div>
 
         {/* Header and Content Container */}
         <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
         {/* Header */}
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
-            {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
+            {(selectedView === 'main-areas' || selectedView === 'sub-areas') && (
               <button
                 onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
