@@ -326,7 +326,7 @@ const Home: React.FC<HomeProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Search className="w-5 h-5 text-[#c21d14]" />
+            <Search className="w-5 h-5 text-[#7f1d1d]" />
           </motion.button>
 
           {/* Location Button with City Name - Left Side */}
@@ -339,7 +339,7 @@ const Home: React.FC<HomeProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <MapPin className="w-5 h-5 text-[#c21d14]" />
+            <MapPin className="w-5 h-5 text-[#7f1d1d]" />
             <div className="flex flex-col items-start min-w-0">
               <span className="text-xs text-gray-500 leading-none">التوصيل إلى</span>
               <span className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[120px]">
@@ -401,7 +401,7 @@ const Home: React.FC<HomeProps> = ({
                     {/* Category Image */}
                     <div className={`w-full aspect-square rounded-lg overflow-hidden border border-gray-200 transition-all relative bg-red-800 ${
                       selectedCategory === category.id
-                        ? 'ring-2 ring-brand ring-offset-2'
+                        ? 'ring-2 ring-[#7f1d1d] ring-offset-2'
                         : ''
                     }`}>
                       <img
@@ -418,7 +418,7 @@ const Home: React.FC<HomeProps> = ({
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute top-1 right-1 w-4 h-4 bg-brand rounded-full flex items-center justify-center shadow-lg"
+                          className="absolute top-1 right-1 w-4 h-4 bg-[#7f1d1d] rounded-full flex items-center justify-center shadow-lg"
                         >
                           <div className="w-2 h-2 bg-white rounded-full"></div>
                         </motion.div>
@@ -427,7 +427,7 @@ const Home: React.FC<HomeProps> = ({
                       {/* Gradient overlay */}
                       <div className={`absolute inset-0 transition-all duration-300 ${
                         selectedCategory === category.id
-                          ? 'bg-brand/20'
+                          ? 'bg-[#7f1d1d]/20'
                           : 'bg-black/10 hover:bg-black/5'
                       }`}></div>
                     </div>
@@ -435,7 +435,7 @@ const Home: React.FC<HomeProps> = ({
                     {/* Category Name */}
                     <span className={`text-[10px] font-bold text-center leading-tight line-clamp-2 ${
                       selectedCategory === category.id
-                        ? 'text-brand'
+                        ? 'text-[#7f1d1d]'
                         : 'text-gray-900'
                     }`}>
                       {category.name}
@@ -474,7 +474,7 @@ const Home: React.FC<HomeProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
           <button
             onClick={() => setShowAllVendors(true)}
-            className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+            className="text-[#7f1d1d] hover:text-[#991b1b] transition-colors text-sm font-medium flex items-center"
           >
             عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
           </button>
@@ -508,7 +508,7 @@ const Home: React.FC<HomeProps> = ({
                 <div className="bg-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand/20">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#7f1d1d]/20">
                         <img
                           src={category.image_url || getCategoryFallbackImage(category.name)}
                           alt={category.name}
@@ -522,7 +522,7 @@ const Home: React.FC<HomeProps> = ({
                     </h2>
                     <button
                       onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                      className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
+                      className="text-[#7f1d1d] hover:text-[#991b1b] transition-colors text-sm font-medium flex items-center bg-[#7f1d1d]/10 px-3 py-1.5 rounded-full"
                     >
                       عرض الكل ({vendors.length})
                       <ChevronLeft className="w-4 h-4 mr-1" />
