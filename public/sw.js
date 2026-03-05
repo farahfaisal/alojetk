@@ -1,4 +1,4 @@
-const CACHE_NAME = 'benedek-v2-modal';
+const CACHE_NAME = 'benedek-v1';
 const urlsToCache = [
   '/',
   '/index.html',
