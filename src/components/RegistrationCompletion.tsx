@@ -358,12 +358,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
               {/* Service Area Picker Modal */}
               {showServiceAreaPicker && (
-                <div className="fixed inset-0 bg-black/50 z-[999999] flex items-end sm:items-center justify-center">
+                <div className="fixed inset-0 bg-black/50 z-[9999999] flex items-end sm:items-center justify-center">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
-                    className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col"
+                    className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col relative z-[10000000]"
                   >
                     <div className="p-4 border-b border-gray-200">
                       <div className="flex items-center justify-between mb-3">
