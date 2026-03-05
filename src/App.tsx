@@ -68,7 +68,7 @@ const AppContent: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
-    return stored ? JSON.parse(stored) : null;
+    return stored ? JSON.parse(stored) : 'يطا';
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
@@ -121,28 +121,6 @@ const AppContent: React.FC = () => {
                         isProductPageOpen || isVariantsModalOpen || isStorePageOpen ||
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen;
-
-  // Clear old default values from localStorage on first load
-  useEffect(() => {
-    const APP_VERSION = '2.0.0';
-    const storedVersion = localStorage.getItem('app_version');
-
-    if (!storedVersion || storedVersion !== APP_VERSION) {
-      // Clear old default city values
-      const selectedCity = localStorage.getItem('selectedCity');
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-
-      if (selectedCity === '"يطا"' || selectedCity === 'يطا') {
-        localStorage.removeItem('selectedCity');
-        localStorage.removeItem('selectedServiceArea');
-      }
-      if (selectedServiceArea === 'يطا') {
-        localStorage.removeItem('selectedServiceArea');
-      }
-
-      localStorage.setItem('app_version', APP_VERSION);
-    }
-  }, []);
 
   // Check if user has seen onboarding
   useEffect(() => {
@@ -266,7 +244,7 @@ const AppContent: React.FC = () => {
   // Listen for city selector open event
   useEffect(() => {
     const handleOpenCitySelector = () => {
-      setShowServiceAreaSelection(true);
+      setShowAddressOrAreaSelector(true);
     };
 
     window.addEventListener('openCitySelector', handleOpenCitySelector);
@@ -298,7 +276,7 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open service area selector after splash screen
+  // Open address selector after splash screen (only if logged in)
   useEffect(() => {
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
@@ -307,9 +285,9 @@ const AppContent: React.FC = () => {
       if (storedUser) {
         // User logged in, check if they have selected a service area
         if (!selectedServiceArea) {
-          // No service area selected, show service area selection
+          // No service area selected, force address/area selector
           setTimeout(() => {
-            setShowServiceAreaSelection(true);
+            setShowAddressOrAreaSelector(true);
           }, 500);
         }
       } else {
@@ -614,7 +592,6 @@ const AppContent: React.FC = () => {
     setIsCartOpen(false);
     setIsOrdersOpen(false);
     setShowAddressOrAreaSelector(false);
-    setShowServiceAreaSelection(false);
   };
 
   const handleCloseLogin = () => {
@@ -670,7 +647,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowServiceAreaSelection(true);
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -686,7 +663,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowServiceAreaSelection(true);
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -731,7 +708,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowServiceAreaSelection(true);
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -757,7 +734,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowServiceAreaSelection(true);
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -1084,22 +1061,16 @@ const AppContent: React.FC = () => {
           required={true}
         />
 
-        {/* Service Area Selection */}
-        <AnimatePresence>
-          {showServiceAreaSelection && (
-            <ServiceAreaSelection
-              onSelectArea={handleServiceAreaSelect}
-              onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Address or Area Selector - for changing address after initial selection */}
+        {/* Address or Area Selector */}
         <AnimatePresence>
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                setShowAddressOrAreaSelector(false);
+                // Only allow closing if a service area is already selected
+                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                if (selectedServiceArea) {
+                  setShowAddressOrAreaSelector(false);
+                }
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
@@ -1107,6 +1078,14 @@ const AppContent: React.FC = () => {
             />
           )}
         </AnimatePresence>
+
+        {/* Service Area Selection */}
+        {showServiceAreaSelection && (
+          <ServiceAreaSelection
+            onSelectArea={handleServiceAreaSelect}
+            onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
+          />
+        )}
 
         {/* Single Product Page */}
         {selectedProduct && (

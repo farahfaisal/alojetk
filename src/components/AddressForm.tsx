@@ -61,13 +61,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
     if (selectedCity) {
       try {
         const parsed = JSON.parse(selectedCity);
-        return typeof parsed === 'string' ? parsed : '';
+        return typeof parsed === 'string' ? parsed : 'يطا';
       } catch {
         return selectedCity;
       }
     }
 
-    return '';
+    return 'يطا';
   };
 
   const [formData, setFormData] = useState({
