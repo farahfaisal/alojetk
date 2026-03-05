@@ -280,54 +280,17 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
 
       if (storedUser) {
-        // User logged in, check if they have a saved address or selected service area
-        const checkForSavedAddress = async () => {
-          try {
-            const user = JSON.parse(storedUser);
+        // User logged in, always show address selector
+        // Clear any previously saved service area to force selection every time
+        localStorage.removeItem('selectedServiceArea');
+        localStorage.removeItem('selectedCity');
+        localStorage.removeItem('selectedAddressId');
 
-            // First, try to load default address from database
-            const { data: defaultAddress, error } = await supabase
-              .from('customer_addresses')
-              .select('city, service_area_id')
-              .eq('customer_id', user.id)
-              .eq('is_default', true)
-              .maybeSingle();
-
-            if (!error && defaultAddress) {
-              // Found a default address, use it automatically
-              const areaName = defaultAddress.city;
-              setSelectedCity(areaName);
-              localStorage.setItem('selectedServiceArea', areaName);
-              localStorage.setItem('selectedCity', JSON.stringify(areaName));
-              window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
-                detail: { areaName }
-              }));
-              console.log('✅ Auto-loaded default address area:', areaName);
-              return;
-            }
-
-            // No default address found, check if service area was selected before
-            if (!selectedServiceArea) {
-              // No service area selected, force address/area selector
-              setTimeout(() => {
-                setShowAddressOrAreaSelector(true);
-              }, 500);
-            }
-          } catch (err) {
-            console.error('Error checking for saved address:', err);
-            // On error, show address selector if no service area
-            if (!selectedServiceArea) {
-              setTimeout(() => {
-                setShowAddressOrAreaSelector(true);
-              }, 500);
-            }
-          }
-        };
-
-        checkForSavedAddress();
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
       } else {
         // User not logged in, show login page
         setTimeout(() => {
