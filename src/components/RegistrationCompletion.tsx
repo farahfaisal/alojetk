@@ -253,7 +253,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-md mx-auto p-4">
+        <div className="max-w-md mx-auto p-4 pb-24">
           {success ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
