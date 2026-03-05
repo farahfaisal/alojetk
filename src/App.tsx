@@ -283,13 +283,51 @@ const AppContent: React.FC = () => {
       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
 
       if (storedUser) {
-        // User logged in, check if they have selected a service area
-        if (!selectedServiceArea) {
-          // No service area selected, force address/area selector
-          setTimeout(() => {
-            setShowAddressOrAreaSelector(true);
-          }, 500);
-        }
+        // User logged in, check if they have a saved address or selected service area
+        const checkForSavedAddress = async () => {
+          try {
+            const user = JSON.parse(storedUser);
+
+            // First, try to load default address from database
+            const { data: defaultAddress, error } = await supabase
+              .from('customer_addresses')
+              .select('city, service_area_id')
+              .eq('customer_id', user.id)
+              .eq('is_default', true)
+              .maybeSingle();
+
+            if (!error && defaultAddress) {
+              // Found a default address, use it automatically
+              const areaName = defaultAddress.city;
+              setSelectedCity(areaName);
+              localStorage.setItem('selectedServiceArea', areaName);
+              localStorage.setItem('selectedCity', JSON.stringify(areaName));
+              window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
+                detail: { areaName }
+              }));
+              console.log('✅ Auto-loaded default address area:', areaName);
+              return;
+            }
+
+            // No default address found, check if service area was selected before
+            if (!selectedServiceArea) {
+              // No service area selected, force address/area selector
+              setTimeout(() => {
+                setShowAddressOrAreaSelector(true);
+              }, 500);
+            }
+          } catch (err) {
+            console.error('Error checking for saved address:', err);
+            // On error, show address selector if no service area
+            if (!selectedServiceArea) {
+              setTimeout(() => {
+                setShowAddressOrAreaSelector(true);
+              }, 500);
+            }
+          }
+        };
+
+        checkForSavedAddress();
       } else {
         // User not logged in, show login page
         setTimeout(() => {
@@ -560,10 +598,18 @@ const AppContent: React.FC = () => {
     setSelectedCity(city);
     localStorage.setItem('selectedServiceArea', city);
     localStorage.setItem('selectedCity', JSON.stringify(city));
+
+    // Also save the address ID for future reference
+    if (address.id) {
+      localStorage.setItem('selectedAddressId', address.id);
+    }
+
     window.dispatchEvent(new CustomEvent('serviceAreaChanged', {
       detail: { areaName: city }
     }));
     setShowAddressOrAreaSelector(false);
+
+    console.log('✅ Address selected and saved:', city);
   };
 
   const handleAreaSelected = (area: string) => {
