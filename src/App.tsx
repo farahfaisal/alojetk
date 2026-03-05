@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Home as HomeIcon, User, Store, Package, Bike, Circle, Menu, MapPin, Search, Clock, Headphones, ShoppingCart, Check, Star, Navigation } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter, useNavigate, Routes, Route } from 'react-router-dom';
@@ -92,6 +92,12 @@ const AppContent: React.FC = () => {
   const [isParcelTrackingOpen, setIsParcelTrackingOpen] = useState(false);
   const [showAddressOrAreaSelector, setShowAddressOrAreaSelector] = useState(false);
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
+
+  // Stable callback for address form state change
+  const handleAddressFormStateChange = useCallback((isOpen: boolean) => {
+    console.log('App: handleAddressFormStateChange called with', isOpen);
+    setIsAddressFormOpen(isOpen);
+  }, []);
 
   // Function to detect iOS devices
   const isIOSDevice = () => {
@@ -1074,7 +1080,7 @@ const AppContent: React.FC = () => {
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
-              onAddressFormStateChange={setIsAddressFormOpen}
+              onAddressFormStateChange={handleAddressFormStateChange}
             />
           )}
         </AnimatePresence>

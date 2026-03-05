@@ -49,6 +49,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
 
   // Notify parent when address form state changes
   useEffect(() => {
+    console.log('AddressOrAreaSelector: showAddressForm changed to', showAddressForm);
     if (onAddressFormStateChange) {
       onAddressFormStateChange(showAddressForm);
     }
