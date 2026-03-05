@@ -24,7 +24,7 @@ const NewAddressPage: React.FC<NewAddressPageProps> = ({
   return (
     <div
       className="fixed inset-0 bg-gray-50 flex flex-col"
-      style={{ zIndex: 99999 }}
+      style={{ zIndex: 100000 }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex-1 overflow-y-auto">
