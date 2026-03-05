@@ -233,7 +233,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-end justify-center"
-      style={{ background: 'transparent', pointerEvents: 'none' }}
+      style={{ background: 'rgba(0, 0, 0, 0.08)', backdropFilter: 'blur(3px)', pointerEvents: 'auto' }}
+      onClick={onClose}
     >
       <motion.div
         initial={{ y: '100%' }}
