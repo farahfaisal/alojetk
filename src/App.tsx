@@ -122,18 +122,13 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen;
 
-  // Check if user has seen onboarding
+  // Show login immediately after splash screen
   useEffect(() => {
     if (!showSplash && !isAuthenticated) {
-      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-      if (!hasSeenOnboarding) {
-        setShowOnboarding(true);
-      } else {
-        const timer = setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-        return () => clearTimeout(timer);
-      }
+      const timer = setTimeout(() => {
+        setIsLoginOpen(true);
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [showSplash, isAuthenticated]);
 
