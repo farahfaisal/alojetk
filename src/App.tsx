@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Home as HomeIcon, User, Store, Package, Bike, Circle, Menu, MapPin, Search, Clock, Headphones, ShoppingCart, Check, Star, Navigation } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter, useNavigate, Routes, Route } from 'react-router-dom';
@@ -777,10 +777,18 @@ const AppContent: React.FC = () => {
     setIsPrivacyPolicyOpen(true);
   };
 
-  const shouldHideBottomNav = () => {
+  const shouldHideBottomNav = useMemo(() => {
     // Hide bottom nav when product page, address form, signup page, or address selector is open
-    return isProductPageOpen || isAddressFormOpen || isSignupOpen || showAddressOrAreaSelector;
-  };
+    const shouldHide = isProductPageOpen || isAddressFormOpen || isSignupOpen || showAddressOrAreaSelector;
+    console.log('shouldHideBottomNav:', {
+      isProductPageOpen,
+      isAddressFormOpen,
+      isSignupOpen,
+      showAddressOrAreaSelector,
+      shouldHide
+    });
+    return shouldHide;
+  }, [isProductPageOpen, isAddressFormOpen, isSignupOpen, showAddressOrAreaSelector]);
 
   const renderContent = () => {
     // Check if user has selected a service area
@@ -919,7 +927,7 @@ const AppContent: React.FC = () => {
           onOpenMenu={handleOpenMenu}
           onOpenAccount={handleOpenAccount}
           onOpenOrders={handleOpenOrders}
-          isHidden={shouldHideBottomNav()}
+          isHidden={shouldHideBottomNav}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           cartItemsCount={cartItemsCount}
