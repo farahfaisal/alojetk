@@ -276,15 +276,18 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Always open address selector after splash screen
+  // Open address selector only after successful login
   useEffect(() => {
-    if (!showSplash) {
-      // Always show address selector when app opens
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
+    if (!showSplash && isAuthenticated) {
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      // Only show address selector if user is logged in and hasn't selected an area
+      if (!selectedServiceArea) {
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
+      }
     }
-  }, [showSplash]);
+  }, [showSplash, isAuthenticated]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {
@@ -598,6 +601,14 @@ const AppContent: React.FC = () => {
 
         // Navigate to home page after successful login
         navigate('/');
+
+        // Show address selector after login if no service area is selected
+        const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+        if (!selectedServiceArea) {
+          setTimeout(() => {
+            setShowAddressOrAreaSelector(true);
+          }, 500);
+        }
       } catch (e) {
         console.error('Error parsing stored user:', e);
       }
@@ -613,6 +624,14 @@ const AppContent: React.FC = () => {
 
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
+
+    // Show address selector after signup if no service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
+    }
   };
 
   const handleOpenMenu = () => {
