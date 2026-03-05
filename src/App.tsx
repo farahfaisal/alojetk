@@ -281,20 +281,13 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Always show address selector if no area is selected
+  // Always show address selector on every page load
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-      console.log('🔍 Checking selected service area:', selectedServiceArea);
-      // Always show address selector if no area is selected
-      if (!selectedServiceArea) {
-        console.log('⚠️ No service area selected, showing selector');
-        setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
-        }, 500);
-      } else {
-        console.log('✅ Service area already selected:', selectedServiceArea);
-      }
+      console.log('🔄 Page loaded, showing service area selector');
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
     }
   }, [showSplash, showOnboarding]);
 
