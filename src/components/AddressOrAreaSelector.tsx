@@ -229,6 +229,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
 
   return (
     <>
+    {/* Modal overlay - centered v2.0 */}
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
