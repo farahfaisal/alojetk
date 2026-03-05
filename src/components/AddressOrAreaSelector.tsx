@@ -22,12 +22,14 @@ interface AddressOrAreaSelectorProps {
   onClose: () => void;
   onAddressSelected: (address: SavedAddress) => void;
   onAreaSelected: (area: string) => void;
+  onAddressFormStateChange?: (isOpen: boolean) => void;
 }
 
 const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   onClose,
   onAddressSelected,
-  onAreaSelected
+  onAreaSelected,
+  onAddressFormStateChange
 }) => {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     loadSavedAddresses();
     loadServiceAreas();
   }, []);
+
+  // Notify parent when address form state changes
+  useEffect(() => {
+    if (onAddressFormStateChange) {
+      onAddressFormStateChange(showAddressForm);
+    }
+  }, [showAddressForm, onAddressFormStateChange]);
 
   const loadServiceAreas = async () => {
     try {

@@ -91,6 +91,7 @@ const AppContent: React.FC = () => {
   const [isParcelOrderOpen, setIsParcelOrderOpen] = useState(false);
   const [isParcelTrackingOpen, setIsParcelTrackingOpen] = useState(false);
   const [showAddressOrAreaSelector, setShowAddressOrAreaSelector] = useState(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
 
   // Function to detect iOS devices
   const isIOSDevice = () => {
@@ -777,8 +778,8 @@ const AppContent: React.FC = () => {
   };
 
   const shouldHideBottomNav = () => {
-    // Hide bottom nav only when product page is open
-    return isProductPageOpen;
+    // Hide bottom nav when product page or address form is open
+    return isProductPageOpen || isAddressFormOpen;
   };
 
   const renderContent = () => {
@@ -1065,6 +1066,7 @@ const AppContent: React.FC = () => {
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
+              onAddressFormStateChange={setIsAddressFormOpen}
             />
           )}
         </AnimatePresence>
