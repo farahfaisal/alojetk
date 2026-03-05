@@ -50,7 +50,10 @@ const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    return hasSeenOnboarding !== 'true';
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -135,6 +138,7 @@ const AppContent: React.FC = () => {
   // Handle onboarding completion
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    localStorage.setItem('hasSeenOnboarding', 'true');
     setTimeout(() => {
       setIsLoginOpen(true);
     }, 300);
