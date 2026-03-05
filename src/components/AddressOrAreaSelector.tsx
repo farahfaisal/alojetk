@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NewAddressPage from './NewAddressPage';
+import AddressForm from './AddressForm';
 import { getMainServiceAreas, getSubServiceAreas, ServiceArea } from '../lib/zones';
+import { SavedAddress as StorageAddress } from '../lib/storage';
 
 interface SavedAddress {
   id: string;
@@ -412,16 +414,33 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   <p className="text-black font-semibold mt-4">جاري التحميل...</p>
                 </div>
               ) : savedAddresses.length === 0 ? (
-                <div className="text-center py-8">
-                  <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-black font-semibold mb-1">لا توجد عناوين محفوظة</p>
-                  <p className="text-gray-700 text-sm mb-6 font-medium">أضف عنوان جديد لبدء الطلب</p>
-                  <button
-                    onClick={handleSelectNewArea}
-                    className="px-6 py-3 bg-gradient-to-r from-[#b91c1c] to-[#b91c1c] text-white rounded-xl hover:shadow-lg transition-all font-semibold"
-                  >
-                    إضافة عنوان جديد
-                  </button>
+                <div className="h-full">
+                  <AddressForm
+                    onSave={async (storageAddress: StorageAddress) => {
+                      // Reload addresses from database
+                      await loadSavedAddresses();
+
+                      // Convert StorageAddress to SavedAddress format
+                      const dbAddress: SavedAddress = {
+                        id: storageAddress.id,
+                        customer_id: '', // Will be filled by loadSavedAddresses
+                        address_label: storageAddress.address,
+                        address_line1: storageAddress.detailedAddress || storageAddress.address,
+                        city: storageAddress.city,
+                        zone_id: storageAddress.serviceAreaId || '',
+                        zone_name: storageAddress.serviceAreaName,
+                        latitude: storageAddress.coordinates?.lat,
+                        longitude: storageAddress.coordinates?.lng,
+                        is_default: storageAddress.isDefault
+                      };
+
+                      onAddressSelected(dbAddress);
+                      onClose();
+                    }}
+                    onCancel={onClose}
+                    isModal={true}
+                    preselectedCity={selectedCity}
+                  />
                 </div>
               ) : (
                 <>
