@@ -276,26 +276,13 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open address selector after splash screen (only if logged in)
+  // Always open address selector after splash screen
   useEffect(() => {
     if (!showSplash) {
-      const storedUser = localStorage.getItem('auth_user');
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-
-      if (storedUser) {
-        // User logged in, check if they have selected a service area
-        if (!selectedServiceArea) {
-          // No service area selected, force address/area selector
-          setTimeout(() => {
-            setShowAddressOrAreaSelector(true);
-          }, 500);
-        }
-      } else {
-        // User not logged in, show login page
-        setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-      }
+      // Always show address selector when app opens
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
     }
   }, [showSplash]);
 
@@ -1066,11 +1053,8 @@ const AppContent: React.FC = () => {
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                // Only allow closing if a service area is already selected
-                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-                if (selectedServiceArea) {
-                  setShowAddressOrAreaSelector(false);
-                }
+                // Allow closing anytime
+                setShowAddressOrAreaSelector(false);
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
