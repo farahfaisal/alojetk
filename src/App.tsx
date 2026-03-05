@@ -275,18 +275,18 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open address selector only after successful login
+  // Always show address selector if no area is selected
   useEffect(() => {
-    if (!showSplash && isAuthenticated) {
+    if (!showSplash && !showOnboarding) {
       const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-      // Only show address selector if user is logged in and hasn't selected an area
+      // Always show address selector if no area is selected
       if (!selectedServiceArea) {
         setTimeout(() => {
           setShowAddressOrAreaSelector(true);
         }, 500);
       }
     }
-  }, [showSplash, isAuthenticated]);
+  }, [showSplash, showOnboarding]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {

@@ -226,6 +226,13 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
 
   const hasSelectedArea = !!localStorage.getItem('selectedServiceArea');
 
+  // Prevent closing if no area is selected
+  const handleBackgroundClick = () => {
+    if (hasSelectedArea) {
+      onClose();
+    }
+  };
+
   return (
     <>
     <motion.div
@@ -234,7 +241,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-end justify-center"
       style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
-      onClick={onClose}
+      onClick={handleBackgroundClick}
     >
       <motion.div
         initial={{ y: '100%' }}
@@ -251,9 +258,12 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
           display: showAddressForm ? 'none' : 'flex'
         }}
       >
-        {/* Handle bar - Always show */}
+        {/* Handle bar - Only clickable if area is selected */}
         <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-          <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
+          <div
+            className={`w-12 h-1.5 bg-white/60 rounded-full ${hasSelectedArea ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+            onClick={hasSelectedArea ? onClose : undefined}
+          ></div>
         </div>
 
         {/* Header and Content Container */}
@@ -276,7 +286,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
             </h2>
           </div>
           <p className="text-sm text-gray-700 mt-1 font-medium">
-            {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
+            {selectedView === 'addresses' && (hasSelectedArea ? 'حدد العنوان للمتابعة' : 'يجب اختيار منطقة للمتابعة')}
             {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية أولاً'}
             {selectedView === 'sub-areas' && 'اختر المنطقة الفرعية'}
           </p>
