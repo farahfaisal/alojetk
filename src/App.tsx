@@ -266,7 +266,7 @@ const AppContent: React.FC = () => {
   // Listen for city selector open event
   useEffect(() => {
     const handleOpenCitySelector = () => {
-      setShowAddressOrAreaSelector(true);
+      setShowServiceAreaSelection(true);
     };
 
     window.addEventListener('openCitySelector', handleOpenCitySelector);
@@ -298,7 +298,7 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Open address selector after splash screen (only if logged in)
+  // Open service area selector after splash screen
   useEffect(() => {
     if (!showSplash) {
       const storedUser = localStorage.getItem('auth_user');
@@ -307,9 +307,9 @@ const AppContent: React.FC = () => {
       if (storedUser) {
         // User logged in, check if they have selected a service area
         if (!selectedServiceArea) {
-          // No service area selected, force address/area selector
+          // No service area selected, show service area selection
           setTimeout(() => {
-            setShowAddressOrAreaSelector(true);
+            setShowServiceAreaSelection(true);
           }, 500);
         }
       } else {
@@ -614,6 +614,7 @@ const AppContent: React.FC = () => {
     setIsCartOpen(false);
     setIsOrdersOpen(false);
     setShowAddressOrAreaSelector(false);
+    setShowServiceAreaSelection(false);
   };
 
   const handleCloseLogin = () => {
@@ -669,7 +670,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
+      setShowServiceAreaSelection(true);
       return;
     }
     closeAllComponents();
@@ -685,7 +686,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
+      setShowServiceAreaSelection(true);
       return;
     }
     closeAllComponents();
@@ -730,7 +731,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
+      setShowServiceAreaSelection(true);
       return;
     }
     closeAllComponents();
@@ -756,7 +757,7 @@ const AppContent: React.FC = () => {
     // Check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
+      setShowServiceAreaSelection(true);
       return;
     }
     closeAllComponents();
@@ -1083,16 +1084,22 @@ const AppContent: React.FC = () => {
           required={true}
         />
 
-        {/* Address or Area Selector */}
+        {/* Service Area Selection */}
+        <AnimatePresence>
+          {showServiceAreaSelection && (
+            <ServiceAreaSelection
+              onSelectArea={handleServiceAreaSelect}
+              onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Address or Area Selector - for changing address after initial selection */}
         <AnimatePresence>
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                // Only allow closing if a service area is already selected
-                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-                if (selectedServiceArea) {
-                  setShowAddressOrAreaSelector(false);
-                }
+                setShowAddressOrAreaSelector(false);
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
@@ -1100,14 +1107,6 @@ const AppContent: React.FC = () => {
             />
           )}
         </AnimatePresence>
-
-        {/* Service Area Selection */}
-        {showServiceAreaSelection && (
-          <ServiceAreaSelection
-            onSelectArea={handleServiceAreaSelect}
-            onOpenPrivacyPolicy={handleOpenPrivacyPolicyFromServiceArea}
-          />
-        )}
 
         {/* Single Product Page */}
         {selectedProduct && (
