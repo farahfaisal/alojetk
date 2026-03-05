@@ -122,6 +122,28 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen;
 
+  // Clear old default values from localStorage on first load
+  useEffect(() => {
+    const APP_VERSION = '2.0.0';
+    const storedVersion = localStorage.getItem('app_version');
+
+    if (!storedVersion || storedVersion !== APP_VERSION) {
+      // Clear old default city values
+      const selectedCity = localStorage.getItem('selectedCity');
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+
+      if (selectedCity === '"يطا"' || selectedCity === 'يطا') {
+        localStorage.removeItem('selectedCity');
+        localStorage.removeItem('selectedServiceArea');
+      }
+      if (selectedServiceArea === 'يطا') {
+        localStorage.removeItem('selectedServiceArea');
+      }
+
+      localStorage.setItem('app_version', APP_VERSION);
+    }
+  }, []);
+
   // Check if user has seen onboarding
   useEffect(() => {
     if (!showSplash && !isAuthenticated) {
