@@ -67,7 +67,7 @@ const FloatingCart: React.FC<FloatingCartProps> = ({ onOpenCart, showOnlyInProdu
           <div className="relative">
             <ShoppingCart className="w-5 h-5" />
             {cartItemsCount > 0 && (
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-700 text-white rounded-full flex items-center justify-center text-xs font-bold">
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#b91c1c] text-white rounded-full flex items-center justify-center text-xs font-bold">
                 {cartItemsCount > 99 ? '99+' : cartItemsCount}
               </div>
             )}

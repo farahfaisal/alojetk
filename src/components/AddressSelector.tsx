@@ -140,7 +140,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                   )}
                   <button
                     onClick={(e) => handleDeleteAddress(address.id, e)}
-                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-500 hover:text-[#b91c1c] hover:bg-[#b91c1c]/10 rounded-lg transition-colors"
                     title="حذف"
                   >
                     <Trash className="w-5 h-5" />

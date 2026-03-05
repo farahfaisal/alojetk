@@ -180,7 +180,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
                     <motion.button
                       key={subArea.id}
                       onClick={() => handleSubAreaClick(subArea)}
-                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-red-50 transition-all flex items-center justify-between group"
+                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#b91c1c]/10 transition-all flex items-center justify-between group"
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
                     <motion.button
                       key={area.id}
                       onClick={() => handleMainAreaClick(area)}
-                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-red-50 transition-all flex items-center justify-between group"
+                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#b91c1c]/10 transition-all flex items-center justify-between group"
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">

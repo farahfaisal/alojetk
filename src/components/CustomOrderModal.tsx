@@ -149,7 +149,7 @@ const CustomOrderModal: React.FC<CustomOrderModalProps> = ({
                 )}
 
                 {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                  <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3 text-[#b91c1c] text-sm">
                     {error}
                   </div>
                 )}

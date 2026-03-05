@@ -226,7 +226,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               }}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-red-700 to-red-800 flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-full h-full bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] flex items-center justify-center text-white font-bold text-xl">
               {vendor.store_name.charAt(0)}
             </div>
           )}
@@ -276,8 +276,8 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               return workingStatus.is_open
                 ? 'bg-green-500/90 text-white'
                 : vendor.status === 'suspended'
-                  ? 'bg-red-500/90 text-white'
-                  : 'bg-red-600 text-white';
+                  ? 'bg-[#b91c1c]/90 text-white'
+                  : 'bg-[#b91c1c] text-white';
             })()
           }`}>
             {(() => {

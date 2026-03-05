@@ -574,10 +574,10 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
   // Show error state with retry option
   if (mapError) {
     return (
-      <div style={{ height: height }} className="flex flex-col items-center justify-center bg-red-50 rounded-lg border border-red-200 p-4">
+      <div style={{ height: height }} className="flex flex-col items-center justify-center bg-[#b91c1c]/10 rounded-lg border border-[#b91c1c]/30 p-4">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mb-4 mx-auto" />
-          <h3 className="text-lg font-semibold text-red-700 mb-2">خطأ في تحميل الخريطة</h3>
+          <AlertCircle className="w-12 h-12 text-[#b91c1c] mb-4 mx-auto" />
+          <h3 className="text-lg font-semibold text-[#b91c1c] mb-2">خطأ في تحميل الخريطة</h3>
           <p className="text-red-600 mb-4">{mapError}</p>
           {retryCount < 2 && (
             <button
@@ -586,7 +586,7 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
                 setMapError(null);
                 window.location.reload();
               }}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              className="bg-[#b91c1c]/100 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
             >
               إعادة المحاولة
             </button>
@@ -704,9 +704,9 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
                   <Loader2 className="w-8 h-8 animate-spin text-brand" />
                 </div>
               ) : mapError ? (
-                <div className="flex flex-col items-center justify-center h-full bg-red-50 p-4">
-                  <AlertCircle className="w-12 h-12 text-red-500 mb-2" />
-                  <p className="text-red-700 text-center">{mapError}</p>
+                <div className="flex flex-col items-center justify-center h-full bg-[#b91c1c]/10 p-4">
+                  <AlertCircle className="w-12 h-12 text-[#b91c1c] mb-2" />
+                  <p className="text-[#b91c1c] text-center">{mapError}</p>
                 </div>
               ) : (
                 <GoogleMap
@@ -735,7 +735,7 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
 
             {/* Error Message */}
             {locationError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm flex items-center gap-2">
+              <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3 text-[#b91c1c] text-sm flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 {locationError}
               </div>
@@ -921,7 +921,7 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
 
           {/* Location Error Message */}
           {locationError && (
-            <div className={`absolute ${height === '100%' ? 'top-20 left-4 right-4' : 'top-4 left-4 right-4'} z-50 bg-red-50 border border-red-200 rounded-lg p-3 shadow-lg`}>
+            <div className={`absolute ${height === '100%' ? 'top-20 left-4 right-4' : 'top-4 left-4 right-4'} z-50 bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3 shadow-lg`}>
               <p className="text-red-600 text-sm">{locationError}</p>
             </div>
           )}
@@ -1085,7 +1085,7 @@ const MapAddressSelector: React.FC<MapAddressSelectorProps> = ({
           className={`fixed left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl z-[110] ${
             gettingLocation 
               ? 'bg-blue-500 text-white' 
-              : 'bg-red-500 text-white'
+              : 'bg-[#b91c1c]/100 text-white'
           } font-medium`}
           style={{
             bottom: height === '100%' 

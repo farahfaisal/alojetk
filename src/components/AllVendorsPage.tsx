@@ -132,7 +132,7 @@ const AllVendorsPage: React.FC<AllVendorsPageProps> = ({
 
     if (error) {
       return (
-        <div className="bg-red-50 text-red-800 p-4 rounded-lg my-4">
+        <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg my-4">
           <p>{error}</p>
         </div>
       );

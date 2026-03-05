@@ -331,7 +331,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 bg-red-50 border-2 border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3"
+              className="mb-6 bg-[#b91c1c]/10 border-2 border-[#b91c1c]/30 text-[#b91c1c] p-4 rounded-xl flex items-start gap-3"
             >
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <p className="text-sm">{error}</p>
@@ -378,7 +378,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white py-3.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold"
+                className="w-full bg-gradient-to-r from-[#b91c1c] to-[#b91c1c] text-white py-3.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'متابعة'}
               </button>
@@ -392,7 +392,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       onClose();
                       window.dispatchEvent(new CustomEvent('open-signup-page'));
                     }}
-                    className="text-[#B91C1C] hover:text-[#991B1B] font-semibold"
+                    className="text-[#b91c1c] hover:text-[#b91c1c] font-semibold"
                   >
                     إنشاء حساب
                   </button>
@@ -406,7 +406,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">التحقق من رقم الهاتف</h3>
                 <p className="text-gray-600">تم إرسال رمز التحقق إلى</p>
-                <p className="text-lg font-semibold text-[#B91C1C] mt-1" dir="ltr">{phone}</p>
+                <p className="text-lg font-semibold text-[#b91c1c] mt-1" dir="ltr">{phone}</p>
               </div>
 
               <div className="space-y-3">
@@ -434,7 +434,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-[#B91C1C] to-[#991B1B] text-white py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold"
+                  className="flex-1 bg-gradient-to-r from-[#b91c1c] to-[#b91c1c] text-white py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'تأكيد'}
                 </button>

@@ -15,8 +15,8 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
       title: 'ابحث عن الطعام الذي تحبه',
       description: 'اكتشف أفضل الأطعمة من جميع المطاعم مع توصيل سريع إلى باب منزلك',
       color: 'from-red-50 to-red-100',
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-700'
+      iconBg: 'bg-[#b91c1c]/10',
+      iconColor: 'text-[#b91c1c]'
     },
     {
       icon: Clock,
@@ -39,8 +39,8 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
       title: 'عروض وخصومات حصرية',
       description: 'استمتع بالعروض اليومية والخصومات الخاصة على مطاعمك المفضلة',
       color: 'from-red-50 to-red-100',
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-700'
+      iconBg: 'bg-[#b91c1c]/10',
+      iconColor: 'text-[#b91c1c]'
     }
   ];
 
@@ -102,7 +102,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
                 localStorage.setItem('hasSeenOnboarding', 'true');
                 onComplete();
               }}
-              className="w-full bg-white border-2 border-red-700 text-red-700 py-4 rounded-xl font-bold text-lg hover:bg-red-50 transition-all"
+              className="w-full bg-white border-2 border-red-700 text-[#b91c1c] py-4 rounded-xl font-bold text-lg hover:bg-red-50 transition-all"
             >
               إنشاء حساب جديد
             </button>
@@ -145,9 +145,9 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute top-8 right-8 w-12 h-12 bg-red-200 rounded-full opacity-50"></div>
-          <div className="absolute bottom-12 left-8 w-8 h-8 bg-red-300 rounded-full opacity-40"></div>
-          <div className="absolute top-1/2 right-4 w-6 h-6 bg-red-400 rounded-full opacity-30"></div>
+          <div className="absolute top-8 right-8 w-12 h-12 bg-[#b91c1c]/20 rounded-full opacity-50"></div>
+          <div className="absolute bottom-12 left-8 w-8 h-8 bg-[#b91c1c]/30 rounded-full opacity-40"></div>
+          <div className="absolute top-1/2 right-4 w-6 h-6 bg-[#b91c1c]/40 rounded-full opacity-30"></div>
         </div>
 
         {/* Text Content */}
@@ -171,7 +171,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
               onClick={() => setCurrentSlide(index)}
               className={`transition-all duration-300 rounded-full ${
                 index === currentSlide
-                  ? 'w-8 h-2 bg-red-700'
+                  ? 'w-8 h-2 bg-[#b91c1c]'
                   : 'w-2 h-2 bg-gray-300'
               }`}
             />

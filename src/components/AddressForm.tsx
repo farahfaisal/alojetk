@@ -600,13 +600,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center max-w-md">
-            <AlertCircle className="w-12 h-12 text-red-700 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-red-700 mb-2">فشل في تحميل الخريطة</h3>
-            <p className="text-red-800 mb-4">لا يمكن تحميل خرائط Google. يرجى التحقق من الاتصال بالإنترنت.</p>
+          <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-xl p-6 text-center max-w-md">
+            <AlertCircle className="w-12 h-12 text-[#b91c1c] mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-[#b91c1c] mb-2">فشل في تحميل الخريطة</h3>
+            <p className="text-[#b91c1c] mb-4">لا يمكن تحميل خرائط Google. يرجى التحقق من الاتصال بالإنترنت.</p>
             <button
               onClick={onCancel}
-              className="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800 transition-colors"
+              className="bg-[#b91c1c] text-white px-6 py-2 rounded-lg hover:bg-[#b91c1c] transition-colors"
             >
               إغلاق
             </button>
@@ -665,12 +665,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     onChange={handleChange}
                     disabled={true}
                     className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
-                      errors.name ? 'border-red-700' : 'border-gray-300'
+                      errors.name ? 'border-[#b91c1c]' : 'border-gray-300'
                     }`}
                     placeholder="الاسم الكامل"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-800">{errors.name}</p>
+                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.name}</p>
                   )}
                 </div>
 
@@ -687,13 +687,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     placeholder="05xxxxxxxx"
                     disabled={true}
                     className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
-                      errors.phone ? 'border-red-700' : 'border-gray-300'
+                      errors.phone ? 'border-[#b91c1c]' : 'border-gray-300'
                     }`}
                     dir="ltr"
                   />
                   <p className="text-xs text-gray-500 mt-1">يتم استخدام رقم الهاتف المسجل في حسابك</p>
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-800">{errors.phone}</p>
+                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.phone}</p>
                   )}
                 </div>
               </div>
@@ -712,9 +712,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     منطقة التوصيل *
                   </label>
                   {preselectedCity ? (
-                    <div className="w-full px-4 py-3 border-2 border-[#B91C1C] bg-red-50 rounded-lg flex items-center justify-between">
+                    <div className="w-full px-4 py-3 border-2 border-[#b91c1c] bg-[#b91c1c]/10 rounded-lg flex items-center justify-between">
                       <span className="text-gray-900 font-medium">{formData.city}</span>
-                      <Check className="w-5 h-5 text-[#B91C1C]" />
+                      <Check className="w-5 h-5 text-[#b91c1c]" />
                     </div>
                   ) : (
                     <>
@@ -1053,10 +1053,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 </div>
 
                 {errors.coordinates && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3">
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-700 flex-shrink-0" />
-                      <p className="text-red-800 text-sm">{errors.coordinates}</p>
+                      <AlertCircle className="w-5 h-5 text-[#b91c1c] flex-shrink-0" />
+                      <p className="text-[#b91c1c] text-sm">{errors.coordinates}</p>
                     </div>
                   </div>
                 )}
@@ -1103,7 +1103,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             </div>
             
             {errors.submit && (
-              <div className="bg-red-50 text-red-800 p-4 rounded-lg border border-red-200">
+              <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg border border-[#b91c1c]/30">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p>{errors.submit}</p>

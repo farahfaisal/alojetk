@@ -743,15 +743,15 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   if (error) {
     return (
       <div className="fixed inset-0 bg-gray-50 z-[99999] flex items-center justify-center p-4">
-        <div className="bg-red-50 text-red-800 p-6 rounded-xl flex flex-col items-center gap-4 max-w-md w-full text-center">
+        <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-6 rounded-xl flex flex-col items-center gap-4 max-w-md w-full text-center">
           <AlertCircle className="w-12 h-12" />
           <div>
             <h3 className="text-xl font-bold mb-2">حدث خطأ</h3>
-            <p className="text-red-800/80">{error}</p>
+            <p className="text-[#b91c1c]/80">{error}</p>
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-red-800 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-6 py-2 bg-[#b91c1c] text-white rounded-lg hover:bg-[#b91c1c] transition-colors"
           >
             إغلاق
           </button>
@@ -818,7 +818,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             </div>
 
             {/* شريط رفيع أحمر تحت البانر (كما في الصورة) */}
-            <div className="h-2 w-full bg-red-700" />
+            <div className="h-2 w-full bg-[#b91c1c]" />
 
             {/* الطبقة الأمامية: شعار + شارات الوقت/السعر + حالة المتجر */}
             <div className="relative -mt-12 px-4">
@@ -842,7 +842,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 {/* شارة "مفتوح" يسار تحت البانر */}
                 <div className="absolute -top-6 left-4">
                   <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow
-                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-red-700 text-white'}`}>
+                    ${isVendorAvailable ? 'bg-lime-500 text-white' : 'bg-[#b91c1c] text-white'}`}>
                     {isVendorAvailable ? 'مفتوح' : 'مغلق'}
                   </span>
                 </div>
@@ -851,7 +851,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                 <div className="relative bg-gray-100 rounded-2xl px-4 pb-6 pt-16 border border-gray-200">
 
                   {/* دائرة الشعار في المنتصف فوق البطاقة */}
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-red-700 shadow-xl overflow-hidden flex items-center justify-center">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border-4 border-[#b91c1c] shadow-xl overflow-hidden flex items-center justify-center">
                     <img
                       src={vendor.logo || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500"}
                       alt={vendor.store_name}
@@ -945,11 +945,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-red-800" />
+                        <Clock className="w-5 h-5 text-[#b91c1c]" />
                         {isVendorAvailable ? (
                           <span className="font-semibold text-lime-600">مفتوح</span>
                         ) : (
-                          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                          <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
@@ -966,7 +966,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                             }
                             if (!todayHours.close) {
                               return (
-                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold">
                                   مغلق اليوم
                                 </span>
                               );
@@ -978,7 +978,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                             );
                           }
                           return (
-                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold">
                               مغلق اليوم
                             </span>
                           );
@@ -1014,13 +1014,13 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                                   <div
                                     key={hours.day}
                                     className={`flex justify-between items-center text-sm ${
-                                      isToday ? 'text-red-800 font-semibold' : 'text-gray-600'
+                                      isToday ? 'text-[#b91c1c] font-semibold' : 'text-gray-600'
                                     }`}
                                   >
                                     <span>{dayName}</span>
                                     <span>
                                       {!hours.enabled || !hours.open || !hours.close ? (
-                                        <span className="text-red-600 font-medium">مغلق</span>
+                                        <span className="text-[#b91c1c] font-medium">مغلق</span>
                                       ) : hours.open === '00:00' && hours.close === '23:59' ? (
                                         <span className="text-green-600 font-medium">24 ساعة</span>
                                       ) : (
@@ -1049,12 +1049,12 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
           {/* Vendor Status Warning */}
           {!isVendorAvailable && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mx-4 mt-2">
+            <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3 mx-4 mt-2">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-700 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 text-[#b91c1c] mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-red-700 font-medium">المتجر غير متاح حالياً</p>
-                  <p className="text-red-800 text-sm mt-1">{vendorStatusMessage}</p>
+                  <p className="text-[#b91c1c] font-medium">المتجر غير متاح حالياً</p>
+                  <p className="text-[#b91c1c] text-sm mt-1">{vendorStatusMessage}</p>
                 </div>
               </div>
             </div>
@@ -1065,7 +1065,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             <div className="p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Filter className="w-5 h-5 text-red-800" />
+                  <Filter className="w-5 h-5 text-[#b91c1c]" />
                   <span className="font-medium text-gray-900">الأصناف</span>
                 </div>
                 <motion.button
@@ -1085,7 +1085,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       onClick={() => handleCategoryClick(null, null)}
                       className={`px-4 py-2 rounded-full text-sm font-medium ${
                         selectedCategoryId === null
-                          ? 'bg-red-800 text-white'
+                          ? 'bg-[#b91c1c] text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       } transition-colors whitespace-nowrap`}
                     >
@@ -1098,7 +1098,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         onClick={() => handleCategoryClick(category.id, category.type)}
                         className={`px-4 py-2 rounded-full text-sm font-medium ${
                           selectedCategoryId === category.id && selectedCategoryType === category.type
-                            ? 'bg-red-800 text-white'
+                            ? 'bg-[#b91c1c] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         } transition-colors whitespace-nowrap`}
                       >
@@ -1175,7 +1175,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                               {!isVendorAvailable && (
                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                  <div className="bg-white/90 px-3 py-1 rounded-lg text-red-800 text-sm font-medium">
+                                  <div className="bg-white/90 px-3 py-1 rounded-lg text-[#b91c1c] text-sm font-medium">
                                     غير متاح
                                   </div>
                                 </div>
@@ -1207,11 +1207,11 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                   if (discountedProducts.length === 0) return null;
 
                   return (
-                    <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border border-red-200">
+                    <div className="bg-gradient-to-r from-[#b91c1c]/10 to-orange-50 rounded-xl p-4 border border-[#b91c1c]/30">
                       {/* Category Header */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-red-600">
+                          <div className="p-1.5 rounded-lg bg-[#b91c1c]">
                             <ShoppingBag className="w-5 h-5 text-white" />
                           </div>
                           <h2 className="text-lg font-bold text-gray-900">خصومات خاصة</h2>
@@ -1231,7 +1231,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           <SwiperSlide key={product.id}>
                             <motion.div
                               whileHover={{ scale: 1.02 }}
-                              className="bg-white rounded-lg overflow-hidden border border-red-200 transition-all cursor-pointer h-full shadow-sm"
+                              className="bg-white rounded-lg overflow-hidden border border-[#b91c1c]/30 transition-all cursor-pointer h-full shadow-sm"
                               onClick={() => setSelectedProduct(product)}
                             >
                               {/* Product Image */}
@@ -1243,7 +1243,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                                 />
 
                                 {/* Discount Badge */}
-                                <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                                <div className="absolute top-2 left-2 bg-[#b91c1c] text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
                                   {Math.round(((product.price - product.discount_price) / product.price) * 100)}% خصم
                                 </div>
 
@@ -1252,14 +1252,14 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                                   <div className="bg-gray-800/80 text-white px-2 py-0.5 rounded-full text-xs line-through">
                                     ₪{product.price}
                                   </div>
-                                  <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
+                                  <div className="bg-[#b91c1c] text-white px-2 py-1 rounded-full text-sm font-bold">
                                     ₪{product.discount_price}
                                   </div>
                                 </div>
 
                                 {!isVendorAvailable && (
                                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                    <div className="bg-white/90 px-3 py-1 rounded-lg text-red-800 text-sm font-medium">
+                                    <div className="bg-white/90 px-3 py-1 rounded-lg text-[#b91c1c] text-sm font-medium">
                                       غير متاح
                                     </div>
                                   </div>
@@ -1340,7 +1340,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
 
                               {!isVendorAvailable && (
                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                  <div className="bg-white/90 px-3 py-1 rounded-lg text-red-800 text-sm font-medium">
+                                  <div className="bg-white/90 px-3 py-1 rounded-lg text-[#b91c1c] text-sm font-medium">
                                     غير متاح
                                   </div>
                                 </div>

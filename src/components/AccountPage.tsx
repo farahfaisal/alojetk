@@ -144,7 +144,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
       title: 'الإشعارات',
       description: 'عرض جميع الإشعارات',
       icon: <Bell className="w-6 h-6" />,
-      color: 'bg-red-500',
+      color: 'bg-[#b91c1c]/100',
       onClick: () => setShowNotificationCenter(true)
     },
     {
@@ -510,7 +510,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
 
       <div className="p-4 space-y-6 overflow-y-auto">
         {pointsError && (
-          <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+          <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg flex items-center gap-2">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <p>{pointsError}</p>
           </div>
@@ -556,7 +556,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
                             {new Date(transaction.created_at).toLocaleDateString('ar')}
                           </div>
                         </div>
-                        <div className={`font-bold ${transaction.amount > 0 ? 'text-green-600' : 'text-red-800'}`}>
+                        <div className={`font-bold ${transaction.amount > 0 ? 'text-green-600' : 'text-[#b91c1c]'}`}>
                           {transaction.amount > 0 ? '+' : ''}{transaction.amount} نقطة
                         </div>
                       </div>
@@ -628,7 +628,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
 
       <div className="p-4 space-y-6 overflow-y-auto">
         {referralError && (
-          <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+          <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg flex items-center gap-2">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <p>{referralError}</p>
           </div>
@@ -905,7 +905,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+              <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 <p>{error}</p>
               </div>
@@ -1034,17 +1034,17 @@ const AccountPage: React.FC<AccountPageProps> = ({
               WebkitOverflowScrolling: 'touch'
             }}>
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 m-4">
+                <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-xl p-4 m-4">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-700 shrink-0" />
-                    <p className="text-red-800 font-medium">{error}</p>
+                    <AlertCircle className="w-5 h-5 text-[#b91c1c] shrink-0" />
+                    <p className="text-[#b91c1c] font-medium">{error}</p>
                   </div>
                 </div>
               )}
 
               <div className="p-4">
                 {/* Welcome Header Card */}
-                <div className="bg-gradient-to-br from-brand via-red-600 to-red-700 rounded-3xl shadow-xl overflow-hidden mb-6 relative">
+                <div className="bg-gradient-to-br from-brand via-[#b91c1c] to-[#b91c1c] rounded-3xl shadow-xl overflow-hidden mb-6 relative">
                   {/* Decorative background elements */}
                   <div className="absolute inset-0 overflow-hidden">
                     <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full"></div>
@@ -1221,9 +1221,9 @@ const AccountPage: React.FC<AccountPageProps> = ({
                     whileTap={{ scale: 0.98 }}
                     onClick={handleLogout}
                     disabled={logoutLoading}
-                    className="w-full bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-5 flex items-center shadow-lg hover:shadow-xl transition-all border border-red-100 hover:border-red-200 group"
+                    className="w-full bg-gradient-to-r from-[#b91c1c]/10 to-pink-50 rounded-2xl p-5 flex items-center shadow-lg hover:shadow-xl transition-all border border-[#b91c1c]/20 hover:border-[#b91c1c]/30 group"
                   >
-                    <div className="bg-gradient-to-br from-red-500 to-red-600 w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="bg-gradient-to-br from-[#b91c1c]/100 to-[#b91c1c] w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                       {logoutLoading ? (
                         <Loader2 className="w-7 h-7 animate-spin" />
                       ) : (
@@ -1231,12 +1231,12 @@ const AccountPage: React.FC<AccountPageProps> = ({
                       )}
                     </div>
                     <div className="mr-4 text-right flex-1">
-                      <h3 className="font-bold text-red-800 text-lg group-hover:text-red-700 transition-colors">
+                      <h3 className="font-bold text-[#b91c1c] text-lg group-hover:text-[#b91c1c] transition-colors">
                         {logoutLoading ? 'جاري تسجيل الخروج...' : 'تسجيل الخروج'}
                       </h3>
                       <p className="text-gray-500 text-sm mt-1">الخروج من الحساب بأمان</p>
                     </div>
-                    <div className="text-red-600 group-hover:text-red-800 transition-colors">
+                    <div className="text-[#b91c1c] group-hover:text-[#b91c1c] transition-colors">
                       <ChevronLeft className="w-5 h-5" />
                     </div>
                   </motion.button>
@@ -1246,16 +1246,16 @@ const AccountPage: React.FC<AccountPageProps> = ({
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="w-full bg-gradient-to-r from-gray-50 to-red-50 rounded-2xl p-5 flex items-center shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-red-200 group"
+                    className="w-full bg-gradient-to-r from-gray-50 to-[#b91c1c]/10 rounded-2xl p-5 flex items-center shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-[#b91c1c]/30 group"
                   >
-                    <div className="bg-gradient-to-br from-gray-500 to-red-500 w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                    <div className="bg-gradient-to-br from-gray-500 to-[#b91c1c]/100 w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                       <Trash2 className="w-7 h-7" />
                     </div>
                     <div className="mr-4 text-right flex-1">
-                      <h3 className="font-bold text-red-800 text-lg group-hover:text-red-700 transition-colors">حذف الحساب</h3>
+                      <h3 className="font-bold text-[#b91c1c] text-lg group-hover:text-[#b91c1c] transition-colors">حذف الحساب</h3>
                       <p className="text-gray-500 text-sm mt-1">حذف الحساب نهائياً (لا يمكن التراجع)</p>
                     </div>
-                    <div className="text-red-600 group-hover:text-red-800 transition-colors">
+                    <div className="text-[#b91c1c] group-hover:text-[#b91c1c] transition-colors">
                       <ChevronLeft className="w-5 h-5" />
                     </div>
                   </motion.button>
@@ -1315,14 +1315,14 @@ const AccountPage: React.FC<AccountPageProps> = ({
             className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100"
           >
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-red-700" />
+              <div className="w-16 h-16 bg-[#b91c1c]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-[#b91c1c]" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">تأكيد حذف الحساب</h3>
             </div>
             
-            <div className="bg-red-50 rounded-2xl p-4 mb-6 border border-red-100">
-              <p className="text-red-700 text-center font-medium">
+            <div className="bg-[#b91c1c]/10 rounded-2xl p-4 mb-6 border border-[#b91c1c]/20">
+              <p className="text-[#b91c1c] text-center font-medium">
                 ⚠️ تحذير: هذا الإجراء لا يمكن التراجع عنه
               </p>
             </div>
@@ -1341,7 +1341,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
               <button
                 onClick={handleDeleteAccount}
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-4 rounded-2xl font-bold hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+                className="flex-1 bg-gradient-to-r from-[#b91c1c]/100 to-[#b91c1c] text-white py-4 rounded-2xl font-bold hover:from-[#b91c1c] hover:to-[#b91c1c] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
               >
                 {loading ? (
                   <>

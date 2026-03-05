@@ -580,7 +580,7 @@ body {
 
 /* Scrollbar with brand colors */
 .scrollbar-thumb-brand {
-  scrollbar-color: #e11d48 #f3f4f6;
+  scrollbar-color: #b91c1c #f3f4f6;
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar {
@@ -593,13 +593,13 @@ body {
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar-thumb {
-  background: #e11d48;
+  background: #b91c1c;
   border-radius: 4px;
   border: 2px solid #f3f4f6;
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar-thumb:hover {
-  background: #be123c;
+  background: #b91c1c;
 }
 
 .scrollbar-track-gray-100 {
@@ -739,11 +739,11 @@ body {
 
 /* Brand colors */
 .text-brand {
-  color: #dc2626;
+  color: #b91c1c;
 }
 
 .bg-brand {
-  background-color: #dc2626;
+  background-color: #b91c1c;
 }
 
 .text-accent {
@@ -954,5 +954,5 @@ body {
 }
 
 .address-selector-scroll::-webkit-scrollbar-thumb:hover {
-  background: #991B1B !important;
+  background: #b91c1c !important;
 }

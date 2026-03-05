@@ -880,7 +880,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
             {/* Vendor status overlay */}
             {!isVendorAvailable && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <div className="bg-white px-4 py-2 rounded-xl text-red-800 font-bold">
+                <div className="bg-white px-4 py-2 rounded-xl text-[#b91c1c] font-bold">
                   المتجر غير متاح حالياً
                 </div>
               </div>
@@ -889,7 +889,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
         </div>
 
         {/* Red Card with Product Info */}
-        <div className="mx-4 bg-[#B91C1C] rounded-3xl shadow-2xl overflow-hidden">
+        <div className="mx-4 bg-[#b91c1c] rounded-3xl shadow-2xl overflow-hidden">
           <div className="bg-white m-1 rounded-[22px] p-6">
             {/* Quantity Selector at Top - Show in all steps */}
             <div className="flex items-center justify-center mb-4">
@@ -929,7 +929,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={handleShare}
-                  className="w-10 h-10 bg-gradient-to-br from-[#B91C1C] to-[#991B1B] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+                  className="w-10 h-10 bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
                   aria-label="مشاركة المنتج"
                 >
                   <Share2 className="w-5 h-5 text-white" />
@@ -944,7 +944,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 <div className="flex items-center justify-center gap-3">
                   {product.discount_price && product.discount_price > 0 && product.discount_price < product.price ? (
                     <>
-                      <span className="text-3xl font-bold text-[#B91C1C]">
+                      <span className="text-3xl font-bold text-[#b91c1c]">
                         {Number(product.discount_price).toFixed(2)} ₪
                       </span>
                       <span className="text-lg text-gray-400 line-through">
@@ -952,7 +952,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       </span>
                     </>
                   ) : (
-                    <span className="text-3xl font-bold text-[#B91C1C]">
+                    <span className="text-3xl font-bold text-[#b91c1c]">
                       {Number(product.price).toFixed(2)} ₪
                     </span>
                   )}
@@ -960,7 +960,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
               )}
               {product.sale_price && product.sale_price > 0 && !product.discount_price && (
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-3xl font-bold text-[#B91C1C]">
+                  <span className="text-3xl font-bold text-[#b91c1c]">
                     {Number(product.sale_price).toFixed(2)} ₪
                   </span>
                   {product.regular_price && product.regular_price > product.sale_price && (
@@ -974,13 +974,13 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
             {/* Error messages */}
             {addToCartError && (
-              <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg mb-4 text-sm">
+              <div className="bg-[#b91c1c]/10 border border-red-200 text-[#b91c1c] p-3 rounded-lg mb-4 text-sm">
                 {addToCartError}
               </div>
             )}
 
             {!isVendorAvailable && (
-              <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg mb-4 flex items-center gap-2 text-sm">
+              <div className="bg-[#b91c1c]/10 border border-red-200 text-[#b91c1c] p-3 rounded-lg mb-4 flex items-center gap-2 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <p>المتجر غير متاح حالياً</p>
               </div>
@@ -996,7 +996,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       key={variant.id}
                       className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
                         selectedVariantId === variant.id
-                          ? 'border-[#B91C1C] bg-red-50'
+                          ? 'border-[#b91c1c] bg-[#b91c1c]/10'
                           : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
                     >
@@ -1014,7 +1014,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       <div className="flex items-center gap-3">
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                           selectedVariantId === variant.id
-                            ? 'bg-[#B91C1C] border-[#B91C1C]'
+                            ? 'bg-[#b91c1c] border-[#b91c1c]'
                             : 'border-gray-300'
                         }`}>
                           {selectedVariantId === variant.id && (
@@ -1028,7 +1028,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           )}
                         </div>
                       </div>
-                      <div className="font-bold text-[#B91C1C]">₪{variant.price}</div>
+                      <div className="font-bold text-[#b91c1c]">₪{variant.price}</div>
                     </label>
                   ))}
                 </div>
@@ -1036,7 +1036,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 {/* Price breakdown for variants */}
                 {selectedVariantId && (
                   <div className="mt-4 bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-200">
-                    <div className="flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                    <div className="flex justify-between items-center font-bold text-lg text-[#b91c1c]">
                       <span>السعر المختار:</span>
                       <span>
                         ₪{(() => {
@@ -1069,7 +1069,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       <div
                         className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
                           selectedAddons[addon.id]
-                            ? 'border-[#B91C1C] bg-red-50'
+                            ? 'border-[#b91c1c] bg-[#b91c1c]/10'
                             : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
                         onClick={() => {
@@ -1089,7 +1089,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                         <div className="flex items-center gap-3 flex-1">
                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                             selectedAddons[addon.id]
-                              ? 'bg-[#B91C1C] border-[#B91C1C]'
+                              ? 'bg-[#b91c1c] border-[#b91c1c]'
                               : 'border-gray-300'
                           }`}>
                             {selectedAddons[addon.id] && (
@@ -1105,7 +1105,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           )}
                           <div className="font-semibold text-gray-900">{addon.name}</div>
                         </div>
-                        <div className="font-bold text-[#B91C1C] flex-shrink-0">₪{addon.price}</div>
+                        <div className="font-bold text-[#b91c1c] flex-shrink-0">₪{addon.price}</div>
                       </div>
                       {selectedAddons[addon.id] && (
                         <div className="flex items-center justify-center gap-2 px-4">
@@ -1175,7 +1175,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           })}
                       </div>
 
-                      <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                      <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#b91c1c]">
                         <span>المجموع الجزئي:</span>
                         <span>₪{(() => {
                           const basePrice = product.discount_price && product.discount_price > 0
@@ -1208,7 +1208,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       <label
                         className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${
                           selectedAddons[addon.id]
-                            ? 'border-[#B91C1C] bg-red-50'
+                            ? 'border-[#b91c1c] bg-[#b91c1c]/10'
                             : 'border-gray-200 bg-white hover:border-gray-300'
                         }`}
                         onClick={() => {
@@ -1235,7 +1235,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                         <div className="flex items-center gap-3 flex-1">
                           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
                             selectedAddons[addon.id]
-                              ? 'bg-[#B91C1C] border-[#B91C1C]'
+                              ? 'bg-[#b91c1c] border-[#b91c1c]'
                               : 'border-gray-300'
                           }`}>
                             {selectedAddons[addon.id] && (
@@ -1251,7 +1251,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                           )}
                           <div className="font-semibold text-gray-900">{addon.name}</div>
                         </div>
-                        <div className="font-bold text-[#B91C1C] flex-shrink-0">₪{addon.price}</div>
+                        <div className="font-bold text-[#b91c1c] flex-shrink-0">₪{addon.price}</div>
                       </label>
                       {selectedAddons[addon.id] && (
                         <div className="flex items-center justify-center gap-2 px-4">
@@ -1324,7 +1324,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                         })}
                     </div>
 
-                    <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#B91C1C]">
+                    <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#b91c1c]">
                       <span>المجموع الجزئي:</span>
                       <span>₪{calculateTotalPrice().toFixed(2)}</span>
                     </div>
@@ -1341,7 +1341,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
 
             {/* Error Message */}
             {addToCartError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center">
+              <div className="mb-4 p-3 bg-[#b91c1c]/10 border border-red-200 rounded-lg text-red-700 text-sm text-center">
                 {addToCartError}
               </div>
             )}
@@ -1368,7 +1368,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 disabled={!isVendorAvailable}
                 className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg ${
                   isVendorAvailable
-                    ? 'bg-[#B91C1C] text-white hover:bg-[#991B1B] transition-colors'
+                    ? 'bg-[#b91c1c] text-white hover:bg-[#b91c1c] transition-colors'
                     : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                 }`}
               >
@@ -1405,7 +1405,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 disabled={!selectedVariantId}
                 className={`w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg ${
                   selectedVariantId
-                    ? 'bg-[#B91C1C] text-white hover:bg-[#991B1B] transition-colors'
+                    ? 'bg-[#b91c1c] text-white hover:bg-[#b91c1c] transition-colors'
                     : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                 }`}
               >
@@ -1433,7 +1433,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                     handleAddToCart(e);
                   }
                 }}
-                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg bg-[#B91C1C] text-white hover:bg-[#991B1B] transition-colors"
+                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg bg-[#b91c1c] text-white hover:bg-[#b91c1c] transition-colors"
               >
                 <span className="flex items-center gap-3">
                   التالي
@@ -1454,7 +1454,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   e.preventDefault();
                   handleAddToCart(e);
                 }}
-                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg bg-[#B91C1C] text-white hover:bg-[#991B1B] transition-colors"
+                className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg bg-[#b91c1c] text-white hover:bg-[#b91c1c] transition-colors"
               >
                 <span className="flex items-center gap-3">
                   {justAddedToCart ? (

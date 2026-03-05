@@ -140,7 +140,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
         return <ArrowDownLeft className="w-5 h-5 text-green-500" />;
       case 'payment':
       case 'penalty':
-        return <ArrowUpRight className="w-5 h-5 text-red-700" />;
+        return <ArrowUpRight className="w-5 h-5 text-[#b91c1c]" />;
       default:
         return <DollarSign className="w-5 h-5 text-gray-500" />;
     }
@@ -154,7 +154,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
         return 'text-green-600';
       case 'payment':
       case 'penalty':
-        return 'text-red-800';
+        return 'text-[#b91c1c]';
       default:
         return 'text-gray-600';
     }
@@ -199,7 +199,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-md mx-auto p-4 space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+            <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg flex items-center gap-2">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <p>{error}</p>
             </div>
@@ -294,7 +294,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
                           </div>
                         )}
                         {transaction.status === 'rejected' && (
-                          <div className="text-xs text-red-800 mt-1">
+                          <div className="text-xs text-[#b91c1c] mt-1">
                             مرفوضة
                           </div>
                         )}
@@ -352,7 +352,7 @@ const WalletPage: React.FC<WalletPageProps> = ({ onClose }) => {
 
               <form onSubmit={handleAddMoney} className="p-4 space-y-4">
                 {actionError && (
-                  <div className="bg-red-50 text-red-800 p-3 rounded-lg flex items-center gap-2">
+                  <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-3 rounded-lg flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
                     <p>{actionError}</p>
                   </div>

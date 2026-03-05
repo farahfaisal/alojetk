@@ -236,7 +236,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2">
+      <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-xl flex items-center gap-2">
         <Store className="w-5 h-5" />
         <p>{error}</p>
       </div>
@@ -283,7 +283,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-red-700 to-red-800 flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-full h-full bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] flex items-center justify-center text-white font-bold text-xl">
                       {vendor.store_name.charAt(0)}
                     </div>
                   )}

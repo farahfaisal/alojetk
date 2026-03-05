@@ -28,7 +28,7 @@ interface VendorsWithOffersProps {
   selectedCity?: string;
 }
 
-const BRAND = '#dc2626';
+const BRAND = '#b91c1c';
 
 const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, type = 'all', selectedCity }) => {
   const [vendors, setVendors] = useState<VendorWithOffer[]>([]);

@@ -753,7 +753,7 @@ const CartPage: React.FC<CartPageProps> = ({
           {cartItems.length > 0 && (
             <button
               onClick={clearCart}
-              className="text-red-700 hover:text-red-800 text-sm"
+              className="text-[#b91c1c] hover:text-[#b91c1c] text-sm"
             >
               إفراغ السلة
             </button>
@@ -912,7 +912,7 @@ const CartPage: React.FC<CartPageProps> = ({
                               <div className="flex justify-end mt-2">
                                 <button
                                   onClick={() => removeCartItem(item.id)}
-                                  className="text-red-700 hover:text-red-800 text-sm flex items-center gap-1"
+                                  className="text-[#b91c1c] hover:text-[#b91c1c] text-sm flex items-center gap-1"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                   حذف
@@ -971,7 +971,7 @@ const CartPage: React.FC<CartPageProps> = ({
                         </button>
                       </div>
                       {couponError && (
-                        <p className="text-xs text-red-600 mt-1">{couponError}</p>
+                        <p className="text-xs text-[#b91c1c] mt-1">{couponError}</p>
                       )}
                     </div>
                   ) : (
@@ -990,7 +990,7 @@ const CartPage: React.FC<CartPageProps> = ({
                         </div>
                         <button
                           onClick={removeCoupon}
-                          className="text-red-600 hover:text-red-700 text-sm"
+                          className="text-[#b91c1c] hover:text-[#b91c1c] text-sm"
                         >
                           <X className="w-5 h-5" />
                         </button>

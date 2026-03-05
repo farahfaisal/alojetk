@@ -401,7 +401,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDeliveryAreaPicker(true)}
-                        className="px-5 py-2.5 bg-brand text-white rounded-xl hover:bg-red-700 transition-colors text-sm font-medium whitespace-nowrap"
+                        className="px-5 py-2.5 bg-brand text-white rounded-xl hover:bg-[#b91c1c] transition-colors text-sm font-medium whitespace-nowrap"
                       >
                         اختر
                       </button>
@@ -422,7 +422,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDeliveryMap(true)}
-                        className="px-5 py-2.5 border-2 border-brand text-brand rounded-xl hover:bg-red-50 transition-colors text-sm font-medium whitespace-nowrap"
+                        className="px-5 py-2.5 border-2 border-brand text-brand rounded-xl hover:bg-[#b91c1c]/10 transition-colors text-sm font-medium whitespace-nowrap"
                       >
                         خريطة
                       </button>
@@ -452,7 +452,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm text-right">
+                <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-xl p-3 text-[#b91c1c] text-sm text-right">
                   {error}
                 </div>
               )}

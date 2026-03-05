@@ -161,10 +161,10 @@ const CategoriesSlider: React.FC<CategoriesSliderProps> = ({
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-800 p-4 rounded-xl flex items-center gap-2 mb-4">
+      <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-xl flex items-center gap-2 mb-4">
         <AlertCircle className="w-5 h-5" />
         <div className="flex-1">{error}</div>
-        <button onClick={handleRetry} className="px-3 py-1 bg-red-100 rounded-lg hover:bg-red-200">
+        <button onClick={handleRetry} className="px-3 py-1 bg-[#b91c1c]/10 rounded-lg hover:bg-[#b91c1c]/20">
           <RefreshCw className="w-4 h-4 inline-block" /> إعادة المحاولة
         </button>
       </div>
@@ -203,7 +203,7 @@ const CategoriesSlider: React.FC<CategoriesSliderProps> = ({
               <div className={`w-28 h-28 rounded-full overflow-hidden border-3 transition-all duration-300 ${
                 selectedCategory === category.id
                   ? 'border-brand shadow-lg shadow-red-500/30 ring-4 ring-red-200'
-                  : 'border-gray-300 hover:border-red-500'
+                  : 'border-gray-300 hover:border-[#b91c1c]'
               }`}>
                 <img
                   loading="lazy"
@@ -220,10 +220,10 @@ const CategoriesSlider: React.FC<CategoriesSliderProps> = ({
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="absolute inset-0 bg-red-700/20 flex items-center justify-center"
+                    className="absolute inset-0 bg-[#b91c1c]/20 flex items-center justify-center"
                   >
                     <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                      <div className="w-3 h-3 bg-red-700 rounded-full"></div>
+                      <div className="w-3 h-3 bg-[#b91c1c] rounded-full"></div>
                     </div>
                   </motion.div>
                 )}
@@ -240,7 +240,7 @@ const CategoriesSlider: React.FC<CategoriesSliderProps> = ({
               {category.products_count && (
                 <span className={`text-xs transition-colors ${
                   selectedCategory === category.id
-                    ? 'text-red-800 font-medium'
+                    ? 'text-[#b91c1c] font-medium'
                     : 'text-gray-500'
                 }`}>
                   {category.products_count} منتج
@@ -249,7 +249,7 @@ const CategoriesSlider: React.FC<CategoriesSliderProps> = ({
               
               {/* Click ripple effect */}
               <motion.div
-                className="absolute inset-0 bg-red-700 rounded-2xl opacity-0 pointer-events-none"
+                className="absolute inset-0 bg-[#b91c1c] rounded-2xl opacity-0 pointer-events-none"
                 animate={{
                   scale: selectedCategory === category.id ? [1, 1.3, 1] : 1,
                   opacity: selectedCategory === category.id ? [0.2, 0, 0] : 0
