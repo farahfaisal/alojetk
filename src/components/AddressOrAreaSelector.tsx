@@ -233,59 +233,60 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-end justify-center"
-      style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(4px)', pointerEvents: 'auto' }}
       onClick={hasSelectedArea ? onClose : undefined}
     >
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-lg flex flex-col overflow-hidden"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        className="w-full max-w-lg flex flex-col overflow-hidden bg-white rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxHeight: '75vh',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
-          background: 'transparent',
+          maxHeight: '85vh',
           pointerEvents: 'auto',
           display: showAddressForm ? 'none' : 'flex'
         }}
       >
-        {/* Handle bar - Only show if area already selected */}
-        {hasSelectedArea && (
-          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-            <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
-          </div>
-        )}
-
         {/* Required notice when no area selected */}
         {!hasSelectedArea && (
-          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-            <div className="bg-red-500/90 text-white px-4 py-2 rounded-full text-sm font-semibold">
+          <div className="flex justify-center px-4 pt-4 pb-2">
+            <div className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold">
               يجب تحديد عنوان التوصيل للمتابعة
             </div>
           </div>
         )}
 
         {/* Header and Content Container */}
-        <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1">
+              {(selectedView === 'main-areas' || selectedView === 'sub-areas') && hasSelectedArea && (
+                <button
+                  onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+              <h2 className="text-xl font-bold text-black">
+                {selectedView === 'addresses' && 'اختر موقع التوصيل'}
+                {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
+                {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
+              </h2>
+            </div>
+            {hasSelectedArea && (
               <button
-                onClick={selectedView === 'main-areas' ? handleBackToAddresses : handleBackToMainAreas}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex-shrink-0"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
             )}
-            <h2 className="text-xl font-bold text-black">
-              {selectedView === 'addresses' && 'اختر موقع التوصيل'}
-              {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
-              {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
-            </h2>
           </div>
           <p className="text-sm text-gray-700 mt-1 font-medium">
             {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
