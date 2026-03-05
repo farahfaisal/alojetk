@@ -156,7 +156,12 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   };
 
   const handleBackToAddresses = () => {
-    setSelectedView('addresses');
+    // Only allow back if area is already selected, otherwise stay in area selection
+    if (!hasSelectedArea) {
+      setSelectedView('main-areas');
+    } else {
+      setSelectedView('addresses');
+    }
     setSelectedMainArea(null);
     setSubAreas([]);
     setSelectedCity('');
@@ -226,11 +231,15 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
 
   const hasSelectedArea = !!localStorage.getItem('selectedServiceArea');
 
-  // Prevent closing if no area is selected
-  const handleBackgroundClick = () => {
+  // Prevent closing if no area is selected - do nothing if no area selected
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only allow closing if area is selected
     if (hasSelectedArea) {
       onClose();
     }
+    // If no area selected, do nothing (prevent close)
   };
 
   return (
@@ -285,8 +294,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
             </h2>
           </div>
-          <p className="text-sm text-gray-700 mt-1 font-medium">
-            {selectedView === 'addresses' && (hasSelectedArea ? 'حدد العنوان للمتابعة' : 'يجب اختيار منطقة للمتابعة')}
+          <p className={`text-sm mt-1 font-medium ${!hasSelectedArea && selectedView === 'addresses' ? 'text-red-600' : 'text-gray-700'}`}>
+            {selectedView === 'addresses' && (hasSelectedArea ? 'حدد العنوان للمتابعة' : '⚠️ يجب اختيار منطقة أولاً - لا يمكن الإغلاق')}
             {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية أولاً'}
             {selectedView === 'sub-areas' && 'اختر المنطقة الفرعية'}
           </p>
