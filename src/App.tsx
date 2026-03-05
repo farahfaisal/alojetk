@@ -778,8 +778,8 @@ const AppContent: React.FC = () => {
   };
 
   const shouldHideBottomNav = () => {
-    // Hide bottom nav when product page, address form, or signup page is open
-    return isProductPageOpen || isAddressFormOpen || isSignupOpen;
+    // Hide bottom nav when product page, address form, signup page, or address selector is open
+    return isProductPageOpen || isAddressFormOpen || isSignupOpen || showAddressOrAreaSelector;
   };
 
   const renderContent = () => {
