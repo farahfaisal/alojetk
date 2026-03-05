@@ -233,19 +233,19 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-8"
-      style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(5px)', pointerEvents: 'auto' }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(4px)', pointerEvents: 'auto' }}
       onClick={hasSelectedArea ? onClose : undefined}
     >
       <motion.div
-        initial={{ scale: 0.85, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.85, opacity: 0, y: 20 }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="w-full max-w-md flex flex-col overflow-hidden bg-white rounded-3xl shadow-2xl"
+        className="w-full max-w-lg flex flex-col overflow-hidden bg-white rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxHeight: '90vh',
+          maxHeight: '85vh',
           pointerEvents: 'auto',
           display: showAddressForm ? 'none' : 'flex'
         }}
