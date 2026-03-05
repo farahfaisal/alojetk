@@ -284,38 +284,12 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-end justify-center"
-      style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(2px)', pointerEvents: 'auto' }}
-      onClick={(e) => {
-        // Prevent closing by clicking outside if not logged in
-        if (e.target === e.currentTarget && canClose) {
-          onClose();
-        }
-      }}
+      className="fixed inset-0 z-[60] bg-white"
+      style={{ pointerEvents: 'auto' }}
     >
-      <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="w-full max-w-lg flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          maxHeight: '70vh',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 20px)',
-          background: 'transparent',
-          pointerEvents: 'auto'
-        }}
-      >
-        {/* Handle bar */}
-        {canClose && (
-          <div className="flex justify-center pt-3 pb-2" style={{ background: 'transparent' }}>
-            <div className="w-12 h-1.5 bg-white/60 rounded-full cursor-pointer" onClick={onClose}></div>
-          </div>
-        )}
-
+      <div className="h-full w-full flex flex-col">
         {/* Header and Content Container */}
-        <div className="bg-white rounded-t-3xl shadow-2xl flex-1 flex flex-col">
+        <div className="bg-white flex-1 flex flex-col h-full">
         {/* Header */}
         <div className="px-6 pb-3 pt-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
@@ -452,7 +426,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
         </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
