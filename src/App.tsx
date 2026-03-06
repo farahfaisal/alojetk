@@ -272,27 +272,16 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show login first, then address selector on page load
+  // Always show address selector on page load
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      // First priority: Check if user is authenticated
-      if (!isAuthenticated) {
-        console.log('🔄 Page loaded, user not authenticated - showing login');
-        setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-      } else {
-        // Second priority: If authenticated, check if service area is selected
-        const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-        if (!selectedServiceArea) {
-          console.log('🔄 Page loaded, user authenticated but no service area - showing address selector');
-          setTimeout(() => {
-            setShowAddressOrAreaSelector(true);
-          }, 500);
-        }
-      }
+      // Always show address selector regardless of authentication or previous selection
+      console.log('🔄 Page loaded - showing address selector');
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
     }
-  }, [showSplash, showOnboarding, isAuthenticated]);
+  }, [showSplash, showOnboarding]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {

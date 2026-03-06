@@ -36,11 +36,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  // Start with main-areas view for guests, addresses view for logged-in users
-  const [selectedView, setSelectedView] = useState<'addresses' | 'main-areas' | 'sub-areas'>(() => {
-    const storedUser = localStorage.getItem('auth_user');
-    return storedUser ? 'addresses' : 'main-areas';
-  });
+  // Always start with main-areas view regardless of login status
+  const [selectedView, setSelectedView] = useState<'addresses' | 'main-areas' | 'sub-areas'>('main-areas');
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
