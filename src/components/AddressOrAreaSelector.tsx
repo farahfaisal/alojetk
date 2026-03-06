@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search } from 'lucide-react';
+import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NewAddressPage from './NewAddressPage';
 import AddressForm from './AddressForm';
@@ -173,6 +173,29 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     setSelectedView('main-areas');
     setSelectedMainArea(null);
     setSubAreas([]);
+  };
+
+  const handleDeleteAddress = async (e: React.MouseEvent, addressId: string) => {
+    e.stopPropagation();
+
+    if (!confirm('هل أنت متأكد من حذف هذا العنوان؟')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('customer_addresses')
+        .delete()
+        .eq('id', addressId);
+
+      if (error) throw error;
+
+      // Reload addresses
+      await loadSavedAddresses();
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      alert('حدث خطأ أثناء حذف العنوان');
+    }
   };
 
   // Filter service areas and sub areas based on search query
@@ -445,17 +468,19 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
               ) : (
                 <>
                   {savedAddresses.map((address) => (
-                    <motion.button
+                    <motion.div
                       key={address.id}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => handleAddressClick(address)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-right ${
+                      className={`w-full p-4 rounded-xl border-2 transition-all text-right relative ${
                         address.is_default
                           ? 'border-[#b91c1c] bg-red-50'
                           : 'border-gray-200 bg-white hover:border-[#b91c1c]'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
+                      <div
+                        onClick={() => handleAddressClick(address)}
+                        className="flex items-start gap-3 cursor-pointer"
+                      >
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           address.is_default ? 'bg-[#b91c1c]' : 'bg-gray-100'
                         }`}>
@@ -480,7 +505,16 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                         </div>
                         <ChevronLeft className="w-4 h-4 text-gray-400 flex-shrink-0 rotate-180 mt-2" />
                       </div>
-                    </motion.button>
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={(e) => handleDeleteAddress(e, address.id)}
+                        className="absolute left-2 top-2 w-8 h-8 flex items-center justify-center rounded-lg bg-red-100 hover:bg-red-200 text-red-600 transition-colors"
+                        aria-label="حذف العنوان"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </motion.div>
                   ))}
 
                   {/* Add New Address Button */}
