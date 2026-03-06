@@ -817,7 +817,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-extrabold text-lg text-gray-900">
-                  {address.name || `بدون عنوان - ${address.phone}`}
+                  {address.label || `بدون عنوان - ${address.phone}`}
                 </h3>
                 <p className="text-gray-600 mt-1">{address.address}</p>
                 <p className="text-gray-600">{address.phone}</p>
