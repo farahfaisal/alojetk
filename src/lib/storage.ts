@@ -30,7 +30,7 @@ export interface SavedAddress {
   };
   serviceAreaId?: string;
   serviceAreaName?: string;
-  label?: string; // اسم العنوان مثل: البيت، المدرسة، العمل
+  label: string; // اسم العنوان مثل: البيت، المدرسة، العمل (إجباري)
   mainArea?: string; // المنطقة الرئيسية
   subArea?: string; // المنطقة الفرعية
 }
@@ -48,7 +48,7 @@ interface DatabaseAddress {
   latitude?: number;
   longitude?: number;
   service_area_id?: string;
-  label?: string;
+  label: string;
   main_area?: string;
   sub_area?: string;
   service_areas?: {
@@ -208,7 +208,7 @@ export async function saveAddress(address: Omit<SavedAddress, 'id'>): Promise<Sa
         latitude: address.coordinates?.lat,
         longitude: address.coordinates?.lng,
         service_area_id: address.serviceAreaId || null,
-        label: address.label || null,
+        label: address.label,
         main_area: address.mainArea || null,
         sub_area: address.subArea || null
       })
@@ -255,7 +255,7 @@ export async function updateAddress(address: SavedAddress): Promise<SavedAddress
         latitude: address.coordinates?.lat,
         longitude: address.coordinates?.lng,
         service_area_id: address.serviceAreaId || null,
-        label: address.label || null,
+        label: address.label,
         main_area: address.mainArea || null,
         sub_area: address.subArea || null
       })

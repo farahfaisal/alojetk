@@ -588,6 +588,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
 
     if (!formData.address.trim()) newErrors.address = 'العنوان التفصيلي مطلوب';
+    if (!formData.label.trim()) newErrors.label = 'اسم العنوان مطلوب';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -738,7 +739,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               <div className="space-y-4">
                 <div>
                   <label htmlFor="label" className="block text-sm font-medium text-gray-700 mb-1">
-                    اسم العنوان (اختياري)
+                    اسم العنوان *
                   </label>
                   <input
                     type="text"
@@ -746,9 +747,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     name="label"
                     value={formData.label}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand ${
+                      errors.label ? 'border-[#b91c1c]' : 'border-gray-300'
+                    }`}
                     placeholder="مثال: البيت، المدرسة، العمل"
                   />
+                  {errors.label && (
+                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.label}</p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">اختر اسماً مميزاً للعنوان لسهولة التعرف عليه</p>
                 </div>
 
