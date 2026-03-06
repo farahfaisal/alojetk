@@ -533,8 +533,8 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     </motion.div>
                   ))}
 
-                  {/* Add New Address Button - Only for logged-in users */}
-                  {localStorage.getItem('auth_user') && (
+                  {/* Add New Address Button - Hidden */}
+                  {false && localStorage.getItem('auth_user') && (
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
