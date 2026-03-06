@@ -798,20 +798,8 @@ const AppContent: React.FC = () => {
   }, [isProductPageOpen, isAddressFormOpen, isSignupOpen, showAddressOrAreaSelector]);
 
   const renderContent = () => {
-    // Check if user has selected a service area
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-
-    // If no service area selected, show blank screen or force address selector
-    if (!selectedServiceArea) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center p-6">
-            <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">يرجى تحديد عنوان التوصيل أولاً</p>
-          </div>
-        </div>
-      );
-    }
+    // Always show content - even without selected service area
+    // This allows users to see the app before selecting location
 
     if (viewMode === 'supermarket') {
       return <Supermarket selectedCity={selectedCity} />;
