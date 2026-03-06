@@ -1074,33 +1074,6 @@ const CartPage: React.FC<CartPageProps> = ({
           paddingBottom: 'calc(80px + max(env(safe-area-inset-bottom), 0px))'
         }}>
           <div className="max-w-md mx-auto space-y-3">
-            {/* Display Selected Address */}
-            {selectedAddress && (
-              <button
-                onClick={() => setShowAddressSelector(true)}
-                className="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-right hover:border-brand transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-brand" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-bold text-gray-900 text-sm">{selectedAddress.name}</h4>
-                      {selectedAddress.isDefault && (
-                        <span className="text-xs bg-brand text-white px-2 py-0.5 rounded-full font-semibold">
-                          افتراضي
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-600 line-clamp-1">{selectedAddress.address}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{selectedAddress.city}</p>
-                  </div>
-                  <ChevronLeft className="w-5 h-5 text-gray-400 flex-shrink-0 mt-2 rotate-180" />
-                </div>
-              </button>
-            )}
-
             {/* Checkout Button */}
             <button
               onClick={handleProceedToCheckout}
