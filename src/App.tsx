@@ -281,15 +281,15 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Always show address selector on every page load
+  // Show address selector on page load only if user is authenticated
   useEffect(() => {
-    if (!showSplash && !showOnboarding) {
+    if (!showSplash && !showOnboarding && isAuthenticated) {
       console.log('🔄 Page loaded, showing service area selector');
       setTimeout(() => {
         setShowAddressOrAreaSelector(true);
       }, 500);
     }
-  }, [showSplash, showOnboarding]);
+  }, [showSplash, showOnboarding, isAuthenticated]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {
