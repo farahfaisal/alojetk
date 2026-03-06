@@ -318,14 +318,20 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Always show address selector on page load
+  // Show address selector on page load only if not authenticated and no area selected
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      // Always show address selector regardless of authentication or previous selection
-      console.log('🔄 Page loaded - showing address selector');
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
+      const storedUser = localStorage.getItem('auth_user');
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+
+      // Only show if user is NOT authenticated (guest/first time)
+      // Authenticated users will be prompted when they try to access cart/orders
+      if (!storedUser && !selectedServiceArea) {
+        console.log('🔄 Guest user without area - showing address selector');
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
+      }
     }
   }, [showSplash, showOnboarding]);
 
@@ -652,13 +658,8 @@ const AppContent: React.FC = () => {
       }
     }
 
-    // Show address selector after login/guest if no service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
-    }
+    // Don't show address selector automatically after login
+    // User will be prompted when they try to access cart/orders
   };
 
   const handleCloseSignup = () => {
@@ -671,13 +672,8 @@ const AppContent: React.FC = () => {
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
 
-    // Show address selector after signup if no service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
-    }
+    // Don't show address selector automatically after signup
+    // User will be prompted when they try to access cart/orders
   };
 
   const handleOpenMenu = () => {
