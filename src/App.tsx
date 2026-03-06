@@ -272,19 +272,29 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show address selector on page load for all users (guest or authenticated)
+  // Show login first, then address selector on page load
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-      // Only show if no service area is selected
-      if (!selectedServiceArea) {
-        console.log('🔄 Page loaded, showing service area selector');
+      const browsingAsGuest = localStorage.getItem('browsing_as_guest');
+
+      // First priority: Check if user is authenticated or browsing as guest
+      if (!isAuthenticated && !browsingAsGuest) {
+        console.log('🔄 Page loaded, user not authenticated and not guest - showing login');
         setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
+          setIsLoginOpen(true);
         }, 500);
+      } else {
+        // Second priority: If authenticated or guest, check if service area is selected
+        const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+        if (!selectedServiceArea) {
+          console.log('🔄 Page loaded, user authenticated/guest but no service area - showing address selector');
+          setTimeout(() => {
+            setShowAddressOrAreaSelector(true);
+          }, 500);
+        }
       }
     }
-  }, [showSplash, showOnboarding]);
+  }, [showSplash, showOnboarding, isAuthenticated]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {
@@ -586,13 +596,16 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseLogin = () => {
-    // Only allow closing if user is logged in
+    // Only allow closing if user is logged in or browsing as guest
     const storedUser = localStorage.getItem('auth_user');
-    if (!storedUser) {
-      return; // Don't close if not logged in
+    const browsingAsGuest = localStorage.getItem('browsing_as_guest');
+
+    if (!storedUser && !browsingAsGuest) {
+      return; // Don't close if not logged in and not guest
     }
 
     setIsLoginOpen(false);
+
     // Refresh user data after login
     if (storedUser) {
       try {
@@ -602,17 +615,17 @@ const AppContent: React.FC = () => {
 
         // Navigate to home page after successful login
         navigate('/');
-
-        // Show address selector after login if no service area is selected
-        const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-        if (!selectedServiceArea) {
-          setTimeout(() => {
-            setShowAddressOrAreaSelector(true);
-          }, 500);
-        }
       } catch (e) {
         console.error('Error parsing stored user:', e);
       }
+    }
+
+    // Show address selector after login/guest if no service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
     }
   };
 
@@ -1061,8 +1074,12 @@ const AppContent: React.FC = () => {
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                // Allow closing anytime
-                setShowAddressOrAreaSelector(false);
+                // Only allow closing if service area is selected
+                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                if (selectedServiceArea) {
+                  setShowAddressOrAreaSelector(false);
+                }
+                // Otherwise, do nothing - user must select an area
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}

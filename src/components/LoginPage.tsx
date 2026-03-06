@@ -276,8 +276,8 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     navigate('/');
   };
 
-  // Check if user can close (only if already logged in)
-  const canClose = !!localStorage.getItem('auth_user');
+  // Check if user can close (only if already logged in or browsing as guest)
+  const canClose = !!localStorage.getItem('auth_user') || !!localStorage.getItem('browsing_as_guest');
 
   return (
     <motion.div
@@ -383,7 +383,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'متابعة'}
               </button>
 
-              <div className="text-center pt-3">
+              <div className="text-center pt-3 space-y-3">
                 <p className="text-gray-600 text-sm">
                   ليس لديك حساب؟{' '}
                   <button
@@ -397,6 +397,27 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     إنشاء حساب
                   </button>
                 </p>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-500">أو</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Mark as guest browsing
+                    localStorage.setItem('browsing_as_guest', 'true');
+                    onClose();
+                  }}
+                  className="w-full text-gray-600 hover:text-gray-800 py-2.5 rounded-xl border-2 border-gray-200 hover:border-gray-300 transition-all font-medium"
+                >
+                  التصفح كضيف
+                </button>
               </div>
             </form>
           )}
