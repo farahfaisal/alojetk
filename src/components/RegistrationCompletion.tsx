@@ -34,25 +34,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [detailedAddress, setDetailedAddress] = useState('');
   const [addressLabel, setAddressLabel] = useState('');
-
-  // Get default city from localStorage
-  const getDefaultCity = () => {
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    const storedCity = localStorage.getItem('selectedCity');
-
-    if (selectedServiceArea) return selectedServiceArea;
-    if (storedCity) {
-      try {
-        const parsed = JSON.parse(storedCity);
-        return typeof parsed === 'string' ? parsed : 'يطا';
-      } catch {
-        return storedCity;
-      }
-    }
-    return 'يطا';
-  };
-
-  const [selectedCity, setSelectedCity] = useState<string>(getDefaultCity());
+  const [selectedCity, setSelectedCity] = useState<string>('');
 
   // Fetch service areas
   useEffect(() => {
@@ -386,16 +368,24 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowServiceAreaPicker(true)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                    !selectedCity ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
+                    !selectedCity ? 'border-red-300 bg-red-50/30' : 'border-gray-300'
                   }`}
                 >
-                  <span className={`font-medium ${selectedCity ? 'text-gray-900' : 'text-gray-400'}`}>
-                    {selectedCity || 'اختر المنطقة'}
+                  <span className={`font-medium ${selectedCity ? 'text-gray-900' : 'text-red-500'}`}>
+                    {selectedCity || 'انقر لاختيار المنطقة'}
                   </span>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className={`w-5 h-5 ${!selectedCity ? 'text-red-400' : 'text-gray-400'}`} />
                 </button>
-                <p className="text-xs text-gray-500 mt-1">اختر المنطقة الرئيسية ثم الفرعية</p>
+                {!selectedCity && (
+                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <span>⚠️</span>
+                    <span>يجب اختيار منطقة التوصيل للمتابعة</span>
+                  </p>
+                )}
+                {selectedCity && (
+                  <p className="text-xs text-gray-500 mt-1">المنطقة المختارة: {selectedCity}</p>
+                )}
               </div>
 
               <div>
