@@ -46,6 +46,15 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [allSubAreas, setAllSubAreas] = useState<ServiceArea[]>([]);
 
   useEffect(() => {
+    // Check if user is authenticated
+    const storedUser = localStorage.getItem('auth_user');
+    if (!storedUser) {
+      // If not authenticated, close this component
+      console.log('⚠️ User not authenticated, closing address selector');
+      onClose();
+      return;
+    }
+
     loadSavedAddresses();
     loadServiceAreas();
   }, []);

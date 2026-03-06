@@ -696,7 +696,13 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCart = () => {
-    // Check if service area is selected
+    // Check authentication first
+    if (!isAuthenticated) {
+      closeAllComponents();
+      setIsLoginOpen(true);
+      return;
+    }
+    // Then check if service area is selected
     const selectedServiceArea = localStorage.getItem('selectedServiceArea');
     if (!selectedServiceArea) {
       setShowAddressOrAreaSelector(true);
