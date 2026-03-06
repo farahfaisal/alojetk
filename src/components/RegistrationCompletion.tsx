@@ -32,6 +32,8 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [detailedAddress, setDetailedAddress] = useState('');
+  const [addressLabel, setAddressLabel] = useState('');
 
   // Get default city from localStorage
   const getDefaultCity = () => {
@@ -103,6 +105,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       return;
     }
 
+    // تحقق من وجود العنوان التفصيلي
+    if (!detailedAddress || detailedAddress.trim() === '') {
+      setError('العنوان التفصيلي مطلوب');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -126,6 +134,32 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       }
 
       const newCustomerId = customerData[0].id;
+
+      // Find the service area ID for the selected city
+      const { data: serviceAreaData } = await supabase
+        .from('service_areas')
+        .select('id')
+        .eq('name', selectedCity)
+        .maybeSingle();
+
+      // Create the customer address
+      const { error: addressError } = await supabase
+        .from('customer_addresses')
+        .insert({
+          customer_id: newCustomerId,
+          name: addressLabel || selectedCity,
+          address: detailedAddress,
+          city: selectedCity,
+          phone: phone,
+          is_default: true,
+          detailed_address: detailedAddress,
+          service_area_id: serviceAreaData?.id || null,
+          label: addressLabel || null
+        });
+
+      if (addressError) {
+        console.error('Error creating address:', addressError);
+      }
 
       // If referral code is provided, process the referral
       if (referralCode && newCustomerId) {
@@ -289,7 +323,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="bg-brand/10 p-4 rounded-lg mb-6">
-                <p className="text-accent font-medium">أهلاً بك ! يرجى إكمال بياناتك الشخصية.</p>
+                <p className="text-accent font-medium">أهلاً بك ! يرجى إكمال بياناتك الشخصية وعنوان التوصيل.</p>
                 {referralCode && (
                   <p className="text-sm text-brand mt-2">
                     سيتم تطبيق رمز الإحالة وإضافة النقاط إلى حسابك عند إكمال التسجيل.
@@ -337,9 +371,17 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                 </div>
               </div>
 
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <MapPin className="w-5 h-5 text-brand" />
+                  <h3 className="text-lg font-bold text-gray-900">عنوان التوصيل</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">أضف عنوان التوصيل الخاص بك لتسهيل عملية الطلب</p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  منطقة التوصيل <span className="text-red-500">*</span>
+                  المنطقة الرئيسية والفرعية <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -349,11 +391,45 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   }`}
                 >
                   <span className={`font-medium ${selectedCity ? 'text-gray-900' : 'text-gray-400'}`}>
-                    {selectedCity || 'اختر منطقة التوصيل'}
+                    {selectedCity || 'اختر المنطقة'}
                   </span>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </button>
-                <p className="text-xs text-gray-500 mt-1">اختر المنطقة التي سيتم التوصيل إليها</p>
+                <p className="text-xs text-gray-500 mt-1">اختر المنطقة الرئيسية ثم الفرعية</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  تسمية العنوان (اختياري)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={addressLabel}
+                    onChange={(e) => setAddressLabel(e.target.value)}
+                    placeholder="مثل: المنزل، العمل، المدرسة"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                  />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">اسم مميز لهذا العنوان</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  العنوان التفصيلي <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <textarea
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
+                    placeholder="اكتب العنوان التفصيلي (الشارع، رقم المبنى، معالم قريبة...)"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand min-h-[100px] resize-none"
+                    required
+                  />
+                  <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">أدخل تفاصيل العنوان بدقة لتسهيل التوصيل</p>
               </div>
 
               {/* Service Area Picker Modal */}
