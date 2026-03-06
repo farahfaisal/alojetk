@@ -994,17 +994,18 @@ const AddressForm: React.FC<AddressFormProps> = ({
               <div className="space-y-4">
                 <div>
                   <label htmlFor="detailedAddress" className="block text-sm font-medium text-gray-700 mb-1">
-                    العنوان التفصيلي (اختياري)
+                    معلومات إضافية (اختياري)
                   </label>
                   <textarea
                     id="detailedAddress"
                     name="detailedAddress"
                     value={formData.detailedAddress}
                     onChange={handleChange}
-                    placeholder="أدخل تفاصيل إضافية للعنوان (رقم الشقة، الطابق، علامات مميزة...)"
+                    placeholder="أدخل تفاصيل إضافية للعنوان (رقم الشقة، الطابق، علامات مميزة، تعليمات خاصة...)"
                     className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300 resize-none"
                     rows={3}
                   />
+                  <p className="text-xs text-gray-500 mt-1">مثل: شقة 5، الطابق الثالث، بجانب السوبرماركت</p>
                 </div>
 
                 <div>
