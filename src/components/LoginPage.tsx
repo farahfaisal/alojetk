@@ -397,6 +397,25 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     إنشاء حساب
                   </button>
                 </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Create a guest user session
+                    const guestUser = {
+                      id: 'guest_' + Date.now(),
+                      phone: 'guest',
+                      name: 'ضيف',
+                      is_guest: true
+                    };
+                    localStorage.setItem('auth_user', JSON.stringify(guestUser));
+                    window.dispatchEvent(new Event('auth-change'));
+                    onClose();
+                  }}
+                  className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+                >
+                  متابعة كضيف
+                </button>
               </div>
             </form>
           )}

@@ -318,18 +318,16 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show address selector on page load only if not authenticated and no area selected
+  // Show login screen first for unauthenticated users, then address selector
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
       const storedUser = localStorage.getItem('auth_user');
-      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
 
-      // Only show if user is NOT authenticated (guest/first time)
-      // Authenticated users will be prompted when they try to access cart/orders
-      if (!storedUser && !selectedServiceArea) {
-        console.log('🔄 Guest user without area - showing address selector');
+      // If user is NOT authenticated, show login screen
+      if (!storedUser) {
+        console.log('🔄 User not authenticated - showing login screen');
         setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
+          setIsLoginOpen(true);
         }, 500);
       }
     }
@@ -658,8 +656,13 @@ const AppContent: React.FC = () => {
       }
     }
 
-    // Don't show address selector automatically after login
-    // User will be prompted when they try to access cart/orders
+    // Show address selector after login if no service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
+    }
   };
 
   const handleCloseSignup = () => {
@@ -672,8 +675,13 @@ const AppContent: React.FC = () => {
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
 
-    // Don't show address selector automatically after signup
-    // User will be prompted when they try to access cart/orders
+    // Show address selector after signup if no service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setTimeout(() => {
+        setShowAddressOrAreaSelector(true);
+      }, 500);
+    }
   };
 
   const handleOpenMenu = () => {
