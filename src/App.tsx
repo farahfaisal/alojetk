@@ -329,6 +329,12 @@ const AppContent: React.FC = () => {
         setTimeout(() => {
           setIsLoginOpen(true);
         }, 500);
+      } else {
+        // If user IS authenticated, always show address selector on app open
+        console.log('🔄 User authenticated - showing address selector');
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
       }
     }
   }, [showSplash, showOnboarding]);
@@ -656,13 +662,10 @@ const AppContent: React.FC = () => {
       }
     }
 
-    // Show address selector after login if no service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
-    }
+    // Always show address selector after login
+    setTimeout(() => {
+      setShowAddressOrAreaSelector(true);
+    }, 500);
   };
 
   const handleCloseSignup = () => {
@@ -675,13 +678,10 @@ const AppContent: React.FC = () => {
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
 
-    // Show address selector after signup if no service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
-    }
+    // Always show address selector after signup
+    setTimeout(() => {
+      setShowAddressOrAreaSelector(true);
+    }, 500);
   };
 
   const handleOpenMenu = () => {
