@@ -80,8 +80,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
     coordinates: initialAddress?.coordinates || null,
     label: initialAddress?.label || ''
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [autoGettingLocation, setAutoGettingLocation] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [markerPosition, setMarkerPosition] = useState(
     initialAddress?.coordinates || vendorLocation
@@ -138,6 +139,86 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
     fetchUserData();
   }, [user, initialAddress]);
+
+  // Auto-get current location on mount
+  useEffect(() => {
+    const getAutoLocation = async () => {
+      if (initialAddress?.coordinates) {
+        // Don't auto-get if editing existing address
+        return;
+      }
+
+      console.log('🌍 Auto-getting current location...');
+      setAutoGettingLocation(true);
+
+      try {
+        const isNative = Capacitor.isNativePlatform();
+
+        if (isNative) {
+          const permissionStatus = await Geolocation.checkPermissions();
+
+          if (permissionStatus.location !== 'granted') {
+            const request = await Geolocation.requestPermissions();
+            if (request.location !== 'granted') {
+              console.log('⚠️ Location permission denied');
+              setAutoGettingLocation(false);
+              return;
+            }
+          }
+
+          const position = await Geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+
+          const coords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          console.log('✅ Auto location obtained (native):', coords);
+          setFormData(prev => ({ ...prev, coordinates: coords }));
+        } else {
+          // Web browser
+          if (!navigator.geolocation) {
+            console.log('⚠️ Geolocation not supported');
+            setAutoGettingLocation(false);
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const coords = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              };
+
+              console.log('✅ Auto location obtained (web):', coords);
+              setFormData(prev => ({ ...prev, coordinates: coords }));
+              setAutoGettingLocation(false);
+            },
+            (error) => {
+              console.log('⚠️ Auto location error:', error.message);
+              setAutoGettingLocation(false);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0
+            }
+          );
+          return;
+        }
+      } catch (error: any) {
+        console.log('⚠️ Auto location error:', error.message || error);
+      } finally {
+        setAutoGettingLocation(false);
+      }
+    };
+
+    getAutoLocation();
+  }, [initialAddress]);
 
   const handleMainAreaClick = async (area: ServiceArea) => {
     try {
@@ -543,7 +624,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
       const addressData = {
         ...formData,
-        coordinates: null,
+        coordinates: formData.coordinates, // Use auto-captured coordinates
         serviceAreaId,
         serviceAreaName: formData.city
       };
@@ -721,7 +802,29 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 <MapPin className="w-5 h-5 text-brand" />
                 معلومات الموقع
               </h3>
-              
+
+              {/* Auto Location Status */}
+              {autoGettingLocation && (
+                <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                    <p className="text-sm text-blue-800 font-medium">جاري تحديد موقعك تلقائياً...</p>
+                  </div>
+                </div>
+              )}
+
+              {formData.coordinates && !autoGettingLocation && (
+                <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <p className="text-sm text-green-800 font-medium">تم تحديد موقعك تلقائياً</p>
+                  </div>
+                  <p className="text-xs text-green-700 mt-1">
+                    {formData.coordinates.lat.toFixed(6)}, {formData.coordinates.lng.toFixed(6)}
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
