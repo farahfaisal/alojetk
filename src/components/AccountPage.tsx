@@ -816,7 +816,9 @@ const AccountPage: React.FC<AccountPageProps> = ({
           <div key={address.id} className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-extrabold text-lg text-gray-900">{address.name}</h3>
+                <h3 className="font-extrabold text-lg text-gray-900">
+                  {address.name || `بدون عنوان - ${address.phone}`}
+                </h3>
                 <p className="text-gray-600 mt-1">{address.address}</p>
                 <p className="text-gray-600">{address.phone}</p>
                 {address.isDefault && (

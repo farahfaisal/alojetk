@@ -95,7 +95,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
       const formattedAddresses = data?.map(addr => ({
         id: addr.id,
         customer_id: addr.customer_id,
-        address_label: addr.name,
+        address_label: addr.name || `بدون عنوان - ${addr.phone}`,
         address_line1: addr.address,
         city: addr.city,
         zone_id: addr.city,
