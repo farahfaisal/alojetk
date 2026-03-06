@@ -31,6 +31,8 @@ export interface SavedAddress {
   serviceAreaId?: string;
   serviceAreaName?: string;
   label?: string; // اسم العنوان مثل: البيت، المدرسة، العمل
+  mainArea?: string; // المنطقة الرئيسية
+  subArea?: string; // المنطقة الفرعية
 }
 
 // Database address interface
@@ -47,6 +49,8 @@ interface DatabaseAddress {
   longitude?: number;
   service_area_id?: string;
   label?: string;
+  main_area?: string;
+  sub_area?: string;
   service_areas?: {
     id: string;
     name: string;
@@ -69,7 +73,9 @@ function convertDatabaseAddress(dbAddress: DatabaseAddress): SavedAddress {
     } : undefined,
     serviceAreaId: dbAddress.service_area_id,
     serviceAreaName: dbAddress.service_areas?.name,
-    label: dbAddress.label
+    label: dbAddress.label,
+    mainArea: dbAddress.main_area,
+    subArea: dbAddress.sub_area
   };
 }
 
@@ -202,7 +208,9 @@ export async function saveAddress(address: Omit<SavedAddress, 'id'>): Promise<Sa
         latitude: address.coordinates?.lat,
         longitude: address.coordinates?.lng,
         service_area_id: address.serviceAreaId || null,
-        label: address.label || null
+        label: address.label || null,
+        main_area: address.mainArea || null,
+        sub_area: address.subArea || null
       })
       .select(`
         *,
@@ -247,7 +255,9 @@ export async function updateAddress(address: SavedAddress): Promise<SavedAddress
         latitude: address.coordinates?.lat,
         longitude: address.coordinates?.lng,
         service_area_id: address.serviceAreaId || null,
-        label: address.label || null
+        label: address.label || null,
+        main_area: address.mainArea || null,
+        sub_area: address.subArea || null
       })
       .eq('id', address.id)
       .eq('customer_id', userData.customer_id)

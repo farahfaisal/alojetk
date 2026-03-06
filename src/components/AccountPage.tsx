@@ -820,6 +820,16 @@ const AccountPage: React.FC<AccountPageProps> = ({
                   {address.label || `بدون عنوان - ${address.phone}`}
                 </h3>
                 <p className="text-gray-600 mt-1">{address.address}</p>
+                {address.mainArea && (
+                  <p className="text-gray-500 text-sm mt-1">
+                    المنطقة الرئيسية: {address.mainArea}
+                  </p>
+                )}
+                {address.subArea && (
+                  <p className="text-gray-500 text-sm">
+                    المنطقة الفرعية: {address.subArea}
+                  </p>
+                )}
                 <p className="text-gray-600">{address.phone}</p>
                 {address.isDefault && (
                   <span className="inline-block mt-2 px-2 py-1 bg-brand/10 text-accent text-sm rounded-lg">

@@ -78,7 +78,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
     city: getDefaultCity(),
     isDefault: initialAddress?.isDefault || false,
     coordinates: initialAddress?.coordinates || null,
-    label: initialAddress?.label || ''
+    label: initialAddress?.label || '',
+    mainArea: (initialAddress as any)?.mainArea || '',
+    subArea: (initialAddress as any)?.subArea || ''
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -998,7 +1000,37 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     rows={3}
                   />
                 </div>
-                
+
+                <div>
+                  <label htmlFor="mainArea" className="block text-sm font-medium text-gray-700 mb-1">
+                    المنطقة الرئيسية (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    id="mainArea"
+                    name="mainArea"
+                    value={formData.mainArea}
+                    onChange={handleChange}
+                    placeholder="مثال: وسط البلد، الحي الغربي..."
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="subArea" className="block text-sm font-medium text-gray-700 mb-1">
+                    المنطقة الفرعية (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    id="subArea"
+                    name="subArea"
+                    value={formData.subArea}
+                    onChange={handleChange}
+                    placeholder="مثال: بجانب المسجد، شارع الجامعة..."
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
+                  />
+                </div>
+
                 <div className="flex items-center">
                   <input
                     type="checkbox"
