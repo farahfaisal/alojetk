@@ -131,23 +131,14 @@ const AppContent: React.FC = () => {
                         isCartOpen || isOrdersOpen || isCaptainRequestOpen || isCaptainTrackingOpen ||
                         isParcelOrderOpen || isParcelTrackingOpen;
 
-  // Show login immediately after splash screen
-  useEffect(() => {
-    if (!showSplash && !isAuthenticated) {
-      const timer = setTimeout(() => {
-        setIsLoginOpen(true);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [showSplash, isAuthenticated]);
+  // Don't force login - let users browse freely
+  // Login will be requested when needed (checkout, orders, etc.)
 
   // Handle onboarding completion
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     localStorage.setItem('hasSeenOnboarding', 'true');
-    setTimeout(() => {
-      setIsLoginOpen(true);
-    }, 300);
+    // Don't force login - let users explore the app first
   };
 
   // Update cart items count
@@ -281,15 +272,19 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show address selector on page load only if user is authenticated
+  // Show address selector on page load for all users (guest or authenticated)
   useEffect(() => {
-    if (!showSplash && !showOnboarding && isAuthenticated) {
-      console.log('🔄 Page loaded, showing service area selector');
-      setTimeout(() => {
-        setShowAddressOrAreaSelector(true);
-      }, 500);
+    if (!showSplash && !showOnboarding) {
+      const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+      // Only show if no service area is selected
+      if (!selectedServiceArea) {
+        console.log('🔄 Page loaded, showing service area selector');
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
+      }
     }
-  }, [showSplash, showOnboarding, isAuthenticated]);
+  }, [showSplash, showOnboarding]);
 
   useEffect(() => {
     const handleCategorySelect = (event: CustomEvent) => {

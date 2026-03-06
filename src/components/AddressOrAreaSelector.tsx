@@ -36,7 +36,11 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [selectedView, setSelectedView] = useState<'addresses' | 'main-areas' | 'sub-areas'>('addresses');
+  // Start with main-areas view for guests, addresses view for logged-in users
+  const [selectedView, setSelectedView] = useState<'addresses' | 'main-areas' | 'sub-areas'>(() => {
+    const storedUser = localStorage.getItem('auth_user');
+    return storedUser ? 'addresses' : 'main-areas';
+  });
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
@@ -158,8 +162,11 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
   };
 
   const handleBackToAddresses = () => {
-    // Only allow back if area is already selected, otherwise stay in area selection
-    if (!hasSelectedArea) {
+    // For guests, don't allow back to addresses view - stay in main areas
+    const storedUser = localStorage.getItem('auth_user');
+    if (!storedUser) {
+      setSelectedView('main-areas');
+    } else if (!hasSelectedArea) {
       setSelectedView('main-areas');
     } else {
       setSelectedView('addresses');
@@ -436,7 +443,7 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                   <div className="w-12 h-12 border-4 border-[#b91c1c] border-t-transparent rounded-full animate-spin mx-auto"></div>
                   <p className="text-black font-semibold mt-4">جاري التحميل...</p>
                 </div>
-              ) : savedAddresses.length === 0 ? (
+              ) : savedAddresses.length === 0 && localStorage.getItem('auth_user') ? (
                 <div className="h-full">
                   <AddressForm
                     onSave={async (storageAddress: StorageAddress) => {
@@ -464,6 +471,18 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     isModal={true}
                     preselectedCity={selectedCity}
                   />
+                </div>
+              ) : savedAddresses.length === 0 ? (
+                <div className="text-center py-8">
+                  <MapPin className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-black font-semibold mb-2">لا توجد عناوين محفوظة</p>
+                  <p className="text-gray-600 text-sm mb-4">اختر منطقة للمتابعة</p>
+                  <button
+                    onClick={handleSelectNewArea}
+                    className="px-6 py-3 bg-[#b91c1c] text-white rounded-xl font-semibold hover:bg-[#991515] transition-colors"
+                  >
+                    اختر منطقة
+                  </button>
                 </div>
               ) : (
                 <>
@@ -517,18 +536,20 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                     </motion.div>
                   ))}
 
-                  {/* Add New Address Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleSelectNewArea}
-                    className="w-full p-4 bg-gradient-to-r from-[#b91c1c] to-[#b91c1c] text-white rounded-xl hover:shadow-lg transition-all"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Plus className="w-5 h-5" />
-                      <span className="font-semibold">إضافة عنوان جديد</span>
-                    </div>
-                  </motion.button>
+                  {/* Add New Address Button - Only for logged-in users */}
+                  {localStorage.getItem('auth_user') && (
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleSelectNewArea}
+                      className="w-full p-4 bg-gradient-to-r from-[#b91c1c] to-[#b91c1c] text-white rounded-xl hover:shadow-lg transition-all"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Plus className="w-5 h-5" />
+                        <span className="font-semibold">إضافة عنوان جديد</span>
+                      </div>
+                    </motion.button>
+                  )}
                 </>
               )}
             </div>
