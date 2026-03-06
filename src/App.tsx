@@ -72,11 +72,16 @@ const AppContent: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState(() => {
     const stored = localStorage.getItem('selectedCity');
     const storedArea = localStorage.getItem('selectedServiceArea');
+    console.log('🔍 Initial selectedCity - stored:', stored, 'storedArea:', storedArea);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      console.log('✅ Using stored city:', parsed);
+      return parsed;
     } else if (storedArea) {
+      console.log('✅ Using storedArea:', storedArea);
       return storedArea;
     }
+    console.log('⚠️ No city selected');
     return null; // Don't set default city, force user to select
   });
   const [cartNotification, setCartNotification] = useState<{show: boolean; productName: string} | null>(null);
@@ -161,6 +166,47 @@ const AppContent: React.FC = () => {
     window.addEventListener('storage', updateCartCount);
     return () => window.removeEventListener('storage', updateCartCount);
   }, []);
+
+  // Monitor selectedServiceArea changes and update selectedCity
+  useEffect(() => {
+    const checkServiceArea = () => {
+      const storedArea = localStorage.getItem('selectedServiceArea');
+      const storedCity = localStorage.getItem('selectedCity');
+      console.log('🔄 Checking service area - storedArea:', storedArea, 'storedCity:', storedCity, 'currentCity:', selectedCity);
+
+      if (storedArea && storedArea !== selectedCity) {
+        console.log('🔄 Updating selectedCity to:', storedArea);
+        setSelectedCity(storedArea);
+      } else if (storedCity && !storedArea) {
+        try {
+          const parsed = JSON.parse(storedCity);
+          if (parsed !== selectedCity) {
+            console.log('🔄 Updating selectedCity from storedCity to:', parsed);
+            setSelectedCity(parsed);
+          }
+        } catch (e) {
+          console.error('Error parsing stored city:', e);
+        }
+      }
+    };
+
+    // Check on mount
+    checkServiceArea();
+
+    // Listen for serviceAreaChanged events
+    const handleServiceAreaChange = (e: any) => {
+      console.log('📢 Service area changed event:', e.detail);
+      checkServiceArea();
+    };
+
+    window.addEventListener('serviceAreaChanged', handleServiceAreaChange);
+    window.addEventListener('storage', checkServiceArea);
+
+    return () => {
+      window.removeEventListener('serviceAreaChanged', handleServiceAreaChange);
+      window.removeEventListener('storage', checkServiceArea);
+    };
+  }, [selectedCity]);
 
   // Fetch vendor data when vendorId is set
   useEffect(() => {
