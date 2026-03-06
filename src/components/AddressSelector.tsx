@@ -108,7 +108,9 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <MapPin className="w-4 h-4 text-brand flex-shrink-0" />
-                    <span className="font-bold text-gray-900">{address.name}</span>
+                    <span className="font-bold text-gray-900">
+                      {address.label ? `${address.label} - ${address.name}` : address.name}
+                    </span>
                     {address.isDefault && (
                       <span className="bg-brand text-white text-xs px-2 py-0.5 rounded-full">
                         افتراضي

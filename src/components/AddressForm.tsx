@@ -77,7 +77,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
     detailedAddress: initialAddress?.detailedAddress || '',
     city: getDefaultCity(),
     isDefault: initialAddress?.isDefault || false,
-    coordinates: initialAddress?.coordinates || null
+    coordinates: initialAddress?.coordinates || null,
+    label: initialAddress?.label || ''
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -651,8 +652,24 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 <User className="w-5 h-5 text-brand" />
                 المعلومات الشخصية
               </h3>
-              
+
               <div className="space-y-4">
+                <div>
+                  <label htmlFor="label" className="block text-sm font-medium text-gray-700 mb-1">
+                    اسم العنوان (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    id="label"
+                    name="label"
+                    value={formData.label}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
+                    placeholder="مثال: البيت، المدرسة، العمل"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">اختر اسماً مميزاً للعنوان لسهولة التعرف عليه</p>
+                </div>
+
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     الاسم *
