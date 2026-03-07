@@ -99,13 +99,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onOpenContact }) => 
                 <div className="space-y-3">
                   <p className="flex items-center gap-2">
                     <Phone className="w-5 h-5 text-accent" />
-                    <a href="tel:+970569697080" className="text-gray-600 hover:text-accent">
-                      0569697080
+                    <a href="tel:00972597868159" className="text-gray-600 hover:text-accent">
+                      00972597868159
                     </a>
                   </p>
                   <p className="flex items-center gap-2">
                     <Heart className="w-5 h-5 text-accent" />
-                    <a href="https://wa.me/970569697080" className="text-gray-600 hover:text-accent">
+                    <a href="https://wa.me/972597868159" className="text-gray-600 hover:text-accent">
                       واتساب
                     </a>
                   </p>

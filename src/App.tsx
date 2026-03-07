@@ -950,7 +950,7 @@ const AppContent: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.open('https://wa.me/972568499643', '_blank')}
+              onClick={() => window.open('https://wa.me/972597868159', '_blank')}
               className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all bg-brand text-white hover:bg-brand-light"
               title="الدعم الفني"
             >
