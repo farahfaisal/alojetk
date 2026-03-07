@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin, Box } from 'lucide-react';
+import { Package, Clock, Truck, Check, ChevronLeft, RefreshCw, Search, Filter, ChevronDown, Star, MapPin, Box, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -552,31 +552,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
                 <motion.div
                   key={order.id}
                   whileHover={{ scale: 1.01 }}
-                  onClick={() => {
-                    console.log('🔍 Order clicked:', {
-                      id: order.id,
-                      order_number: order.order_number,
-                      has_sub_orders: !!(order.sub_orders && order.sub_orders.length > 0),
-                      sub_orders_count: order.sub_orders?.length || 0,
-                      order_group_id: order.order_group_id
-                    });
-
-                    if (order.sub_orders && order.sub_orders.length > 0) {
-                      // Multi-vendor order - set the first sub-order as selected
-                      console.log('🔍 Opening multi-vendor order:', {
-                        firstOrderId: order.sub_orders[0].id,
-                        groupId: order.order_group_id
-                      });
-                      setSelectedOrder(order.sub_orders[0].id);
-                      setSelectedGroupId(order.order_group_id || null);
-                    } else {
-                      // Single vendor order
-                      console.log('🔍 Opening single vendor order:', order.id);
-                      setSelectedOrder(order.id);
-                      setSelectedGroupId(null);
-                    }
-                  }}
-                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all cursor-pointer"
+                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all"
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
@@ -629,6 +605,35 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
                           </div>
                         </div>
                       )}
+
+                      <button
+                        onClick={() => {
+                          console.log('🔍 Order clicked:', {
+                            id: order.id,
+                            order_number: order.order_number,
+                            has_sub_orders: !!(order.sub_orders && order.sub_orders.length > 0),
+                            sub_orders_count: order.sub_orders?.length || 0,
+                            order_group_id: order.order_group_id
+                          });
+
+                          if (order.sub_orders && order.sub_orders.length > 0) {
+                            console.log('🔍 Opening multi-vendor order:', {
+                              firstOrderId: order.sub_orders[0].id,
+                              groupId: order.order_group_id
+                            });
+                            setSelectedOrder(order.sub_orders[0].id);
+                            setSelectedGroupId(order.order_group_id || null);
+                          } else {
+                            console.log('🔍 Opening single vendor order:', order.id);
+                            setSelectedOrder(order.id);
+                            setSelectedGroupId(null);
+                          }
+                        }}
+                        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-lg hover:bg-brand-light transition-colors font-medium"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>عرض التفاصيل</span>
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -681,6 +686,16 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
                           {order.notes}
                         </p>
                       )}
+
+                      <button
+                        onClick={() => {
+                          window.location.href = `/parcel-tracking/${order.id}`;
+                        }}
+                        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-lg hover:bg-brand-light transition-colors font-medium"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>عرض التفاصيل</span>
+                      </button>
                     </div>
                   </div>
                 </motion.div>
