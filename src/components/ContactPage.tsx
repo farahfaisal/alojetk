@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Phone, Mail, MapPin, Clock, Globe, MessageSquare } from 'lucide-react';
+import { X, Phone, Mail, MapPin, Clock, Globe, MessageSquare, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ContactPageProps {
@@ -49,8 +49,8 @@ const ContactPage: React.FC<ContactPageProps> = ({ onClose }) => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">اتصل بنا</h3>
-                <a href="tel:+972568499643" className="text-accent hover:text-accent-light transition-colors block">
-                  +972 56-849-9643
+                <a href="tel:00972597868159" className="text-accent hover:text-accent-light transition-colors block">
+                  00972 59-786-8159
                 </a>
               </div>
             </motion.div>
@@ -65,8 +65,8 @@ const ContactPage: React.FC<ContactPageProps> = ({ onClose }) => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">واتساب</h3>
-                <a href="https://wa.me/972568499643" className="text-accent hover:text-accent-light transition-colors block">
-                  +972 56-849-9643
+                <a href="https://wa.me/972597868159" className="text-accent hover:text-accent-light transition-colors block">
+                  00972 59-786-8159
                 </a>
               </div>
             </motion.div>
