@@ -270,13 +270,14 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
 
   return (
-    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
+    <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden" style={{ zIndex: 9999 }}>
       <div className="bg-white shadow-sm">
         <div className="max-w-md mx-auto">
           <div className="p-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">إكمال التسجيل</h2>
             <button
               onClick={onClose}
+              type="button"
               className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             >
               <X className="w-5 h-5 text-gray-500" />
@@ -285,7 +286,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="max-w-md mx-auto p-4 pb-24">
           {success ? (
             <motion.div
@@ -462,7 +463,8 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                             <>
                               {/* Backdrop */}
                               <div
-                                className="fixed inset-0 z-40"
+                                className="fixed inset-0 bg-transparent"
+                                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9998 }}
                                 onClick={() => {
                                   setShowSubAreaPicker(false);
                                   setSubAreaSearchQuery('');
@@ -474,7 +476,8 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 max-h-[400px] flex flex-col"
+                                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl max-h-[400px] flex flex-col"
+                                style={{ zIndex: 9999 }}
                               >
                                 {/* Search Input */}
                                 <div className="p-3 border-b border-gray-200">
