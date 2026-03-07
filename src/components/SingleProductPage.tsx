@@ -245,10 +245,28 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
   }, []);
 
   const calculateTotalPrice = () => {
-    // Calculate base price
-    const basePrice = product.discount_price && product.discount_price > 0
-      ? Number(product.discount_price)
-      : Number(product.price);
+    // Calculate base price - use variant price if selected
+    let basePrice;
+
+    if (product.is_variant_product && selectedVariantId) {
+      const selectedVariant = variants.find(v => v.id === selectedVariantId);
+      if (selectedVariant) {
+        basePrice = selectedVariant.price;
+        // Apply product discount to variant price
+        if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+          const discountPercentage = (product.price - product.discount_price) / product.price;
+          basePrice = selectedVariant.price * (1 - discountPercentage);
+        }
+      } else {
+        basePrice = product.discount_price && product.discount_price > 0
+          ? Number(product.discount_price)
+          : Number(product.price);
+      }
+    } else {
+      basePrice = product.discount_price && product.discount_price > 0
+        ? Number(product.discount_price)
+        : Number(product.price);
+    }
 
     // Calculate addons total - include all selected addons
     const addonsTotal = mergedAddons
@@ -1150,9 +1168,25 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                   <div className="flex justify-between items-center text-gray-700">
                     <span>السعر الأساسي:</span>
                     <span className="font-semibold">
-                      ₪{(product.discount_price && product.discount_price > 0
-                        ? Number(product.discount_price)
-                        : Number(product.price)).toFixed(2)}
+                      ₪{(() => {
+                        // If variant product, use selected variant price
+                        if (product.is_variant_product && selectedVariantId) {
+                          const selectedVariant = variants.find(v => v.id === selectedVariantId);
+                          if (selectedVariant) {
+                            let finalPrice = selectedVariant.price;
+                            // Apply product discount to variant price
+                            if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+                              const discountPercentage = (product.price - product.discount_price) / product.price;
+                              finalPrice = selectedVariant.price * (1 - discountPercentage);
+                            }
+                            return Number(finalPrice).toFixed(2);
+                          }
+                        }
+                        // Otherwise use product price
+                        return (product.discount_price && product.discount_price > 0
+                          ? Number(product.discount_price)
+                          : Number(product.price)).toFixed(2);
+                      })()}
                     </span>
                   </div>
 
@@ -1178,9 +1212,28 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                       <div className="border-t border-gray-300 pt-2 flex justify-between items-center font-bold text-lg text-[#b91c1c]">
                         <span>المجموع الجزئي:</span>
                         <span>₪{(() => {
-                          const basePrice = product.discount_price && product.discount_price > 0
-                            ? Number(product.discount_price)
-                            : Number(product.price);
+                          let basePrice;
+
+                          // If variant product, use selected variant price
+                          if (product.is_variant_product && selectedVariantId) {
+                            const selectedVariant = variants.find(v => v.id === selectedVariantId);
+                            if (selectedVariant) {
+                              basePrice = selectedVariant.price;
+                              // Apply product discount to variant price
+                              if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+                                const discountPercentage = (product.price - product.discount_price) / product.price;
+                                basePrice = selectedVariant.price * (1 - discountPercentage);
+                              }
+                            } else {
+                              basePrice = product.discount_price && product.discount_price > 0
+                                ? Number(product.discount_price)
+                                : Number(product.price);
+                            }
+                          } else {
+                            basePrice = product.discount_price && product.discount_price > 0
+                              ? Number(product.discount_price)
+                              : Number(product.price);
+                          }
 
                           const requiredAddonsTotal = groupedAddons.required
                             .filter(addon => selectedAddons[addon.id])
@@ -1299,9 +1352,25 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 <div className="flex justify-between items-center text-gray-700">
                   <span>السعر الأساسي:</span>
                   <span className="font-semibold">
-                    ₪{(product.discount_price && product.discount_price > 0
-                      ? Number(product.discount_price)
-                      : Number(product.price)).toFixed(2)}
+                    ₪{(() => {
+                      // If variant product, use selected variant price
+                      if (product.is_variant_product && selectedVariantId) {
+                        const selectedVariant = variants.find(v => v.id === selectedVariantId);
+                        if (selectedVariant) {
+                          let finalPrice = selectedVariant.price;
+                          // Apply product discount to variant price
+                          if (product.discount_price && product.discount_price > 0 && product.price > 0) {
+                            const discountPercentage = (product.price - product.discount_price) / product.price;
+                            finalPrice = selectedVariant.price * (1 - discountPercentage);
+                          }
+                          return Number(finalPrice).toFixed(2);
+                        }
+                      }
+                      // Otherwise use product price
+                      return (product.discount_price && product.discount_price > 0
+                        ? Number(product.discount_price)
+                        : Number(product.price)).toFixed(2);
+                    })()}
                   </span>
                 </div>
 
