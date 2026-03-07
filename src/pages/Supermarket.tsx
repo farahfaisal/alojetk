@@ -523,20 +523,22 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
             </button>
           </div>
-          <div className="relative px-12">
-            {/* Navigation Buttons */}
-            <button
-              id="available-vendors-prev"
-              className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              id="available-vendors-next"
-              className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+          <div className="relative">
+            {/* Navigation Buttons - Outside Swiper */}
+            <div className="flex justify-between items-center mb-3 px-4">
+              <button
+                id="available-vendors-prev"
+                className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-brand transition-all border border-gray-200 hover:border-brand"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              <button
+                id="available-vendors-next"
+                className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-brand transition-all border border-gray-200 hover:border-brand"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            </div>
 
             <Swiper
               slidesPerView={2.2}
@@ -592,20 +594,22 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             </button>
           </div>
 
-          <div className="relative px-12">
-            {/* Navigation Buttons */}
-            <button
-              id={swiperPrevId}
-              className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              id={swiperNextId}
-              className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+          <div className="relative">
+            {/* Navigation Buttons - Outside Swiper */}
+            <div className="flex justify-between items-center mb-3 px-4">
+              <button
+                id={swiperPrevId}
+                className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-brand transition-all border border-gray-200 hover:border-brand"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              <button
+                id={swiperNextId}
+                className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-brand transition-all border border-gray-200 hover:border-brand"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            </div>
 
             <Swiper
               slidesPerView={2.2}
