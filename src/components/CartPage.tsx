@@ -838,7 +838,14 @@ const CartPage: React.FC<CartPageProps> = ({
                                 </h4>
                               </div>
                               {item.variant_name && (
-                                <p className="text-sm text-gray-600">النوع: {item.variant_name}</p>
+                                <div className="mt-1 flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm font-semibold text-[#b91c1c] bg-red-50 px-2 py-1 rounded-md border border-red-200">
+                                    النوع: {item.variant_name}
+                                  </p>
+                                  <p className="text-sm font-bold text-[#b91c1c]">
+                                    {(item.price || 0).toFixed(2)} ₪
+                                  </p>
+                                </div>
                               )}
 
                               {/* Custom Order Details */}
