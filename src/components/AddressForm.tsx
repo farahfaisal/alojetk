@@ -588,7 +588,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
 
     if (!formData.address.trim()) newErrors.address = 'العنوان التفصيلي مطلوب';
-    if (!formData.label.trim()) newErrors.label = 'اسم العنوان مطلوب';
+    if (!formData.label.trim()) newErrors.label = 'يجب إدخال تسمية للعنوان';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -738,8 +738,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="label" className="block text-sm font-medium text-gray-700 mb-1">
-                    اسم العنوان *
+                  <label htmlFor="label" className="block text-sm font-medium text-gray-900 mb-1 flex items-center gap-1">
+                    <span>تسمية العنوان</span>
+                    <span className="text-[#b91c1c]">*</span>
                   </label>
                   <input
                     type="text"
@@ -747,15 +748,22 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     name="label"
                     value={formData.label}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand ${
-                      errors.label ? 'border-[#b91c1c]' : 'border-gray-300'
+                    required
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand transition-colors ${
+                      errors.label ? 'border-[#b91c1c] bg-[#b91c1c]/5' : 'border-gray-300 focus:border-brand'
                     }`}
-                    placeholder="مثال: البيت، المدرسة، العمل"
+                    placeholder="مثال: البيت، المدرسة، العمل، بيت جدي..."
                   />
                   {errors.label && (
-                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.label}</p>
+                    <div className="mt-2 flex items-center gap-2 text-[#b91c1c] bg-[#b91c1c]/10 px-3 py-2 rounded-lg">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <p className="text-sm font-medium">{errors.label}</p>
+                    </div>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">اختر اسماً مميزاً للعنوان لسهولة التعرف عليه</p>
+                  <p className="text-xs text-gray-600 mt-1.5 flex items-start gap-1">
+                    <span className="text-brand mt-0.5">ℹ️</span>
+                    <span>اختر اسماً مميزاً للعنوان لسهولة التعرف عليه عند الطلب</span>
+                  </p>
                 </div>
 
                 <div>
