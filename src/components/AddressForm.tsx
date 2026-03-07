@@ -107,14 +107,38 @@ const AddressForm: React.FC<AddressFormProps> = ({
     console.log('🔍 Device detection - iOS:', iOS);
   }, []);
 
-  // Fetch service areas
+  // Fetch service areas and set initial selection
   useEffect(() => {
     const fetchServiceAreas = async () => {
       const areas = await getMainServiceAreas();
       setServiceAreas(areas.filter(area => area.status === 'active'));
+
+      // If editing an address, try to find and set the main area
+      if (initialAddress?.city || preselectedCity) {
+        const cityName = preselectedCity || initialAddress?.city || '';
+
+        // First, check if it's a main area
+        const mainArea = areas.find(area => area.name === cityName);
+        if (mainArea) {
+          setSelectedMainArea(mainArea);
+          const subs = await getSubServiceAreas(mainArea.id);
+          setSubAreas(subs);
+        } else {
+          // If not a main area, check all sub areas
+          for (const area of areas) {
+            const subs = await getSubServiceAreas(area.id);
+            const subArea = subs.find(sub => sub.name === cityName);
+            if (subArea) {
+              setSelectedMainArea(area);
+              setSubAreas(subs);
+              break;
+            }
+          }
+        }
+      }
     };
     fetchServiceAreas();
-  }, []);
+  }, [initialAddress?.city, preselectedCity]);
 
   // Auto-fill user data when no initialAddress provided
   useEffect(() => {
@@ -222,28 +246,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
     getAutoLocation();
   }, [initialAddress]);
 
-  const handleMainAreaClick = async (area: ServiceArea) => {
-    try {
-      const subs = await getSubServiceAreas(area.id);
-
-      if (subs.length > 0) {
-        setSelectedMainArea(area);
-        setSubAreas(subs);
-      } else {
-        setFormData(prev => ({ ...prev, city: area.name }));
-        setShowServiceAreaPicker(false);
-      }
-    } catch (err) {
-      console.error('Error fetching sub areas:', err);
-      setFormData(prev => ({ ...prev, city: area.name }));
-      setShowServiceAreaPicker(false);
-    }
-  };
-
-  const handleBackToMain = () => {
-    setSelectedMainArea(null);
-    setSubAreas([]);
-  };
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -590,6 +592,16 @@ const AddressForm: React.FC<AddressFormProps> = ({
     if (!formData.address.trim()) newErrors.address = 'العنوان التفصيلي مطلوب';
     if (!formData.label.trim()) newErrors.label = 'يجب إدخال تسمية للعنوان';
 
+    // Validate service area selection
+    if (!selectedMainArea) {
+      newErrors.city = 'يجب اختيار المنطقة الرئيسية';
+    } else if (subAreas.length > 0 && !formData.city) {
+      newErrors.city = 'يجب اختيار المنطقة الفرعية';
+    } else if (subAreas.length === 0 && !formData.city) {
+      // If no sub areas, set city to main area name
+      setFormData(prev => ({ ...prev, city: selectedMainArea.name }));
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -842,27 +854,30 @@ const AddressForm: React.FC<AddressFormProps> = ({
               )}
 
               <div className="space-y-4">
-                <div className="relative">
+                {/* Main Service Area Selection */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    منطقة التوصيل *
+                    المنطقة الرئيسية *
                   </label>
                   {preselectedCity ? (
                     <div className="w-full px-4 py-3 border-2 border-[#b91c1c] bg-[#b91c1c]/10 rounded-lg flex items-center justify-between">
-                      <span className="text-gray-900 font-medium">{formData.city}</span>
+                      <span className="text-gray-900 font-medium">{selectedMainArea?.name || formData.city}</span>
                       <Check className="w-5 h-5 text-[#b91c1c]" />
                     </div>
                   ) : (
-                    <>
+                    <div className="relative">
                       <button
                         type="button"
                         onClick={() => setShowServiceAreaPicker(!showServiceAreaPicker)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
                       >
-                        <span className="text-gray-900 font-medium">{formData.city}</span>
+                        <span className="text-gray-900 font-medium">
+                          {selectedMainArea?.name || 'اختر المنطقة الرئيسية'}
+                        </span>
                         <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showServiceAreaPicker ? 'rotate-90' : ''}`} />
                       </button>
 
-                      {/* Service Area Dropdown */}
+                      {/* Main Area Dropdown */}
                       {showServiceAreaPicker && (
                         <>
                           {/* Backdrop */}
@@ -870,8 +885,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
                             className="fixed inset-0 z-40"
                             onClick={() => {
                               setShowServiceAreaPicker(false);
-                              setSelectedMainArea(null);
-                              setSubAreas([]);
                               setSearchQuery('');
                             }}
                           />
@@ -890,7 +903,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                                   type="text"
                                   value={searchQuery}
                                   onChange={(e) => setSearchQuery(e.target.value)}
-                                  placeholder="ابحث عن منطقة..."
+                                  placeholder="ابحث عن منطقة رئيسية..."
                                   className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
                                   onClick={(e) => e.stopPropagation()}
                                 />
@@ -898,54 +911,48 @@ const AddressForm: React.FC<AddressFormProps> = ({
                               </div>
                             </div>
 
-                            {/* Areas List */}
+                            {/* Main Areas List */}
                             <div className="flex-1 overflow-y-auto p-2">
-                              {selectedMainArea && (
-                                <button
-                                  onClick={handleBackToMain}
-                                  className="w-full mb-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-2 text-gray-700 transition-colors"
-                                >
-                                  <ChevronRight className="w-4 h-4" />
-                                  <span className="font-medium text-sm">رجوع للمناطق الرئيسية</span>
-                                </button>
-                              )}
-
                               <div className="space-y-1">
-                                {(selectedMainArea ? subAreas : serviceAreas)
+                                {serviceAreas
                                   .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase()))
                                   .map((area) => (
                                     <button
                                       key={area.id}
-                                      onClick={() => {
-                                        if (selectedMainArea) {
+                                      onClick={async () => {
+                                        setSelectedMainArea(area);
+                                        setShowServiceAreaPicker(false);
+                                        setSearchQuery('');
+
+                                        // Load sub areas
+                                        const subs = await getSubServiceAreas(area.id);
+                                        setSubAreas(subs);
+
+                                        // If no sub areas, set the main area as city
+                                        if (subs.length === 0) {
                                           setFormData(prev => ({ ...prev, city: area.name }));
-                                          setShowServiceAreaPicker(false);
-                                          setSelectedMainArea(null);
-                                          setSubAreas([]);
-                                          setSearchQuery('');
                                         } else {
-                                          handleMainAreaClick(area);
+                                          // Reset sub area selection
+                                          setFormData(prev => ({ ...prev, city: '' }));
                                         }
                                       }}
                                       className={`w-full p-3 rounded-lg transition-all text-right ${
-                                        formData.city === area.name
+                                        selectedMainArea?.id === area.id
                                           ? 'bg-brand/10 text-brand font-medium'
                                           : 'hover:bg-gray-50 text-gray-900'
                                       }`}
                                     >
                                       <div className="flex items-center justify-between">
                                         <span className="font-medium">{area.name}</span>
-                                        {formData.city === area.name ? (
+                                        {selectedMainArea?.id === area.id && (
                                           <Check className="w-5 h-5 text-brand" />
-                                        ) : !selectedMainArea && (
-                                          <ChevronRight className="w-4 h-4 text-gray-400" />
                                         )}
                                       </div>
                                     </button>
                                   ))}
 
                                 {/* No Results Message */}
-                                {searchQuery && (selectedMainArea ? subAreas : serviceAreas)
+                                {searchQuery && serviceAreas
                                   .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
                                   <div className="text-center py-6">
                                     <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-2" />
@@ -964,9 +971,66 @@ const AddressForm: React.FC<AddressFormProps> = ({
                           </motion.div>
                         </>
                       )}
-                    </>
+                    </div>
                   )}
                 </div>
+
+                {/* Sub Area Selection - Only show if main area is selected and has sub areas */}
+                {selectedMainArea && subAreas.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      المنطقة الفرعية *
+                    </label>
+                    <select
+                      value={formData.city}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, city: e.target.value }));
+                        // Clear error when selecting
+                        if (errors.city) {
+                          setErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.city;
+                            return newErrors;
+                          });
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
+                        errors.city ? 'border-[#b91c1c]' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">اختر المنطقة الفرعية</option>
+                      {subAreas.map((area) => (
+                        <option key={area.id} value={area.name}>
+                          {area.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.city && (
+                      <div className="mt-2 flex items-center gap-2 text-[#b91c1c] bg-[#b91c1c]/10 px-3 py-2 rounded-lg">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <p className="text-sm font-medium">{errors.city}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Display selected areas */}
+                {selectedMainArea && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-blue-900">
+                          المنطقة المختارة:
+                        </p>
+                        <p className="text-sm text-blue-800 mt-1">
+                          {selectedMainArea.name}
+                          {formData.city && subAreas.length > 0 && ` - ${formData.city}`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
