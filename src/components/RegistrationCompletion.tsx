@@ -41,7 +41,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   useEffect(() => {
     const fetchServiceAreas = async () => {
       const areas = await getMainServiceAreas();
-      setServiceAreas(areas.filter(area => area.status === 'active'));
+      setServiceAreas(areas);
     };
     fetchServiceAreas();
   }, []);
