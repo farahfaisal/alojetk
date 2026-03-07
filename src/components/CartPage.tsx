@@ -963,11 +963,11 @@ const CartPage: React.FC<CartPageProps> = ({
                           type="text"
                           value={couponCode}
                           onChange={(e) => {
-                            setCouponCode(e.target.value);
+                            setCouponCode(e.target.value.toUpperCase());
                             setCouponError('');
                           }}
                           placeholder="أدخل كود الخصم"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent text-sm"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent text-sm uppercase"
                         />
                         <button
                           onClick={applyCoupon}
