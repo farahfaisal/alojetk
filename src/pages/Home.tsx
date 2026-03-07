@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Home as HomeIcon, User, Store, Package, Bike, Circle, Menu, MapPin, Search, Clock, Headphones, ShoppingCart, Check, ChevronLeft, Star, Gift, Loader2, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Home as HomeIcon, User, Store, Package, Bike, Circle, Menu, MapPin, Search, Clock, Headphones, ShoppingCart, Check, ChevronLeft, ChevronRight, Star, Gift, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
+import { FreeMode, Navigation } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
 import CategoriesSlider from '../components/CategoriesSlider';
 import FeaturedVendors from '../components/FeaturedVendors';
 import FeaturedSlider from '../components/FeaturedSlider';
@@ -18,6 +19,7 @@ import { checkVendorWorkingStatus } from '../lib/store-hours';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
 
 interface HomeProps {
   selectedCategory: number | null;
@@ -503,7 +505,11 @@ const Home: React.FC<HomeProps> = ({
               ))}
             </div>
           ) : (
-            vendorsByCategory.map(({ category, vendors }) => (
+            vendorsByCategory.map(({ category, vendors }, idx) => {
+              const swiperPrevId = `swiper-prev-${category.id}`;
+              const swiperNextId = `swiper-next-${category.id}`;
+
+              return (
               <div key={category.id} className="px-4">
                 <div className="bg-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center justify-between mb-3">
@@ -520,20 +526,40 @@ const Home: React.FC<HomeProps> = ({
                       </div>
                       مطاعم {category.name}
                     </h2>
-                    <button
-                      onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                      className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
-                    >
-                      عرض الكل ({vendors.length})
-                      <ChevronLeft className="w-4 h-4 mr-1" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <button
+                          id={swiperNextId}
+                          className="w-8 h-8 rounded-full bg-[#b91c1c]/10 hover:bg-[#b91c1c]/20 flex items-center justify-center text-[#b91c1c] transition-all"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <button
+                          id={swiperPrevId}
+                          className="w-8 h-8 rounded-full bg-[#b91c1c]/10 hover:bg-[#b91c1c]/20 flex items-center justify-center text-[#b91c1c] transition-all"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => handleViewCategoryVendors(category.id, category.name)}
+                        className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
+                      >
+                        عرض الكل ({vendors.length})
+                        <ChevronLeft className="w-4 h-4 mr-1" />
+                      </button>
+                    </div>
                   </div>
 
                   <Swiper
                   slidesPerView={2.2}
                   spaceBetween={16}
                   freeMode={true}
-                  modules={[FreeMode]}
+                  navigation={{
+                    prevEl: `#${swiperPrevId}`,
+                    nextEl: `#${swiperNextId}`,
+                  }}
+                  modules={[FreeMode, Navigation]}
                   className="w-full"
                   loop={false}
                 >
@@ -633,7 +659,8 @@ const Home: React.FC<HomeProps> = ({
                   </Swiper>
                 </div>
               </div>
-            ))
+            );
+          })
           )}
         </div>
       )}

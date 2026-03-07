@@ -14,11 +14,13 @@ import AllOffersPage from '../components/AllOffersPage';
 import { supabase } from '../lib/supabase';
 import { checkVendorWorkingStatus } from '../lib/store-hours';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
-import { ChevronLeft, Star } from 'lucide-react';
+import { FreeMode, Navigation } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
 
 interface SupermarketProps {
   selectedCity: string;
@@ -514,18 +516,38 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
         <div className="w-full px-4 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">المتاجر المتوفرة</h2>
-            <button
-              onClick={() => setShowAllVendors(true)}
-              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
-            >
-              عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <button
+                  id="available-vendors-next"
+                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  id="available-vendors-prev"
+                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                onClick={() => setShowAllVendors(true)}
+                className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+              >
+                عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
+              </button>
+            </div>
           </div>
           <Swiper
             slidesPerView={2.2}
             spaceBetween={16}
             freeMode={true}
-            modules={[FreeMode]}
+            navigation={{
+              prevEl: '#available-vendors-prev',
+              nextEl: '#available-vendors-next',
+            }}
+            modules={[FreeMode, Navigation]}
             className="w-full"
             loop={false}
           >
@@ -537,7 +559,11 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
       )}
 
       {/* Category-Specific Vendors Carousels */}
-      {vendorsByCategory.map(({ category, vendors }) => (
+      {vendorsByCategory.map(({ category, vendors }) => {
+        const swiperPrevId = `swiper-prev-${category.id}`;
+        const swiperNextId = `swiper-next-${category.id}`;
+
+        return (
         <div
           key={category.id}
           ref={(el) => (categoryRefs.current[category.id] = el)}
@@ -557,19 +583,39 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               </div>
               متاجر {category.name}
             </h2>
-            <button
-              onClick={() => handleViewCategoryVendors(category.id, category.name)}
-              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
-            >
-              عرض الكل ({vendors.length})
-              <ChevronLeft className="w-4 h-4 mr-1" />
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <button
+                  id={swiperNextId}
+                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  id={swiperPrevId}
+                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                onClick={() => handleViewCategoryVendors(category.id, category.name)}
+                className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
+              >
+                عرض الكل ({vendors.length})
+                <ChevronLeft className="w-4 h-4 mr-1" />
+              </button>
+            </div>
           </div>
           <Swiper
             slidesPerView={2.2}
             spaceBetween={16}
             freeMode={true}
-            modules={[FreeMode]}
+            navigation={{
+              prevEl: `#${swiperPrevId}`,
+              nextEl: `#${swiperNextId}`,
+            }}
+            modules={[FreeMode, Navigation]}
             className="w-full"
             loop={false}
           >
@@ -578,7 +624,8 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             ))}
           </Swiper>
         </div>
-      ))}
+        );
+      })}
       
       {/* Vendor Page Modal */}
       {selectedVendor && (
