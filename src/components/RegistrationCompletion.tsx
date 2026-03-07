@@ -144,7 +144,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
         .from('customer_addresses')
         .insert({
           customer_id: newCustomerId,
-          name: name,
+          name: addressLabel,
           address: detailedAddress,
           city: selectedCity,
           phone: phone,
@@ -327,153 +327,169 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   </p>
                 )}
               </div>
-              
+
               {error && (
                 <div className="bg-red-50 text-red-800 p-4 rounded-lg">
                   {error}
                 </div>
               )}
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  الاسم الكامل *
-                </label>
-                <div className="relative">
-                  <input 
-                    type="text"
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    placeholder="الاسم الكامل"
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                    required
-                  />
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  البريد الإلكتروني (اختياري)
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="example@email.com"
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                    dir="ltr"
-                  />
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+              {/* Personal Information Section */}
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-brand" />
+                  المعلومات الشخصية
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      الاسم الكامل *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="الاسم الكامل"
+                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                        required
+                      />
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      البريد الإلكتروني (اختياري)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@email.com"
+                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                        dir="ltr"
+                      />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-6">
+              {/* Location Information Section */}
+              <div className="bg-white rounded-xl p-4 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <MapPin className="w-5 h-5 text-brand" />
                   <h3 className="text-lg font-bold text-gray-900">عنوان التوصيل</h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-4">أضف عنوان التوصيل الخاص بك لتسهيل عملية الطلب</p>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  المنطقة الرئيسية <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={selectedMainAreaId}
-                  onChange={(e) => handleMainAreaChange(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
-                    !selectedMainAreaId ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
-                  }`}
-                  required
-                >
-                  <option value="">اختر المنطقة الرئيسية</option>
-                  {serviceAreas.map((area) => (
-                    <option key={area.id} value={area.id}>
-                      {area.name}
-                    </option>
-                  ))}
-                </select>
-                {!selectedMainAreaId && (
-                  <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                    <span>⚠️</span>
-                    <span>يجب اختيار المنطقة الرئيسية</span>
-                  </p>
-                )}
-              </div>
-
-              {selectedMainAreaId && subAreas.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    المنطقة الفرعية <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={selectedCity}
-                    onChange={(e) => handleSubAreaChange(e.target.value)}
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
-                      !selectedCity ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
-                    }`}
-                    required
-                  >
-                    <option value="">اختر المنطقة الفرعية</option>
-                    {subAreas.map((area) => (
-                      <option key={area.id} value={area.name}>
-                        {area.name}
-                      </option>
-                    ))}
-                  </select>
-                  {!selectedCity && (
-                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                      <span>⚠️</span>
-                      <span>يجب اختيار المنطقة الفرعية</span>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      تسمية العنوان <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={addressLabel}
+                        onChange={(e) => setAddressLabel(e.target.value)}
+                        placeholder="مثال: البيت، المدرسة، العمل، بيت جدي..."
+                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                        required
+                      />
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1.5 flex items-start gap-1">
+                      <span className="text-brand mt-0.5">ℹ️</span>
+                      <span>اختر اسماً مميزاً للعنوان لسهولة التعرف عليه عند الطلب</span>
                     </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      المنطقة الرئيسية <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={selectedMainAreaId}
+                      onChange={(e) => handleMainAreaChange(e.target.value)}
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
+                        !selectedMainAreaId ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
+                      }`}
+                      required
+                    >
+                      <option value="">اختر المنطقة الرئيسية</option>
+                      {serviceAreas.map((area) => (
+                        <option key={area.id} value={area.id}>
+                          {area.name}
+                        </option>
+                      ))}
+                    </select>
+                    {!selectedMainAreaId && (
+                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                        <span>⚠️</span>
+                        <span>يجب اختيار المنطقة الرئيسية</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {selectedMainAreaId && subAreas.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        المنطقة الفرعية <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={selectedCity}
+                        onChange={(e) => handleSubAreaChange(e.target.value)}
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
+                          !selectedCity ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
+                        }`}
+                        required
+                      >
+                        <option value="">اختر المنطقة الفرعية</option>
+                        {subAreas.map((area) => (
+                          <option key={area.id} value={area.name}>
+                            {area.name}
+                          </option>
+                        ))}
+                      </select>
+                      {!selectedCity && (
+                        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                          <span>⚠️</span>
+                          <span>يجب اختيار المنطقة الفرعية</span>
+                        </p>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
 
-              {selectedCity && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <p className="text-sm text-green-800 font-medium flex items-center gap-2">
-                    <Check className="w-4 h-4" />
-                    <span>المنطقة المختارة: {selectedCity}</span>
-                  </p>
-                </div>
-              )}
+                  {selectedCity && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+                        <Check className="w-4 h-4" />
+                        <span>المنطقة المختارة: {selectedCity}</span>
+                      </p>
+                    </div>
+                  )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  تسمية العنوان <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={addressLabel}
-                    onChange={(e) => setAddressLabel(e.target.value)}
-                    placeholder="مثل: المنزل، العمل، المدرسة"
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                    required
-                  />
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      العنوان التفصيلي <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <textarea
+                        value={detailedAddress}
+                        onChange={(e) => setDetailedAddress(e.target.value)}
+                        placeholder="أدخل العنوان التفصيلي (الشارع، رقم البناية، الحي...)"
+                        className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand min-h-[100px] resize-none"
+                        required
+                      />
+                      <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">أدخل تفاصيل العنوان بدقة لتسهيل التوصيل</p>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">اسم مميز لهذا العنوان (مثل: المنزل، العمل)</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  العنوان التفصيلي <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <textarea
-                    value={detailedAddress}
-                    onChange={(e) => setDetailedAddress(e.target.value)}
-                    placeholder="اكتب العنوان التفصيلي (الشارع، رقم المبنى، معالم قريبة...)"
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand min-h-[100px] resize-none"
-                    required
-                  />
-                  <MapPin className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">أدخل تفاصيل العنوان بدقة لتسهيل التوصيل</p>
               </div>
 
               <button 
