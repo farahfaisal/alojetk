@@ -93,6 +93,12 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
       return;
     }
 
+    // تحقق من وجود تسمية العنوان
+    if (!addressLabel || addressLabel.trim() === '') {
+      setError('تسمية العنوان مطلوبة');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -129,14 +135,14 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
         .from('customer_addresses')
         .insert({
           customer_id: newCustomerId,
-          name: addressLabel || selectedCity,
+          name: addressLabel,
           address: detailedAddress,
           city: selectedCity,
           phone: phone,
           is_default: true,
           detailed_address: detailedAddress,
           service_area_id: serviceAreaData?.id || null,
-          label: addressLabel || null
+          label: addressLabel
         });
 
       if (addressError) {
@@ -390,7 +396,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  تسمية العنوان (اختياري)
+                  تسمية العنوان <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -399,10 +405,11 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                     onChange={(e) => setAddressLabel(e.target.value)}
                     placeholder="مثل: المنزل، العمل، المدرسة"
                     className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                    required
                   />
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">اسم مميز لهذا العنوان</p>
+                <p className="text-xs text-gray-500 mt-1">اسم مميز لهذا العنوان (مثل: المنزل، العمل)</p>
               </div>
 
               <div>
