@@ -225,27 +225,15 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
     // Reload addresses to show the new one
     await loadSavedAddresses();
 
-    // Close the address form
+    // Close the address form and return to addresses view
     setShowAddressForm(false);
+    setSelectedView('addresses');
+    setSelectedMainArea(null);
+    setSubAreas([]);
+    setSelectedCity('');
 
-    // Convert the saved address to our format and auto-select it
-    const formattedAddress: SavedAddress = {
-      id: address.id,
-      customer_id: address.customer_id || address.customerId,
-      address_label: address.name || address.address_label,
-      address_line1: address.address || address.address_line1,
-      city: address.city,
-      zone_id: address.city,
-      zone_name: address.city,
-      latitude: address.coordinates?.lat || address.latitude,
-      longitude: address.coordinates?.lng || address.longitude,
-      is_default: address.isDefault || address.is_default
-    };
-
-    console.log('🔵 Auto-selecting new address:', formattedAddress);
-
-    onAddressSelected(formattedAddress);
-    onClose();
+    // Don't auto-select or close - let user choose from the list
+    console.log('🔵 Showing addresses list for user to select');
   };
 
   const getAddressIcon = (label: string) => {
