@@ -1133,23 +1133,23 @@ const CartPage: React.FC<CartPageProps> = ({
       <BottomNav
         onOpenCart={() => {}}
         onOpenAccount={() => {
-          if (onOpenAccount) {
-            onClose();
-            onOpenAccount();
-          }
+          onClose();
+          setTimeout(() => {
+            if (onOpenAccount) onOpenAccount();
+          }, 100);
         }}
         onOpenOrders={() => {
-          if (onOpenOrders) {
-            onClose();
-            onOpenOrders();
-          }
+          onClose();
+          setTimeout(() => {
+            if (onOpenOrders) onOpenOrders();
+          }, 100);
         }}
         viewMode="restaurants"
         onViewModeChange={(mode) => {
-          if (onNavigateHome) {
-            onClose();
-            onNavigateHome();
-          }
+          onClose();
+          setTimeout(() => {
+            if (onNavigateHome) onNavigateHome();
+          }, 100);
         }}
         cartItemsCount={cartItems.length}
         isAccountOpen={false}

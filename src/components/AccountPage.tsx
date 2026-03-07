@@ -1388,15 +1388,25 @@ const AccountPage: React.FC<AccountPageProps> = ({
 
       {/* Bottom Navigation */}
       <BottomNav
-        onOpenCart={onOpenCart || (() => {})}
-        onOpenAccount={onClose}
-        onOpenOrders={onOpenOrders || (() => {})}
+        onOpenCart={() => {
+          onClose();
+          setTimeout(() => {
+            if (onOpenCart) onOpenCart();
+          }, 100);
+        }}
+        onOpenAccount={() => {}}
+        onOpenOrders={() => {
+          onClose();
+          setTimeout(() => {
+            if (onOpenOrders) onOpenOrders();
+          }, 100);
+        }}
         viewMode={viewMode}
         onViewModeChange={(mode) => {
-          if (onViewModeChange) {
-            onViewModeChange(mode);
-          }
           onClose();
+          setTimeout(() => {
+            if (onViewModeChange) onViewModeChange(mode);
+          }, 100);
         }}
         cartItemsCount={cartItemsCount}
         isAccountOpen={true}
