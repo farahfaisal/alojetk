@@ -111,7 +111,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
   useEffect(() => {
     const fetchServiceAreas = async () => {
       const areas = await getMainServiceAreas();
-      setServiceAreas(areas.filter(area => area.status === 'active'));
+      console.log('📍 All main areas loaded:', areas);
+      setServiceAreas(areas);
 
       // If editing an address, try to find and set the main area
       if (initialAddress?.city || preselectedCity) {
