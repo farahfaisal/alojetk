@@ -1452,7 +1452,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 </span>
               </motion.button>
             ) : selectionStep === 'variants' ? (
-              // Next Button for Variants
+              // Button for Variants Step
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -1479,17 +1479,26 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 }`}
               >
                 <span className="flex items-center gap-3">
-                  التالي
-                  <motion.div
-                    animate={{ x: [-3, 0, -3] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  >
-                    ←
-                  </motion.div>
+                  {groupedAddons.required.length > 0 || groupedAddons.optional.length > 0 ? (
+                    <>
+                      التالي
+                      <motion.div
+                        animate={{ x: [-3, 0, -3] }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                      >
+                        ←
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" />
+                      أضف للسلة
+                    </>
+                  )}
                 </span>
               </motion.button>
             ) : selectionStep === 'required' ? (
-              // Next Button for Required Addons
+              // Button for Required Addons Step
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -1505,13 +1514,22 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 className="w-full py-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-lg bg-[#b91c1c] text-white hover:bg-[#b91c1c] transition-colors"
               >
                 <span className="flex items-center gap-3">
-                  التالي
-                  <motion.div
-                    animate={{ x: [-3, 0, -3] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  >
-                    ←
-                  </motion.div>
+                  {groupedAddons.optional.length > 0 ? (
+                    <>
+                      التالي
+                      <motion.div
+                        animate={{ x: [-3, 0, -3] }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                      >
+                        ←
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" />
+                      أضف للسلة
+                    </>
+                  )}
                 </span>
               </motion.button>
             ) : (
