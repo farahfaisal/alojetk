@@ -98,6 +98,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [subAreaSearchQuery, setSubAreaSearchQuery] = useState('');
+  const [showSubAreaPicker, setShowSubAreaPicker] = useState(false);
 
   // Detect iOS
   useEffect(() => {
@@ -982,30 +984,111 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       المنطقة الفرعية *
                     </label>
-                    <select
-                      value={formData.city}
-                      onChange={(e) => {
-                        setFormData(prev => ({ ...prev, city: e.target.value }));
-                        // Clear error when selecting
-                        if (errors.city) {
-                          setErrors(prev => {
-                            const newErrors = { ...prev };
-                            delete newErrors.city;
-                            return newErrors;
-                          });
-                        }
-                      }}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
-                        errors.city ? 'border-[#b91c1c]' : 'border-gray-300'
-                      }`}
-                    >
-                      <option value="">اختر المنطقة الفرعية</option>
-                      {subAreas.map((area) => (
-                        <option key={area.id} value={area.name}>
-                          {area.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowSubAreaPicker(!showSubAreaPicker)}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
+                          errors.city ? 'border-[#b91c1c]' : 'border-gray-300'
+                        }`}
+                      >
+                        <span className={formData.city ? 'text-gray-900 font-medium' : 'text-gray-400'}>
+                          {formData.city || 'اختر المنطقة الفرعية'}
+                        </span>
+                        <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showSubAreaPicker ? 'rotate-90' : ''}`} />
+                      </button>
+
+                      {/* Sub Area Dropdown */}
+                      {showSubAreaPicker && (
+                        <>
+                          {/* Backdrop */}
+                          <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => {
+                              setShowSubAreaPicker(false);
+                              setSubAreaSearchQuery('');
+                            }}
+                          />
+
+                          {/* Dropdown Menu */}
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 max-h-[400px] flex flex-col"
+                          >
+                            {/* Search Input */}
+                            <div className="p-3 border-b border-gray-200">
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  value={subAreaSearchQuery}
+                                  onChange={(e) => setSubAreaSearchQuery(e.target.value)}
+                                  placeholder="ابحث عن منطقة فرعية..."
+                                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                              </div>
+                            </div>
+
+                            {/* Sub Areas List */}
+                            <div className="flex-1 overflow-y-auto p-2">
+                              <div className="space-y-1">
+                                {subAreas
+                                  .filter(area => area.name.toLowerCase().includes(subAreaSearchQuery.toLowerCase()))
+                                  .map((area) => (
+                                    <button
+                                      key={area.id}
+                                      onClick={() => {
+                                        setFormData(prev => ({ ...prev, city: area.name }));
+                                        setShowSubAreaPicker(false);
+                                        setSubAreaSearchQuery('');
+                                        // Clear error when selecting
+                                        if (errors.city) {
+                                          setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.city;
+                                            return newErrors;
+                                          });
+                                        }
+                                      }}
+                                      className={`w-full p-3 rounded-lg transition-all text-right ${
+                                        formData.city === area.name
+                                          ? 'bg-brand/10 text-brand font-medium'
+                                          : 'hover:bg-gray-50 text-gray-900'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-medium">{area.name}</span>
+                                        {formData.city === area.name && (
+                                          <Check className="w-5 h-5 text-brand" />
+                                        )}
+                                      </div>
+                                    </button>
+                                  ))}
+
+                                {/* No Results Message */}
+                                {subAreaSearchQuery && subAreas
+                                  .filter(area => area.name.toLowerCase().includes(subAreaSearchQuery.toLowerCase())).length === 0 && (
+                                  <div className="text-center py-6">
+                                    <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                                    <p className="text-gray-500 text-sm">لا توجد مناطق تطابق البحث</p>
+                                    <button
+                                      type="button"
+                                      onClick={() => setSubAreaSearchQuery('')}
+                                      className="mt-2 text-brand hover:text-brand-light text-sm font-medium"
+                                    >
+                                      مسح البحث
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </motion.div>
+                        </>
+                      )}
+                    </div>
                     {errors.city && (
                       <div className="mt-2 flex items-center gap-2 text-[#b91c1c] bg-[#b91c1c]/10 px-3 py-2 rounded-lg">
                         <AlertCircle className="w-4 h-4 flex-shrink-0" />
