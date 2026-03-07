@@ -523,17 +523,17 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
             </button>
           </div>
-          <div className="relative">
+          <div className="relative px-12">
             {/* Navigation Buttons */}
             <button
               id="available-vendors-prev"
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               id="available-vendors-next"
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+              className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -547,7 +547,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
                 nextEl: '#available-vendors-next',
               }}
               modules={[FreeMode, Navigation]}
-              className="w-full"
+              className="w-full swiper-with-nav"
               loop={false}
             >
               {availableVendors.map(vendor => (
@@ -592,17 +592,17 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             </button>
           </div>
 
-          <div className="relative">
+          <div className="relative px-12">
             {/* Navigation Buttons */}
             <button
               id={swiperPrevId}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               id={swiperNextId}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+              className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-brand transition-all border-2 border-gray-200 hover:border-brand"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -616,7 +616,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
                 nextEl: `#${swiperNextId}`,
               }}
               modules={[FreeMode, Navigation]}
-              className="w-full"
+              className="w-full swiper-with-nav"
               loop={false}
             >
               {vendors.map(vendor => (

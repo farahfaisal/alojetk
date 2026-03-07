@@ -956,3 +956,35 @@ body {
 .address-selector-scroll::-webkit-scrollbar-thumb:hover {
   background: #b91c1c !important;
 }
+
+/* Swiper Navigation Buttons */
+.swiper-with-nav .swiper-button-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.swiper-with-nav button[class*="swiper-"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Custom navigation arrows visibility */
+button[id^="swiper-prev-"],
+button[id^="swiper-next-"],
+button[id="available-vendors-prev"],
+button[id="available-vendors-next"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+button[id^="swiper-prev-"]:disabled,
+button[id^="swiper-next-"]:disabled,
+button[id="available-vendors-prev"]:disabled,
+button[id="available-vendors-next"]:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}

@@ -535,17 +535,17 @@ const Home: React.FC<HomeProps> = ({
                     </button>
                   </div>
 
-                  <div className="relative">
+                  <div className="relative px-12">
                     {/* Navigation Buttons */}
                     <button
                       id={swiperPrevId}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200"
+                      className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border-2 border-gray-200 hover:border-[#b91c1c]"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       id={swiperNextId}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200"
+                      className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white hover:bg-gray-50 shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border-2 border-gray-200 hover:border-[#b91c1c]"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -559,7 +559,7 @@ const Home: React.FC<HomeProps> = ({
                       nextEl: `#${swiperNextId}`,
                     }}
                     modules={[FreeMode, Navigation]}
-                    className="w-full"
+                    className="w-full swiper-with-nav"
                     loop={false}
                   >
                   {vendors.map(vendor => (
