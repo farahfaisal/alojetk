@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, MapPin, X, Loader2, Check, ChevronRight, Search } from 'lucide-react';
+import { User, Mail, MapPin, X, Loader2, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,6 +30,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
   const [showServiceAreaPicker, setShowServiceAreaPicker] = useState(false);
   const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
   const [selectedMainArea, setSelectedMainArea] = useState<ServiceArea | null>(null);
+  const [selectedMainAreaId, setSelectedMainAreaId] = useState<string>('');
   const [subAreas, setSubAreas] = useState<ServiceArea[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [detailedAddress, setDetailedAddress] = useState('');
@@ -45,27 +46,35 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
     fetchServiceAreas();
   }, []);
 
-  const handleMainAreaClick = async (area: ServiceArea) => {
-    try {
-      const subs = await getSubServiceAreas(area.id);
+  const handleMainAreaChange = async (areaId: string) => {
+    setSelectedMainAreaId(areaId);
+    setSelectedCity(''); // Reset sub area selection
 
-      if (subs.length > 0) {
-        setSelectedMainArea(area);
-        setSubAreas(subs);
-      } else {
+    if (!areaId) {
+      setSubAreas([]);
+      setSelectedMainArea(null);
+      return;
+    }
+
+    try {
+      const area = serviceAreas.find(a => a.id === areaId);
+      setSelectedMainArea(area || null);
+
+      const subs = await getSubServiceAreas(areaId);
+      setSubAreas(subs);
+
+      // If no sub areas, use main area as selected city
+      if (subs.length === 0 && area) {
         setSelectedCity(area.name);
-        setShowServiceAreaPicker(false);
       }
     } catch (err) {
       console.error('Error fetching sub areas:', err);
-      setSelectedCity(area.name);
-      setShowServiceAreaPicker(false);
+      setSubAreas([]);
     }
   };
 
-  const handleBackToMain = () => {
-    setSelectedMainArea(null);
-    setSubAreas([]);
+  const handleSubAreaChange = (areaName: string) => {
+    setSelectedCity(areaName);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -369,30 +378,68 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  المنطقة الرئيسية والفرعية <span className="text-red-500">*</span>
+                  المنطقة الرئيسية <span className="text-red-500">*</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setShowServiceAreaPicker(true)}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                    !selectedCity ? 'border-red-300 bg-red-50/30' : 'border-gray-300'
+                <select
+                  value={selectedMainAreaId}
+                  onChange={(e) => handleMainAreaChange(e.target.value)}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
+                    !selectedMainAreaId ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
                   }`}
+                  required
                 >
-                  <span className={`font-medium ${selectedCity ? 'text-gray-900' : 'text-red-500'}`}>
-                    {selectedCity || 'انقر لاختيار المنطقة'}
-                  </span>
-                  <ChevronRight className={`w-5 h-5 ${!selectedCity ? 'text-red-400' : 'text-gray-400'}`} />
-                </button>
-                {!selectedCity && (
+                  <option value="">اختر المنطقة الرئيسية</option>
+                  {serviceAreas.map((area) => (
+                    <option key={area.id} value={area.id}>
+                      {area.name}
+                    </option>
+                  ))}
+                </select>
+                {!selectedMainAreaId && (
                   <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                     <span>⚠️</span>
-                    <span>يجب اختيار منطقة التوصيل للمتابعة</span>
+                    <span>يجب اختيار المنطقة الرئيسية</span>
                   </p>
                 )}
-                {selectedCity && (
-                  <p className="text-xs text-gray-500 mt-1">المنطقة المختارة: {selectedCity}</p>
-                )}
               </div>
+
+              {selectedMainAreaId && subAreas.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    المنطقة الفرعية <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => handleSubAreaChange(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
+                      !selectedCity ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
+                    }`}
+                    required
+                  >
+                    <option value="">اختر المنطقة الفرعية</option>
+                    {subAreas.map((area) => (
+                      <option key={area.id} value={area.name}>
+                        {area.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!selectedCity && (
+                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                      <span>⚠️</span>
+                      <span>يجب اختيار المنطقة الفرعية</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {selectedCity && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+                    <Check className="w-4 h-4" />
+                    <span>المنطقة المختارة: {selectedCity}</span>
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -429,109 +476,6 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                 <p className="text-xs text-gray-500 mt-1">أدخل تفاصيل العنوان بدقة لتسهيل التوصيل</p>
               </div>
 
-              {/* Service Area Picker Modal */}
-              {showServiceAreaPicker && (
-                <div className="fixed inset-0 bg-black/50 z-[9999999] flex items-end sm:items-center justify-center">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col relative z-[10000000]"
-                  >
-                    <div className="p-4 border-b border-gray-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-bold text-gray-900">
-                          {selectedMainArea ? `اختر منطقة في ${selectedMainArea.name}` : 'اختر منطقة التوصيل'}
-                        </h3>
-                        <button
-                          onClick={() => {
-                            setShowServiceAreaPicker(false);
-                            setSelectedMainArea(null);
-                            setSubAreas([]);
-                            setSearchQuery('');
-                          }}
-                          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      {/* Search Input */}
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="ابحث عن منطقة..."
-                          className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand"
-                        />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      </div>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-4">
-                      {selectedMainArea && (
-                        <button
-                          onClick={handleBackToMain}
-                          className="mb-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-2 text-gray-700 transition-colors"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                          <span className="font-medium text-sm">رجوع للمناطق الرئيسية</span>
-                        </button>
-                      )}
-
-                      <div className="space-y-2">
-                        {(selectedMainArea ? subAreas : serviceAreas)
-                          .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                          .map((area) => (
-                            <button
-                              key={area.id}
-                              onClick={() => {
-                                if (selectedMainArea) {
-                                  setSelectedCity(area.name);
-                                  setShowServiceAreaPicker(false);
-                                  setSelectedMainArea(null);
-                                  setSubAreas([]);
-                                  setSearchQuery('');
-                                } else {
-                                  handleMainAreaClick(area);
-                                }
-                              }}
-                              className={`w-full p-4 rounded-lg border-2 transition-all text-right ${
-                                selectedCity === area.name
-                                  ? 'bg-brand/10 border-brand'
-                                  : 'bg-white border-gray-200 hover:border-brand/50'
-                              }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-gray-900">{area.name}</span>
-                                {selectedCity === area.name && (
-                                  <Check className="w-5 h-5 text-brand" />
-                                )}
-                              </div>
-                            </button>
-                          ))}
-
-                        {/* No Results Message */}
-                        {searchQuery && (selectedMainArea ? subAreas : serviceAreas)
-                          .filter(area => area.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                          <div className="text-center py-8">
-                            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500">لا توجد مناطق تطابق البحث</p>
-                            <button
-                              onClick={() => setSearchQuery('')}
-                              className="mt-3 text-brand hover:text-brand-light text-sm font-medium"
-                            >
-                              مسح البحث
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
-              
               <button 
                 type="submit" 
                 disabled={loading} 
