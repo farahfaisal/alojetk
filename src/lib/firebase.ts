@@ -3,6 +3,7 @@ import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messagi
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Geolocation } from '@capacitor/geolocation';
+import { supabase } from './supabase';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -483,6 +484,9 @@ export function showNotification(title: string, body: string, data?: any) {
   try {
     console.log('📢 Showing notification:', title);
 
+    // Save to database first
+    saveFirebaseNotificationToDatabase(title, body, data);
+
     if (Notification.permission !== 'granted') {
       console.warn('⚠️ Notification permission not granted');
       return;
@@ -580,11 +584,58 @@ async function setupFCMToken() {
   }
 }
 
+// Save Firebase notification to database
+async function saveFirebaseNotificationToDatabase(title: string, body: string, data?: any) {
+  try {
+    // Get current user from localStorage
+    const authUser = localStorage.getItem('auth_user');
+    if (!authUser) {
+      console.log('No user logged in, skipping notification save');
+      return;
+    }
+
+    const user = JSON.parse(authUser);
+    const userId = user.customer_id || user.id;
+
+    if (!userId) {
+      console.log('No user ID found, skipping notification save');
+      return;
+    }
+
+    console.log('💾 Saving Firebase notification to database for user:', userId);
+
+    const { error } = await supabase
+      .from('firebase_notifications')
+      .insert({
+        user_id: userId,
+        title: title,
+        body: body || '',
+        data: data || {},
+        is_read: false
+      });
+
+    if (error) {
+      console.error('Error saving Firebase notification:', error);
+    } else {
+      console.log('✅ Firebase notification saved to database');
+    }
+  } catch (error) {
+    console.error('Error in saveFirebaseNotificationToDatabase:', error);
+  }
+}
+
 // Show local notification
 function showLocalNotification(payload: any) {
   try {
     const { title, body } = payload.notification || payload;
-    
+
+    // Save to database
+    saveFirebaseNotificationToDatabase(
+      title || 'إشعار جديد',
+      body || '',
+      payload.data
+    );
+
     if (Notification.permission === 'granted') {
       const notification = new Notification(title || 'إشعار جديد', {
         body: body || '',
@@ -596,12 +647,12 @@ function showLocalNotification(payload: any) {
         dir: 'rtl',
         lang: 'ar'
       });
-      
+
       // Auto close after 5 seconds
       setTimeout(() => {
         notification.close();
       }, 5000);
-      
+
       // Handle click
       notification.onclick = () => {
         handleNotificationClick(payload.data);

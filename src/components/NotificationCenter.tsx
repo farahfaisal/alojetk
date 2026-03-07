@@ -10,9 +10,30 @@ interface NotificationCenterProps {
   onClose: () => void;
 }
 
+interface FirebaseNotification {
+  id: string;
+  title: string;
+  body: string;
+  data?: any;
+  is_read: boolean;
+  created_at: string;
+  type: 'firebase';
+}
+
+interface CombinedNotification {
+  id: string;
+  title?: string;
+  message?: string;
+  body?: string;
+  is_read: boolean;
+  created_at: string;
+  type: 'order' | 'firebase';
+  data?: any;
+}
+
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<OrderNotification[]>([]);
+  const [notifications, setNotifications] = useState<CombinedNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [markingAllRead, setMarkingAllRead] = useState(false);
 
@@ -21,8 +42,43 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
     try {
       setLoading(true);
-      const data = await getUserNotifications(user.customer_id);
-      setNotifications(data);
+
+      // Load order notifications
+      const orderNotifications = await getUserNotifications(user.customer_id);
+
+      // Load Firebase notifications
+      const { data: firebaseNotifications, error } = await supabase
+        .from('firebase_notifications')
+        .select('*')
+        .eq('user_id', user.customer_id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Error loading Firebase notifications:', error);
+      }
+
+      // Combine and sort notifications
+      const combined: CombinedNotification[] = [
+        ...orderNotifications.map(n => ({
+          id: n.id,
+          message: n.message,
+          is_read: n.is_read,
+          created_at: n.created_at,
+          type: 'order' as const
+        })),
+        ...(firebaseNotifications || []).map(n => ({
+          id: n.id,
+          title: n.title,
+          body: n.body,
+          is_read: n.is_read,
+          created_at: n.created_at,
+          type: 'firebase' as const,
+          data: n.data
+        }))
+      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setNotifications(combined);
     } catch (error) {
       console.error('خطأ في تحميل الإشعارات:', error);
     } finally {
@@ -34,7 +90,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
     if (isOpen && user?.customer_id) {
       loadNotifications();
 
-      const channel = supabase
+      // Subscribe to order notifications
+      const orderChannel = supabase
         .channel('order-notifications')
         .on(
           'postgres_changes',
@@ -44,23 +101,60 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
             table: 'order_notifications'
           },
           (payload) => {
-            console.log('إشعار جديد:', payload);
+            console.log('إشعار طلب جديد:', payload);
+            loadNotifications();
+          }
+        )
+        .subscribe();
+
+      // Subscribe to Firebase notifications
+      const firebaseChannel = supabase
+        .channel('firebase-notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'firebase_notifications',
+            filter: `user_id=eq.${user.customer_id}`
+          },
+          (payload) => {
+            console.log('إشعار Firebase جديد:', payload);
             loadNotifications();
           }
         )
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        supabase.removeChannel(orderChannel);
+        supabase.removeChannel(firebaseChannel);
       };
     }
   }, [isOpen, user?.customer_id]);
 
-  const handleMarkAsRead = async (notificationId: string) => {
-    await markNotificationAsRead(notificationId);
-    setNotifications(prev =>
-      prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
-    );
+  const handleMarkAsRead = async (notificationId: string, type: 'order' | 'firebase') => {
+    try {
+      if (type === 'order') {
+        await markNotificationAsRead(notificationId);
+      } else {
+        // Mark Firebase notification as read
+        const { error } = await supabase
+          .from('firebase_notifications')
+          .update({ is_read: true })
+          .eq('id', notificationId);
+
+        if (error) {
+          console.error('Error marking Firebase notification as read:', error);
+          return;
+        }
+      }
+
+      setNotifications(prev =>
+        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   const handleMarkAllAsRead = async () => {
@@ -68,7 +162,21 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
     try {
       setMarkingAllRead(true);
+
+      // Mark all order notifications as read
       await markAllNotificationsAsRead(user.customer_id);
+
+      // Mark all Firebase notifications as read
+      const { error } = await supabase
+        .from('firebase_notifications')
+        .update({ is_read: true })
+        .eq('user_id', user.customer_id)
+        .eq('is_read', false);
+
+      if (error) {
+        console.error('Error marking all Firebase notifications as read:', error);
+      }
+
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch (error) {
       console.error('خطأ في تحديد جميع الإشعارات كمقروءة:', error);
@@ -186,40 +294,62 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
                 </div>
               ) : (
                 <div className="flex-1 overflow-y-auto">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      onClick={() => !notification.is_read && handleMarkAsRead(notification.id)}
-                      className={`p-4 border-b cursor-pointer transition-colors ${
-                        notification.is_read
-                          ? 'bg-white hover:bg-gray-50'
-                          : 'bg-blue-50 hover:bg-blue-100'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          notification.is_read ? 'bg-gray-100' : 'bg-accent/10'
-                        }`}>
-                          <Package className={`w-5 h-5 ${
-                            notification.is_read ? 'text-gray-400' : 'text-accent'
-                          }`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm ${
-                            notification.is_read ? 'text-gray-600' : 'text-gray-900 font-medium'
+                  {notifications.map((notification) => {
+                    const displayTitle = notification.type === 'firebase'
+                      ? notification.title
+                      : '';
+                    const displayMessage = notification.type === 'firebase'
+                      ? notification.body
+                      : notification.message;
+
+                    return (
+                      <div
+                        key={notification.id}
+                        onClick={() => !notification.is_read && handleMarkAsRead(notification.id, notification.type)}
+                        className={`p-4 border-b cursor-pointer transition-colors ${
+                          notification.is_read
+                            ? 'bg-white hover:bg-gray-50'
+                            : 'bg-blue-50 hover:bg-blue-100'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            notification.is_read ? 'bg-gray-100' : 'bg-accent/10'
                           }`}>
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {formatNotificationTime(notification.created_at)}
-                          </p>
+                            {notification.type === 'firebase' ? (
+                              <Bell className={`w-5 h-5 ${
+                                notification.is_read ? 'text-gray-400' : 'text-accent'
+                              }`} />
+                            ) : (
+                              <Package className={`w-5 h-5 ${
+                                notification.is_read ? 'text-gray-400' : 'text-accent'
+                              }`} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            {displayTitle && (
+                              <p className={`text-sm font-semibold mb-1 ${
+                                notification.is_read ? 'text-gray-700' : 'text-gray-900'
+                              }`}>
+                                {displayTitle}
+                              </p>
+                            )}
+                            <p className={`text-sm ${
+                              notification.is_read ? 'text-gray-600' : 'text-gray-900 font-medium'
+                            }`}>
+                              {displayMessage}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {formatNotificationTime(notification.created_at)}
+                            </p>
+                          </div>
+                          {!notification.is_read && (
+                            <div className="w-2 h-2 bg-accent rounded-full flex-shrink-0 mt-2" />
+                          )}
                         </div>
-                        {!notification.is_read && (
-                          <div className="w-2 h-2 bg-accent rounded-full flex-shrink-0 mt-2" />
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
