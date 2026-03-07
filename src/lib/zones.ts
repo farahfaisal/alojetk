@@ -84,10 +84,17 @@ export const getServiceAreas = async (): Promise<ServiceArea[]> => {
       };
     });
 
-    // Sort: active areas first, then by name
+    // Sort: يطا first, then active areas, then by name
     serviceAreas.sort((a, b) => {
+      // يطا always first
+      if (a.name.trim() === 'يطا') return -1;
+      if (b.name.trim() === 'يطا') return 1;
+
+      // Then active areas
       if (a.status === 'active' && b.status !== 'active') return -1;
       if (a.status !== 'active' && b.status === 'active') return 1;
+
+      // Then by name
       return a.name.localeCompare(b.name, 'ar');
     });
 
@@ -188,10 +195,17 @@ export const getMainServiceAreas = async (): Promise<ServiceArea[]> => {
       };
     });
 
-    // Sort: active areas first, then by name
+    // Sort: يطا first, then active areas, then by name
     areas.sort((a, b) => {
+      // يطا always first
+      if (a.name.trim() === 'يطا') return -1;
+      if (b.name.trim() === 'يطا') return 1;
+
+      // Then active areas
       if (a.status === 'active' && b.status !== 'active') return -1;
       if (a.status !== 'active' && b.status === 'active') return 1;
+
+      // Then by name
       return a.name.localeCompare(b.name, 'ar');
     });
 
