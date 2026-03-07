@@ -143,10 +143,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
     fetchServiceAreas();
   }, [initialAddress?.city, preselectedCity]);
 
-  // Auto-fill user data when no initialAddress provided
+  // Auto-fill user data - always fetch customer name from database
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!user || initialAddress) return;
+      if (!user) return;
 
       const customerId = user.customer_id || user.id;
       const { data, error } = await supabase
@@ -158,10 +158,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
       if (data && !error) {
         setFormData(prev => ({
           ...prev,
+          // Always use customer name from database, not from address
           name: data.name || prev.name,
-          phone: data.phone || prev.phone,
-          address: data.address || prev.address,
-          city: data.city || prev.city
+          // Only fill these if no initialAddress
+          phone: initialAddress ? prev.phone : (data.phone || prev.phone),
+          address: initialAddress ? prev.address : (data.address || prev.address),
+          city: initialAddress ? prev.city : (data.city || prev.city)
         }));
       }
     };
