@@ -1442,7 +1442,7 @@ const SingleProductPage: React.FC<SingleProductPageProps> = ({ product, onClose,
                 }`}
               >
                 <span className="flex items-center gap-3">
-                  أضف للسلة
+                  {(product.is_variant_product && variants.length > 0) || groupedAddons.required.length > 0 || groupedAddons.optional.length > 0 ? 'التالي' : 'أضف للسلة'}
                   <motion.div
                     animate={{ x: [-3, 0, -3] }}
                     transition={{ repeat: Infinity, duration: 1.5 }}
