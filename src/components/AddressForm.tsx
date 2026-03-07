@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { MapPin, Navigation, X, Loader2, Check, AlertCircle, User, Phone, Home, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { MapPin, Navigation, X, Loader2, Check, AlertCircle, User, Phone, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SavedAddress, saveAddress, updateAddress, getSavedAddresses } from '../lib/storage';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
@@ -992,73 +992,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
             </div>
 
 
-            {/* Additional Details */}
+            {/* Default Address Option */}
             <div className="bg-white rounded-xl p-4 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Home className="w-5 h-5 text-brand" />
-                تفاصيل إضافية
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="detailedAddress" className="block text-sm font-medium text-gray-700 mb-1">
-                    معلومات إضافية (اختياري)
-                  </label>
-                  <textarea
-                    id="detailedAddress"
-                    name="detailedAddress"
-                    value={formData.detailedAddress}
-                    onChange={handleChange}
-                    placeholder="أدخل تفاصيل إضافية للعنوان (رقم الشقة، الطابق، علامات مميزة، تعليمات خاصة...)"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300 resize-none"
-                    rows={3}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">مثل: شقة 5، الطابق الثالث، بجانب السوبرماركت</p>
-                </div>
-
-                <div>
-                  <label htmlFor="mainArea" className="block text-sm font-medium text-gray-700 mb-1">
-                    المنطقة الرئيسية (اختياري)
-                  </label>
-                  <input
-                    type="text"
-                    id="mainArea"
-                    name="mainArea"
-                    value={formData.mainArea}
-                    onChange={handleChange}
-                    placeholder="مثال: وسط البلد، الحي الغربي..."
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subArea" className="block text-sm font-medium text-gray-700 mb-1">
-                    المنطقة الفرعية (اختياري)
-                  </label>
-                  <input
-                    type="text"
-                    id="subArea"
-                    name="subArea"
-                    value={formData.subArea}
-                    onChange={handleChange}
-                    placeholder="مثال: بجانب المسجد، شارع الجامعة..."
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand border-gray-300"
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="isDefault"
-                    name="isDefault"
-                    checked={formData.isDefault}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-brand focus:ring-brand border-gray-300 rounded"
-                  />
-                  <label htmlFor="isDefault" className="mr-2 block text-sm text-gray-700">
-                    تعيين كعنوان افتراضي
-                  </label>
-                </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isDefault"
+                  name="isDefault"
+                  checked={formData.isDefault}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-brand focus:ring-brand border-gray-300 rounded"
+                />
+                <label htmlFor="isDefault" className="mr-2 block text-sm text-gray-700">
+                  تعيين كعنوان افتراضي
+                </label>
               </div>
             </div>
             
