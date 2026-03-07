@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/icons/app-icon.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#B91C1C" />
@@ -127,11 +127,28 @@
           padding-top: max(env(safe-area-inset-top), 0px);
           padding-bottom: max(env(safe-area-inset-bottom), 0px);
         }
-        
+
         #root {
           padding-top: max(env(safe-area-inset-top), 0px);
           min-height: calc(100vh - max(env(safe-area-inset-top), 0px) - max(env(safe-area-inset-bottom), 0px));
         }
+      }
+
+      /* Prevent zoom on input focus for iOS */
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="number"],
+      input[type="password"],
+      input[type="search"],
+      textarea,
+      select {
+        font-size: 16px !important;
+      }
+
+      /* Prevent iOS auto-zoom on double tap */
+      * {
+        touch-action: manipulation;
       }
     </style>
   </head>
