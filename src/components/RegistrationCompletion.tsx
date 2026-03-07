@@ -135,7 +135,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
         .from('customer_addresses')
         .insert({
           customer_id: newCustomerId,
-          name: addressLabel,
+          name: name,
           address: detailedAddress,
           city: selectedCity,
           phone: phone,
