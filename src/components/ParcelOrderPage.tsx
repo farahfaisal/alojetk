@@ -179,7 +179,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
           payment_method: 'cash',
           delivery_fee: estimate?.fare || 0,
           distance: estimate?.distance || null,
-          status: 'pending'
+          status: 'pending_review'
         })
         .select()
         .single();
