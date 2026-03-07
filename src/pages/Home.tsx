@@ -526,43 +526,42 @@ const Home: React.FC<HomeProps> = ({
                       </div>
                       مطاعم {category.name}
                     </h2>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        <button
-                          id={swiperNextId}
-                          className="w-8 h-8 rounded-full bg-[#b91c1c]/10 hover:bg-[#b91c1c]/20 flex items-center justify-center text-[#b91c1c] transition-all"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                        <button
-                          id={swiperPrevId}
-                          className="w-8 h-8 rounded-full bg-[#b91c1c]/10 hover:bg-[#b91c1c]/20 flex items-center justify-center text-[#b91c1c] transition-all"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <button
-                        onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                        className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
-                      >
-                        عرض الكل ({vendors.length})
-                        <ChevronLeft className="w-4 h-4 mr-1" />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleViewCategoryVendors(category.id, category.name)}
+                      className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
+                    >
+                      عرض الكل ({vendors.length})
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                    </button>
                   </div>
 
-                  <Swiper
-                  slidesPerView={2.2}
-                  spaceBetween={16}
-                  freeMode={true}
-                  navigation={{
-                    prevEl: `#${swiperPrevId}`,
-                    nextEl: `#${swiperNextId}`,
-                  }}
-                  modules={[FreeMode, Navigation]}
-                  className="w-full"
-                  loop={false}
-                >
+                  <div className="relative">
+                    {/* Navigation Buttons */}
+                    <button
+                      id={swiperPrevId}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      id={swiperNextId}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+
+                    <Swiper
+                    slidesPerView={2.2}
+                    spaceBetween={16}
+                    freeMode={true}
+                    navigation={{
+                      prevEl: `#${swiperPrevId}`,
+                      nextEl: `#${swiperNextId}`,
+                    }}
+                    modules={[FreeMode, Navigation]}
+                    className="w-full"
+                    loop={false}
+                  >
                   {vendors.map(vendor => (
                     <SwiperSlide key={vendor.id}>
                       <motion.button
@@ -657,6 +656,7 @@ const Home: React.FC<HomeProps> = ({
                     </SwiperSlide>
                   ))}
                   </Swiper>
+                  </div>
                 </div>
               </div>
             );

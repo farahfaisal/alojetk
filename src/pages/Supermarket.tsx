@@ -516,45 +516,45 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
         <div className="w-full px-4 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">المتاجر المتوفرة</h2>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <button
-                  id="available-vendors-next"
-                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                <button
-                  id="available-vendors-prev"
-                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-              </div>
-              <button
-                onClick={() => setShowAllVendors(true)}
-                className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
-              >
-                عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
-              </button>
-            </div>
+            <button
+              onClick={() => setShowAllVendors(true)}
+              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+            >
+              عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
+            </button>
           </div>
-          <Swiper
-            slidesPerView={2.2}
-            spaceBetween={16}
-            freeMode={true}
-            navigation={{
-              prevEl: '#available-vendors-prev',
-              nextEl: '#available-vendors-next',
-            }}
-            modules={[FreeMode, Navigation]}
-            className="w-full"
-            loop={false}
-          >
-            {availableVendors.map(vendor => (
-              <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
-            ))}
-          </Swiper>
+          <div className="relative">
+            {/* Navigation Buttons */}
+            <button
+              id="available-vendors-prev"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              id="available-vendors-next"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            <Swiper
+              slidesPerView={2.2}
+              spaceBetween={16}
+              freeMode={true}
+              navigation={{
+                prevEl: '#available-vendors-prev',
+                nextEl: '#available-vendors-next',
+              }}
+              modules={[FreeMode, Navigation]}
+              className="w-full"
+              loop={false}
+            >
+              {availableVendors.map(vendor => (
+                <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
       )}
 
@@ -583,46 +583,47 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               </div>
               متاجر {category.name}
             </h2>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <button
-                  id={swiperNextId}
-                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                <button
-                  id={swiperPrevId}
-                  className="w-8 h-8 rounded-full bg-brand/10 hover:bg-brand/20 flex items-center justify-center text-brand transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-              </div>
-              <button
-                onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
-              >
-                عرض الكل ({vendors.length})
-                <ChevronLeft className="w-4 h-4 mr-1" />
-              </button>
-            </div>
+            <button
+              onClick={() => handleViewCategoryVendors(category.id, category.name)}
+              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
+            >
+              عرض الكل ({vendors.length})
+              <ChevronLeft className="w-4 h-4 mr-1" />
+            </button>
           </div>
-          <Swiper
-            slidesPerView={2.2}
-            spaceBetween={16}
-            freeMode={true}
-            navigation={{
-              prevEl: `#${swiperPrevId}`,
-              nextEl: `#${swiperNextId}`,
-            }}
-            modules={[FreeMode, Navigation]}
-            className="w-full"
-            loop={false}
-          >
-            {vendors.map(vendor => (
-              <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
-            ))}
-          </Swiper>
+
+          <div className="relative">
+            {/* Navigation Buttons */}
+            <button
+              id={swiperPrevId}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              id={swiperNextId}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-lg flex items-center justify-center text-brand transition-all border border-gray-200"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            <Swiper
+              slidesPerView={2.2}
+              spaceBetween={16}
+              freeMode={true}
+              navigation={{
+                prevEl: `#${swiperPrevId}`,
+                nextEl: `#${swiperNextId}`,
+              }}
+              modules={[FreeMode, Navigation]}
+              className="w-full"
+              loop={false}
+            >
+              {vendors.map(vendor => (
+                <SwiperSlide key={vendor.id}>{renderVendorCard(vendor)}</SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
         );
       })}
