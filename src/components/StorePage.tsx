@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, CreditCard as Edit3, Share2 } from 'lucide-react';
+import { X, Search, Filter, ChevronDown, Star, MapPin, Clock, ShoppingBag, AlertCircle, ChevronLeft, Truck, Timer, CheckCircle, CreditCard as Edit3, Share2, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
+import { FreeMode, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
 import { supabase } from '../lib/supabase';
 import StoreStatus from './StoreStatus';
 import SingleProductPage from './SingleProductPage';
@@ -1219,14 +1220,19 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       </div>
 
                       {/* Products Carousel */}
-                      <Swiper
-                        slidesPerView={1.8}
-                        spaceBetween={16}
-                        freeMode={true}
-                        modules={[FreeMode]}
-                        className="w-full"
-                        loop={false}
-                      >
+                      <div className="relative group">
+                        <Swiper
+                          slidesPerView={1.8}
+                          spaceBetween={16}
+                          freeMode={true}
+                          modules={[FreeMode, Navigation]}
+                          navigation={{
+                            nextEl: '.swiper-button-next-discounts',
+                            prevEl: '.swiper-button-prev-discounts',
+                          }}
+                          className="w-full"
+                          loop={false}
+                        >
                         {discountedProducts.map((product: any) => (
                           <SwiperSlide key={product.id}>
                             <motion.div
@@ -1277,11 +1283,20 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           </SwiperSlide>
                         ))}
                       </Swiper>
+
+                      {/* Navigation Arrows */}
+                      <button className="swiper-button-prev-discounts absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ChevronLeft className="w-6 h-6 text-gray-700" />
+                      </button>
+                      <button className="swiper-button-next-discounts absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ChevronRight className="w-6 h-6 text-gray-700" />
+                      </button>
+                    </div>
                     </div>
                   );
                 })()}
 
-                {categories.map((category) => (
+                {categories.map((category, index) => (
                   <div key={category.id} className="bg-white rounded-xl p-4 border border-gray-100">
                     {/* Category Header */}
                     <div className="flex items-center justify-between mb-3">
@@ -1299,14 +1314,19 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                     </div>
 
                     {/* Products Carousel */}
-                    <Swiper
-                      slidesPerView={1.8}
-                      spaceBetween={16}
-                      freeMode={true}
-                      modules={[FreeMode]}
-                      className="w-full"
-                      loop={false}
-                    >
+                    <div className="relative group">
+                      <Swiper
+                        slidesPerView={1.8}
+                        spaceBetween={16}
+                        freeMode={true}
+                        modules={[FreeMode, Navigation]}
+                        navigation={{
+                          nextEl: `.swiper-button-next-${index}`,
+                          prevEl: `.swiper-button-prev-${index}`,
+                        }}
+                        className="w-full"
+                        loop={false}
+                      >
                       {category.products.map((product: any) => (
                         <SwiperSlide key={product.id}>
                           <motion.div
@@ -1358,6 +1378,15 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         </SwiperSlide>
                       ))}
                     </Swiper>
+
+                    {/* Navigation Arrows */}
+                    <button className={`swiper-button-prev-${index} absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}>
+                      <ChevronLeft className="w-6 h-6 text-gray-700" />
+                    </button>
+                    <button className={`swiper-button-next-${index} absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}>
+                      <ChevronRight className="w-6 h-6 text-gray-700" />
+                    </button>
+                  </div>
                   </div>
                 ))}
               </div>
