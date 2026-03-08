@@ -81,8 +81,8 @@ const ContactPage: React.FC<ContactPageProps> = ({ onClose }) => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">البريد الإلكتروني</h3>
-                <a href="mailto:info@ben-edek.shop" className="text-accent hover:text-accent-light transition-colors block">
-                  info@ben-edek.shop
+                <a href="mailto:info@alo-jitak.shop" className="text-accent hover:text-accent-light transition-colors block">
+                  info@alo-jitak.shop
                 </a>
               </div>
             </motion.div>

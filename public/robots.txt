@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://benedek.app/sitemap.xml
+Sitemap: https://alo-jitak.shop/sitemap.xml
