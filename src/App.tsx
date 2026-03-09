@@ -646,11 +646,12 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseLogin = () => {
-    // Only allow closing if user is logged in
+    // Allow closing if user is logged in OR in guest mode
     const storedUser = localStorage.getItem('auth_user');
+    const guestMode = localStorage.getItem('guest_mode') === 'true';
 
-    if (!storedUser) {
-      return; // Don't close if not logged in
+    if (!storedUser && !guestMode) {
+      return; // Don't close if not logged in and not in guest mode
     }
 
     setIsLoginOpen(false);
@@ -676,10 +677,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseSignup = () => {
-    // Only allow closing if user is logged in
+    // Allow closing if user is logged in OR in guest mode
     const storedUser = localStorage.getItem('auth_user');
-    if (!storedUser) {
-      return; // Don't close if not logged in
+    const guestMode = localStorage.getItem('guest_mode') === 'true';
+    if (!storedUser && !guestMode) {
+      return; // Don't close if not logged in and not in guest mode
     }
 
     setIsSignupOpen(false);
