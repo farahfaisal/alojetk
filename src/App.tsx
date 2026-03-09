@@ -146,6 +146,13 @@ const AppContent: React.FC = () => {
     // Don't force login - let users explore the app first
   };
 
+  // Skip onboarding when guest mode is activated
+  useEffect(() => {
+    if (isGuestMode) {
+      setShowOnboarding(false);
+    }
+  }, [isGuestMode]);
+
   // Update cart items count
   useEffect(() => {
     const updateCartCount = () => {
