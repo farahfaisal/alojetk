@@ -1188,6 +1188,14 @@ const AppContent: React.FC = () => {
   );
 };
 
+const ContactPageRoute: React.FC = () => {
+  return (
+    <div className="fixed inset-0 bg-white z-[999999]">
+      <ContactPage onClose={() => window.history.back()} />
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <ToastProvider>
@@ -1195,6 +1203,7 @@ const App: React.FC = () => {
         <BackButtonHandler />
         <Routes>
           <Route path="/" element={<AppContent />} />
+          <Route path="/contact" element={<ContactPageRoute />} />
           <Route path="*" element={<AppContent />} />
         </Routes>
       </BrowserRouter>
