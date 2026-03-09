@@ -325,24 +325,12 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show login screen first for unauthenticated users, then address selector
+  // Don't force login or address selection on app start
+  // Users can browse freely and will be prompted when needed (checkout)
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      const storedUser = localStorage.getItem('auth_user');
-
-      // If user is NOT authenticated, show login screen
-      if (!storedUser) {
-        console.log('🔄 User not authenticated - showing login screen');
-        setTimeout(() => {
-          setIsLoginOpen(true);
-        }, 500);
-      } else {
-        // If user IS authenticated, always show address selector on app open
-        console.log('🔄 User authenticated - showing address selector');
-        setTimeout(() => {
-          setShowAddressOrAreaSelector(true);
-        }, 500);
-      }
+      console.log('🔄 App ready - users can browse freely');
+      // No forced login or address selection
     }
   }, [showSplash, showOnboarding]);
 
@@ -670,10 +658,8 @@ const AppContent: React.FC = () => {
       }
     }
 
-    // Always show address selector after login
-    setTimeout(() => {
-      setShowAddressOrAreaSelector(true);
-    }, 500);
+    // Don't force address selection after login
+    // Users can browse freely and will be prompted during checkout if needed
   };
 
   const handleCloseSignup = () => {
@@ -687,10 +673,8 @@ const AppContent: React.FC = () => {
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
 
-    // Always show address selector after signup
-    setTimeout(() => {
-      setShowAddressOrAreaSelector(true);
-    }, 500);
+    // Don't force address selection after signup
+    // Users can browse freely and will be prompted during checkout if needed
   };
 
   const handleOpenMenu = () => {
@@ -709,34 +693,20 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCart = () => {
-    // Check authentication first
-    if (!isAuthenticated) {
-      closeAllComponents();
-      setIsLoginOpen(true);
-      return;
-    }
-    // Then check if service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
-      return;
-    }
+    // Users can view cart without authentication or location
+    // Authentication and address will be checked during checkout
     closeAllComponents();
     setIsCartOpen(true);
   };
 
   const handleOpenOrders = () => {
+    // Check authentication for viewing orders
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
       return;
     }
-    // Check if service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
-      return;
-    }
+    // Don't require location to view orders
     closeAllComponents();
     setIsOrdersOpen(true);
   };
@@ -771,15 +741,10 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCaptainRequest = () => {
+    // Check authentication and location will be done inside the component
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
-      return;
-    }
-    // Check if service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -797,15 +762,10 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenParcelOrder = () => {
+    // Check authentication and location will be done inside the component
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
-      return;
-    }
-    // Check if service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
