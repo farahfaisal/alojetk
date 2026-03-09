@@ -354,6 +354,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
                 type="button"
                 onClick={() => {
                   localStorage.setItem('guest_mode', 'true');
+                  localStorage.setItem('hasSeenOnboarding', 'true');
                   window.dispatchEvent(new Event('auth-change'));
                   onClose();
                 }}

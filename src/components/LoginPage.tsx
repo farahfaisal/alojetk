@@ -412,6 +412,7 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 type="button"
                 onClick={() => {
                   localStorage.setItem('guest_mode', 'true');
+                  localStorage.setItem('hasSeenOnboarding', 'true');
                   window.dispatchEvent(new Event('auth-change'));
                   onClose();
                 }}

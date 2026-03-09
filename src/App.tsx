@@ -47,7 +47,7 @@ interface ServiceArea {
 }
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isGuestMode } = useAuth();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
