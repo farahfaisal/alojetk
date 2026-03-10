@@ -476,7 +476,7 @@ const Home: React.FC<HomeProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
           <button
             onClick={() => setShowAllVendors(true)}
-            className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center"
+            className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-bold flex items-center"
           >
             عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
           </button>
@@ -528,7 +528,7 @@ const Home: React.FC<HomeProps> = ({
                     </h2>
                     <button
                       onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                      className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-medium flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
+                      className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-bold flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
                     >
                       عرض الكل ({vendors.length})
                       <ChevronLeft className="w-4 h-4 mr-1" />

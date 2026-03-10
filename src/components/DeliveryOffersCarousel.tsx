@@ -83,7 +83,7 @@ const DeliveryOffersCarousel: React.FC<DeliveryOffersCarouselProps> = ({
         {offers.length > 2 && onViewAll && (
           <button
             onClick={onViewAll}
-            className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+            className="text-brand hover:text-brand-light transition-colors text-sm font-bold flex items-center"
           >
             عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
           </button>

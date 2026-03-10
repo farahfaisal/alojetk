@@ -345,7 +345,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
               onClick={onViewAll}
               className="h-full w-full bg-accent/5 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-accent/10 transition-colors"
             >
-              <span className="text-accent font-medium">عرض الكل</span>
+              <span className="text-accent font-bold">عرض الكل</span>
               <ChevronLeft className="w-5 h-5 text-accent" />
               <span className="text-sm text-gray-500">
                 {totalCount} {type === 'restaurant' ? 'مطعم' : 'متجر'}
