@@ -47,7 +47,7 @@ interface ServiceArea {
 }
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user, isGuestMode } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
@@ -145,13 +145,6 @@ const AppContent: React.FC = () => {
     localStorage.setItem('hasSeenOnboarding', 'true');
     // Don't force login - let users explore the app first
   };
-
-  // Skip onboarding when guest mode is activated
-  useEffect(() => {
-    if (isGuestMode) {
-      setShowOnboarding(false);
-    }
-  }, [isGuestMode]);
 
   // Update cart items count
   useEffect(() => {
@@ -325,12 +318,24 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Don't force login or address selection on app start
-  // Users can browse freely and will be prompted when needed (checkout)
+  // Show login screen first for unauthenticated users, then address selector
   useEffect(() => {
     if (!showSplash && !showOnboarding) {
-      console.log('🔄 App ready - users can browse freely');
-      // No forced login or address selection
+      const storedUser = localStorage.getItem('auth_user');
+
+      // If user is NOT authenticated, show login screen
+      if (!storedUser) {
+        console.log('🔄 User not authenticated - showing login screen');
+        setTimeout(() => {
+          setIsLoginOpen(true);
+        }, 500);
+      } else {
+        // If user IS authenticated, always show address selector on app open
+        console.log('🔄 User authenticated - showing address selector');
+        setTimeout(() => {
+          setShowAddressOrAreaSelector(true);
+        }, 500);
+      }
     }
   }, [showSplash, showOnboarding]);
 
@@ -634,12 +639,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleCloseLogin = () => {
-    // Allow closing if user is logged in OR in guest mode
+    // Only allow closing if user is logged in
     const storedUser = localStorage.getItem('auth_user');
-    const guestMode = localStorage.getItem('guest_mode') === 'true';
 
-    if (!storedUser && !guestMode) {
-      return; // Don't close if not logged in and not in guest mode
+    if (!storedUser) {
+      return; // Don't close if not logged in
     }
 
     setIsLoginOpen(false);
@@ -658,23 +662,26 @@ const AppContent: React.FC = () => {
       }
     }
 
-    // Don't force address selection after login
-    // Users can browse freely and will be prompted during checkout if needed
+    // Always show address selector after login
+    setTimeout(() => {
+      setShowAddressOrAreaSelector(true);
+    }, 500);
   };
 
   const handleCloseSignup = () => {
-    // Allow closing if user is logged in OR in guest mode
+    // Only allow closing if user is logged in
     const storedUser = localStorage.getItem('auth_user');
-    const guestMode = localStorage.getItem('guest_mode') === 'true';
-    if (!storedUser && !guestMode) {
-      return; // Don't close if not logged in and not in guest mode
+    if (!storedUser) {
+      return; // Don't close if not logged in
     }
 
     setIsSignupOpen(false);
     setSignupReferralCode(undefined);
 
-    // Don't force address selection after signup
-    // Users can browse freely and will be prompted during checkout if needed
+    // Always show address selector after signup
+    setTimeout(() => {
+      setShowAddressOrAreaSelector(true);
+    }, 500);
   };
 
   const handleOpenMenu = () => {
@@ -693,20 +700,34 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCart = () => {
-    // Users can view cart without authentication or location
-    // Authentication and address will be checked during checkout
-    closeAllComponents();
-    setIsCartOpen(true);
-  };
-
-  const handleOpenOrders = () => {
-    // Check authentication for viewing orders
+    // Check authentication first
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
       return;
     }
-    // Don't require location to view orders
+    // Then check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
+      return;
+    }
+    closeAllComponents();
+    setIsCartOpen(true);
+  };
+
+  const handleOpenOrders = () => {
+    if (!isAuthenticated) {
+      closeAllComponents();
+      setIsLoginOpen(true);
+      return;
+    }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
+      return;
+    }
     closeAllComponents();
     setIsOrdersOpen(true);
   };
@@ -741,10 +762,15 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenCaptainRequest = () => {
-    // Check authentication and location will be done inside the component
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
+      return;
+    }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -762,10 +788,15 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenParcelOrder = () => {
-    // Check authentication and location will be done inside the component
     if (!isAuthenticated) {
       closeAllComponents();
       setIsLoginOpen(true);
+      return;
+    }
+    // Check if service area is selected
+    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+    if (!selectedServiceArea) {
+      setShowAddressOrAreaSelector(true);
       return;
     }
     closeAllComponents();
@@ -1148,14 +1179,6 @@ const AppContent: React.FC = () => {
   );
 };
 
-const ContactPageRoute: React.FC = () => {
-  return (
-    <div className="fixed inset-0 bg-white z-[999999]">
-      <ContactPage onClose={() => window.history.back()} />
-    </div>
-  );
-};
-
 const App: React.FC = () => {
   return (
     <ToastProvider>
@@ -1163,7 +1186,6 @@ const App: React.FC = () => {
         <BackButtonHandler />
         <Routes>
           <Route path="/" element={<AppContent />} />
-          <Route path="/contact" element={<ContactPageRoute />} />
           <Route path="*" element={<AppContent />} />
         </Routes>
       </BrowserRouter>

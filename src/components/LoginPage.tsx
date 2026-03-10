@@ -398,28 +398,6 @@ const LoginPage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   </button>
                 </p>
               </div>
-
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">أو</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  localStorage.setItem('guest_mode', 'true');
-                  localStorage.setItem('hasSeenOnboarding', 'true');
-                  window.dispatchEvent(new Event('auth-change'));
-                  onClose();
-                }}
-                className="w-full bg-gray-100 text-gray-700 py-3.5 rounded-xl hover:bg-gray-200 transition-all font-semibold"
-              >
-                تصفح كضيف
-              </button>
             </form>
           )}
 

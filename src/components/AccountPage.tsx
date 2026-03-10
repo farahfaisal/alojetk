@@ -31,7 +31,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
   viewMode = 'restaurants',
   cartItemsCount = 0
 }) => {
-  const { user, logout, deleteUserAccount, isGuestMode } = useAuth();
+  const { user, logout, deleteUserAccount } = useAuth();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -1054,46 +1054,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
                 </div>
               )}
 
-              {/* Guest Mode Banner */}
-              {isGuestMode && (
-                <div className="m-4 mb-6">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-center">
-                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <User className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">أهلاً بك كضيف!</h3>
-                    <p className="text-white/90 text-sm mb-4">
-                      يمكنك تصفح المتاجر والمنتجات، لكن للطلب والاستفادة من المزايا يجب تسجيل حساب
-                    </p>
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => {
-                          localStorage.removeItem('guest_mode');
-                          window.dispatchEvent(new CustomEvent('open-login-page'));
-                          onClose();
-                        }}
-                        className="w-full bg-white text-blue-600 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all"
-                      >
-                        تسجيل الدخول
-                      </button>
-                      <button
-                        onClick={() => {
-                          localStorage.removeItem('guest_mode');
-                          window.dispatchEvent(new CustomEvent('open-signup-page'));
-                          onClose();
-                        }}
-                        className="w-full bg-blue-700 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition-all"
-                      >
-                        إنشاء حساب جديد
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <div className="p-4">
-                {!isGuestMode && (
-                  <>
                 {/* Welcome Header Card */}
                 <div className="bg-gradient-to-br from-brand via-[#b91c1c] to-[#b91c1c] rounded-3xl shadow-xl overflow-hidden mb-6 relative">
                   {/* Decorative background elements */}
@@ -1240,8 +1201,6 @@ const AccountPage: React.FC<AccountPageProps> = ({
                     </div>
                   </div>
                 </div>
-                </>
-                )}
 
                 {/* Menu Items with Enhanced Design */}
                 <div className="mt-8 space-y-4">

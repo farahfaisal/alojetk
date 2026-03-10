@@ -30,7 +30,6 @@ interface AuthContextType {
   logout: () => void;
   deleteUserAccount: () => Promise<void>;
   isAuthenticated: boolean;
-  isGuestMode: boolean;
   isProduction: boolean;
 }
 
@@ -44,7 +43,6 @@ const defaultContext: AuthContextType = {
   logout: () => {},
   deleteUserAccount: async () => {},
   isAuthenticated: false,
-  isGuestMode: false,
   isProduction
 };
 
@@ -58,7 +56,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isGuestMode, setIsGuestMode] = useState(false);
 
   // Validate customer exists in database
   const validateCustomer = async (user: AuthUser): Promise<AuthUser | null> => {
@@ -103,42 +100,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     initAuthFunc();
-
-    const checkGuestMode = () => {
-      const guestMode = localStorage.getItem('guest_mode') === 'true';
-      setIsGuestMode(guestMode);
-      return guestMode;
-    };
-
     getCurrentUser().then(async (current) => {
-      const guestMode = checkGuestMode();
       if (current) {
         const validatedUser = await validateCustomer(current);
         setUser(validatedUser);
-        setIsGuestMode(false);
-      } else if (guestMode) {
-        setUser(null);
-        setIsGuestMode(true);
       } else {
         setUser(null);
-        setIsGuestMode(false);
       }
       setLoading(false);
     });
 
     window.addEventListener('auth-change', async () => {
-      const guestMode = checkGuestMode();
       const current = await getCurrentUser();
       if (current) {
         const validatedUser = await validateCustomer(current);
         setUser(validatedUser);
-        setIsGuestMode(false);
-      } else if (guestMode) {
-        setUser(null);
-        setIsGuestMode(true);
       } else {
         setUser(null);
-        setIsGuestMode(false);
       }
     });
   }, []);
@@ -244,10 +222,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleLogout = () => {
     logoutFunc();
     setUser(null);
-    localStorage.removeItem('guest_mode');
-    setIsGuestMode(false);
     window.dispatchEvent(new Event('auth-change'));
-
+    
     // Show a farewell message
     const logoutMessage = document.createElement('div');
     logoutMessage.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-3 px-4 rounded-lg shadow-lg z-[100] flex items-center gap-2';
@@ -258,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       <span>تم تسجيل الخروج بنجاح. نتمنى رؤيتك مرة أخرى قريباً!</span>
     `;
     document.body.appendChild(logoutMessage);
-
+    
     // Remove the message after 3 seconds
     setTimeout(() => {
       logoutMessage.classList.add('opacity-0', 'transition-opacity', 'duration-300');
@@ -289,7 +265,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout: handleLogout,
     deleteUserAccount: handleDeleteAccount,
     isAuthenticated: !!user,
-    isGuestMode,
     isProduction
   };
 
