@@ -502,7 +502,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
           <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
           <button
             onClick={() => setShowAllVendors(true)}
-            className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+            className="bg-brand hover:bg-brand/90 text-white transition-colors text-sm font-bold flex items-center px-3 py-1.5 rounded-full shadow-md"
           >
             عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
           </button>
@@ -518,7 +518,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             <h2 className="text-xl font-bold text-gray-900">المتاجر المتوفرة</h2>
             <button
               onClick={() => setShowAllVendors(true)}
-              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center"
+              className="bg-brand hover:bg-brand/90 text-white transition-colors text-sm font-bold flex items-center px-3 py-1.5 rounded-full shadow-md"
             >
               عرض الكل <ChevronLeft className="w-4 h-4 mr-1" />
             </button>
@@ -587,7 +587,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             </h2>
             <button
               onClick={() => handleViewCategoryVendors(category.id, category.name)}
-              className="text-brand hover:text-brand-light transition-colors text-sm font-medium flex items-center bg-brand/10 px-3 py-1.5 rounded-full"
+              className="bg-brand hover:bg-brand/90 text-white transition-colors text-sm font-bold flex items-center px-3 py-1.5 rounded-full shadow-md"
             >
               عرض الكل ({vendors.length})
               <ChevronLeft className="w-4 h-4 mr-1" />

@@ -528,7 +528,7 @@ const Home: React.FC<HomeProps> = ({
                     </h2>
                     <button
                       onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                      className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-bold flex items-center bg-[#b91c1c]/10 px-3 py-1.5 rounded-full"
+                      className="text-white bg-[#b91c1c] hover:bg-[#8b1515] transition-colors text-sm font-bold flex items-center shadow-md px-3 py-1.5 rounded-full"
                     >
                       عرض الكل ({vendors.length})
                       <ChevronLeft className="w-4 h-4 mr-1" />

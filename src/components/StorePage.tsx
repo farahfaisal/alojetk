@@ -1306,7 +1306,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           // Open category page with all products
                           setSelectedCategoryId(category.id);
                         }}
-                        className="text-brand hover:text-brand-light text-sm font-medium flex items-center gap-1"
+                        className="bg-brand hover:bg-brand/90 text-white text-sm font-bold flex items-center gap-1 px-3 py-1.5 rounded-full shadow-md transition-colors"
                       >
                         عرض الكل
                         <ChevronLeft className="w-4 h-4" />

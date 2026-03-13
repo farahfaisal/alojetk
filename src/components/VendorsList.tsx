@@ -343,11 +343,11 @@ const VendorsList: React.FC<VendorsListProps> = ({
             <motion.button
               whileHover={{ scale: 1.02 }}
               onClick={onViewAll}
-              className="h-full w-full bg-accent/5 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-accent/10 transition-colors"
+              className="h-full w-full bg-[#b91c1c] rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#8b1515] transition-colors shadow-lg"
             >
-              <span className="text-accent font-bold">عرض الكل</span>
-              <ChevronLeft className="w-5 h-5 text-accent" />
-              <span className="text-sm text-gray-500">
+              <span className="text-white font-bold">عرض الكل</span>
+              <ChevronLeft className="w-5 h-5 text-white" />
+              <span className="text-sm text-white/80">
                 {totalCount} {type === 'restaurant' ? 'مطعم' : 'متجر'}
               </span>
             </motion.button>
