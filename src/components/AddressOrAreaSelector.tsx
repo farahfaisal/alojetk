@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search, Trash2 } from 'lucide-react';
+import { MapPin, Plus, ChevronLeft, Home, Building, Navigation, ChevronRight, Check, Search, Trash2, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import NewAddressPage from './NewAddressPage';
 import AddressForm from './AddressForm';
@@ -299,11 +299,20 @@ const AddressOrAreaSelector: React.FC<AddressOrAreaSelectorProps> = ({
                 <ChevronRight className="w-5 h-5" />
               </button>
             )}
-            <h2 className="text-xl font-bold text-black">
+            <h2 className="text-xl font-bold text-black flex-1">
               {selectedView === 'addresses' && 'اختر موقع التوصيل'}
               {selectedView === 'main-areas' && 'اختر المنطقة الرئيسية'}
               {selectedView === 'sub-areas' && `اختر منطقة في ${selectedMainArea?.name}`}
             </h2>
+            {/* Close button - only show if service area is already selected */}
+            {hasSelectedArea && (
+              <button
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            )}
           </div>
           <p className="text-sm mt-1 font-medium text-gray-700">
             {selectedView === 'addresses' && 'حدد العنوان للمتابعة'}
