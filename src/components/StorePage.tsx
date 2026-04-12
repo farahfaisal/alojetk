@@ -232,60 +232,40 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
-  // Refresh vendor data from database to ensure up-to-date working hours
-  useEffect(() => {
-    const refreshVendorData = async () => {
-      if (vendor?.id) {
-        try {
-          const { data: freshVendor, error } = await supabase
-            .from('vendors')
-            .select('working_hours, vacation_mode, status')
-            .eq('id', vendor.id)
-            .single();
+  const [freshVendorData, setFreshVendorData] = useState<any>(null);
 
-          if (!error && freshVendor) {
-            // Update vendor data with fresh values
-            vendor.working_hours = freshVendor.working_hours;
-            vendor.vacation_mode = freshVendor.vacation_mode;
-            vendor.status = freshVendor.status;
-          }
-        } catch (error) {
-          console.error('Error refreshing vendor data:', error);
+  // Refresh vendor data from database and check status together
+  useEffect(() => {
+    if (!vendor?.id) return;
+
+    const refreshAndCheckStatus = async (vendorData: any) => {
+      let data = vendorData;
+
+      try {
+        const { data: fresh, error } = await supabase
+          .from('vendors')
+          .select('working_hours, vacation_mode, status')
+          .eq('id', vendorData.id)
+          .single();
+
+        if (!error && fresh) {
+          data = { ...vendorData, ...fresh };
+          setFreshVendorData(fresh);
         }
+      } catch (err) {
+        console.error('Error refreshing vendor data:', err);
       }
-    };
-
-    refreshVendorData();
-  }, [vendor?.id]);
-
-  // Check vendor status including working hours
-  useEffect(() => {
-    if (vendor) {
-      console.log('🔍 StorePage - فحص حالة المتجر:', {
-        vendorId: vendor.id,
-        storeName: vendor.store_name,
-        working_hours: vendor.working_hours,
-        vacation_mode: vendor.vacation_mode,
-        status: vendor.status
-      });
 
       const workingStatus = checkVendorWorkingStatus({
-        working_hours: vendor.working_hours,
-        vacation_mode: vendor.vacation_mode,
-        status: vendor.status
-      });
-
-      console.log('✅ StorePage - نتيجة الفحص:', {
-        is_open: workingStatus.is_open,
-        reason: workingStatus.reason,
-        today_hours: workingStatus.today_hours
+        working_hours: data.working_hours,
+        vacation_mode: data.vacation_mode,
+        status: data.status
       });
 
       setIsVendorAvailable(workingStatus.is_open);
 
       if (!workingStatus.is_open) {
         let message = 'المتجر مغلق حالياً';
-
         switch (workingStatus.reason) {
           case 'vacation':
             message = 'المتجر في إجازة';
@@ -304,27 +284,26 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             message = 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي';
             break;
         }
-
         setVendorStatusMessage(message);
       } else {
         setVendorStatusMessage('');
       }
-    }
+    };
 
-    // Check status every minute
+    refreshAndCheckStatus(vendor);
+
     const interval = setInterval(() => {
-      if (vendor) {
-        const workingStatus = checkVendorWorkingStatus({
-          working_hours: vendor.working_hours,
-          vacation_mode: vendor.vacation_mode,
-          status: vendor.status
-        });
-        setIsVendorAvailable(workingStatus.is_open);
-      }
+      const merged = freshVendorData ? { ...vendor, ...freshVendorData } : vendor;
+      const workingStatus = checkVendorWorkingStatus({
+        working_hours: merged.working_hours,
+        vacation_mode: merged.vacation_mode,
+        status: merged.status
+      });
+      setIsVendorAvailable(workingStatus.is_open);
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [vendor]);
+  }, [vendor?.id]);
 
   // Fetch store categories (both regular and custom)
   useEffect(() => {
