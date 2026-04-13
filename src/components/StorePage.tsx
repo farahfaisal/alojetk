@@ -233,6 +233,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   }, [newVendorData, onClose]);
 
   const [freshVendorData, setFreshVendorData] = useState<any>(null);
+  const effectiveVendor = freshVendorData ? { ...vendor, ...freshVendorData } : vendor;
 
   // Refresh vendor data from database and check status together
   useEffect(() => {
@@ -934,8 +935,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                       </div>
                       <div className="flex items-center gap-2">
                         {(() => {
-                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                          const todayHours = getTodayHours(storeHours, vendor.timezone);
+                          const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
+                          const todayHours = getTodayHours(storeHours, effectiveVendor.timezone);
                           if (todayHours && todayHours.enabled && todayHours.open) {
                             if (todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59')) {
                               return (
@@ -979,8 +980,8 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         >
                           <div className="pt-3 space-y-2">
                             {(() => {
-                              const storeHours = convertWorkingHoursToArray(vendor.working_hours);
-                              const timezone = vendor.timezone || 'Asia/Jerusalem';
+                              const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
+                              const timezone = effectiveVendor.timezone || 'Asia/Jerusalem';
                               const now = new Date();
                               const localTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
                               const currentDay = localTime.getDay();
