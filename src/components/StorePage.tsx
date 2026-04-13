@@ -246,7 +246,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       try {
         const { data: fresh, error } = await supabase
           .from('vendors')
-          .select('working_hours, vacation_mode, status')
+          .select('working_hours, vacation_mode, status, timezone')
           .eq('id', vendorData.id)
           .single();
 
