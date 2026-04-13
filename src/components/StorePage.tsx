@@ -233,6 +233,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
   }, [newVendorData, onClose]);
 
   const [freshVendorData, setFreshVendorData] = useState<any>(null);
+  const [vendorDataLoaded, setVendorDataLoaded] = useState(false);
   const effectiveVendor = freshVendorData ? { ...vendor, ...freshVendorData } : vendor;
 
   // Refresh vendor data from database and check status together
@@ -256,6 +257,7 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
       } catch (err) {
         console.error('Error refreshing vendor data:', err);
       }
+      setVendorDataLoaded(true);
 
       const workingStatus = checkVendorWorkingStatus({
         working_hours: data.working_hours,
@@ -934,7 +936,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        {(() => {
+                        {!vendorDataLoaded ? (
+                          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                        ) : (() => {
                           const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
                           const todayHours = getTodayHours(storeHours, effectiveVendor.timezone);
                           if (todayHours && todayHours.enabled && todayHours.open) {
@@ -979,7 +983,16 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           className="border-t border-gray-100 px-4 pb-3"
                         >
                           <div className="pt-3 space-y-2">
-                            {(() => {
+                            {!vendorDataLoaded ? (
+                              <div className="space-y-2">
+                                {[...Array(7)].map((_, i) => (
+                                  <div key={i} className="flex justify-between items-center">
+                                    <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                                    <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (() => {
                               const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
                               const timezone = effectiveVendor.timezone || 'Asia/Jerusalem';
                               const now = new Date();
