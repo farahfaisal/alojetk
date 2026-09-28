@@ -102,6 +102,7 @@ const FeaturedSlider: React.FC<FeaturedSliderProps> = ({ type, position = 'home'
                 src={ad.image_url}
                 alt={ad.title}
                 className="w-full h-full object-cover"
+                style={{ objectPosition: 'left center' }}
               />
             </div>
           </SwiperSlide>

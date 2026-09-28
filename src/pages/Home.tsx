@@ -7,6 +7,7 @@ import { FreeMode, Navigation } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import CategoriesSlider from '../components/CategoriesSlider';
 import FeaturedVendors from '../components/FeaturedVendors';
+import SponsoredVendors from '../components/SponsoredVendors';
 import FeaturedSlider from '../components/FeaturedSlider';
 import VendorsWithOffers from '../components/VendorsWithOffers';
 import AllVendorsPage from '../components/AllVendorsPage';
@@ -470,8 +471,13 @@ const Home: React.FC<HomeProps> = ({
         onViewAll={() => setShowAllOffers(true)}
       />
 
-      {/* Featured Vendors Section */}
+      {/* Sponsored Vendors Section */}
       <div className="px-4 py-6">
+        <SponsoredVendors onVendorClick={setSelectedVendor} type="restaurant" />
+      </div>
+
+      {/* Featured Vendors Section */}
+      <div className="px-4 py-2">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-900">تسوق مع جيب</h2>
           <button
