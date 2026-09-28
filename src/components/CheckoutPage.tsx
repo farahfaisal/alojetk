@@ -717,7 +717,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             <Check className="w-10 h-10" style={{ color: BRAND }} />
           </div>
           <div className="text-center mb-2">
-            <span className="text-sm font-bold" style={{ color: BRAND }}>ألو جيتك</span>
+            <span className="text-sm font-bold" style={{ color: BRAND }}>جيب</span>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2 text-right">تم إنشاء الطلب بنجاح!</h2>
           <p className="text-gray-600 mb-4 text-right">سيتم تحضير طلبك وتوصيله في أقرب وقت ممكن</p>
@@ -815,7 +815,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <div className="flex-1 text-right">
                   <p className={`text-base font-bold ${
                     courierMode === 'delivery' ? 'text-white' : 'text-gray-900'
-                  }`}>توصيل ألو جيتك</p>
+                  }`}>توصيل جيب</p>
                   <p className={`text-sm ${
                     courierMode === 'delivery' ? 'text-white/80' : 'text-gray-500'
                   }`}>(36 دقيقة)</p>
@@ -1002,7 +1002,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             </div>
             <div className="flex-1 text-right mr-3">
-              <p className="font-bold text-gray-900 text-base">محفظة ألو جيتك</p>
+              <p className="font-bold text-gray-900 text-base">محفظة جيب</p>
               <p className="text-sm" style={{ color: BRAND }}>₪{walletBalance.toFixed(2)}</p>
             </div>
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${BRAND}20` }}>
