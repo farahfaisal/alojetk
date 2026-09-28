@@ -324,7 +324,7 @@ const Home: React.FC<HomeProps> = ({
             onClick={() => {
               if (onOpenSearch) onOpenSearch();
             }}
-            className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center hover:bg-white transition-all shadow-lg"
+            className="w-12 h-12 rounded-full bg-[#1a1a1a]/90 backdrop-blur-md flex items-center justify-center hover:bg-[#2a2a2a] transition-all shadow-lg border border-gray-800"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -337,14 +337,14 @@ const Home: React.FC<HomeProps> = ({
               const event = new CustomEvent('openCitySelector');
               window.dispatchEvent(event);
             }}
-            className="flex items-center gap-2 px-4 h-12 rounded-full bg-white/90 backdrop-blur-md hover:bg-white transition-all shadow-lg"
+            className="flex items-center gap-2 px-4 h-12 rounded-full bg-[#1a1a1a]/90 backdrop-blur-md hover:bg-[#2a2a2a] transition-all shadow-lg border border-gray-800"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <MapPin className="w-5 h-5 text-[#1759cb]" />
             <div className="flex flex-col items-start min-w-0">
               <span className="text-xs text-gray-500 leading-none">التوصيل إلى</span>
-              <span className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[120px]">
+              <span className="text-sm font-bold text-white leading-tight truncate max-w-[120px]">
                 {selectedCity || 'اختر المنطقة'}
               </span>
             </div>
@@ -358,7 +358,7 @@ const Home: React.FC<HomeProps> = ({
       </div>
 
       {/* Categories Horizontal Scroll - 6 visible per view */}
-      <div className="bg-white py-6 overflow-hidden">
+      <div className="bg-[#1a1a1a] py-6 overflow-hidden">
         {categoriesLoading ? (
           <div className="px-4">
             <Swiper
@@ -371,8 +371,8 @@ const Home: React.FC<HomeProps> = ({
               {[...Array(12)].map((_, index) => (
                 <SwiperSlide key={index}>
                   <div className="flex flex-col items-center gap-2 animate-pulse">
-                    <div className="w-full aspect-square bg-gray-200 rounded-2xl"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4 mx-auto"></div>
+                    <div className="w-full aspect-square bg-[#2a2a2a] rounded-2xl"></div>
+                    <div className="h-3 bg-[#2a2a2a] rounded w-3/4 mx-auto"></div>
                   </div>
                 </SwiperSlide>
               ))}
@@ -438,7 +438,7 @@ const Home: React.FC<HomeProps> = ({
                     <span className={`text-[10px] font-bold text-center leading-tight line-clamp-2 ${
                       selectedCategory === category.id
                         ? 'text-[#1759cb]'
-                        : 'text-gray-900'
+                        : 'text-gray-200'
                     }`}>
                       {category.name}
                     </span>
@@ -473,7 +473,7 @@ const Home: React.FC<HomeProps> = ({
       {/* Featured Vendors Section */}
       <div className="px-4 py-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
+          <h2 className="text-2xl font-bold text-white">تسوق مع الـو جيتك</h2>
           <button
             onClick={() => setShowAllVendors(true)}
             className="text-[#1759cb] hover:text-[#1759cb] transition-colors text-sm font-bold flex items-center"
@@ -495,10 +495,10 @@ const Home: React.FC<HomeProps> = ({
             <div className="px-4 space-y-6">
               {[...Array(3)].map((_, index) => (
                 <div key={index} className="space-y-4">
-                  <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
+                  <div className="h-6 bg-[#2a2a2a] rounded w-48 animate-pulse"></div>
                   <div className="flex gap-4 overflow-hidden">
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="w-48 h-64 bg-gray-200 rounded-xl animate-pulse flex-shrink-0"></div>
+                      <div key={i} className="w-48 h-64 bg-[#2a2a2a] rounded-xl animate-pulse flex-shrink-0"></div>
                     ))}
                   </div>
                 </div>
@@ -511,9 +511,9 @@ const Home: React.FC<HomeProps> = ({
 
               return (
               <div key={category.id} className="px-4">
-                <div className="bg-white rounded-xl p-4 border border-gray-100">
+                <div className="bg-[#1a1a1a] rounded-xl p-4 border border-gray-800">
                   <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#1759cb]/20">
                         <img
                           src={category.image_url || getCategoryFallbackImage(category.name)}
@@ -540,13 +540,13 @@ const Home: React.FC<HomeProps> = ({
                     <div className="flex justify-between items-center mb-3 px-4">
                       <button
                         id={swiperPrevId}
-                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-200 hover:border-[#1759cb]"
+                        className="w-9 h-9 rounded-full bg-[#2a2a2a] hover:bg-[#333] shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-700 hover:border-[#1759cb]"
                       >
                         <ChevronRight className="w-5 h-5" />
                       </button>
                       <button
                         id={swiperNextId}
-                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-200 hover:border-[#1759cb]"
+                        className="w-9 h-9 rounded-full bg-[#2a2a2a] hover:bg-[#333] shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-700 hover:border-[#1759cb]"
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
@@ -570,12 +570,12 @@ const Home: React.FC<HomeProps> = ({
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedVendor(vendor)}
-                        className="bg-white rounded-lg overflow-hidden border border-gray-200 transition-all cursor-pointer w-full flex flex-col"
+                        className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800 transition-all cursor-pointer w-full flex flex-col"
                         style={{ height: '230px' }}
                       >
                         {/* Logo Section - Centered - Fixed Height */}
-                        <div className="flex flex-col items-center pt-4 pb-1 bg-white" style={{ height: '100px' }}>
-                          <div className="w-20 h-20 rounded-full overflow-hidden bg-white border-2 border-gray-100">
+                        <div className="flex flex-col items-center pt-4 pb-1 bg-[#1a1a1a]" style={{ height: '100px' }}>
+                          <div className="w-20 h-20 rounded-full overflow-hidden bg-[#1a1a1a] border-2 border-gray-800">
                             {vendor.logo_url ? (
                               <img
                                 src={vendor.logo_url}
@@ -594,9 +594,9 @@ const Home: React.FC<HomeProps> = ({
                         </div>
 
                         {/* Store Info - Fixed Height */}
-                        <div className="px-3 pb-3 bg-white flex-1 flex flex-col">
+                        <div className="px-3 pb-3 bg-[#1a1a1a] flex-1 flex flex-col">
                           {/* Store Name - Fixed Height */}
-                          <h3 className="font-bold text-gray-900 text-base text-center line-clamp-2 leading-tight mb-1" style={{ height: '38px' }}>
+                          <h3 className="font-bold text-white text-base text-center line-clamp-2 leading-tight mb-1" style={{ height: '38px' }}>
                             {vendor.store_name}
                           </h3>
 
@@ -604,23 +604,23 @@ const Home: React.FC<HomeProps> = ({
                           {vendor.address && (
                             <div className="flex items-center justify-center gap-1 mb-2" style={{ height: '16px' }}>
                               <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                              <span className="text-gray-500 text-[10px] truncate">
+                              <span className="text-gray-400 text-[10px] truncate">
                                 {vendor.address}
                               </span>
                             </div>
                           )}
 
                           {/* Divider */}
-                          <div className="w-full h-px bg-gray-200 my-1.5"></div>
+                          <div className="w-full h-px bg-gray-700 my-1.5"></div>
 
                           {/* Rating Section - Fixed Height */}
                           <div className="flex items-center justify-center gap-1 mb-1.5" style={{ height: '18px' }}>
                             <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                            <span className="font-bold text-gray-900 text-xs">
+                            <span className="font-bold text-white text-xs">
                               {vendor.rating ? vendor.rating : 'جديد'}
                             </span>
                             {vendor.rating_count && (
-                              <span className="text-gray-500 text-[11px]">({vendor.rating_count > 999 ? '+1000' : `+${vendor.rating_count}`})</span>
+                              <span className="text-gray-400 text-[11px]">({vendor.rating_count > 999 ? '+1000' : `+${vendor.rating_count}`})</span>
                             )}
                           </div>
 
