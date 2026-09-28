@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Force redeploy
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

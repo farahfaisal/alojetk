@@ -101,7 +101,6 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
             address,
             delivery_zones,
             service_areas,
-            main_service_area_id,
             working_hours
           `)
           .eq('status', 'active');
@@ -155,11 +154,6 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
           const searchAreaIds = areaData?.map(a => a.id) || [];
 
           vendorsWithActiveOffers = vendorsWithActiveOffers.filter((v: any) => {
-            // Check main_service_area_id first (most reliable)
-            if (v.main_service_area_id && searchAreaIds.includes(v.main_service_area_id)) {
-              return true;
-            }
-
             // Check service_areas (secondary method)
             if (v.service_areas && Array.isArray(v.service_areas) && v.service_areas.length > 0) {
               const hasServiceArea = v.service_areas.some((area: string) => searchAreas.includes(area));
