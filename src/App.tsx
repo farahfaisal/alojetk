@@ -717,17 +717,6 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenOrders = () => {
-    if (!isAuthenticated) {
-      closeAllComponents();
-      setIsLoginOpen(true);
-      return;
-    }
-    // Check if service area is selected
-    const selectedServiceArea = localStorage.getItem('selectedServiceArea');
-    if (!selectedServiceArea) {
-      setShowAddressOrAreaSelector(true);
-      return;
-    }
     closeAllComponents();
     setIsOrdersOpen(true);
   };
