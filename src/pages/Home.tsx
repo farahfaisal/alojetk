@@ -358,95 +358,60 @@ const Home: React.FC<HomeProps> = ({
         <FeaturedSlider position="home" type="restaurant" />
       </div>
 
-      {/* Categories Horizontal Scroll - 6 visible per view */}
-      <div className="bg-white py-6 overflow-hidden">
+      {/* Categories Grid - Blue & Black Theme */}
+      <div className="py-6 overflow-hidden" style={{ background: 'linear-gradient(180deg, #0a1a2e 0%, #11243f 100%)' }}>
         {categoriesLoading ? (
-          <div className="px-4">
-            <Swiper
-              slidesPerView={5.5}
-              spaceBetween={12}
-              freeMode={true}
-              modules={[FreeMode]}
-              className="w-full"
-            >
-              {[...Array(12)].map((_, index) => (
-                <SwiperSlide key={index}>
-                  <div className="flex flex-col items-center gap-2 animate-pulse">
-                    <div className="w-full aspect-square bg-gray-200 rounded-2xl"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <div className="px-4 grid grid-cols-4 gap-3">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="flex flex-col items-center gap-2 animate-pulse">
+                <div className="w-14 h-14 bg-white/10 rounded-xl"></div>
+                <div className="h-2.5 bg-white/10 rounded w-3/4"></div>
+              </div>
+            ))}
           </div>
         ) : categories.length > 0 ? (
-          <div className="px-4">
-            <Swiper
-              slidesPerView={5.5}
-              spaceBetween={12}
-              freeMode={true}
-              modules={[FreeMode]}
-              className="w-full"
-              style={{ overflow: 'visible' }}
-            >
-              {categories.map((category, index) => (
-                <SwiperSlide key={`cat-${category.id}`}>
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.3 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleCategoryClick(category.id)}
-                    className={`flex flex-col items-center gap-2 w-full ${
-                      selectedCategory === category.id ? 'opacity-100' : 'opacity-90'
-                    }`}
-                  >
-                    {/* Category Image */}
-                    <div className={`w-full aspect-square rounded-lg overflow-hidden border border-gray-200 transition-all relative bg-[#1759cb] ${
-                      selectedCategory === category.id
-                        ? 'ring-2 ring-[#1759cb] ring-offset-2'
-                        : ''
-                    }`}>
-                      <img
-                        src={category.image_url || getCategoryFallbackImage(category.name)}
-                        alt={category.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = getCategoryFallbackImage(category.name);
-                        }}
-                      />
-
-                      {/* Selected indicator */}
-                      {selectedCategory === category.id && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute top-1 right-1 w-4 h-4 bg-[#1759cb] rounded-full flex items-center justify-center shadow-lg"
-                        >
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </motion.div>
-                      )}
-
-                      {/* Gradient overlay */}
-                      <div className={`absolute inset-0 transition-all duration-300 ${
-                        selectedCategory === category.id
-                          ? 'bg-[#1759cb]/20'
-                          : 'bg-black/10 hover:bg-black/5'
-                      }`}></div>
+          <div className="px-4 grid grid-cols-4 gap-x-3 gap-y-4">
+            {categories.map((category, index) => (
+              <motion.button
+                key={`cat-${category.id}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04, duration: 0.25 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => handleCategoryClick(category.id)}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <div className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all relative ${
+                  selectedCategory === category.id
+                    ? 'border-[#3b82f6] shadow-[0_0_12px_rgba(59,130,246,0.5)]'
+                    : 'border-[#1e3a5f] hover:border-[#3b82f6]/60'
+                }`} style={{ background: '#0d1b2e' }}>
+                  <img
+                    src={category.image_url || getCategoryFallbackImage(category.name)}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = getCategoryFallbackImage(category.name);
+                    }}
+                  />
+                  <div className={`absolute inset-0 transition-all ${
+                    selectedCategory === category.id
+                      ? 'bg-blue-500/20'
+                      : 'bg-black/30 hover:bg-black/10'
+                  }`}></div>
+                  {selectedCategory === category.id && (
+                    <div className="absolute top-0.5 right-0.5 w-3 h-3 bg-[#3b82f6] rounded-full flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                     </div>
-
-                    {/* Category Name */}
-                    <span className={`text-[10px] font-bold text-center leading-tight line-clamp-2 ${
-                      selectedCategory === category.id
-                        ? 'text-[#1759cb]'
-                        : 'text-gray-900'
-                    }`}>
-                      {category.name}
-                    </span>
-                  </motion.button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                  )}
+                </div>
+                <span className={`text-[10px] font-bold text-center leading-tight line-clamp-1 transition-colors ${
+                  selectedCategory === category.id ? 'text-[#3b82f6]' : 'text-gray-300'
+                }`}>
+                  {category.name}
+                </span>
+              </motion.button>
+            ))}
           </div>
         ) : null}
       </div>
