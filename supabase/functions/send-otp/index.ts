@@ -178,24 +178,6 @@ Deno.serve(async (req: Request) => {
       expires_at: expiresAt.toISOString()
     });
 
-    // Skip sending SMS for test number but mark as successful
-    if (isTestNumber) {
-      console.log("✅ Test number detected - OTP stored but SMS not sent");
-      return new Response(JSON.stringify({
-        success: true,
-        sms_sent: true,
-        message: "تم إرسال رمز التحقق بنجاح",
-        debug: {
-          isTestMode: false,
-          otp: otp,
-          testNumber: true,
-          skipSms: true
-        }
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     if (isTestMode) {
       console.log("✅ Test mode - OTP stored successfully (HTD not configured)");
 

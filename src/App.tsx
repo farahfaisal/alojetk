@@ -1116,7 +1116,12 @@ const AppContent: React.FC = () => {
           {showAddressOrAreaSelector && (
             <AddressOrAreaSelector
               onClose={() => {
-                setShowAddressOrAreaSelector(false);
+                // Only allow closing if service area is selected
+                const selectedServiceArea = localStorage.getItem('selectedServiceArea');
+                if (selectedServiceArea) {
+                  setShowAddressOrAreaSelector(false);
+                }
+                // Otherwise, do nothing - user must select an area
               }}
               onAddressSelected={handleAddressSelected}
               onAreaSelected={handleAreaSelected}
@@ -1154,10 +1159,7 @@ const AppContent: React.FC = () => {
               banner: selectedVendor.banner_url,
               logo: selectedVendor.logo_url,
               rating: selectedVendor.rating,
-              status: selectedVendor.status,
-              working_hours: selectedVendor.working_hours,
-              vacation_mode: selectedVendor.vacation_mode,
-              timezone: selectedVendor.timezone,
+              status: { is_open: selectedVendor.status === 'active' },
               address: selectedVendor.address
             }}
             categoryId={null}

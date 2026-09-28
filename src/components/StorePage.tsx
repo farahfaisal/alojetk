@@ -232,43 +232,60 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
     }
   }, [newVendorData, onClose]);
 
-  const [freshVendorData, setFreshVendorData] = useState<any>(null);
-  const [vendorDataLoaded, setVendorDataLoaded] = useState(false);
-  const effectiveVendor = freshVendorData ? { ...vendor, ...freshVendorData } : vendor;
-
-  // Refresh vendor data from database and check status together
+  // Refresh vendor data from database to ensure up-to-date working hours
   useEffect(() => {
-    if (!vendor?.id) return;
+    const refreshVendorData = async () => {
+      if (vendor?.id) {
+        try {
+          const { data: freshVendor, error } = await supabase
+            .from('vendors')
+            .select('working_hours, vacation_mode, status')
+            .eq('id', vendor.id)
+            .single();
 
-    const refreshAndCheckStatus = async (vendorData: any) => {
-      let data = vendorData;
-
-      try {
-        const { data: fresh, error } = await supabase
-          .from('vendors')
-          .select('working_hours, vacation_mode, status, timezone')
-          .eq('id', vendorData.id)
-          .single();
-
-        if (!error && fresh) {
-          data = { ...vendorData, ...fresh };
-          setFreshVendorData(fresh);
+          if (!error && freshVendor) {
+            // Update vendor data with fresh values
+            vendor.working_hours = freshVendor.working_hours;
+            vendor.vacation_mode = freshVendor.vacation_mode;
+            vendor.status = freshVendor.status;
+          }
+        } catch (error) {
+          console.error('Error refreshing vendor data:', error);
         }
-      } catch (err) {
-        console.error('Error refreshing vendor data:', err);
       }
-      setVendorDataLoaded(true);
+    };
+
+    refreshVendorData();
+  }, [vendor?.id]);
+
+  // Check vendor status including working hours
+  useEffect(() => {
+    if (vendor) {
+      console.log('🔍 StorePage - فحص حالة المتجر:', {
+        vendorId: vendor.id,
+        storeName: vendor.store_name,
+        working_hours: vendor.working_hours,
+        vacation_mode: vendor.vacation_mode,
+        status: vendor.status
+      });
 
       const workingStatus = checkVendorWorkingStatus({
-        working_hours: data.working_hours,
-        vacation_mode: data.vacation_mode,
-        status: data.status
+        working_hours: vendor.working_hours,
+        vacation_mode: vendor.vacation_mode,
+        status: vendor.status
+      });
+
+      console.log('✅ StorePage - نتيجة الفحص:', {
+        is_open: workingStatus.is_open,
+        reason: workingStatus.reason,
+        today_hours: workingStatus.today_hours
       });
 
       setIsVendorAvailable(workingStatus.is_open);
 
       if (!workingStatus.is_open) {
         let message = 'المتجر مغلق حالياً';
+
         switch (workingStatus.reason) {
           case 'vacation':
             message = 'المتجر في إجازة';
@@ -287,26 +304,27 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
             message = 'المتجر معلق حالياً، لا يمكن الطلب منه في الوقت الحالي';
             break;
         }
+
         setVendorStatusMessage(message);
       } else {
         setVendorStatusMessage('');
       }
-    };
+    }
 
-    refreshAndCheckStatus(vendor);
-
+    // Check status every minute
     const interval = setInterval(() => {
-      const merged = freshVendorData ? { ...vendor, ...freshVendorData } : vendor;
-      const workingStatus = checkVendorWorkingStatus({
-        working_hours: merged.working_hours,
-        vacation_mode: merged.vacation_mode,
-        status: merged.status
-      });
-      setIsVendorAvailable(workingStatus.is_open);
+      if (vendor) {
+        const workingStatus = checkVendorWorkingStatus({
+          working_hours: vendor.working_hours,
+          vacation_mode: vendor.vacation_mode,
+          status: vendor.status
+        });
+        setIsVendorAvailable(workingStatus.is_open);
+      }
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [vendor?.id]);
+  }, [vendor]);
 
   // Fetch store categories (both regular and custom)
   useEffect(() => {
@@ -936,11 +954,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        {!vendorDataLoaded ? (
-                          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                        ) : (() => {
-                          const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
-                          const todayHours = getTodayHours(storeHours, effectiveVendor.timezone);
+                        {(() => {
+                          const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                          const todayHours = getTodayHours(storeHours, vendor.timezone);
                           if (todayHours && todayHours.enabled && todayHours.open) {
                             if (todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59')) {
                               return (
@@ -983,18 +999,9 @@ const StorePage: React.FC<StorePageProps> = ({ vendor, categoryId, onClose }) =>
                           className="border-t border-gray-100 px-4 pb-3"
                         >
                           <div className="pt-3 space-y-2">
-                            {!vendorDataLoaded ? (
-                              <div className="space-y-2">
-                                {[...Array(7)].map((_, i) => (
-                                  <div key={i} className="flex justify-between items-center">
-                                    <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
-                                    <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (() => {
-                              const storeHours = convertWorkingHoursToArray(effectiveVendor.working_hours);
-                              const timezone = effectiveVendor.timezone || 'Asia/Jerusalem';
+                            {(() => {
+                              const storeHours = convertWorkingHoursToArray(vendor.working_hours);
+                              const timezone = vendor.timezone || 'Asia/Jerusalem';
                               const now = new Date();
                               const localTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
                               const currentDay = localTime.getDay();
