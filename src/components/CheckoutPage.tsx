@@ -98,7 +98,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     console.log('📊 deliveryFee prop changed to:', deliveryFee);
   }, [deliveryFee]);
 
-  const BRAND = '#C8102E';
+  const BRAND = '#1759cb';
 
   // Calculate multi-vendor delivery fee
   useEffect(() => {
@@ -716,6 +716,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                style={{ backgroundColor: `${BRAND}1A` }}>
             <Check className="w-10 h-10" style={{ color: BRAND }} />
           </div>
+          <div className="text-center mb-2">
+            <span className="text-sm font-bold" style={{ color: BRAND }}>ألو جيتك</span>
+          </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2 text-right">تم إنشاء الطلب بنجاح!</h2>
           <p className="text-gray-600 mb-4 text-right">سيتم تحضير طلبك وتوصيله في أقرب وقت ممكن</p>
           <p className="text-sm text-gray-500 text-center mb-6">جاري الانتقال للصفحة الرئيسية...</p>
@@ -754,7 +757,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             onClick={onBack}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <ChevronRight className="w-6 h-6" style={{ color: BRAND }} />
+            <ChevronRight className="w-6 h-6" style={{ color: '#1759cb' }} />
           </button>
           <h2 className="text-lg font-bold text-gray-900">العودة لسلة المشتريات</h2>
           <div className="w-10" />
@@ -782,7 +785,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   courierMode === 'pickup' ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50'
                 }`}
               >
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#1759cb]/10 flex items-center justify-center flex-shrink-0">
                   <span className="text-2xl">🚶</span>
                 </div>
                 <div className="flex-1 text-right">
@@ -801,7 +804,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 } : {}}
               >
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  courierMode === 'delivery' ? 'bg-white/20' : 'bg-gray-100'
+                  courierMode === 'delivery' ? 'bg-white/20' : 'bg-[#1759cb]/10'
                 }`}>
                   <svg viewBox="0 0 24 24" fill="currentColor" className={`w-6 h-6 ${
                     courierMode === 'delivery' ? 'text-white' : 'text-gray-600'
@@ -999,7 +1002,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             </div>
             <div className="flex-1 text-right mr-3">
-              <p className="font-bold text-gray-900 text-base">محفظة JIB</p>
+              <p className="font-bold text-gray-900 text-base">محفظة ألو جيتك</p>
               <p className="text-sm" style={{ color: BRAND }}>₪{walletBalance.toFixed(2)}</p>
             </div>
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${BRAND}20` }}>
@@ -1087,8 +1090,8 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           <button
             onClick={handlePlaceOrder}
             disabled={loading || isProcessing}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ backgroundColor: BRAND }}
+            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+            style={{ backgroundColor: '#1759cb' }}
           >
             {loading ? (
               <>
