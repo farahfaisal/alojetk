@@ -173,7 +173,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
           <div className="w-24 h-24 mx-auto bg-white rounded-full shadow-2xl flex items-center justify-center relative overflow-hidden">
             <img
               src="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/categories/test.png"
-              alt="الو جيتك"
+              alt="JIB"
               className="w-20 h-20 object-cover rounded-full"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg";
@@ -355,7 +355,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
                 <Star className="w-6 h-6 text-yellow-300" />
               </div>
               <div>
-                <h3 className="font-bold text-white mb-2">مرحباً بك في الو جيتك!</h3>
+                <h3 className="font-bold text-white mb-2">مرحباً بك في JIB!</h3>
                 <p className="text-white/80 text-sm leading-relaxed">
                   نقدم خدمة توصيل سريعة وموثوقة في جميع أنحاء فلسطين. 
                   اختر منطقتك لنبدأ رحلة التسوق معاً.

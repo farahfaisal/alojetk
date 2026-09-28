@@ -1076,7 +1076,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
                           {getGreeting()}، {user?.name || 'المستخدم'}! 👋
                         </h1>
                         <p className="text-white/90 text-lg">
-                          مرحباً بك في الو جيتك
+                          مرحباً بك في JIB
                         </p>
                         {user?.email && (
                           <p className="text-white/70 text-sm">{user.email}</p>
@@ -1167,7 +1167,7 @@ const AccountPage: React.FC<AccountPageProps> = ({
                         نحن سعداء لوجودك معنا! 🌟
                       </h3>
                       <p className="text-gray-600 text-sm leading-relaxed">
-                        شكراً لاختيارك الو جيتك. نسعى دائماً لتقديم أفضل خدمة توصيل في فلسطين. 
+                        شكراً لاختيارك JIB. نسعى دائماً لتقديم أفضل خدمة توصيل في فلسطين. 
                         استمتع بتجربة التسوق والتوصيل السريع!
                       </p>
                       
@@ -1278,10 +1278,10 @@ const AccountPage: React.FC<AccountPageProps> = ({
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <img 
                           src="https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg"
-                          alt="الو جيتك"
+                          alt="JIB"
                           className="w-8 h-8 rounded-full"
                         />
-                        <span className="font-bold text-gray-900">الو جيتك</span>
+                        <span className="font-bold text-gray-900">JIB</span>
                       </div>
                       <p className="text-gray-600 text-xs">
                         الإصدار 1.0 • أفضل تطبيق توصيل في فلسطين

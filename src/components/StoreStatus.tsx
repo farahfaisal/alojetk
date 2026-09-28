@@ -118,7 +118,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
 
   if (error && !storeStatus) {
     return (
-      <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg">
+      <div className="bg-[#1759cb]/10 text-[#1759cb] p-4 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
           <AlertCircle className="w-5 h-5" />
           <p className="font-medium">خطأ في جلب البيانات</p>
@@ -154,7 +154,7 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
       {/* حالة المتجر */}
       <div className="flex items-center gap-3 mb-4">
         <Store className={`w-5 h-5 ${
-          storeStatus.is_open_now ? 'text-green-500' : 'text-[#b91c1c]'
+          storeStatus.is_open_now ? 'text-green-500' : 'text-[#1759cb]'
         }`} />
         <div>
           <h3 className="font-semibold text-gray-900">
@@ -164,11 +164,11 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
           {!storeStatus.vacation_mode && todayHours && (
             <p className="text-sm text-gray-600">
               {!todayHours.enabled || !todayHours.open ? (
-                <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
+                <span className="bg-[#1759cb] text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
               ) : todayHours.open === '00:00' && (!todayHours.close || todayHours.close === '23:59') ? (
                 <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold inline-block">مفتوح 24 ساعة</span>
               ) : !todayHours.close ? (
-                <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
+                <span className="bg-[#1759cb] text-white px-3 py-1 rounded-full text-xs font-bold inline-block">المتجر مغلق اليوم</span>
               ) : (
                 <span>ساعات العمل اليوم: {formatTime(todayHours.open)} - {formatTime(todayHours.close)}</span>
               )}
@@ -195,11 +195,11 @@ const StoreStatus: React.FC<StoreStatusProps> = ({ vendorId }) => {
                 <span>{getDayName(hours.day)}</span>
                 <span>
                   {!hours.enabled || !hours.open ? (
-                    <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                    <span className="bg-[#1759cb] text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                   ) : hours.open === '00:00' && (!hours.close || hours.close === '23:59') ? (
                     <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">24 ساعة</span>
                   ) : !hours.close ? (
-                    <span className="bg-[#b91c1c] text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
+                    <span className="bg-[#1759cb] text-white px-3 py-1 rounded-full text-xs font-bold">مغلق</span>
                   ) : (
                     `${formatTime(hours.open)} - ${formatTime(hours.close)}`
                   )}

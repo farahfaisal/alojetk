@@ -368,7 +368,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
         }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-br from-[#c21d14] to-[#8b1a1a] px-4 py-6">
+        <div className="bg-gradient-to-br from-[#1759cb] to-[#0f3d8a] px-4 py-6">
           <div className="flex items-center gap-3 mb-4">
             <button
               onClick={onClose}
@@ -417,7 +417,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
             />
             {isSearching && (
               <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <div className="w-5 h-5 border-2 border-gray-300 border-t-[#c21d14] rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-gray-300 border-t-[#1759cb] rounded-full animate-spin" />
               </div>
             )}
           </div>
@@ -485,7 +485,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                               </div>
                             )}
                             {result.price && (
-                              <p className="text-sm font-bold text-[#c21d14] whitespace-nowrap">
+                              <p className="text-sm font-bold text-[#1759cb] whitespace-nowrap">
                                 {result.price.toFixed(2)} ₪
                               </p>
                             )}

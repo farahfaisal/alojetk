@@ -108,7 +108,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-gradient-to-br from-[#c21d14] to-[#8b1a1a] px-6 py-5 flex items-center justify-between z-10">
+          <div className="sticky top-0 bg-gradient-to-br from-[#1759cb] to-[#0f3d8a] px-6 py-5 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
               <MapPin className="w-6 h-6 text-white" />
               <h2 className="text-xl font-bold text-white">
@@ -134,7 +134,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث عن المنطقة..."
-                className="w-full pr-11 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#c21d14]/20 focus:border-[#c21d14] transition-all"
+                className="w-full pr-11 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1759cb]/20 focus:border-[#1759cb] transition-all"
               />
               {searchQuery && (
                 <button
@@ -153,7 +153,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           }}>
             {loading ? (
               <div className="p-8 flex items-center justify-center">
-                <div className="w-8 h-8 border-3 border-gray-200 border-t-[#c21d14] rounded-full animate-spin" />
+                <div className="w-8 h-8 border-3 border-gray-200 border-t-[#1759cb] rounded-full animate-spin" />
               </div>
             ) : (
               <div className="p-4 space-y-2">
@@ -214,16 +214,16 @@ const CitySelector: React.FC<CitySelectorProps> = ({
                         disabled={!isActive}
                         className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
                           isActive
-                            ? 'bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-[#c21d14]/30'
+                            ? 'bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-[#1759cb]/30'
                             : 'bg-gray-50 cursor-not-allowed opacity-60'
-                        } ${currentCity === area.name ? 'border-[#c21d14] bg-[#1759cb]/10' : ''}`}
+                        } ${currentCity === area.name ? 'border-[#1759cb] bg-[#1759cb]/10' : ''}`}
                         whileHover={isActive ? { scale: 1.01 } : {}}
                         whileTap={isActive ? { scale: 0.99 } : {}}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                             currentCity === area.name
-                              ? 'bg-[#c21d14]'
+                              ? 'bg-[#1759cb]'
                               : isActive
                               ? 'bg-gray-100'
                               : 'bg-gray-200'
@@ -244,7 +244,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
                         </div>
                         {isActive ? (
                           currentCity === area.name && (
-                            <div className="w-8 h-8 rounded-full bg-[#c21d14] flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-[#1759cb] flex items-center justify-center">
                               <Check className="w-5 h-5 text-white" />
                             </div>
                           )

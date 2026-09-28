@@ -236,7 +236,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
 
   if (error) {
     return (
-      <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-xl flex items-center gap-2">
+      <div className="bg-[#1759cb]/10 text-[#1759cb] p-4 rounded-xl flex items-center gap-2">
         <Store className="w-5 h-5" />
         <p>{error}</p>
       </div>
@@ -283,7 +283,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-full h-full bg-gradient-to-br from-[#1759cb] to-[#1759cb] flex items-center justify-center text-white font-bold text-xl">
                       {vendor.store_name.charAt(0)}
                     </div>
                   )}
@@ -343,7 +343,7 @@ const VendorsList: React.FC<VendorsListProps> = ({
             <motion.button
               whileHover={{ scale: 1.02 }}
               onClick={onViewAll}
-              className="h-full w-full bg-[#b91c1c] rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#8b1515] transition-colors shadow-lg"
+              className="h-full w-full bg-[#1759cb] rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#0f3d8a] transition-colors shadow-lg"
             >
               <span className="text-white font-bold">عرض الكل</span>
               <ChevronLeft className="w-5 h-5 text-white" />

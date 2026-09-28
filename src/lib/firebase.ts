@@ -451,7 +451,7 @@ function sendWelcomeNotification() {
     if (Notification.permission === 'granted') {
       try {
         const testNotification = new Notification('مرحباً من بين إديك! 🎉', {
-          body: 'تم تفعيل الإشعارات بنجاح. ستصلك إشعارات حول طلباتك والعروض الجديدة من الو جيتك.',
+          body: 'تم تفعيل الإشعارات بنجاح. ستصلك إشعارات حول طلباتك والعروض الجديدة من JIB.',
           icon: 'https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg',
           badge: 'https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg',
           dir: 'rtl',

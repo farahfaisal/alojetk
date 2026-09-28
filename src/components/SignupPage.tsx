@@ -288,7 +288,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">تمت دعوتك بواسطة</h3>
-                    <p className="text-gray-600">{referralInfo.customer?.name || 'مستخدم الو جيتك'}</p>
+                    <p className="text-gray-600">{referralInfo.customer?.name || 'مستخدم JIB'}</p>
                     <p className="text-sm text-brand mt-1">
                       أكمل التسجيل للحصول على {referralInfo.points_reward} نقطة مكافأة!
                     </p>

@@ -581,7 +581,7 @@ body {
 
 /* Scrollbar with brand colors */
 .scrollbar-thumb-brand {
-  scrollbar-color: #b91c1c #f3f4f6;
+  scrollbar-color: #1759cb #f3f4f6;
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar {
@@ -594,13 +594,13 @@ body {
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar-thumb {
-  background: #b91c1c;
+  background: #1759cb;
   border-radius: 4px;
   border: 2px solid #f3f4f6;
 }
 
 .scrollbar-thumb-brand::-webkit-scrollbar-thumb:hover {
-  background: #b91c1c;
+  background: #1759cb;
 }
 
 .scrollbar-track-gray-100 {
@@ -656,10 +656,10 @@ body {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 5px rgba(47, 204, 250, 0.5);
   }
   50% {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 20px rgba(47, 204, 250, 0.8);
   }
 }
 
@@ -740,11 +740,11 @@ body {
 
 /* Brand colors */
 .text-brand {
-  color: #b91c1c;
+  color: #1759cb;
 }
 
 .bg-brand {
-  background-color: #b91c1c;
+  background-color: #1759cb;
 }
 
 .text-accent {
@@ -757,7 +757,7 @@ body {
 
 /* Red click effects for categories */
 .text-shadow-red {
-  text-shadow: 0 2px 4px rgba(194, 29, 20, 0.5);
+  text-shadow: 0 2px 4px rgba(23, 89, 203, 0.5);
 }
 
 .border-3 {
@@ -768,15 +768,15 @@ body {
 @keyframes category-click {
   0% { 
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(194, 29, 20, 0.7);
+    box-shadow: 0 0 0 0 rgba(23, 89, 203, 0.7);
   }
   50% { 
     transform: scale(0.95);
-    box-shadow: 0 0 0 10px rgba(194, 29, 20, 0.3);
+    box-shadow: 0 0 0 10px rgba(23, 89, 203, 0.3);
   }
   100% { 
     transform: scale(1);
-    box-shadow: 0 0 0 20px rgba(194, 29, 20, 0);
+    box-shadow: 0 0 0 20px rgba(23, 89, 203, 0);
   }
 }
 
@@ -786,7 +786,7 @@ body {
 
 /* Red glow effect */
 .red-glow {
-  box-shadow: 0 0 20px rgba(194, 29, 20, 0.4);
+  box-shadow: 0 0 20px rgba(23, 89, 203, 0.4);
 }
 
 /* Responsive text - smaller fonts for mobile */
@@ -929,7 +929,7 @@ body {
 /* Thin red scrollbar for address selector */
 .address-selector-scroll {
   scrollbar-width: thin !important;
-  scrollbar-color: #B91C1C #f3f4f6 !important;
+  scrollbar-color: #1759cb #f3f4f6 !important;
   -ms-overflow-style: scrollbar !important;
   overflow-y: scroll !important;
 }
@@ -947,7 +947,7 @@ body {
 }
 
 .address-selector-scroll::-webkit-scrollbar-thumb {
-  background: #B91C1C !important;
+  background: #1759cb !important;
   border-radius: 3px !important;
   display: block !important;
   -webkit-appearance: none !important;
@@ -955,7 +955,7 @@ body {
 }
 
 .address-selector-scroll::-webkit-scrollbar-thumb:hover {
-  background: #b91c1c !important;
+  background: #1759cb !important;
 }
 
 /* Swiper Navigation Buttons */

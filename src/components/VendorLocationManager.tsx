@@ -198,14 +198,14 @@ export default function VendorLocationManager() {
         <div className={`rounded-lg p-4 mb-6 flex items-center gap-3 ${
           message.type === 'success'
             ? 'bg-emerald-50 border border-emerald-200'
-            : 'bg-red-50 border border-red-200'
+            : 'bg-sky-50 border border-sky-200'
         }`}>
           {message.type === 'success' ? (
             <CheckCircle2 className="text-emerald-600" size={20} />
           ) : (
-            <AlertCircle className="text-red-600" size={20} />
+            <AlertCircle className="text-sky-600" size={20} />
           )}
-          <p className={message.type === 'success' ? 'text-emerald-900' : 'text-red-900'}>
+          <p className={message.type === 'success' ? 'text-emerald-900' : 'text-sky-900'}>
             {message.text}
           </p>
         </div>

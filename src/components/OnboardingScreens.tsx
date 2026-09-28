@@ -70,7 +70,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
             <div className="w-40 h-40 bg-white rounded-3xl shadow-2xl flex items-center justify-center overflow-hidden">
               <img
                 src="/icons/app-icon.jpg"
-                alt="الو جيتك"
+                alt="JIB"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -80,10 +80,10 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
 
           {/* Welcome Text */}
           <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
-            مرحباً بك في الو جيتك
+            مرحباً بك في JIB
           </h1>
           <p className="text-gray-600 text-lg text-center max-w-sm mb-12 leading-relaxed">
-            أفضل المطاعم من الو جيتك - توصيلاً سريعاً لآلاف المأكولات من جميع المتاجر المحلية
+            أفضل المطاعم من JIB - توصيلاً سريعاً لآلاف المأكولات من جميع المتاجر المحلية
           </p>
 
           {/* Action Buttons */}

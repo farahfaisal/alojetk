@@ -231,9 +231,9 @@ export const getStatusBadgeClasses = (status: VendorWorkingStatus): string => {
     case 'vacation':
       return 'bg-blue-500/90 text-white';
     case 'suspended':
-      return 'bg-[#b91c1c]/90 text-white';
+      return 'bg-[#1759cb]/90 text-white';
     default:
-      return 'bg-[#b91c1c]/90 text-white';
+      return 'bg-[#1759cb]/90 text-white';
   }
 };
 

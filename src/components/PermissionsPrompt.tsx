@@ -189,9 +189,9 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
   const renderIntroStep = () => (
     <div className="space-y-6">
       <div className="bg-brand/10 p-6 rounded-xl">
-        <h3 className="text-xl font-bold text-accent mb-4 text-center">مرحباً بك في تطبيق الو جيتك!</h3>
+        <h3 className="text-xl font-bold text-accent mb-4 text-center">مرحباً بك في تطبيق JIB!</h3>
         <p className="text-gray-700 mb-4">
-          لتقديم أفضل تجربة ممكنة في الو جيتك، نحتاج إلى بعض الأذونات:
+          لتقديم أفضل تجربة ممكنة في JIB، نحتاج إلى بعض الأذونات:
         </p>
         <ul className="space-y-3">
           {locationSupported && (
@@ -471,7 +471,7 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
         </div>
         <h3 className="text-xl font-bold text-accent mb-4 text-center">تم الإعداد بنجاح!</h3>
         <p className="text-gray-700 mb-4 text-center">
-          شكراً لك! يمكنك الآن الاستمتاع بكامل مزايا تطبيق الو جيتك.
+          شكراً لك! يمكنك الآن الاستمتاع بكامل مزايا تطبيق JIB.
         </p>
         
         <div className="space-y-3 mt-6">

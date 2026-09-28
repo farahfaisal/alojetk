@@ -33,7 +33,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       transition={{ duration: 0.5 }}
       className="z-[9999] flex items-center justify-center overflow-hidden min-h-screen"
       style={{
-        background: 'linear-gradient(135deg, #c21d14 0%, #a71e1e 50%, #8b1a1a 100%)'
+        background: 'linear-gradient(135deg, #1759cb 0%, #1255a8 50%, #0f3d8a 100%)'
       }}
     >
       <motion.div
@@ -70,7 +70,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                     ease: "easeInOut"
                   }}
                 >
-                  <Phone className="w-20 h-20 text-[#c21d14]" strokeWidth={2.5} />
+                  <Phone className="w-20 h-20 text-[#1759cb]" strokeWidth={2.5} />
                 </motion.div>
                 <motion.div
                   className="absolute -bottom-2 -right-2"
@@ -79,14 +79,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                   transition={{ delay: 0.3, type: "spring" }}
                 >
                   <div className="bg-[#FFD700] rounded-full p-2 shadow-lg">
-                    <ShoppingBag className="w-8 h-8 text-[#c21d14]" strokeWidth={2.5} />
+                    <ShoppingBag className="w-8 h-8 text-[#1759cb]" strokeWidth={2.5} />
                   </div>
                 </motion.div>
               </div>
             ) : (
               <img
                 src="https://fliwyntfvfedslbwkvks.supabase.co/storage/v1/object/public/advertisements/aloo.png"
-                alt="الو جيتك"
+                alt="JIB"
                 className="w-full h-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
@@ -118,7 +118,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           className="text-center"
         >
           <h1 className="text-4xl font-bold text-white mb-2" style={{ fontFamily: 'Arial, sans-serif' }}>
-            الو جيتك
+            JIB
           </h1>
           <p className="text-white/80 text-lg">
             توصيل سريع وموثوق

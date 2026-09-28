@@ -328,7 +328,7 @@ const Home: React.FC<HomeProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Search className="w-5 h-5 text-[#b91c1c]" />
+            <Search className="w-5 h-5 text-[#1759cb]" />
           </motion.button>
 
           {/* Location Button with City Name - Left Side */}
@@ -341,7 +341,7 @@ const Home: React.FC<HomeProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <MapPin className="w-5 h-5 text-[#b91c1c]" />
+            <MapPin className="w-5 h-5 text-[#1759cb]" />
             <div className="flex flex-col items-start min-w-0">
               <span className="text-xs text-gray-500 leading-none">التوصيل إلى</span>
               <span className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[120px]">
@@ -401,9 +401,9 @@ const Home: React.FC<HomeProps> = ({
                     }`}
                   >
                     {/* Category Image */}
-                    <div className={`w-full aspect-square rounded-lg overflow-hidden border border-gray-200 transition-all relative bg-[#b91c1c] ${
+                    <div className={`w-full aspect-square rounded-lg overflow-hidden border border-gray-200 transition-all relative bg-[#1759cb] ${
                       selectedCategory === category.id
-                        ? 'ring-2 ring-[#b91c1c] ring-offset-2'
+                        ? 'ring-2 ring-[#1759cb] ring-offset-2'
                         : ''
                     }`}>
                       <img
@@ -420,7 +420,7 @@ const Home: React.FC<HomeProps> = ({
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute top-1 right-1 w-4 h-4 bg-[#b91c1c] rounded-full flex items-center justify-center shadow-lg"
+                          className="absolute top-1 right-1 w-4 h-4 bg-[#1759cb] rounded-full flex items-center justify-center shadow-lg"
                         >
                           <div className="w-2 h-2 bg-white rounded-full"></div>
                         </motion.div>
@@ -429,7 +429,7 @@ const Home: React.FC<HomeProps> = ({
                       {/* Gradient overlay */}
                       <div className={`absolute inset-0 transition-all duration-300 ${
                         selectedCategory === category.id
-                          ? 'bg-[#b91c1c]/20'
+                          ? 'bg-[#1759cb]/20'
                           : 'bg-black/10 hover:bg-black/5'
                       }`}></div>
                     </div>
@@ -437,7 +437,7 @@ const Home: React.FC<HomeProps> = ({
                     {/* Category Name */}
                     <span className={`text-[10px] font-bold text-center leading-tight line-clamp-2 ${
                       selectedCategory === category.id
-                        ? 'text-[#b91c1c]'
+                        ? 'text-[#1759cb]'
                         : 'text-gray-900'
                     }`}>
                       {category.name}
@@ -476,7 +476,7 @@ const Home: React.FC<HomeProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">تسوق مع الـو جيتك</h2>
           <button
             onClick={() => setShowAllVendors(true)}
-            className="text-[#b91c1c] hover:text-[#b91c1c] transition-colors text-sm font-bold flex items-center"
+            className="text-[#1759cb] hover:text-[#1759cb] transition-colors text-sm font-bold flex items-center"
           >
             عرض الكل<ChevronLeft className="w-4 h-4 mr-1" />
           </button>
@@ -514,7 +514,7 @@ const Home: React.FC<HomeProps> = ({
                 <div className="bg-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#b91c1c]/20">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#1759cb]/20">
                         <img
                           src={category.image_url || getCategoryFallbackImage(category.name)}
                           alt={category.name}
@@ -528,7 +528,7 @@ const Home: React.FC<HomeProps> = ({
                     </h2>
                     <button
                       onClick={() => handleViewCategoryVendors(category.id, category.name)}
-                      className="text-white bg-[#b91c1c] hover:bg-[#8b1515] transition-colors text-sm font-bold flex items-center shadow-md px-3 py-1.5 rounded-full"
+                      className="text-white bg-[#1759cb] hover:bg-[#0f3d8a] transition-colors text-sm font-bold flex items-center shadow-md px-3 py-1.5 rounded-full"
                     >
                       عرض الكل ({vendors.length})
                       <ChevronLeft className="w-4 h-4 mr-1" />
@@ -540,13 +540,13 @@ const Home: React.FC<HomeProps> = ({
                     <div className="flex justify-between items-center mb-3 px-4">
                       <button
                         id={swiperPrevId}
-                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200 hover:border-[#b91c1c]"
+                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-200 hover:border-[#1759cb]"
                       >
                         <ChevronRight className="w-5 h-5" />
                       </button>
                       <button
                         id={swiperNextId}
-                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#b91c1c] transition-all border border-gray-200 hover:border-[#b91c1c]"
+                        className="w-9 h-9 rounded-full bg-white hover:bg-gray-50 shadow-md flex items-center justify-center text-[#1759cb] transition-all border border-gray-200 hover:border-[#1759cb]"
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
@@ -586,7 +586,7 @@ const Home: React.FC<HomeProps> = ({
                                 }}
                               />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] flex items-center justify-center text-white font-bold text-xl">
+                              <div className="w-full h-full bg-gradient-to-br from-[#1759cb] to-[#1759cb] flex items-center justify-center text-white font-bold text-xl">
                                 {vendor.store_name.charAt(0)}
                               </div>
                             )}
@@ -636,8 +636,8 @@ const Home: React.FC<HomeProps> = ({
                                 return workingStatus.is_open
                                   ? 'bg-green-500/90 text-white'
                                   : vendor.status === 'suspended'
-                                    ? 'bg-[#b91c1c]/90 text-white'
-                                    : 'bg-[#b91c1c] text-white';
+                                    ? 'bg-[#1759cb]/90 text-white'
+                                    : 'bg-[#1759cb] text-white';
                               })()
                             }`}>
                               {(() => {

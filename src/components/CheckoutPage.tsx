@@ -999,7 +999,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
             </div>
             <div className="flex-1 text-right mr-3">
-              <p className="font-bold text-gray-900 text-base">محفظة الو جيتك</p>
+              <p className="font-bold text-gray-900 text-base">محفظة JIB</p>
               <p className="text-sm" style={{ color: BRAND }}>₪{walletBalance.toFixed(2)}</p>
             </div>
             <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: `${BRAND}20` }}>

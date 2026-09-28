@@ -58,7 +58,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onClose }) 
         setTimeout(() => {
           if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
             const testNotification = new Notification('🎉 تم تفعيل الإشعارات!', {
-              body: 'هذا إشعار تجريبي من الو جيتك للتأكد من عمل النظام بشكل صحيح',
+              body: 'هذا إشعار تجريبي من JIB للتأكد من عمل النظام بشكل صحيح',
               icon: 'https://rrhoxgfnikmtgsxwvjuv.supabase.co/storage/v1/object/public/general/WhatsApp%20Image%202025-09-23%20at%2000.16.28.jpeg',
               dir: 'rtl',
               lang: 'ar',

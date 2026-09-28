@@ -228,7 +228,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               }}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#b91c1c] to-[#b91c1c] flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-full h-full bg-gradient-to-br from-[#1759cb] to-[#1759cb] flex items-center justify-center text-white font-bold text-xl">
               {vendor.store_name.charAt(0)}
             </div>
           )}
@@ -278,8 +278,8 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
               return workingStatus.is_open
                 ? 'bg-green-500/90 text-white'
                 : vendor.status === 'suspended'
-                  ? 'bg-[#b91c1c]/90 text-white'
-                  : 'bg-[#b91c1c] text-white';
+                  ? 'bg-[#1759cb]/90 text-white'
+                  : 'bg-[#1759cb] text-white';
             })()
           }`}>
             {(() => {
@@ -351,7 +351,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Search className="w-5 h-5 text-[#c21d14]" />
+            <Search className="w-5 h-5 text-[#1759cb]" />
           </motion.button>
 
           {/* Location Button with City Name - Left Side */}
@@ -364,7 +364,7 @@ const Supermarket: React.FC<SupermarketProps> = ({ selectedCity, onOpenSearch })
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <MapPin className="w-5 h-5 text-[#c21d14]" />
+            <MapPin className="w-5 h-5 text-[#1759cb]" />
             <div className="flex flex-col items-start min-w-0">
               <span className="text-xs text-gray-500 leading-none">التوصيل إلى</span>
               <span className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[120px]">

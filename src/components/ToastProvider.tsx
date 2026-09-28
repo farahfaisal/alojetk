@@ -11,7 +11,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       case 'success':
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'destructive':
-        return <AlertCircle className="w-5 h-5 text-[#b91c1c]" />;
+        return <AlertCircle className="w-5 h-5 text-[#1759cb]" />;
       default:
         return <Info className="w-5 h-5 text-blue-500" />;
     }
@@ -22,7 +22,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       case 'success':
         return 'bg-green-50 border-green-200 text-green-800';
       case 'destructive':
-        return 'bg-[#b91c1c]/10 border-[#b91c1c]/30 text-[#b91c1c]';
+        return 'bg-[#1759cb]/10 border-[#1759cb]/30 text-[#1759cb]';
       default:
         return 'bg-blue-50 border-blue-200 text-blue-800';
     }

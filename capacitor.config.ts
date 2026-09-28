@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: "com.alojitak.app",
-  appName: "الو جيتك",
+  appName: "JIB",
   webDir: "dist", 
   server: {
     androidScheme: "https",
@@ -17,13 +17,13 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: "always",
-    scheme: "الو جيتك",
-    backgroundColor: "#c21d14",
+    scheme: "JIB",
+    backgroundColor: "#1759cb",
     limitsNavigationsToAppBoundDomains: true,
     preferredContentMode: "mobile"
   },
   android: {
-    backgroundColor: "#c21d14",
+    backgroundColor: "#1759cb",
     allowMixedContent: true,
     captureInput: true,
     webContentsDebuggingEnabled: false

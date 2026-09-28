@@ -121,9 +121,9 @@ export function getColorClasses(color: string): {
       border: 'border-purple-300'
     },
     red: {
-      bg: 'bg-[#b91c1c]/10',
-      text: 'text-[#b91c1c]',
-      border: 'border-[#b91c1c]/30'
+      bg: 'bg-[#1759cb]/10',
+      text: 'text-[#1759cb]',
+      border: 'border-[#1759cb]/30'
     }
   };
 

@@ -38,7 +38,7 @@ export default function BackButtonHandler() {
             console.log('🚪 خروج من التطبيق');
             
             showExitToast("جاري الخروج من التطبيق", "شكراً لاستخدام بين إديك");
-            showExitToast("جاري الخروج من التطبيق", "شكراً لاستخدام الو جيتك");
+            showExitToast("جاري الخروج من التطبيق", "شكراً لاستخدام JIB");
             
             // تأخير قصير لعرض الرسالة ثم الخروج
             setTimeout(() => {
