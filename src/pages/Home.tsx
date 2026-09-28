@@ -473,7 +473,7 @@ const Home: React.FC<HomeProps> = ({
       {/* Featured Vendors Section */}
       <div className="px-4 py-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-white">تسوق مع الـو جيتك</h2>
+          <h2 className="text-2xl font-bold text-white">تسوق مع جيب</h2>
           <button
             onClick={() => setShowAllVendors(true)}
             className="text-[#1759cb] hover:text-[#1759cb] transition-colors text-sm font-bold flex items-center"
