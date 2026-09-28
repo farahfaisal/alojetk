@@ -369,9 +369,9 @@ const Home: React.FC<HomeProps> = ({
               </div>
             ))}
           </div>
-        ) : categories.length > 0 ? (
+        ) : categories.filter(c => c.image_url).length > 0 ? (
           <div className="px-4 grid grid-cols-4 gap-x-3 gap-y-4">
-            {categories.map((category, index) => (
+            {categories.filter(c => c.image_url).slice(0, 8).map((category, index) => (
               <motion.button
                 key={`cat-${category.id}`}
                 initial={{ opacity: 0, y: 12 }}
@@ -387,12 +387,9 @@ const Home: React.FC<HomeProps> = ({
                     : 'border-[#1e3a5f] hover:border-[#3b82f6]/60'
                 }`} style={{ background: '#0d1b2e' }}>
                   <img
-                    src={category.image_url || getCategoryFallbackImage(category.name)}
+                    src={category.image_url!}
                     alt={category.name}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = getCategoryFallbackImage(category.name);
-                    }}
                   />
                   <div className={`absolute inset-0 transition-all ${
                     selectedCategory === category.id
