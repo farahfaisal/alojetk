@@ -28,7 +28,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       style={{ backgroundColor: '#000000' }}
     >
       <motion.img
-        src="/assets/2e102ed0-e938-4493-8651-e2076a789cb1.png"
+        src="/assets/1d461b4a-1276-435e-8bfd-5afbc9a8d342.png"
         alt="JIB"
         className="w-full h-full object-cover"
         initial={{ scale: 1.05, opacity: 0 }}
