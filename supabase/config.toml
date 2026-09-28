@@ -1,0 +1,11 @@
+[functions.send-otp]
+verify_jwt = false
+
+[functions.verify-otp]
+verify_jwt = false
+
+[functions.create-order]
+verify_jwt = false
+
+[functions.apply-migration]
+verify_jwt = false

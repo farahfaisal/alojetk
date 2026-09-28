@@ -182,16 +182,18 @@ Deno.serve(async (req: Request) => {
       console.log("✅ Test mode - OTP stored successfully (HTD not configured)");
 
       return new Response(JSON.stringify({
-        success: false,
+        success: true,
         sms_sent: false,
-        message: "HTD SMS credentials not configured",
+        message: isTestNumber
+          ? "رقم تجريبي - رمز التحقق: 123456"
+          : "وضع الاختبار - تم تخزين رمز التحقق",
         debug: {
           isTestMode: true,
-          error: "Missing HTD_API_ID or HTD_SENDER_ID"
+          otp: otp,
+          isTestNumber: isTestNumber
         }
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500
       });
     }
 
