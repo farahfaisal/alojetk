@@ -59,10 +59,10 @@ const statusConfig = {
   },
   cancelled: {
     label: 'ملغي',
-    color: 'bg-red-700',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
-    textColor: 'text-red-700',
+    color: 'bg-sky-700',
+    bgColor: 'bg-sky-50',
+    borderColor: 'border-sky-200',
+    textColor: 'text-sky-700',
     icon: XCircle
   }
 };
@@ -183,7 +183,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
       >
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="bg-gradient-to-r from-brand to-red-600 text-white px-4 py-4 flex items-center justify-between shadow-lg">
+          <div className="bg-gradient-to-r from-brand to-sky-600 text-white px-4 py-4 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
               <Navigation className="w-6 h-6" />
               <h2 className="text-xl font-bold">طلبات الكابتن</h2>
@@ -248,7 +248,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
                         <div className="mr-3 border-r-2 border-dashed border-gray-300 h-4"></div>
 
                         <div className="flex items-start gap-2">
-                          <div className="w-6 h-6 rounded-full bg-red-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <div className="w-6 h-6 rounded-full bg-sky-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <MapPin className="w-4 h-4 text-white" />
                           </div>
                           <div className="flex-1">
@@ -303,7 +303,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
               exit={{ scale: 0.9, opacity: 0 }}
               className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[10001] bg-white rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto"
             >
-              <div className="sticky top-0 bg-gradient-to-r from-brand to-red-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
+              <div className="sticky top-0 bg-gradient-to-r from-brand to-sky-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
                 <h3 className="text-lg font-bold">تفاصيل الطلب</h3>
                 <button
                   onClick={() => setSelectedRequest(null)}
@@ -356,7 +356,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
                     <div className="mr-4 border-r-2 border-dashed border-gray-300 h-6"></div>
 
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-red-700 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-sky-700 flex items-center justify-center flex-shrink-0">
                         <MapPin className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -434,7 +434,7 @@ const CaptainRequestsTracking: React.FC<CaptainRequestsTrackingProps> = ({ onClo
                 {selectedRequest.status === 'pending' && (
                   <button
                     onClick={() => handleCancelRequest(selectedRequest.id)}
-                    className="w-full bg-red-700 hover:bg-red-800 text-white py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-sky-700 hover:bg-sky-800 text-white py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2"
                   >
                     <XCircle className="w-5 h-5" />
                     إلغاء الطلب

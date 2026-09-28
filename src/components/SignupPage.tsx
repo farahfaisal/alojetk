@@ -264,7 +264,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ onClose, referralCode }) => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-md mx-auto p-4">
-          {error && <div className="mb-6 bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg flex items-center gap-2"><AlertCircle className="w-5 h-5" /><p>{error}</p></div>}
+          {error && <div className="mb-6 bg-[#1759cb]/10 text-[#1759cb] p-4 rounded-lg flex items-center gap-2"><AlertCircle className="w-5 h-5" /><p>{error}</p></div>}
           {success && !error && <div className="mb-6 bg-green-50 text-green-600 p-4 rounded-lg flex items-center gap-2"><Info className="w-5 h-5" /><p>{success}</p></div>}
           {!isOnline && (
             <div className="mb-6 bg-yellow-50 text-yellow-600 p-4 rounded-lg flex items-center gap-2">

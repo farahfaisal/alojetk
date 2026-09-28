@@ -162,14 +162,14 @@ const PointsRedemptionModal: React.FC<PointsRedemptionModalProps> = ({
               <p className="text-gray-600">جاري تحميل المكافآت المتاحة...</p>
             </div>
           ) : error ? (
-            <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+            <div className="bg-sky-50 text-sky-800 p-4 rounded-lg flex items-center gap-2">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <p>{error}</p>
             </div>
           ) : confirmationStep && selectedReward ? (
             <div className="space-y-6">
               {redeemError && (
-                <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+                <div className="bg-sky-50 text-sky-800 p-4 rounded-lg flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p>{redeemError}</p>
                 </div>

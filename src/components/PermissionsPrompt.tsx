@@ -269,7 +269,7 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
         </p>
         
         {locationPermission === 'denied' && (
-          <div className="bg-[#b91c1c]/10 p-4 rounded-lg text-[#b91c1c] flex items-start gap-2 mb-4">
+          <div className="bg-[#1759cb]/10 p-4 rounded-lg text-[#1759cb] flex items-start gap-2 mb-4">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">تم رفض الإذن</p>
@@ -364,7 +364,7 @@ const PermissionsPrompt: React.FC<PermissionsPromptProps> = ({ onClose }) => {
         </p>
         
         {notificationPermission === 'denied' && (
-          <div className="bg-[#b91c1c]/10 p-4 rounded-lg text-[#b91c1c] flex items-start gap-2 mb-4">
+          <div className="bg-[#1759cb]/10 p-4 rounded-lg text-[#1759cb] flex items-start gap-2 mb-4">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">تم رفض الإذن</p>

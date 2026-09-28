@@ -209,7 +209,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
       >
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="bg-gradient-to-r from-brand to-red-600 text-white px-4 py-4 flex items-center justify-between shadow-lg">
+          <div className="bg-gradient-to-r from-brand to-sky-600 text-white px-4 py-4 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
               <Navigation className="w-6 h-6" />
               <h2 className="text-xl font-bold">توصيل طرود</h2>
@@ -394,7 +394,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDestinationAreaPicker(true)}
-                        className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                        className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-sky-700 transition-colors text-sm font-medium"
                       >
                         اختر
                       </button>
@@ -424,7 +424,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDestinationMap(true)}
-                        className="px-4 py-2 border-2 border-brand text-brand rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
+                        className="px-4 py-2 border-2 border-brand text-brand rounded-lg hover:bg-sky-50 transition-colors text-sm font-medium"
                       >
                         خريطة
                       </button>
@@ -453,9 +453,9 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                   </div>
 
                   {destinationAddress && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="bg-sky-50 border border-sky-200 rounded-lg p-3">
                       <p className="text-xs text-gray-600 mb-1">العنوان الكامل:</p>
-                      <p className="text-sm font-medium text-red-900">{destinationAddress.address}</p>
+                      <p className="text-sm font-medium text-sky-900">{destinationAddress.address}</p>
                     </div>
                   )}
                 </div>
@@ -496,7 +496,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                     onClick={() => setPaymentMethod('cash')}
                     className={`p-4 rounded-lg border-2 transition-all ${
                       paymentMethod === 'cash'
-                        ? 'border-brand bg-red-50 shadow-md'
+                        ? 'border-brand bg-sky-50 shadow-md'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -515,7 +515,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
                     onClick={() => setPaymentMethod('wallet')}
                     className={`p-4 rounded-lg border-2 transition-all ${
                       paymentMethod === 'wallet'
-                        ? 'border-brand bg-red-50 shadow-md'
+                        ? 'border-brand bg-sky-50 shadow-md'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -533,7 +533,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 text-sky-700 text-sm">
                   {error}
                 </div>
               )}
@@ -542,7 +542,7 @@ const CaptainRequestPage: React.FC<CaptainRequestPageProps> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={loading || !pickupAddress || !destinationAddress}
-                className="w-full bg-gradient-to-r from-brand to-red-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-brand to-sky-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

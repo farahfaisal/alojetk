@@ -44,21 +44,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <button
             onClick={() => onViewModeChange('restaurants')}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'restaurants' ? 'text-[#b91c1c]' : 'text-gray-500 hover:text-[#b91c1c]'
+              viewMode === 'restaurants' ? 'text-[#1759cb]' : 'text-gray-500 hover:text-[#1759cb]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 viewMode === 'restaurants'
-                  ? 'bg-[#b91c1c] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#b91c1c]/10 group-hover:text-[#b91c1c]'
+                  ? 'bg-[#1759cb] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#1759cb]/10 group-hover:text-[#1759cb]'
               }`}
             >
               <Home className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'restaurants' ? 'text-[#b91c1c]' : 'text-gray-500 group-hover:text-[#b91c1c]'
+                viewMode === 'restaurants' ? 'text-[#1759cb]' : 'text-gray-500 group-hover:text-[#1759cb]'
               }`}
             >
               مطاعم
@@ -69,21 +69,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <button
             onClick={() => onViewModeChange('supermarket')}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              viewMode === 'supermarket' ? 'text-[#b91c1c]' : 'text-gray-500 hover:text-[#b91c1c]'
+              viewMode === 'supermarket' ? 'text-[#1759cb]' : 'text-gray-500 hover:text-[#1759cb]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 viewMode === 'supermarket'
-                  ? 'bg-[#b91c1c] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#b91c1c]/10 group-hover:text-[#b91c1c]'
+                  ? 'bg-[#1759cb] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#1759cb]/10 group-hover:text-[#1759cb]'
               }`}
             >
               <Store className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                viewMode === 'supermarket' ? 'text-[#b91c1c]' : 'text-gray-500 group-hover:text-[#b91c1c]'
+                viewMode === 'supermarket' ? 'text-[#1759cb]' : 'text-gray-500 group-hover:text-[#1759cb]'
               }`}
             >
               ماركت
@@ -94,26 +94,26 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <button
             onClick={onOpenCart}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group relative ${
-              isCartOpen ? 'text-[#b91c1c]' : 'text-gray-500 hover:text-[#b91c1c]'
+              isCartOpen ? 'text-[#1759cb]' : 'text-gray-500 hover:text-[#1759cb]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 relative ${
                 isCartOpen || cartItemsCount > 0
-                  ? 'bg-[#b91c1c] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#b91c1c]/10 group-hover:text-[#b91c1c]'
+                  ? 'bg-[#1759cb] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#1759cb]/10 group-hover:text-[#1759cb]'
               }`}
             >
               <ShoppingCart className="w-6 h-6" />
               {cartItemsCount > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#b91c1c] text-white rounded-full flex items-center justify-center text-[9px] font-bold shadow-md">
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#1759cb] text-white rounded-full flex items-center justify-center text-[9px] font-bold shadow-md">
                   {cartItemsCount > 99 ? '99+' : cartItemsCount}
                 </div>
               )}
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isCartOpen || cartItemsCount > 0 ? 'text-[#b91c1c]' : 'text-gray-500 group-hover:text-[#b91c1c]'
+                isCartOpen || cartItemsCount > 0 ? 'text-[#1759cb]' : 'text-gray-500 group-hover:text-[#1759cb]'
               }`}
             >
               السلة
@@ -124,21 +124,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <button
             onClick={onOpenAccount}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              isAccountOpen ? 'text-[#b91c1c]' : 'text-gray-500 hover:text-[#b91c1c]'
+              isAccountOpen ? 'text-[#1759cb]' : 'text-gray-500 hover:text-[#1759cb]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 isAccountOpen
-                  ? 'bg-[#b91c1c] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#b91c1c]/10 group-hover:text-[#b91c1c]'
+                  ? 'bg-[#1759cb] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#1759cb]/10 group-hover:text-[#1759cb]'
               }`}
             >
               <User className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isAccountOpen ? 'text-[#b91c1c]' : 'text-gray-500 group-hover:text-[#b91c1c]'
+                isAccountOpen ? 'text-[#1759cb]' : 'text-gray-500 group-hover:text-[#1759cb]'
               }`}
             >
               حسابي
@@ -149,21 +149,21 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <button
             onClick={onOpenOrders}
             className={`flex flex-col items-center gap-1 py-1 transition-all duration-300 group ${
-              isOrdersOpen ? 'text-[#b91c1c]' : 'text-gray-500 hover:text-[#b91c1c]'
+              isOrdersOpen ? 'text-[#1759cb]' : 'text-gray-500 hover:text-[#1759cb]'
             }`}
           >
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 isOrdersOpen
-                  ? 'bg-[#b91c1c] text-white shadow-md'
-                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#b91c1c]/10 group-hover:text-[#b91c1c]'
+                  ? 'bg-[#1759cb] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-500 group-hover:bg-[#1759cb]/10 group-hover:text-[#1759cb]'
               }`}
             >
               <Package className="w-6 h-6" />
             </div>
             <span
               className={`text-[10px] font-bold transition-colors duration-300 ${
-                isOrdersOpen ? 'text-[#b91c1c]' : 'text-gray-500 group-hover:text-[#b91c1c]'
+                isOrdersOpen ? 'text-[#1759cb]' : 'text-gray-500 group-hover:text-[#1759cb]'
               }`}
             >
               طلباتي

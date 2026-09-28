@@ -91,7 +91,7 @@ const CustomOrderModal: React.FC<CustomOrderModalProps> = ({
           className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-brand to-red-600 text-white px-6 py-4 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-brand to-sky-600 text-white px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ShoppingBag className="w-6 h-6" />
               <div>
@@ -149,7 +149,7 @@ const CustomOrderModal: React.FC<CustomOrderModalProps> = ({
                 )}
 
                 {error && (
-                  <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-lg p-3 text-[#b91c1c] text-sm">
+                  <div className="bg-[#1759cb]/10 border border-[#1759cb]/30 rounded-lg p-3 text-[#1759cb] text-sm">
                     {error}
                   </div>
                 )}
@@ -165,7 +165,7 @@ const CustomOrderModal: React.FC<CustomOrderModalProps> = ({
                   <button
                     type="submit"
                     disabled={loading || !customRequest.trim()}
-                    className="flex-1 py-3 bg-gradient-to-r from-brand to-red-600 text-white rounded-lg font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-gradient-to-r from-brand to-sky-600 text-white rounded-lg font-bold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>

@@ -155,7 +155,7 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
                       onError={(e) => { (e.target as HTMLImageElement).src = `https://via.placeholder.com/100?text=${vendor.store_name.charAt(0)}`; }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-red-700 to-red-800 flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-full h-full bg-gradient-to-br from-sky-700 to-sky-800 flex items-center justify-center text-white font-bold text-xl">
                       {vendor.store_name.charAt(0)}
                     </div>
                   )}

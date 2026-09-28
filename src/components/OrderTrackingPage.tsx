@@ -408,7 +408,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
         return 'bg-green-100 text-green-800';
       case 'cancelled':
       case 'rejected':
-        return 'bg-[#b91c1c]/10 text-[#b91c1c]';
+        return 'bg-[#1759cb]/10 text-[#1759cb]';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -433,8 +433,8 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
     return (
       <div className="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-xl p-8 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-[#b91c1c]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Package className="w-8 h-8 text-[#b91c1c]" />
+          <div className="w-16 h-16 bg-[#1759cb]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="w-8 h-8 text-[#1759cb]" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">خطأ في تحميل الطلب</h2>
           <p className="text-gray-600 mb-6">{error || 'لم يتم العثور على الطلب'}</p>
@@ -959,7 +959,7 @@ const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({ orderId, orderGro
               })}
 
               {/* Total for all sub-orders */}
-              <div className="bg-gradient-to-r from-brand to-red-700 rounded-xl p-4 text-white shadow-lg">
+              <div className="bg-gradient-to-r from-brand to-sky-700 rounded-xl p-4 text-white shadow-lg">
                 <div className="space-y-2">
                   {/* المجموع الفرعي */}
                   <div className="flex justify-between items-center text-white/90">

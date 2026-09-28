@@ -231,7 +231,7 @@ export default function ProductVariantsModal({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Red Card Container matching SingleProductPage style */}
-            <div className="bg-[#B91C1C] rounded-3xl shadow-2xl overflow-hidden">
+            <div className="bg-[#1759cb] rounded-3xl shadow-2xl overflow-hidden">
               <div className="bg-white m-1 rounded-[22px] flex flex-col max-h-[83vh]">
                 {/* Header */}
                 <div className="sticky top-0 bg-white border-b border-gray-200 p-4 rounded-t-[22px] z-10">
@@ -266,10 +266,10 @@ export default function ProductVariantsModal({
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mx-4 mt-3 p-3 bg-red-50 border-2 border-red-200 rounded-xl flex items-center gap-2"
+                    className="mx-4 mt-3 p-3 bg-sky-50 border-2 border-sky-200 rounded-xl flex items-center gap-2"
                   >
-                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                    <p className="text-red-800 font-medium text-sm">{error}</p>
+                    <AlertCircle className="w-5 h-5 text-sky-600 flex-shrink-0" />
+                    <p className="text-sky-800 font-medium text-sm">{error}</p>
                   </motion.div>
                 )}
 
@@ -342,12 +342,12 @@ export default function ProductVariantsModal({
                     </div>
 
                     {groupedAddons.required.length > 0 && (
-                      <div className="bg-white rounded-lg p-3 border-2 border-red-200">
+                      <div className="bg-white rounded-lg p-3 border-2 border-sky-200">
                         <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                          <AlertCircle className="w-5 h-5 text-red-600" />
+                          <AlertCircle className="w-5 h-5 text-sky-600" />
                           المكونات المطلوبة
                         </h4>
-                        <p className="text-xs text-red-700 mb-3 bg-red-50 p-2 rounded">يمكنك اختيار أكثر من مكون</p>
+                        <p className="text-xs text-sky-700 mb-3 bg-sky-50 p-2 rounded">يمكنك اختيار أكثر من مكون</p>
 
                         <div className={`space-y-2 ${groupedAddons.required.length > 4 ? 'max-h-[300px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
                           {groupedAddons.required.map((addon) => (
@@ -356,15 +356,15 @@ export default function ProductVariantsModal({
                               onClick={() => handleAddonToggle(addon.id)}
                               className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                                 selectedAddons[addon.id]
-                                  ? 'bg-red-50 border-red-500'
-                                  : 'bg-white border-gray-200 hover:border-red-300'
+                                  ? 'bg-sky-50 border-sky-500'
+                                  : 'bg-white border-gray-200 hover:border-sky-300'
                               }`}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 flex-1">
                                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                                     selectedAddons[addon.id]
-                                      ? 'bg-red-600 border-red-600'
+                                      ? 'bg-sky-600 border-sky-600'
                                       : 'border-gray-300'
                                   }`}>
                                     {selectedAddons[addon.id] && <Check className="w-4 h-4 text-white" />}

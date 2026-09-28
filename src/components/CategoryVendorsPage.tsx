@@ -168,7 +168,7 @@ const CategoryVendorsPage: React.FC<CategoryVendorsPageProps> = ({
 
     if (error) {
       return (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg my-4">
+        <div className="bg-sky-50 text-sky-600 p-4 rounded-lg my-4">
           <p>{error}</p>
         </div>
       );

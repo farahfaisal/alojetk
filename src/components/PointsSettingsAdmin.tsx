@@ -107,7 +107,7 @@ const PointsSettingsAdmin: React.FC<PointsSettingsAdminProps> = ({ onClose }) =>
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto p-4 space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-800 p-4 rounded-lg flex items-center gap-2">
+            <div className="bg-sky-50 text-sky-800 p-4 rounded-lg flex items-center gap-2">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <p>{error}</p>
             </div>

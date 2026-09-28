@@ -102,7 +102,7 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
         className="fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-t-3xl shadow-2xl max-h-[85vh]"
       >
         <div className="flex flex-col h-full">
-          <div className="bg-gradient-to-r from-brand to-red-600 text-white px-6 py-4 flex items-center justify-between rounded-t-3xl">
+          <div className="bg-gradient-to-r from-brand to-sky-600 text-white px-6 py-4 flex items-center justify-between rounded-t-3xl">
             <div className="flex items-center gap-3">
               {selectedMainArea && (
                 <button
@@ -180,11 +180,11 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
                     <motion.button
                       key={subArea.id}
                       onClick={() => handleSubAreaClick(subArea)}
-                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#b91c1c]/10 transition-all flex items-center justify-between group"
+                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#1759cb]/10 transition-all flex items-center justify-between group"
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-brand to-red-600 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-brand to-sky-600 rounded-full flex items-center justify-center">
                           <MapPin className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-bold text-gray-800 group-hover:text-brand">
@@ -222,11 +222,11 @@ const ServiceAreaPicker: React.FC<ServiceAreaPickerProps> = ({
                     <motion.button
                       key={area.id}
                       onClick={() => handleMainAreaClick(area)}
-                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#b91c1c]/10 transition-all flex items-center justify-between group"
+                      className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-brand hover:bg-[#1759cb]/10 transition-all flex items-center justify-between group"
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-brand to-red-600 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-brand to-sky-600 rounded-full flex items-center justify-center">
                           <MapPin className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-bold text-gray-800 group-hover:text-brand">

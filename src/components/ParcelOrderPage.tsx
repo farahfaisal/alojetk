@@ -218,7 +218,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
         }}
       >
         <div className="h-full flex flex-col">
-          <div className="bg-gradient-to-r from-brand to-red-700 text-white px-4 py-4 flex items-center justify-between shadow-lg">
+          <div className="bg-gradient-to-r from-brand to-sky-700 text-white px-4 py-4 flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
               <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/>
@@ -401,7 +401,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDeliveryAreaPicker(true)}
-                        className="px-5 py-2.5 bg-brand text-white rounded-xl hover:bg-[#b91c1c] transition-colors text-sm font-medium whitespace-nowrap"
+                        className="px-5 py-2.5 bg-brand text-white rounded-xl hover:bg-[#1759cb] transition-colors text-sm font-medium whitespace-nowrap"
                       >
                         اختر
                       </button>
@@ -422,7 +422,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                       <button
                         type="button"
                         onClick={() => setShowDeliveryMap(true)}
-                        className="px-5 py-2.5 border-2 border-brand text-brand rounded-xl hover:bg-[#b91c1c]/10 transition-colors text-sm font-medium whitespace-nowrap"
+                        className="px-5 py-2.5 border-2 border-brand text-brand rounded-xl hover:bg-[#1759cb]/10 transition-colors text-sm font-medium whitespace-nowrap"
                       >
                         خريطة
                       </button>
@@ -452,7 +452,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
               </div>
 
               {error && (
-                <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-xl p-3 text-[#b91c1c] text-sm text-right">
+                <div className="bg-[#1759cb]/10 border border-[#1759cb]/30 rounded-xl p-3 text-[#1759cb] text-sm text-right">
                   {error}
                 </div>
               )}
@@ -460,7 +460,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={loading || !pickupAddress || !deliveryAddress || !receiverName || !receiverPhone}
-                className="w-full bg-gradient-to-r from-brand to-red-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-brand to-sky-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -594,7 +594,7 @@ const ParcelOrderPage: React.FC<ParcelOrderPageProps> = ({ onClose }) => {
                         window.dispatchEvent(new CustomEvent('open-parcel-tracking'));
                       }, 200);
                     }}
-                    className="w-full bg-gradient-to-r from-brand to-red-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-brand to-sky-700 text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                   >
                     <Clock className="w-5 h-5" />
                     <span>عرض طلباتي</span>

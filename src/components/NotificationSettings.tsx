@@ -148,7 +148,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ onClose }) 
                     <h3 className="font-semibold text-lg">حالة الإشعارات</h3>
                     <p className={`text-sm ${
                       permissionStatus === 'granted' ? 'text-green-600' :
-                      permissionStatus === 'denied' ? 'text-red-600' : 'text-gray-600'
+                      permissionStatus === 'denied' ? 'text-sky-600' : 'text-gray-600'
                     }`}>
                       {permissionStatus === 'granted' ? 'مفعلة' :
                        permissionStatus === 'denied' ? 'مرفوضة' : 'غير مفعلة'}

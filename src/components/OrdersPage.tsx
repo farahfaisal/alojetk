@@ -356,7 +356,7 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
         return 'bg-green-100 text-green-800';
       case 'cancelled':
       case 'rejected':
-        return 'bg-[#b91c1c]/10 text-[#b91c1c]';
+        return 'bg-[#1759cb]/10 text-[#1759cb]';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -520,8 +520,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
               ))}
             </div>
           ) : error ? (
-            <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg text-center">
-              <Package className="w-12 h-12 text-[#b91c1c] mx-auto mb-2" />
+            <div className="bg-[#1759cb]/10 text-[#1759cb] p-4 rounded-lg text-center">
+              <Package className="w-12 h-12 text-[#1759cb] mx-auto mb-2" />
               <p>{error}</p>
             </div>
           ) : activeTab === 'restaurant' && groupedOrders.length === 0 ? (

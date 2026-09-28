@@ -232,7 +232,7 @@ const ServiceAreaSelection: React.FC<ServiceAreaSelectionProps> = ({
           )}
 
           {error ? (
-            <div className="bg-red-50 text-red-800 p-4 rounded-xl text-center">
+            <div className="bg-sky-50 text-sky-800 p-4 rounded-xl text-center">
               <p>{error}</p>
             </div>
           ) : (

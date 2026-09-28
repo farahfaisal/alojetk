@@ -767,7 +767,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
           {error && (
-            <div className="rounded-xl p-3 flex items-start gap-2 text-sm bg-[#b91c1c]/10 text-[#b91c1c]">
+            <div className="rounded-xl p-3 flex items-start gap-2 text-sm bg-[#1759cb]/10 text-[#1759cb]">
               <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
               <p>{error}</p>
             </div>
@@ -837,7 +837,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   />
                 </button>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-[#b91c1c]" />
+                  <Clock className="w-5 h-5 text-[#1759cb]" />
                   <span className="text-base font-semibold text-gray-900">الاستلام لوقت لاحق</span>
                 </div>
               </div>

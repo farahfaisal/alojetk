@@ -145,7 +145,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
 
           <div>
             {error && (
-              <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-3 rounded-lg mb-4 text-sm">
+              <div className="bg-[#1759cb]/10 text-[#1759cb] p-3 rounded-lg mb-4 text-sm">
                 {error}
               </div>
             )}

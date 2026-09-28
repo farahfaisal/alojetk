@@ -701,13 +701,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-[#b91c1c]/10 border border-[#b91c1c]/30 rounded-xl p-6 text-center max-w-md">
-            <AlertCircle className="w-12 h-12 text-[#b91c1c] mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-[#b91c1c] mb-2">فشل في تحميل الخريطة</h3>
-            <p className="text-[#b91c1c] mb-4">لا يمكن تحميل خرائط Google. يرجى التحقق من الاتصال بالإنترنت.</p>
+          <div className="bg-[#1759cb]/10 border border-[#1759cb]/30 rounded-xl p-6 text-center max-w-md">
+            <AlertCircle className="w-12 h-12 text-[#1759cb] mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-[#1759cb] mb-2">فشل في تحميل الخريطة</h3>
+            <p className="text-[#1759cb] mb-4">لا يمكن تحميل خرائط Google. يرجى التحقق من الاتصال بالإنترنت.</p>
             <button
               onClick={onCancel}
-              className="bg-[#b91c1c] text-white px-6 py-2 rounded-lg hover:bg-[#b91c1c] transition-colors"
+              className="bg-[#1759cb] text-white px-6 py-2 rounded-lg hover:bg-[#1759cb] transition-colors"
             >
               إغلاق
             </button>
@@ -757,7 +757,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 <div>
                   <label htmlFor="label" className="block text-sm font-medium text-gray-900 mb-1 flex items-center gap-1">
                     <span>تسمية العنوان</span>
-                    <span className="text-[#b91c1c]">*</span>
+                    <span className="text-[#1759cb]">*</span>
                   </label>
                   <input
                     type="text"
@@ -767,12 +767,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     onChange={handleChange}
                     required
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand transition-colors ${
-                      errors.label ? 'border-[#b91c1c] bg-[#b91c1c]/5' : 'border-gray-300 focus:border-brand'
+                      errors.label ? 'border-[#1759cb] bg-[#1759cb]/5' : 'border-gray-300 focus:border-brand'
                     }`}
                     placeholder="مثال: البيت، المدرسة، العمل، بيت جدي..."
                   />
                   {errors.label && (
-                    <div className="mt-2 flex items-center gap-2 text-[#b91c1c] bg-[#b91c1c]/10 px-3 py-2 rounded-lg">
+                    <div className="mt-2 flex items-center gap-2 text-[#1759cb] bg-[#1759cb]/10 px-3 py-2 rounded-lg">
                       <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       <p className="text-sm font-medium">{errors.label}</p>
                     </div>
@@ -795,12 +795,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     onChange={handleChange}
                     disabled={true}
                     className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
-                      errors.name ? 'border-[#b91c1c]' : 'border-gray-300'
+                      errors.name ? 'border-[#1759cb]' : 'border-gray-300'
                     }`}
                     placeholder="الاسم الكامل"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.name}</p>
+                    <p className="mt-1 text-sm text-[#1759cb]">{errors.name}</p>
                   )}
                 </div>
 
@@ -817,13 +817,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     placeholder="05xxxxxxxx"
                     disabled={true}
                     className={`w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed ${
-                      errors.phone ? 'border-[#b91c1c]' : 'border-gray-300'
+                      errors.phone ? 'border-[#1759cb]' : 'border-gray-300'
                     }`}
                     dir="ltr"
                   />
                   <p className="text-xs text-gray-500 mt-1">يتم استخدام رقم الهاتف المسجل في حسابك</p>
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.phone}</p>
+                    <p className="mt-1 text-sm text-[#1759cb]">{errors.phone}</p>
                   )}
                 </div>
               </div>
@@ -865,9 +865,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     المنطقة الرئيسية *
                   </label>
                   {preselectedCity ? (
-                    <div className="w-full px-4 py-3 border-2 border-[#b91c1c] bg-[#b91c1c]/10 rounded-lg flex items-center justify-between">
+                    <div className="w-full px-4 py-3 border-2 border-[#1759cb] bg-[#1759cb]/10 rounded-lg flex items-center justify-between">
                       <span className="text-gray-900 font-medium">{selectedMainArea?.name || formData.city}</span>
-                      <Check className="w-5 h-5 text-[#b91c1c]" />
+                      <Check className="w-5 h-5 text-[#1759cb]" />
                     </div>
                   ) : (
                     <div className="relative">
@@ -991,7 +991,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                         type="button"
                         onClick={() => setShowSubAreaPicker(!showSubAreaPicker)}
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                          errors.city ? 'border-[#b91c1c]' : 'border-gray-300'
+                          errors.city ? 'border-[#1759cb]' : 'border-gray-300'
                         }`}
                       >
                         <span className={formData.city ? 'text-gray-900 font-medium' : 'text-gray-400'}>
@@ -1092,7 +1092,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                       )}
                     </div>
                     {errors.city && (
-                      <div className="mt-2 flex items-center gap-2 text-[#b91c1c] bg-[#b91c1c]/10 px-3 py-2 rounded-lg">
+                      <div className="mt-2 flex items-center gap-2 text-[#1759cb] bg-[#1759cb]/10 px-3 py-2 rounded-lg">
                         <AlertCircle className="w-4 h-4 flex-shrink-0" />
                         <p className="text-sm font-medium">{errors.city}</p>
                       </div>
@@ -1129,12 +1129,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
                     onChange={handleChange}
                     placeholder="أدخل العنوان التفصيلي (الشارع، رقم البناية، الحي...)"
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand resize-none ${
-                      errors.address ? 'border-[#b91c1c]' : 'border-gray-300'
+                      errors.address ? 'border-[#1759cb]' : 'border-gray-300'
                     }`}
                     rows={4}
                   />
                   {errors.address && (
-                    <p className="mt-1 text-sm text-[#b91c1c]">{errors.address}</p>
+                    <p className="mt-1 text-sm text-[#1759cb]">{errors.address}</p>
                   )}
                 </div>
 
@@ -1160,7 +1160,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             </div>
             
             {errors.submit && (
-              <div className="bg-[#b91c1c]/10 text-[#b91c1c] p-4 rounded-lg border border-[#b91c1c]/30">
+              <div className="bg-[#1759cb]/10 text-[#1759cb] p-4 rounded-lg border border-[#1759cb]/30">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p>{errors.submit}</p>

@@ -216,7 +216,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
                           isActive
                             ? 'bg-white hover:bg-gray-50 border-2 border-gray-100 hover:border-[#c21d14]/30'
                             : 'bg-gray-50 cursor-not-allowed opacity-60'
-                        } ${currentCity === area.name ? 'border-[#c21d14] bg-[#b91c1c]/10' : ''}`}
+                        } ${currentCity === area.name ? 'border-[#c21d14] bg-[#1759cb]/10' : ''}`}
                         whileHover={isActive ? { scale: 1.01 } : {}}
                         whileTap={isActive ? { scale: 0.99 } : {}}
                       >

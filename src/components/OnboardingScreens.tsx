@@ -14,9 +14,9 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
       icon: ShoppingBag,
       title: 'ابحث عن الطعام الذي تحبه',
       description: 'اكتشف أفضل الأطعمة من جميع المطاعم مع توصيل سريع إلى باب منزلك',
-      color: 'from-red-50 to-red-100',
-      iconBg: 'bg-[#b91c1c]/10',
-      iconColor: 'text-[#b91c1c]'
+      color: 'from-sky-50 to-sky-100',
+      iconBg: 'bg-[#1759cb]/10',
+      iconColor: 'text-[#1759cb]'
     },
     {
       icon: Clock,
@@ -38,9 +38,9 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
       icon: Gift,
       title: 'عروض وخصومات حصرية',
       description: 'استمتع بالعروض اليومية والخصومات الخاصة على مطاعمك المفضلة',
-      color: 'from-red-50 to-red-100',
-      iconBg: 'bg-[#b91c1c]/10',
-      iconColor: 'text-[#b91c1c]'
+      color: 'from-sky-50 to-sky-100',
+      iconBg: 'bg-[#1759cb]/10',
+      iconColor: 'text-[#1759cb]'
     }
   ];
 
@@ -63,7 +63,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
   // Welcome Screen
   if (showWelcome) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-red-50 via-white to-orange-50 z-50 flex flex-col">
+      <div className="fixed inset-0 bg-gradient-to-br from-sky-50 via-white to-orange-50 z-50 flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           {/* Logo Container */}
           <div className="relative mb-8">
@@ -93,7 +93,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
                 localStorage.setItem('hasSeenOnboarding', 'true');
                 onComplete();
               }}
-              className="w-full bg-gradient-to-r from-red-700 to-red-800 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+              className="w-full bg-gradient-to-r from-sky-700 to-sky-800 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all"
             >
               تسجيل الدخول
             </button>
@@ -102,7 +102,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
                 localStorage.setItem('hasSeenOnboarding', 'true');
                 onComplete();
               }}
-              className="w-full bg-white border-2 border-red-700 text-[#b91c1c] py-4 rounded-xl font-bold text-lg hover:bg-red-50 transition-all"
+              className="w-full bg-white border-2 border-sky-700 text-[#1759cb] py-4 rounded-xl font-bold text-lg hover:bg-sky-50 transition-all"
             >
               إنشاء حساب جديد
             </button>
@@ -145,9 +145,9 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute top-8 right-8 w-12 h-12 bg-[#b91c1c]/20 rounded-full opacity-50"></div>
-          <div className="absolute bottom-12 left-8 w-8 h-8 bg-[#b91c1c]/30 rounded-full opacity-40"></div>
-          <div className="absolute top-1/2 right-4 w-6 h-6 bg-[#b91c1c]/40 rounded-full opacity-30"></div>
+          <div className="absolute top-8 right-8 w-12 h-12 bg-[#1759cb]/20 rounded-full opacity-50"></div>
+          <div className="absolute bottom-12 left-8 w-8 h-8 bg-[#1759cb]/30 rounded-full opacity-40"></div>
+          <div className="absolute top-1/2 right-4 w-6 h-6 bg-[#1759cb]/40 rounded-full opacity-30"></div>
         </div>
 
         {/* Text Content */}
@@ -171,7 +171,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
               onClick={() => setCurrentSlide(index)}
               className={`transition-all duration-300 rounded-full ${
                 index === currentSlide
-                  ? 'w-8 h-2 bg-[#b91c1c]'
+                  ? 'w-8 h-2 bg-[#1759cb]'
                   : 'w-2 h-2 bg-gray-300'
               }`}
             />
@@ -181,7 +181,7 @@ const OnboardingScreens = ({ onComplete }: OnboardingScreensProps) => {
         {/* Next Button */}
         <button
           onClick={handleNext}
-          className="w-full bg-gradient-to-r from-red-700 to-red-800 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-sky-700 to-sky-800 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
         >
           {currentSlide === slides.length - 1 ? 'التالي' : 'التالي'}
           <ChevronLeft className="w-5 h-5" />

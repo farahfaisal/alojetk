@@ -315,7 +315,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
               )}
 
               {referralError && (
-                <div className="bg-red-50 p-4 rounded-lg text-red-800 mt-4 w-full">
+                <div className="bg-sky-50 p-4 rounded-lg text-sky-800 mt-4 w-full">
                   <p>{referralError}</p>
                 </div>
               )}
@@ -332,7 +332,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
               </div>
 
               {error && (
-                <div className="bg-red-50 text-red-800 p-4 rounded-lg">
+                <div className="bg-sky-50 text-sky-800 p-4 rounded-lg">
                   {error}
                 </div>
               )}
@@ -392,7 +392,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      تسمية العنوان <span className="text-red-500">*</span>
+                      تسمية العنوان <span className="text-sky-500">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -413,13 +413,13 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      المنطقة الرئيسية <span className="text-red-500">*</span>
+                      المنطقة الرئيسية <span className="text-sky-500">*</span>
                     </label>
                     <select
                       value={selectedMainAreaId}
                       onChange={(e) => handleMainAreaChange(e.target.value)}
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white ${
-                        !selectedMainAreaId ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
+                        !selectedMainAreaId ? 'border-sky-300 text-gray-400' : 'border-gray-300 text-gray-900'
                       }`}
                       required
                     >
@@ -431,7 +431,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                       ))}
                     </select>
                     {!selectedMainAreaId && (
-                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                      <p className="text-xs text-sky-500 mt-1 flex items-center gap-1">
                         <span>⚠️</span>
                         <span>يجب اختيار المنطقة الرئيسية</span>
                       </p>
@@ -441,14 +441,14 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                   {selectedMainAreaId && subAreas.length > 0 && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        المنطقة الفرعية <span className="text-red-500">*</span>
+                        المنطقة الفرعية <span className="text-sky-500">*</span>
                       </label>
                       <div className="relative">
                         <button
                           type="button"
                           onClick={() => setShowSubAreaPicker(!showSubAreaPicker)}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand bg-white hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                            !selectedCity ? 'border-red-300 text-gray-400' : 'border-gray-300 text-gray-900'
+                            !selectedCity ? 'border-sky-300 text-gray-400' : 'border-gray-300 text-gray-900'
                           }`}
                         >
                           <span className={selectedCity ? 'text-gray-900 font-medium' : 'text-gray-400'}>
@@ -546,7 +546,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
                         </AnimatePresence>
                       </div>
                       {!selectedCity && (
-                        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                        <p className="text-xs text-sky-500 mt-1 flex items-center gap-1">
                           <span>⚠️</span>
                           <span>يجب اختيار المنطقة الفرعية</span>
                         </p>
@@ -565,7 +565,7 @@ const RegistrationCompletion: React.FC<RegistrationCompletionProps> = ({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      العنوان التفصيلي <span className="text-red-500">*</span>
+                      العنوان التفصيلي <span className="text-sky-500">*</span>
                     </label>
                     <div className="relative">
                       <textarea
