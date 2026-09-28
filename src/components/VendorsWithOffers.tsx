@@ -245,7 +245,8 @@ const VendorsWithOffers: React.FC<VendorsWithOffersProps> = ({ onVendorClick, ty
             <motion.div
               whileTap={{ scale: 0.95 }}
               onClick={() => onVendorClick(vendor)}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 flex flex-col h-full"
+              className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer transition-all duration-200 flex flex-col h-full hover:shadow-[0_8px_30px_rgba(23,89,203,0.35)] hover:border-[#1759cb]/40"
+              style={{ boxShadow: '0 2px 12px rgba(23,89,203,0.08)' }}
             >
               <div className="relative aspect-square bg-gray-50 overflow-hidden">
                 <div className="absolute top-2 right-2 z-10 px-2 py-1 rounded-full text-xs font-bold text-white flex items-center gap-1 shadow-lg" style={{ backgroundColor: BRAND }}>

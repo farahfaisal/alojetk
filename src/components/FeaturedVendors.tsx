@@ -133,8 +133,8 @@ const FeaturedVendors: React.FC<FeaturedVendorsProps> = ({ onVendorClick, type =
                 e.preventDefault();
                 onVendorClick(vendor);
               }}
-              className="bg-white rounded-lg overflow-hidden transition-all cursor-pointer w-full border border-gray-200 relative flex flex-col"
-              style={{ height: '230px' }}
+              className="bg-white rounded-lg overflow-hidden transition-all cursor-pointer w-full border border-gray-200 relative flex flex-col hover:shadow-[0_8px_30px_rgba(23,89,203,0.35)] hover:border-[#1759cb]/40"
+              style={{ height: '230px', boxShadow: '0 2px 12px rgba(23,89,203,0.08)' }}
             >
               {/* Featured badge - Top Corner */}
               <div className="absolute top-2 right-2 z-10">
