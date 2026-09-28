@@ -392,8 +392,8 @@ input, textarea, select {
     left: 0 !important;
     right: 0 !important;
     z-index: 50 !important;
-    background-color: #1a1a1a !important;
-    border-top: 1px solid #374151 !important;
+    background-color: white !important;
+    border-top: 1px solid #e5e7eb !important;
     padding-bottom: max(env(safe-area-inset-bottom), 8px) !important;
     padding-top: 8px !important;
     min-height: calc(60px + max(env(safe-area-inset-bottom), 8px)) !important;
@@ -521,7 +521,7 @@ body {
 
 /* Loading states */
 .loading-skeleton {
-  background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }
