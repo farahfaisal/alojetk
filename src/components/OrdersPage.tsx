@@ -552,7 +552,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
                 <motion.div
                   key={order.id}
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all"
+                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all hover:shadow-[0_8px_30px_rgba(23,89,203,0.35)] hover:border-[#1759cb]/40"
+                  style={{ boxShadow: '0 2px 12px rgba(23,89,203,0.08)' }}
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
@@ -645,7 +646,8 @@ const OrdersPage: React.FC<OrdersPageProps> = ({
                 <motion.div
                   key={order.id}
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all"
+                  className="bg-white rounded-lg p-4 border border-gray-200 transition-all hover:shadow-[0_8px_30px_rgba(23,89,203,0.35)] hover:border-[#1759cb]/40"
+                  style={{ boxShadow: '0 2px 12px rgba(23,89,203,0.08)' }}
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
