@@ -85,7 +85,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               </div>
             ) : (
               <img
-                src="https://fliwyntfvfedslbwkvks.supabase.co/storage/v1/object/public/advertisements/aloo.png"
+                src="/assets/2e102ed0-e938-4493-8651-e2076a789cb1.png"
                 alt="JIB"
                 className="w-full h-full object-contain"
                 onLoad={() => setImageLoaded(true)}
